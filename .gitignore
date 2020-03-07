@@ -3,3 +3,5 @@
 *.bin
 *.gpu-64
 log-*
+*.pyc
+core.*
