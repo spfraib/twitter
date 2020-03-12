@@ -51,7 +51,7 @@ source ~/mypython/py3.7/bin/activate
 cd /scratch/spf248/twitter
 
 # now start the job:
-srun time python -u ./py/7.8-get-predictions-from-BERT.py > ./log/7.8-get-predictions-from-BERT-${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u ./py/7.9-get-predictions-from-BERT.py > ./log/7.9-get-predictions-from-BERT-${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 #cat thtest.m | srun matlab -nodisplay
 # Leave a few empty lines in the end to avoid occasional EOF trouble.
 
