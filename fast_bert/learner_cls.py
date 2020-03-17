@@ -20,6 +20,9 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics import roc_curve, auc
 
+import json
+
+
 from pathlib import Path
 
 from torch.optim.lr_scheduler import _LRScheduler, Optimizer
@@ -215,6 +218,7 @@ class BertLearner(Learner):
         # Classification specific attributes
         self.multi_label = multi_label
         self.metrics = metrics
+        self.results_all_epochs = {}
 
     # def freeze_to(self, n: int) -> None:
     #     "Freeze layers up to layer group `n`."
@@ -280,7 +284,12 @@ class BertLearner(Learner):
     #     self.layer_groups = split_model(self.model, split_on)
     #     return self
 
-    # def save_to_file(self):
+    def save_results(self):
+
+        path_to_file = output_dir+"/results.json"
+        with open(path_to_file, 'w+') as json_file: #w+ for delete the original content then read/write if file exists, otherwise create the file
+            json.dump(self.results_all_epochs, json_file)
+
 
     ### Train the model ###
     def fit(
@@ -354,7 +363,7 @@ class BertLearner(Learner):
 
         for epoch in pbar:
 
-            self.save_model(epoch=epoch)
+            self.save_model()
 
             epoch_step = 0
             epoch_loss = 0.0
@@ -446,6 +455,12 @@ class BertLearner(Learner):
                     self.logger.info(
                         "eval_{} after epoch {}: {}: ".format(key, (epoch + 1), value)
                     )
+                results['epoch'] = epoch
+                results['train_loss'] = epoch_loss
+                results['lr'] = scheduler.get_lr()[0]
+
+                self.results_all_epochs[epoch] = results
+                self.save_results()
 
             # Log metrics
             self.logger.info(
