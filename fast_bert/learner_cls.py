@@ -192,6 +192,7 @@ class BertLearner(Learner):
         max_grad_norm=1.0,
         adam_epsilon=1e-8,
         logging_steps=100,
+        # training_results = output_dir+"/results.csv",
     ):
 
         super(BertLearner, self).__init__(
@@ -279,6 +280,8 @@ class BertLearner(Learner):
     #     self.layer_groups = split_model(self.model, split_on)
     #     return self
 
+    # def save_to_file(self):
+
     ### Train the model ###
     def fit(
         self,
@@ -350,6 +353,9 @@ class BertLearner(Learner):
         pbar = master_bar(range(epochs))
 
         for epoch in pbar:
+
+            self.save_model(epoch=epoch)
+
             epoch_step = 0
             epoch_loss = 0.0
             for step, batch in enumerate(progress_bar(train_dataloader, parent=pbar)):
