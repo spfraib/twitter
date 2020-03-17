@@ -367,86 +367,86 @@ class BertLearner(Learner):
 
             epoch_step = 0
             epoch_loss = 0.0
-            for step, batch in enumerate(progress_bar(train_dataloader, parent=pbar)):
-                self.model.train()
-                batch = tuple(t.to(self.device) for t in batch)
-                inputs = {
-                    "input_ids": batch[0],
-                    "attention_mask": batch[1],
-                    "labels": batch[3],
-                }
-
-                if self.model_type in ["bert", "xlnet"]:
-                    inputs["token_type_ids"] = batch[2]
-
-                outputs = self.model(**inputs)
-                loss = outputs[
-                    0
-                ]  # model outputs are always tuple in pytorch-transformers (see doc)
-
-                if self.n_gpu > 1:
-                    loss = (
-                        loss.mean()
-                    )  # mean() to average on multi-gpu parallel training
-                if self.grad_accumulation_steps > 1:
-                    loss = loss / self.grad_accumulation_steps
-
-                if self.is_fp16:
-                    with amp.scale_loss(loss, optimizer) as scaled_loss:
-                        scaled_loss.backward()
-                    torch.nn.utils.clip_grad_norm_(
-                        amp.master_params(optimizer), self.max_grad_norm
-                    )
-                else:
-                    loss.backward()
-                    torch.nn.utils.clip_grad_norm_(
-                        self.model.parameters(), self.max_grad_norm
-                    )
-
-                tr_loss += loss.item()
-                epoch_loss += loss.item()
-                if (step + 1) % self.grad_accumulation_steps == 0:
-                    optimizer.step()
-                    scheduler.step()
-
-                    self.model.zero_grad()
-                    global_step += 1
-                    epoch_step += 1
-
-                    if self.logging_steps > 0 and global_step % self.logging_steps == 0:
-                        if validate:
-                            # evaluate model
-                            results = self.validate()
-                            for key, value in results.items():
-                                tb_writer.add_scalar(
-                                    "eval_{}".format(key), value, global_step
-                                )
-                                self.logger.info(
-                                    "eval_{} after step {}: {}: ".format(
-                                        key, global_step, value
-                                    )
-                                )
-
-                        # Log metrics
-                        self.logger.info(
-                            "lr after step {}: {}".format(
-                                global_step, scheduler.get_lr()[0]
-                            )
-                        )
-                        self.logger.info(
-                            "train_loss after step {}: {}".format(
-                                global_step,
-                                (tr_loss - logging_loss) / self.logging_steps,
-                            )
-                        )
-                        tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
-                        tb_writer.add_scalar(
-                            "loss",
-                            (tr_loss - logging_loss) / self.logging_steps,
-                            global_step,
-                        )
-
-                        logging_loss = tr_loss
+            # for step, batch in enumerate(progress_bar(train_dataloader, parent=pbar)):
+            #     self.model.train()
+            #     batch = tuple(t.to(self.device) for t in batch)
+            #     inputs = {
+            #         "input_ids": batch[0],
+            #         "attention_mask": batch[1],
+            #         "labels": batch[3],
+            #     }
+            #
+            #     if self.model_type in ["bert", "xlnet"]:
+            #         inputs["token_type_ids"] = batch[2]
+            #
+            #     outputs = self.model(**inputs)
+            #     loss = outputs[
+            #         0
+            #     ]  # model outputs are always tuple in pytorch-transformers (see doc)
+            #
+            #     if self.n_gpu > 1:
+            #         loss = (
+            #             loss.mean()
+            #         )  # mean() to average on multi-gpu parallel training
+            #     if self.grad_accumulation_steps > 1:
+            #         loss = loss / self.grad_accumulation_steps
+            #
+            #     if self.is_fp16:
+            #         with amp.scale_loss(loss, optimizer) as scaled_loss:
+            #             scaled_loss.backward()
+            #         torch.nn.utils.clip_grad_norm_(
+            #             amp.master_params(optimizer), self.max_grad_norm
+            #         )
+            #     else:
+            #         loss.backward()
+            #         torch.nn.utils.clip_grad_norm_(
+            #             self.model.parameters(), self.max_grad_norm
+            #         )
+            #
+            #     tr_loss += loss.item()
+            #     epoch_loss += loss.item()
+            #     if (step + 1) % self.grad_accumulation_steps == 0:
+            #         optimizer.step()
+            #         scheduler.step()
+            #
+            #         self.model.zero_grad()
+            #         global_step += 1
+            #         epoch_step += 1
+            #
+            #         if self.logging_steps > 0 and global_step % self.logging_steps == 0:
+            #             if validate:
+            #                 # evaluate model
+            #                 results = self.validate()
+            #                 for key, value in results.items():
+            #                     tb_writer.add_scalar(
+            #                         "eval_{}".format(key), value, global_step
+            #                     )
+            #                     self.logger.info(
+            #                         "eval_{} after step {}: {}: ".format(
+            #                             key, global_step, value
+            #                         )
+            #                     )
+            #
+            #             # Log metrics
+            #             self.logger.info(
+            #                 "lr after step {}: {}".format(
+            #                     global_step, scheduler.get_lr()[0]
+            #                 )
+            #             )
+            #             self.logger.info(
+            #                 "train_loss after step {}: {}".format(
+            #                     global_step,
+            #                     (tr_loss - logging_loss) / self.logging_steps,
+            #                 )
+            #             )
+            #             tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
+            #             tb_writer.add_scalar(
+            #                 "loss",
+            #                 (tr_loss - logging_loss) / self.logging_steps,
+            #                 global_step,
+            #             )
+            #
+            #             logging_loss = tr_loss
 
             # Evaluate the model after every epoch
             if validate:
