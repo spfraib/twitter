@@ -110,7 +110,7 @@ class Learner(object):
             optimizer, num_warmup_steps=self.warmup_steps, num_training_steps=t_total
         )
 
-    def save_model(self, epoch = 'final'):
+    def save_model(self):
 
         print('saving to file')
 

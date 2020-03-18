@@ -301,7 +301,7 @@ class BertLearner(Learner):
 
         for epoch in pbar:
 
-            self.save_model()
+            self.save_model(epoch=epoch)
             start_time = time.time()
 
             epoch_step = 0
