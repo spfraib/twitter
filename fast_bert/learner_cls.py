@@ -21,7 +21,7 @@ import numpy as np
 from sklearn.metrics import roc_curve, auc
 
 import json
-
+import time
 
 from pathlib import Path
 
@@ -220,73 +220,11 @@ class BertLearner(Learner):
         self.metrics = metrics
         self.results_all_epochs = {}
 
-    # def freeze_to(self, n: int) -> None:
-    #     "Freeze layers up to layer group `n`."
-    #     for g in self.layer_groups[:n]:
-    #         for l in g:
-    #             if not isinstance(l, self.bn_types):
-    #                 requires_grad(l, False)
-    #     for g in self.layer_groups[n:]:
-    #         requires_grad(g, True)
-    #     self.optimizer = None
-
-    # def freeze_module(self, module):
-    #     for param in module.parameters():
-    #         param.requires_grad = False
-
-    # def unfreeze_module(self, module):
-    #     for param in module.parameters():
-    #         param.requires_grad = True
-
-    # def freeze(self) -> None:
-    #     "Freeze up to last layer group."
-    #     assert len(self.layer_groups) > 1
-    #     self.freeze_to(-1)
-    #     self.optimizer = None
-
-    # def unfreeze(self):
-    #     "Unfreeze entire model."
-    #     self.freeze_to(0)
-    #     self.optimizer = None
-
-    # def bert_clas_split(self) -> List[nn.Module]:
-    #     "Split the BERT `model` in groups for differential learning rates."
-    #     if self.model.module:
-    #         model = self.model.module
-    #     else:
-    #         model = self.model
-
-    #     bert = model.bert
-
-    #     embedder = bert.embeddings
-    #     pooler = bert.pooler
-
-    #     encoder = bert.encoder
-
-    #     classifier = [model.dropout, model.classifier]
-
-    #     n = len(encoder.layer) // 3
-
-    #     groups = [
-    #         [embedder],
-    #         list(encoder.layer[:n]),
-    #         list(encoder.layer[n : 2 * n]),
-    #         list(encoder.layer[2 * n :]),
-    #         [pooler],
-    #         classifier,
-    #     ]
-    #     return groups
-
-    # def split(self, split_on: SplitFuncOrIdxList) -> None:
-    #     "Split the model at `split_on`."
-    #     if isinstance(split_on, Callable):
-    #         split_on = split_on()
-    #     self.layer_groups = split_model(self.model, split_on)
-    #     return self
-
     def save_results(self):
 
-        path_to_file = output_dir+"/results.json"
+        path_to_file = self.output_dir / "results.json"
+
+        print('>> saving to.. ', path_to_file)
         with open(path_to_file, 'w+') as json_file: #w+ for delete the original content then read/write if file exists, otherwise create the file
             json.dump(self.results_all_epochs, json_file)
 
@@ -364,89 +302,90 @@ class BertLearner(Learner):
         for epoch in pbar:
 
             self.save_model()
+            start_time = time.time()
 
             epoch_step = 0
             epoch_loss = 0.0
-            # for step, batch in enumerate(progress_bar(train_dataloader, parent=pbar)):
-            #     self.model.train()
-            #     batch = tuple(t.to(self.device) for t in batch)
-            #     inputs = {
-            #         "input_ids": batch[0],
-            #         "attention_mask": batch[1],
-            #         "labels": batch[3],
-            #     }
-            #
-            #     if self.model_type in ["bert", "xlnet"]:
-            #         inputs["token_type_ids"] = batch[2]
-            #
-            #     outputs = self.model(**inputs)
-            #     loss = outputs[
-            #         0
-            #     ]  # model outputs are always tuple in pytorch-transformers (see doc)
-            #
-            #     if self.n_gpu > 1:
-            #         loss = (
-            #             loss.mean()
-            #         )  # mean() to average on multi-gpu parallel training
-            #     if self.grad_accumulation_steps > 1:
-            #         loss = loss / self.grad_accumulation_steps
-            #
-            #     if self.is_fp16:
-            #         with amp.scale_loss(loss, optimizer) as scaled_loss:
-            #             scaled_loss.backward()
-            #         torch.nn.utils.clip_grad_norm_(
-            #             amp.master_params(optimizer), self.max_grad_norm
-            #         )
-            #     else:
-            #         loss.backward()
-            #         torch.nn.utils.clip_grad_norm_(
-            #             self.model.parameters(), self.max_grad_norm
-            #         )
-            #
-            #     tr_loss += loss.item()
-            #     epoch_loss += loss.item()
-            #     if (step + 1) % self.grad_accumulation_steps == 0:
-            #         optimizer.step()
-            #         scheduler.step()
-            #
-            #         self.model.zero_grad()
-            #         global_step += 1
-            #         epoch_step += 1
-            #
-            #         if self.logging_steps > 0 and global_step % self.logging_steps == 0:
-            #             if validate:
-            #                 # evaluate model
-            #                 results = self.validate()
-            #                 for key, value in results.items():
-            #                     tb_writer.add_scalar(
-            #                         "eval_{}".format(key), value, global_step
-            #                     )
-            #                     self.logger.info(
-            #                         "eval_{} after step {}: {}: ".format(
-            #                             key, global_step, value
-            #                         )
-            #                     )
-            #
-            #             # Log metrics
-            #             self.logger.info(
-            #                 "lr after step {}: {}".format(
-            #                     global_step, scheduler.get_lr()[0]
-            #                 )
-            #             )
-            #             self.logger.info(
-            #                 "train_loss after step {}: {}".format(
-            #                     global_step,
-            #                     (tr_loss - logging_loss) / self.logging_steps,
-            #                 )
-            #             )
-            #             tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
-            #             tb_writer.add_scalar(
-            #                 "loss",
-            #                 (tr_loss - logging_loss) / self.logging_steps,
-            #                 global_step,
-            #             )
-            #
-            #             logging_loss = tr_loss
+            for step, batch in enumerate(progress_bar(train_dataloader, parent=pbar)):
+                self.model.train()
+                batch = tuple(t.to(self.device) for t in batch)
+                inputs = {
+                    "input_ids": batch[0],
+                    "attention_mask": batch[1],
+                    "labels": batch[3],
+                }
+
+                if self.model_type in ["bert", "xlnet"]:
+                    inputs["token_type_ids"] = batch[2]
+
+                outputs = self.model(**inputs)
+                loss = outputs[
+                    0
+                ]  # model outputs are always tuple in pytorch-transformers (see doc)
+
+                if self.n_gpu > 1:
+                    loss = (
+                        loss.mean()
+                    )  # mean() to average on multi-gpu parallel training
+                if self.grad_accumulation_steps > 1:
+                    loss = loss / self.grad_accumulation_steps
+
+                if self.is_fp16:
+                    with amp.scale_loss(loss, optimizer) as scaled_loss:
+                        scaled_loss.backward()
+                    torch.nn.utils.clip_grad_norm_(
+                        amp.master_params(optimizer), self.max_grad_norm
+                    )
+                else:
+                    loss.backward()
+                    torch.nn.utils.clip_grad_norm_(
+                        self.model.parameters(), self.max_grad_norm
+                    )
+
+                tr_loss += loss.item()
+                epoch_loss += loss.item()
+                if (step + 1) % self.grad_accumulation_steps == 0:
+                    optimizer.step()
+                    scheduler.step()
+
+                    self.model.zero_grad()
+                    global_step += 1
+                    epoch_step += 1
+
+                    if self.logging_steps > 0 and global_step % self.logging_steps == 0:
+                        if validate:
+                            # evaluate model
+                            results = self.validate()
+                            for key, value in results.items():
+                                tb_writer.add_scalar(
+                                    "eval_{}".format(key), value, global_step
+                                )
+                                self.logger.info(
+                                    "eval_{} after step {}: {}: ".format(
+                                        key, global_step, value
+                                    )
+                                )
+
+                        # Log metrics
+                        self.logger.info(
+                            "lr after step {}: {}".format(
+                                global_step, scheduler.get_lr()[0]
+                            )
+                        )
+                        self.logger.info(
+                            "train_loss after step {}: {}".format(
+                                global_step,
+                                (tr_loss - logging_loss) / self.logging_steps,
+                            )
+                        )
+                        tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
+                        tb_writer.add_scalar(
+                            "loss",
+                            (tr_loss - logging_loss) / self.logging_steps,
+                            global_step,
+                        )
+
+                        logging_loss = tr_loss
 
             # Evaluate the model after every epoch
             if validate:
@@ -458,6 +397,7 @@ class BertLearner(Learner):
                 results['epoch'] = epoch
                 results['train_loss'] = epoch_loss
                 results['lr'] = scheduler.get_lr()[0]
+                results['time'] = str(time.time() - start_time)
 
                 self.results_all_epochs[epoch] = results
                 self.save_results()

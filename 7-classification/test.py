@@ -33,15 +33,15 @@ torch.cuda.empty_cache()
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-# LOG_PATH=Path('/scratch/da2734/twitter/mturk_mar6/log/')
-# DATA_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data')
-# LABEL_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data/')
-# OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_100')
+LOG_PATH=Path('/scratch/da2734/twitter/mturk_mar6/log/')
+DATA_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data')
+LABEL_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data/')
+OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_every_epoch/')
 
-LOG_PATH=Path('../mturk_mar6/log/')
-DATA_PATH=Path('../mturk_mar6/data')
-LABEL_PATH=Path('../mturk_mar6/data/')
-OUTPUT_PATH=Path('../mturk_mar6/output_every_epoch/')
+# LOG_PATH=Path('../mturk_mar6/log/')
+# DATA_PATH=Path('../mturk_mar6/data')
+# LABEL_PATH=Path('../mturk_mar6/data/')
+# OUTPUT_PATH=Path('../mturk_mar6/output_every_epoch/')
 
 FINETUNED_PATH = None
 
@@ -53,7 +53,7 @@ args = Box({
     "full_data_dir": DATA_PATH,
     "data_dir": DATA_PATH,
     "task_name": "labor_market_classification",
-    "no_cuda": True,
+    "no_cuda": False,
 #     "bert_model": BERT_PRETRAINED_PATH,
     "output_dir": OUTPUT_PATH,
     "max_seq_length": 512,
@@ -63,7 +63,7 @@ args = Box({
     "train_batch_size": 8,
     "eval_batch_size": 16,
     "learning_rate": 5e-5,
-    "num_train_epochs": 3,
+    "num_train_epochs": 100,
     "warmup_proportion": 0.0,
 #     "no_cuda": False,
     "local_rank": -1,
@@ -105,7 +105,7 @@ logger = logging.getLogger()
 
 logger.info(args)
 
-device = torch.device('cpu')
+device = torch.device('cuda')
 if torch.cuda.device_count() > 1:
     args.multi_gpu = True
 else:
@@ -153,11 +153,9 @@ learner = BertLearner.from_pretrained_model(
                                             output_dir=args.output_dir,
                                             finetuned_wgts_path=FINETUNED_PATH,
                                             warmup_steps=args.warmup_steps,
-                                            multi_gpu=False,
+                                            multi_gpu=args.multi_gpu,
                                             is_fp16=args.fp16,
                                             multi_label=True,
                                             logging_steps=0)
 
-# learner.save_model(epoch = 10)
-# learner.fit()
 learner.fit(args.num_train_epochs, args.learning_rate, validate=True) #this trains the model
