@@ -93,10 +93,23 @@ print(merged_random.shape)
 print('time taken for merge random:', str(time.time() - start_time), 'seconds')
 
 
+start_time = time.time()
+merged_filtered.to_pickle('../mturk_mar6/boundary/merged_filtered.pickle')
+print('time taken for pickle filtered:', str(time.time() - start_time), 'seconds')
+
+start_time = time.time()
+merged_random.to_pickle('../mturk_mar6/boundary/merged_random.pickle')
+print('time taken for pickle random:', str(time.time() - start_time), 'seconds')
+
 
 threshold = 0.5
 boundary_width = 0.05
 columns = ['offer_model','search_model','unemployed_model','hired_model','loss_model']
+
+
+
+
+import matplotlib.pyplot as plt
 
 for column in columns:
     start_time = time.time()
@@ -106,9 +119,18 @@ for column in columns:
     # print(all_filtered_boundary['text'])
     print(column, 'filtered time taken:', str(time.time() - start_time), 'seconds')
 
+    start_time = time.time()
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    plt.hist(merged_filtered[column], bins=10, density = True)
+    # plt..yscale(value)
+    plt.title(column)
+    ax.legend()
+    #plt.show()
+    plt.savefig('../mturk_mar6/boundary/filtered_{}.png'.format(column))
 
+    print(column, 'plot filtered time taken:', str(time.time() - start_time), 'seconds')
 
-# merged_random = merged_filtered_sample
 
 for column in columns:
     start_time = time.time()
@@ -119,3 +141,14 @@ for column in columns:
     print(column, 'random time taken:', str(time.time() - start_time), 'seconds')
 
 
+    start_time = time.time()
+    fig = plt.figure()
+    ax = plt.subplot(111)
+    plt.hist(merged_random[column], bins=10, density = True)
+    # plt..yscale(value)
+    plt.title(column)
+    ax.legend()
+    #plt.show()
+    plt.savefig('../mturk_mar6/boundary/random_{}.png'.format(column))
+
+    print(column, 'plot random time taken:', str(time.time() - start_time), 'seconds')
