@@ -527,6 +527,9 @@ class BertLearner(Learner):
                 )
 
         result_df = pd.DataFrame(all_logits, columns=self.data.labels)
+        # print(result_df)
         results = result_df.to_dict("record")
+        # print(results)
 
-        return [sorted(x.items(), key=lambda kv: kv[1], reverse=True) for x in results]
+        # return results
+        return [sorted(x.items(), key=lambda kv: kv[1], reverse=True) for x in results] #for some reason, this is sometime not sorted correctly

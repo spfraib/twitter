@@ -110,7 +110,7 @@ def roc_auc_save_to_plot(y_pred: Tensor, y_true: Tensor):
 #     with open('/scratch/da2734/twitter/roc_auc_save_to_plot.pkl', 'wb') as config_dictionary_file:
 #         pickle.dump(config_dictionary, config_dictionary_file)
         
-    pickle.dump( output, open( "/scratch/da2734/twitter/roc_auc_save_to_plot.pkl", "wb" ) )
+    pickle.dump( output, open( "./roc_auc_save_to_plot.pkl", "wb" ) )
         
     return roc_auc["micro"]
 
