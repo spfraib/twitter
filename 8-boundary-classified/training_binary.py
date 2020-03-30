@@ -145,11 +145,11 @@ print('time taken to load all this stuff:', str(time.time() - start_time), 'seco
 
 # metrics defined: https://github.com/kaushaltrivedi/fast-bert/blob/d89e2aa01d948d6d3cdea7ad106bf5792fea7dfa/fast_bert/metrics.py
 metrics = []
-metrics.append({'name': 'accuracy_thresh', 'function': accuracy_thresh})
-metrics.append({'name': 'roc_auc', 'function': roc_auc})
-metrics.append({'name': 'fbeta', 'function': fbeta})
+# metrics.append({'name': 'accuracy_thresh', 'function': accuracy_thresh})
+# metrics.append({'name': 'roc_auc', 'function': roc_auc})
+# metrics.append({'name': 'fbeta', 'function': fbeta})
 metrics.append({'name': 'accuracy', 'function': accuracy})
-metrics.append({'name': 'accuracy_multilabel', 'function': accuracy_multilabel})
+# metrics.append({'name': 'accuracy_multilabel', 'function': accuracy_multilabel})
 
 learner = BertLearner.from_pretrained_model(
     databunch,
