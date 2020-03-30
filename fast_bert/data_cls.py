@@ -350,7 +350,8 @@ class TextProcessor(DataProcessor):
                     lambda row: InputExample(
                                             guid=row.index,
                                             text_a=row[text_col],
-                                            label=float(row[label_col].values[0])
+                                            label=row[label_col].values[0]
+                                            # label=float(row[label_col].values[0])
                                             # # label=str(row[label_col].values[0])
                                             # label=str(row[label_col])
                     ),
@@ -640,7 +641,8 @@ class BertDataBunch(object):
                 # print([f.label_id for f in features])
                 # print(sum([f.label_id for f in features]))
                 all_label_ids = torch.tensor(
-                    [int(f.label_id) for f in features], dtype=torch.long
+                    [f.label_id for f in features], dtype=torch.long
+                    # [int(f.label_id) for f in features], dtype=torch.long
                 )
 
             dataset = TensorDataset(
