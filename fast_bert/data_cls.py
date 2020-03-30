@@ -136,6 +136,7 @@ def convert_examples_to_features(
 
     features = []
     for (ex_index, example) in enumerate(examples):
+        # print('>>> example:', example)
         if ex_index % 10000 == 0:
             if logger:
                 logger.info("Writing example %d of %d" % (ex_index, len(examples)))
@@ -215,11 +216,24 @@ def convert_examples_to_features(
             label_id = []
             for label in example.label:
                 label_id.append(float(label))
+            # print(type(example.label))
+            # print(example.label)
+            # print(label_map)
+            # print(label_id)
+            # <class 'list'>
+            # [nan, 0, 0, nan, 0]
+            # {'is_unemployed': 0, 'lost_job_1mo': 1, 'job_search': 2, 'is_hired_1mo': 3, 'job_offer"': 4}
+            # [nan, 0.0, 0.0, nan, 0.0]
         else:
             if example.label is not None:
-                label_id = label_map[example.label]
+                # print(type(example.label))
+                # print(example.label)
+                # print(label_map)
+                # label_id = label_map[example.label]
+                label_id = float(example.label)
+                # print(label_id)
             else:
-                label_id = ""
+                label_id = 0
 
         features.append(
             InputFeatures(
@@ -263,7 +277,8 @@ class TextProcessor(DataProcessor):
     ):
 
         if size == -1:
-            data_df = pd.read_csv(os.path.join(self.data_dir, filename))
+            print('>>>', os.path.join(self.data_dir, filename))
+            data_df = pd.read_csv(os.path.join(self.data_dir, filename), lineterminator='\n')
 
             return self._create_examples(
                 data_df, "train", text_col=text_col, label_col=label_col
@@ -326,10 +341,18 @@ class TextProcessor(DataProcessor):
                 )
             )
         else:
+            # print('label_col', label_col)
+            # print(df.iloc[1][label_col])
+            # print(df.iloc[1][label_col].values)
+            # print(type(df.iloc[1][label_col].values))
             return list(
                 df.apply(
                     lambda row: InputExample(
-                        guid=row.index, text_a=row[text_col], label=str(row[label_col])
+                                            guid=row.index,
+                                            text_a=row[text_col],
+                                            label=float(row[label_col].values[0])
+                                            # # label=str(row[label_col].values[0])
+                                            # label=str(row[label_col])
                     ),
                     axis=1,
                 )
@@ -455,6 +478,7 @@ class BertDataBunch(object):
             )
 
             if os.path.exists(cached_features_file) is False or self.no_cache is True:
+                print('cached_features_file:', cached_features_file)
                 train_examples = processor.get_train_examples(
                     train_file, text_col=text_col, label_col=label_col
                 )
@@ -613,8 +637,10 @@ class BertDataBunch(object):
                     [f.label_id for f in features], dtype=torch.float
                 )
             else:
+                # print([f.label_id for f in features])
+                # print(sum([f.label_id for f in features]))
                 all_label_ids = torch.tensor(
-                    [f.label_id for f in features], dtype=torch.long
+                    [int(f.label_id) for f in features], dtype=torch.long
                 )
 
             dataset = TensorDataset(

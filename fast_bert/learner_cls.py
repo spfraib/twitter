@@ -319,6 +319,9 @@ class BertLearner(Learner):
                     inputs["token_type_ids"] = batch[2]
 
                 outputs = self.model(**inputs)
+
+                print('>>>>>', outputs)
+
                 loss = outputs[
                     0
                 ]  # model outputs are always tuple in pytorch-transformers (see doc)
