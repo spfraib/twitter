@@ -320,7 +320,7 @@ class BertLearner(Learner):
 
                 outputs = self.model(**inputs)
 
-                print('>>>>>', outputs)
+                # print('>>>>>', outputs)
 
                 loss = outputs[
                     0
