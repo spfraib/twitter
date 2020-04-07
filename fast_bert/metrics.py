@@ -96,6 +96,12 @@ def roc_auc_save_to_plot(y_pred: Tensor, y_true: Tensor):
     y_true = y_true.detach().cpu().numpy()
     y_pred = y_pred.detach().cpu().numpy()
     
+    print(y_true)
+    print(y_true.shape)
+    
+    print(y_pred)
+    print(y_true.shape)     
+    
     num_classes = 5
     for i in range(num_classes):
         fpr[i], tpr[i], _ = roc_curve(y_true[:, i], y_pred[:, i])
@@ -106,11 +112,50 @@ def roc_auc_save_to_plot(y_pred: Tensor, y_true: Tensor):
     roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
     
     output = {'fpr':fpr, 'tpr':tpr, 'roc_auc':roc_auc}
-
-#     with open('/scratch/da2734/twitter/roc_auc_save_to_plot.pkl', 'wb') as config_dictionary_file:
-#         pickle.dump(config_dictionary, config_dictionary_file)
         
     pickle.dump( output, open( "./roc_auc_save_to_plot.pkl", "wb" ) )
+        
+    return roc_auc["micro"]
+
+from scipy.special import softmax
+def roc_auc_save_to_plot_binary(y_pred: Tensor, y_true: Tensor):
+    # ROC-AUC calcualation
+    # Compute ROC curve and ROC area for each class
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
+    
+#     print(y_pred.shape)
+
+    y_true = y_true.detach().cpu().numpy()
+    y_pred = y_pred.detach().cpu().numpy()
+    
+    
+#     print(y_true)
+#     print(y_true.shape)
+    
+#     print(y_pred)
+#     print(y_true.shape)    
+    
+    y_pred = [softmax(i)[1] for i in y_pred]
+    print(min(y_pred))
+    print(max(y_pred))
+
+#     print(y_preDd)    
+
+    
+#     num_classes = 1
+#     for i in range(num_classes):
+#     fpr, tpr, _ = roc_curve(y_true, y_pred)
+#     roc_auc = auc(fpr, tpr)
+
+    # Compute micro-average ROC curve and ROC area
+    fpr["micro"], tpr["micro"], thresholds = roc_curve(y_true.ravel(), y_pred)
+    roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
+    
+    output = {'fpr':fpr, 'tpr':tpr, 'roc_auc':roc_auc, 'thresholds': thresholds}
+        
+    pickle.dump( output, open( "./roc_auc_save_to_plot_binary.pkl", "wb" ) )
         
     return roc_auc["micro"]
 
