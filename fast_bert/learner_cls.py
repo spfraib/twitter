@@ -259,12 +259,15 @@ class BertLearner(Learner):
 
         # Prepare optimiser
         optimizer = self.get_optimizer(lr, optimizer_type=optimizer_type)
+        # input('hey')
 
         # get the base model if its already wrapped around DataParallel
         if hasattr(self.model, "module"):
+            # input('module')
             self.model = self.model.module
 
         if self.is_fp16:
+            # print('fp16')
             try:
                 from apex import amp
             except ImportError:
@@ -273,6 +276,8 @@ class BertLearner(Learner):
                 self.model, optimizer, opt_level=self.fp16_opt_level
             )
 
+        # print(type(self.model))
+        # input('hey')
         # Get scheduler
         scheduler = self.get_scheduler(
             optimizer, t_total=t_total, schedule_type=schedule_type
@@ -280,6 +285,7 @@ class BertLearner(Learner):
 
         # Parallelize the model architecture
         if self.multi_gpu is True:
+            # input('multi_gpu')
             self.model = torch.nn.DataParallel(self.model)
 
         # Start Training
@@ -454,7 +460,7 @@ class BertLearner(Learner):
                     inputs["token_type_ids"] = batch[2]
 
                 outputs = self.model(**inputs)
-#                 print(outputs)
+                print(outputs)
 #                 print(outputs.shape)
                 
                 tmp_eval_loss, logits = outputs[:2]

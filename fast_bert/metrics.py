@@ -118,6 +118,8 @@ def roc_auc_save_to_plot(y_pred: Tensor, y_true: Tensor):
     return roc_auc["micro"]
 
 from scipy.special import softmax
+
+
 def roc_auc_save_to_plot_binary(y_pred: Tensor, y_true: Tensor):
     # ROC-AUC calcualation
     # Compute ROC curve and ROC area for each class

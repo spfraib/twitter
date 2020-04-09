@@ -45,9 +45,16 @@ def create_model(column):
         os.makedirs('../mturk_mar6/output_binary_{}'.format(column))
 
     LOG_PATH = Path('../mturk_mar6/log_{}/'.format(column))
-    DATA_PATH = Path('../mturk_mar6/data_binary/')
-    LABEL_PATH = Path('../mturk_mar6/data_binary/')
-    OUTPUT_PATH = Path('../mturk_mar6/output_binary_{}'.format(column))
+    # DATA_PATH = Path('../mturk_mar6/data_binary_balanced/')
+    # LABEL_PATH = Path('../mturk_mar6/data_binary_balanced/')
+    # OUTPUT_PATH = Path('../mturk_mar6/output_binary_balanced_{}'.format(column))
+    # DATA_PATH = Path('../mturk_mar6/data_binary/')
+    # LABEL_PATH = Path('../mturk_mar6/data_binary/')
+    # OUTPUT_PATH = Path('../mturk_mar6/output_binary_{}'.format(column))
+    DATA_PATH = Path('../mturk_mar6/data_binary_pos_neg/')
+    LABEL_PATH = Path('../mturk_mar6/data_binary_pos_neg/')
+    OUTPUT_PATH = Path('../mturk_mar6/data_binary_pos_neg_{}'.format(column))
+
     FINETUNED_PATH = None
 
     args = Box({
@@ -116,7 +123,8 @@ def create_model(column):
     else:
         args.multi_gpu = False
 
-    label_cols = ['pos']
+    # label_cols = ['pos']
+    label_cols = ['pos', 'neg']
 
     databunch = BertDataBunch(
         args['data_dir'],
@@ -162,6 +170,8 @@ def create_model(column):
         multi_label=False,
         logging_steps=0)
 
+    # print('fitting..')
+    # learner.fit(args.num_train_epochs, args.learning_rate, validate=True)  # this trains the model
     return learner
 
 trained_model = create_model('job_offer')

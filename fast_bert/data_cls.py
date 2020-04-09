@@ -75,8 +75,10 @@ class InputExample(object):
         if isinstance(label, list):
             self.label = label
         elif label:
+            # print('1why', label)
             self.label = str(label)
         else:
+            # print('0why', label)
             self.label = None
 
 
@@ -88,6 +90,9 @@ class InputFeatures(object):
         self.input_mask = input_mask
         self.segment_ids = segment_ids
         self.label_id = label_id
+
+    # def __str__(self):
+    #     return(self.label_id)
 
 
 def _truncate_seq_pair(tokens_a, tokens_b, max_length):
@@ -136,7 +141,7 @@ def convert_examples_to_features(
 
     features = []
     for (ex_index, example) in enumerate(examples):
-        # print('>>> example:', example)
+        # print('>>> example:', example.label)
         if ex_index % 10000 == 0:
             if logger:
                 logger.info("Writing example %d of %d" % (ex_index, len(examples)))
@@ -225,9 +230,9 @@ def convert_examples_to_features(
             # {'is_unemployed': 0, 'lost_job_1mo': 1, 'job_search': 2, 'is_hired_1mo': 3, 'job_offer"': 4}
             # [nan, 0.0, 0.0, nan, 0.0]
         else:
+            # print('>> example.label', example.label)
             if example.label is not None:
                 # print(type(example.label))
-                # print(example.label)
                 # print(label_map)
                 # label_id = label_map[example.label]
                 label_id = float(example.label)
@@ -243,6 +248,15 @@ def convert_examples_to_features(
                 label_id=label_id,
             )
         )
+        # print('example.text_a', example.text_a)
+        # print('example.text_b', example.text_b)
+        # print('input_ids', input_ids)
+        # print('input_mask', input_mask)
+        # print('segment_ids', segment_ids)
+        # print('label_id', label_id)
+        # print(y)
+        # print(type(example))
+
     return features
 
 
@@ -279,6 +293,8 @@ class TextProcessor(DataProcessor):
         if size == -1:
             print('>>>', os.path.join(self.data_dir, filename))
             data_df = pd.read_csv(os.path.join(self.data_dir, filename), lineterminator='\n')
+            print(data_df.head())
+            # print(data_df.head())
 
             return self._create_examples(
                 data_df, "train", text_col=text_col, label_col=label_col
@@ -332,6 +348,7 @@ class TextProcessor(DataProcessor):
     def _create_examples(self, df, set_type, text_col, label_col):
         """Creates examples for the training and dev sets."""
         if label_col is None:
+            print('wut')
             return list(
                 df.apply(
                     lambda row: InputExample(
@@ -342,10 +359,17 @@ class TextProcessor(DataProcessor):
             )
         else:
             # print('label_col', label_col)
-            # print(df.iloc[1][label_col])
-            # print(df.iloc[1][label_col].values)
+            # print(df.iloc[1])
+            # print('label_col', df.iloc[1][label_col].values)
+            # print('label_col', list(df[label_col].values))
             # print(type(df.iloc[1][label_col].values))
-            return list(
+
+            # for i in range(df.shape[0]):
+            #     print('direct', df.iloc[i][label_col])
+            #     print('value', df.iloc[i][label_col].values[0])
+
+
+            output = list(
                 df.apply(
                     lambda row: InputExample(
                                             guid=row.index,
@@ -358,6 +382,11 @@ class TextProcessor(DataProcessor):
                     axis=1,
                 )
             )
+
+            # for example in output:
+            #     print('hey', example.label)
+
+            return output
 
 
 class MultiLabelTextProcessor(TextProcessor):
@@ -599,7 +628,7 @@ class BertDataBunch(object):
         else:
             # Create tokenized and numericalized features
             features = convert_examples_to_features(
-                examples,
+                examples, #this is just a pandas datafram of the train or test data
                 label_list=self.labels,
                 max_seq_length=self.max_seq_length,
                 tokenizer=self.tokenizer,

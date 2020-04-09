@@ -43,13 +43,13 @@ run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column)):
     os.makedirs('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column))
 
-if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_{}'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_{}'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
 
 LOG_PATH = Path('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column))
-DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary/')
-LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary/')
-OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_{}'.format(column))
+DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
+LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
+OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
 FINETUNED_PATH = None
 
 args = Box({
@@ -70,7 +70,7 @@ args = Box({
     "train_batch_size": 8,
     "eval_batch_size": 16,
     "learning_rate": 5e-5,
-    "num_train_epochs": 100,
+    "num_train_epochs": 50,
     "warmup_proportion": 0.0,
     "no_cuda": False,
     "local_rank": -1,
@@ -119,8 +119,8 @@ else:
     args.multi_gpu = False
 
 # label_cols = ["job_loss","is_unemployed","job_search","is_hired","job_offer"]
-# label_cols = ['pos', 'neg']
-label_cols = ['pos']
+label_cols = ['pos', 'neg']
+# label_cols = ['pos']
 
 databunch = BertDataBunch(
     args['data_dir'],
