@@ -460,7 +460,7 @@ class BertLearner(Learner):
                     inputs["token_type_ids"] = batch[2]
 
                 outputs = self.model(**inputs)
-                print(outputs)
+                # print(outputs)
 #                 print(outputs.shape)
                 
                 tmp_eval_loss, logits = outputs[:2]
