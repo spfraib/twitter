@@ -50,7 +50,7 @@ cd /scratch/da2734/twitter/8-boundary-classified/
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
-python -u training_binary.py job_offer > ../train_bert_binary_separate_models_job_offer.log 2>&1
+python -u training_binary.py job_offer > /scratch/da2734/twitter/batch/train_bert_binary_separate_models_job_offer.log 2>&1
 
 exit
 
