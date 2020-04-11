@@ -40,13 +40,13 @@ torch.cuda.empty_cache()
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
 
 if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column)):
     os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
 
-LOG_PATH = Path('/scratch/da2734/twitter/mturk_mar6/log_{}/'.format(column))
+LOG_PATH = Path('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
 DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
 LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
 OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
@@ -60,7 +60,6 @@ args = Box({
     "full_data_dir": DATA_PATH,
     "data_dir": DATA_PATH,
     "task_name": "labor_market_classification",
-    "no_cuda": False,
     #     "bert_model": BERT_PRETRAINED_PATH,
     "output_dir": OUTPUT_PATH,
     "max_seq_length": 512,
@@ -118,9 +117,7 @@ if torch.cuda.device_count() > 1:
 else:
     args.multi_gpu = False
 
-# label_cols = ["job_loss","is_unemployed","job_search","is_hired","job_offer"]
-label_cols = ['pos', 'neg']
-# label_cols = ['pos']
+label_cols = ['class'] #this is the name of the column in the train and val csv files where the labels are
 
 databunch = BertDataBunch(
     args['data_dir'],
