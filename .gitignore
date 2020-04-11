@@ -5,3 +5,12 @@
 log-*
 *.pyc
 core.*
+batch/*
+cache
+*.png
+output*
+old
+misc
+.idea
+
+
