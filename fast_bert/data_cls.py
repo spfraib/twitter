@@ -238,9 +238,11 @@ def convert_examples_to_features(
                 # label_id = label_map[example.label]
                 label_id = float(example.label)
                 # print(label_id)
+                # print(type(label_id))
             else:
-                label_id = 0
+                label_id = float(0)
 
+        # print(label_id, type(label_id))
         features.append(
             InputFeatures(
                 input_ids=input_ids,
