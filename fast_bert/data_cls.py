@@ -222,6 +222,7 @@ def convert_examples_to_features(
             for label in example.label:
                 label_id.append(float(label))
             # print(type(example.label))
+            # print('wazzup')
             # print(example.label)
             # print(label_map)
             # print(label_id)
@@ -361,6 +362,7 @@ class TextProcessor(DataProcessor):
             # print('label_col', label_col)
             # print(df.iloc[1])
             # print('label_col', df.iloc[1][label_col].values)
+            # print('label_col', df.iloc[1][label_col].to_dict().values())
             # print('label_col', list(df[label_col].values))
             # print(type(df.iloc[1][label_col].values))
 

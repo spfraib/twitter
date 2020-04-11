@@ -14,7 +14,7 @@ results.index = results['epoch']
 print(results.head())
 
 
-results = results[:20]
+# results = results[:20]
 
 print('plotting...')
 
