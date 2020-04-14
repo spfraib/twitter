@@ -35,7 +35,7 @@ column = sys.argv[1]
 
 print(column, 'creating model and loading..')
 
-torch.cuda.empty_cache()
+torch.cuda.empty_cache() 
 
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
@@ -43,13 +43,13 @@ run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 if not os.path.exists('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column)):
     os.makedirs('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
 
-if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column))
 
 LOG_PATH = Path('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
-DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
-LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_pos_neg_balanced/')
-OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_pos_neg_balanced_{}'.format(column))
+DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_OVERsampled/')
+LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_OVERsampled/')
+OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column))
 FINETUNED_PATH = None
 
 args = Box({
