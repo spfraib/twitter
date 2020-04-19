@@ -1,16 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=training_binary
+#SBATCH --job-name=predictions200Msamples
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=60GB
-#SBATCH --time=168:00:00
+#SBATCH --mem=20GB
+#SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
-
-# we want the job to be named "myMatlabTest" rather than something generated
-# from the script name. This will affect the name of the job as reported
-# by squeue:
-#SBATCH --job-name=bert_trainer
 
 # when the job ends, send me an email at this email address.
 # replace with your email address, and uncomment that line if you really need to receive an email.
@@ -27,7 +22,6 @@ module purge
 module load jupyter-kernels/py3.5
 module load miniconda
 
-port=$(shuf -i 10000-65500 -n 1)
 
 #/usr/bin/ssh -N -f -R $port:localhost:$port log-0
 #/usr/bin/ssh -N -f -R $port:localhost:$port log-1
@@ -37,6 +31,7 @@ port=$(shuf -i 10000-65500 -n 1)
 #if [ "$SLURM_JOBTMP" != "" ]; then
 #    export XDG_RUNTIME_DIR=$SLURM_JOBTMP
 #fi
+
 
 source ~/miniconda3/bin/activate worldbank
 source activate worldbank
