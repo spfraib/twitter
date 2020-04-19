@@ -64,6 +64,82 @@ torch.cuda.empty_cache()
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
+# !/usr/bin/env python
+# coding: utf-8
+# run using: sbatch --array=0-9 7.9-get-predictions-from-BERT.sh
+
+import sys
+import os
+
+column = sys.argv[1]
+# column = 'is_unemployed'
+
+
+def get_env_var(varname, default):
+    if os.environ.get(varname) != None:
+        var = int(os.environ.get(varname))
+        print(varname, ':', var)
+    else:
+        var = default
+        print(varname, ':', var, '(Default)')
+    return var
+
+
+# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
+SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
+SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
+SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
+
+print('SLURM_JOB_ID', SLURM_JOB_ID)
+print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
+print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
+
+####################################################################################################################################
+# loading the model
+####################################################################################################################################
+
+
+import time
+
+start_time = time.time()
+from transformers import BertTokenizer
+from pathlib import Path
+import torch
+
+from box import Box
+import pandas as pd
+import collections
+
+from tqdm import tqdm, trange
+# import sys
+import random
+import numpy as np
+# import apex
+from sklearn.model_selection import train_test_split
+
+import datetime
+
+import sys
+import pickle
+import os
+
+sys.path.append('../')
+
+from fast_bert.modeling import BertForMultiLabelSequenceClassification
+from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
+    convert_examples_to_features
+from fast_bert.learner_cls import BertLearner
+# from fast_bert.metrics import accuracy_multilabel, accuracy_thresh, fbeta, roc_auc, accuracy
+from fast_bert.metrics import *
+import matplotlib.pyplot as plt
+
+torch.cuda.empty_cache()
+
+pd.set_option('display.max_colwidth', -1)
+run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
+
+root_path='/scratch/da2734/twitter/running_on_200Msamples/'
+
 
 def create_model(columnm, epoch):
     if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples_{}/'.format(column)):
@@ -195,13 +271,12 @@ def create_model(columnm, epoch):
     return learner
 
 
-
 best_epochs = {
-    'is_hired_1mo':10,
-    'lost_job_1mo':9,
-    'job_offer':5,
-    'is_unemployed':6,
-    'job_search':8
+    'is_hired_1mo': 10,
+    'lost_job_1mo': 9,
+    'job_offer': 5,
+    'is_unemployed': 6,
+    'job_search': 8
 }
 
 start = time.time()
@@ -210,11 +285,17 @@ print('load model:', str(time.time() - start_time), 'seconds')
 
 
 
-####################################################################################################################################
-# loading data
-####################################################################################################################################
 
 
+# ####################################################################################################################################
+# # loading data
+# ####################################################################################################################################
+
+import time
+import pyarrow.parquet as pq
+from glob import glob
+import os
+import numpy as np
 
 path_to_data='/scratch/spf248/twitter/data/classification/US/'
 
