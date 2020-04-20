@@ -3,6 +3,7 @@
 # run using: sbatch --array=0-9 7.9-get-predictions-from-BERT.sh
 
 import sys
+import os
 
 column = sys.argv[1]
 

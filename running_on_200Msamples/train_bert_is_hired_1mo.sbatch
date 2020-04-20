@@ -42,7 +42,7 @@ echo "shell" $0
 
 cd /scratch/da2734/twitter/8-boundary-classified/
 
-echo pwd
+pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 #python -u training_binary.py is_hired_1mo > /scratch/da2734/twitter/batch/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
