@@ -7,20 +7,20 @@ import os
 
 column = sys.argv[1]
 
-def get_env_var(varname,default):
-    
-    if os.environ.get(varname) != None:
-        var = int(os.environ.get(varname))
-        print(varname,':', var)
-    else:
-        var = default
-        print(varname,':', var,'(Default)')
-    return var
-
-# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID',0)
-SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID',0)
-SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
+# def get_env_var(varname,default):
+#
+#     if os.environ.get(varname) != None:
+#         var = int(os.environ.get(varname))
+#         print(varname,':', var)
+#     else:
+#         var = default
+#         print(varname,':', var,'(Default)')
+#     return var
+#
+# # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
+# SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID',0)
+# SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID',0)
+# SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
 
 ####################################################################################################################################
 # loading the model
@@ -75,25 +75,6 @@ import os
 column = sys.argv[1]
 # column = 'is_unemployed'
 
-
-def get_env_var(varname, default):
-    if os.environ.get(varname) != None:
-        var = int(os.environ.get(varname))
-        print(varname, ':', var)
-    else:
-        var = default
-        print(varname, ':', var, '(Default)')
-    return var
-
-
-# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
-SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
-SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
-
-print('SLURM_JOB_ID', SLURM_JOB_ID)
-print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
-print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 
 ####################################################################################################################################
 # loading the model
@@ -285,7 +266,29 @@ learner = create_model(column, best_epochs[column])
 print('load model:', str(time.time() - start_time), 'seconds')
 
 
+def get_env_var(varname, default):
+    if os.environ.get(varname) != None:
+        var = int(os.environ.get(varname))
+        print(varname, ':', var)
+    else:
+        var = default
+        print(varname, ':', var, '(Default)')
+    return var
 
+
+# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
+# SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
+# SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
+# SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
+
+SLURM_JOB_ID = 123123123
+SLURM_ARRAY_TASK_ID = 10
+SLURM_ARRAY_TASK_COUNT = 50
+
+
+print('SLURM_JOB_ID', SLURM_JOB_ID)
+print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
+print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 
 
 # ####################################################################################################################################
@@ -306,11 +309,14 @@ print('Load Filtered Tweets:')
 start_time = time.time()
 
 paths_to_filtered=list(np.array_split(
-glob(os.path.join(path_to_data,'filtered','*.parquet')),SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+                        glob(os.path.join(path_to_data,'filtered','*.parquet')),
+                        SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
+                       )
 print('#files:', len(paths_to_filtered))
 
 tweets_filtered=pd.DataFrame()
 for file in paths_to_filtered:
+    print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
 
 print('time taken to load keyword filtered sample:', str(time.time() - start_time), 'seconds')
@@ -334,6 +340,16 @@ print(tweets_random.shape)
 
 
 # In[ ]:
+
+import re
+with open('/proc/meminfo') as f:
+    meminfo = f.read()
+matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
+if matched:
+    mem_total_kB = int(matched.groups()[0])
+
+print('memory available (GB):', mem_total_kB / 1024 / 1024)
+
 
 
 print('Predictions of Filtered Tweets:')
