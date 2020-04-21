@@ -265,15 +265,15 @@ start = time.time()
 learner = create_model(column, best_epochs[column])
 print('load model:', str(time.time() - start_time), 'seconds')
 
-
-def get_env_var(varname, default):
-    if os.environ.get(varname) != None:
-        var = int(os.environ.get(varname))
-        print(varname, ':', var)
-    else:
-        var = default
-        print(varname, ':', var, '(Default)')
-    return var
+#
+# def get_env_var(varname, default):
+#     if os.environ.get(varname) != None:
+#         var = int(os.environ.get(varname))
+#         print(varname, ':', var)
+#     else:
+#         var = default
+#         print(varname, ':', var, '(Default)')
+#     return var
 
 
 # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
@@ -318,6 +318,7 @@ tweets_filtered=pd.DataFrame()
 for file in paths_to_filtered:
     print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
+    print(tweets_filtered.shape)
 
 print('time taken to load keyword filtered sample:', str(time.time() - start_time), 'seconds')
 print(tweets_filtered.shape)
