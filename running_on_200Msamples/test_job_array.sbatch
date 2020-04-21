@@ -3,7 +3,7 @@
 #SBATCH --job-name=predictions200Msamples
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
+#SBATCH --mem=60GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
 
@@ -20,7 +20,7 @@
 module purge
 #module load jupyter-kernels/py2.7
 module load jupyter-kernels/py3.5
-module load miniconda
+#module load miniconda
 
 
 #/usr/bin/ssh -N -f -R $port:localhost:$port log-0
@@ -34,7 +34,7 @@ module load miniconda
 
 
 source ~/miniconda3/bin/activate worldbank
-source activate worldbank
+#source activate worldbank
 conda activate worldbank
 
 echo "past source"

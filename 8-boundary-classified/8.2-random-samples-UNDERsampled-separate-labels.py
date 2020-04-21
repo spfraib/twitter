@@ -265,6 +265,18 @@ start = time.time()
 learner = create_model(column, best_epochs[column])
 print('load model:', str(time.time() - start_time), 'seconds')
 
+
+import re
+with open('/proc/meminfo') as f:
+    meminfo = f.read()
+matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
+if matched:
+    mem_total_kB = int(matched.groups()[0])
+
+print('[model] memory available (GB):', mem_total_kB / 1024 / 1024)
+
+
+
 #
 # def get_env_var(varname, default):
 #     if os.environ.get(varname) != None:
@@ -349,7 +361,7 @@ matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
 if matched:
     mem_total_kB = int(matched.groups()[0])
 
-print('memory available (GB):', mem_total_kB / 1024 / 1024)
+print('[loaded tweets] memory available (GB):', mem_total_kB / 1024 / 1024)
 
 
 
