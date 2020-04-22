@@ -277,25 +277,25 @@ print('load model:', str(time.time() - start_time), 'seconds')
 #
 
 
-#
-# def get_env_var(varname, default):
-#     if os.environ.get(varname) != None:
-#         var = int(os.environ.get(varname))
-#         print(varname, ':', var)
-#     else:
-#         var = default
-#         print(varname, ':', var, '(Default)')
-#     return var
+
+def get_env_var(varname, default):
+    if os.environ.get(varname) != None:
+        var = int(os.environ.get(varname))
+        print(varname, ':', var)
+    else:
+        var = default
+        print(varname, ':', var, '(Default)')
+    return var
 
 
 # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-# SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
-# SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
-# SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
+SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
+SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
+SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
 
-SLURM_JOB_ID = 123123123
-SLURM_ARRAY_TASK_ID = 10
-SLURM_ARRAY_TASK_COUNT = 500
+# SLURM_JOB_ID = 123123123
+# SLURM_ARRAY_TASK_ID = 10
+# SLURM_ARRAY_TASK_COUNT = 500
 
 
 print('SLURM_JOB_ID', SLURM_JOB_ID)
@@ -332,7 +332,7 @@ for file in paths_to_filtered:
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_filtered.shape)
 
-tweets_filtered = tweets_filtered[:100]
+# tweets_filtered = tweets_filtered[:100]
 
 print('time taken to load keyword filtered sample:', str(time.time() - start_time), 'seconds')
 print(tweets_filtered.shape)
@@ -353,7 +353,7 @@ for file in paths_to_random:
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
 
-tweets_random = tweets_random[:100]
+# tweets_random = tweets_random[:100]
 #
 # # In[ ]:
 #
