@@ -400,7 +400,7 @@ df_filtered = predictions_filtered.set_index(tweets_filtered.tweet_id).rename(co
 
 
 df_filtered.to_csv(
-os.path.join(root_path,'pred','filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
+os.path.join(root_path,'pred_output','filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
 
 print('time taken:', str(time.time() - start_time), 'seconds')
 
@@ -424,7 +424,7 @@ df_random = predictions_random.set_index(tweets_random.tweet_id).rename(columns=
 })
 
 df_random.to_csv(
-os.path.join(root_path,'pred','random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
+os.path.join(root_path,'pred_output','random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
 
 print('time taken:', str(time.time() - start_time), 'seconds')
 
