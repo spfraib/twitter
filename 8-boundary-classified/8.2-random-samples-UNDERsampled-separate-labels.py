@@ -124,13 +124,13 @@ root_path='/scratch/da2734/twitter/running_on_200Msamples/'
 
 
 def create_model(columnm, epoch):
-    if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples_{}/'.format(column)):
-        os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples_{}/'.format(column))
+    if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column)):
+        os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column))
 
-    if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column)):
-        os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column))
+    # if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column)):
+    #     os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column))
 
-    LOG_PATH = Path('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples_{}/'.format(column))
+    LOG_PATH = Path('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column))
     DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_UNDERsampled/')
     LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_UNDERsampled/')
     OUTPUT_PATH = Path(
@@ -266,15 +266,15 @@ learner = create_model(column, best_epochs[column])
 print('load model:', str(time.time() - start_time), 'seconds')
 
 
-import re
-with open('/proc/meminfo') as f:
-    meminfo = f.read()
-matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
-if matched:
-    mem_total_kB = int(matched.groups()[0])
-
-print('[model] memory available (GB):', mem_total_kB / 1024 / 1024)
-
+# import re
+# with open('/proc/meminfo') as f:
+#     meminfo = f.read()
+# matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
+# if matched:
+#     mem_total_kB = int(matched.groups()[0])
+#
+# print('[model] memory available (GB):', mem_total_kB / 1024 / 1024)
+#
 
 
 #
@@ -295,7 +295,7 @@ print('[model] memory available (GB):', mem_total_kB / 1024 / 1024)
 
 SLURM_JOB_ID = 123123123
 SLURM_ARRAY_TASK_ID = 10
-SLURM_ARRAY_TASK_COUNT = 50
+SLURM_ARRAY_TASK_COUNT = 500
 
 
 print('SLURM_JOB_ID', SLURM_JOB_ID)
@@ -321,7 +321,7 @@ print('Load Filtered Tweets:')
 start_time = time.time()
 
 paths_to_filtered=list(np.array_split(
-                        glob(os.path.join(path_to_data,'filtered','*.parquet')),
+                        glob(os.path.join(path_to_data,'filtered_10perct_sample','*.parquet')),
                         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
                        )
 print('#files:', len(paths_to_filtered))
@@ -341,27 +341,27 @@ print('Load Random Tweets:')
 start_time = time.time()
 
 paths_to_random=list(np.array_split(
-glob(os.path.join(path_to_data,'random','*.parquet')),SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 print('#files:', len(paths_to_random))
 
-tweets_random=pd.DataFrame()
+tweets_random=pd.DataFwarame()
 for file in paths_to_random:
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
 
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
 
-
-# In[ ]:
-
-import re
-with open('/proc/meminfo') as f:
-    meminfo = f.read()
-matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
-if matched:
-    mem_total_kB = int(matched.groups()[0])
-
-print('[loaded tweets] memory available (GB):', mem_total_kB / 1024 / 1024)
+#
+# # In[ ]:
+#
+# import re
+# with open('/proc/meminfo') as f:
+#     meminfo = f.read()
+# matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
+# if matched:
+#     mem_total_kB = int(matched.groups()[0])
+#
+# print('[loaded tweets] memory available (GB):', mem_total_kB / 1024 / 1024)
 
 
 
@@ -386,12 +386,18 @@ print('time taken:', str(time.time() - start_time), 'seconds')
 print('Save Predictions of Filtered Tweets:')
 start_time = time.time()
 
-df_filtered = pd.DataFrame(
-[dict(prediction) for prediction in predictions_filtered],
-index=tweets_filtered.tweet_id).rename(columns={
+# df_filtered = pd.DataFrame(
+# [dict(prediction) for prediction in predictions_filtered],
+# index=tweets_filtered.tweet_id).rename(columns={
+#         '0':'pos_model',
+#         '1':'neg_model',
+# })
+
+df_filtered = predictions_filtered.set_index(tweets_filtered.tweet_id).rename(columns={
         '0':'pos_model',
         '1':'neg_model',
 })
+
 
 df_filtered.to_csv(
 os.path.join(root_path,'pred','filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
@@ -405,9 +411,14 @@ print('time taken:', str(time.time() - start_time), 'seconds')
 print('Save Predictions of Random Tweets:')
 start_time = time.time()
 
-df_random = pd.DataFrame(
-[dict(prediction) for prediction in predictions_random],
-index=tweets_random.tweet_id).rename(columns={
+# df_random = pd.DataFrame(
+# [dict(prediction) for prediction in predictions_random],
+# index=tweets_random.tweet_id).rename(columns={
+#         '0':'pos_model',
+#         '1':'neg_model',
+# })
+
+df_random = predictions_random.set_index(tweets_random.tweet_id).rename(columns={
         '0':'pos_model',
         '1':'neg_model',
 })
