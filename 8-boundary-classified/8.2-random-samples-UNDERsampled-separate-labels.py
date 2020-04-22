@@ -344,7 +344,7 @@ paths_to_random=list(np.array_split(
 glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 print('#files:', len(paths_to_random))
 
-tweets_random=pd.DataFwarame()
+tweets_random=pd.DataFrame()
 for file in paths_to_random:
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
 
