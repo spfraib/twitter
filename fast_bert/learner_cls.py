@@ -3,6 +3,8 @@ from .data_cls import BertDataBunch, InputExample, InputFeatures
 from .learner_util import Learner
 from torch import nn
 from typing import List
+import torch.cuda as cutorch
+
 
 from .modeling import (
     BertForMultiLabelSequenceClassification,
@@ -502,6 +504,7 @@ class BertLearner(Learner):
 
         return results
 
+
     ### Return Predictions ###
     def predict_batch(self, texts=None):
 
@@ -517,6 +520,13 @@ class BertLearner(Learner):
         self.model.eval()
         for step, batch in enumerate(dl):
             batch = tuple(t.to(self.device) for t in batch)
+            
+#             print('batch size', batch[0].shape)
+#             t = torch.cuda.get_device_properties(0).total_memory
+#             c = torch.cuda.memory_cached(0)
+#             a = torch.cuda.memory_allocated(0)
+#             f = c-a  # free inside cache
+#             print(f/1024/1024, 'gb free', t/1024/1024, 'gb total')
 
             inputs = {"input_ids": batch[0], "attention_mask": batch[1], "labels": None}
 
@@ -539,11 +549,13 @@ class BertLearner(Learner):
                 all_logits = np.concatenate(
                     (all_logits, logits.detach().cpu().numpy()), axis=0
                 )
+        print('inference done')
 
         result_df = pd.DataFrame(all_logits, columns=self.data.labels)
-        # print(result_df)
-        results = result_df.to_dict("record")
-        # print(results)
+#         print(result_df.head())
+#         results = result_df.to_dict("record")
+#         print(results)
 
-        # return results
-        return [sorted(x.items(), key=lambda kv: kv[1], reverse=True) for x in results] #for some reason, this is sometime not sorted correctly
+#         return all_logits
+        return result_df
+#         return [sorted(x.items(), key=lambda kv: kv[1], reverse=True) for x in results] #for some reason, this is sometime not sorted correctly
