@@ -1,9 +1,9 @@
 #!/bin/bash
 
-#SBATCH --job-name=predictions200Msamples
+#SBATCH --job-name=dvalpred200Msamples
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
+#SBATCH --mem=10GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
 
@@ -18,8 +18,10 @@
 #SBATCH --output=slurm_%j.out
 
 module purge
+module load anaconda3/2019.10
+source /scratch/da2734/pyenv_from_sam/py3.7/bin/activate
 #module load jupyter-kernels/py2.7
-module load jupyter-kernels/py3.5
+#module load jupyter-kernels/py3.5
 #module load miniconda
 
 
@@ -33,12 +35,12 @@ module load jupyter-kernels/py3.5
 #fi
 
 
-source ~/miniconda3/bin/activate worldbank
+#source ~/miniconda3/bin/activate worldbank
 #source activate worldbank
-conda activate worldbank
+#conda activate worldbank
 
-echo "past source"
-echo "shell" $0
+echo "pyenv activated"
+#echo "shell" $0
 
 cd /scratch/da2734/twitter/8-boundary-classified/
 
@@ -47,6 +49,7 @@ pwd
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 #python -u training_binary.py is_hired_1mo > /scratch/da2734/twitter/batch/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
 srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py is_hired_1mo > /scratch/da2734/twitter/running_on_200Msamples/array_logs/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+echo 'running'
 
 exit
 

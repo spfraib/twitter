@@ -48,8 +48,8 @@ pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 #python -u training_binary.py is_hired_1mo > /scratch/da2734/twitter/batch/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
-srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py lost_job_1mo > /scratch/da2734/twitter/running_on_200Msamples/array_logs/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
-
+srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+echo 'running'
 exit
 
 

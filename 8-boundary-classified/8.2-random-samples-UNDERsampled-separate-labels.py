@@ -372,7 +372,7 @@ print('Predictions of Filtered Tweets:')
 start_time = time.time()
 predictions_filtered = learner.predict_batch(tweets_filtered['text'].values.tolist())
 print('time taken:', str(time.time() - start_time), 'seconds')
-
+print('per tweet:', (time.time() - start_time)/tweets_filtered.shape[0], 'seconds')
 
 # In[ ]:
 
@@ -381,7 +381,7 @@ print('Predictions of Random Tweets:')
 start_time = time.time()
 predictions_random = learner.predict_batch(tweets_random['text'].values.tolist())
 print('time taken:', str(time.time() - start_time), 'seconds')
-
+print('per tweet:', (time.time() - start_time)/tweets_random.shape[0], 'seconds')
 
 # In[ ]:
 
@@ -406,6 +406,7 @@ df_filtered.to_csv(
 os.path.join(root_path,'pred_output','filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
 
 print('time taken:', str(time.time() - start_time), 'seconds')
+
 
 
 # In[ ]:
