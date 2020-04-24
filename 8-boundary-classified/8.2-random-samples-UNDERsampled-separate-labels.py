@@ -348,6 +348,7 @@ print('#files:', len(paths_to_random))
 
 tweets_random=pd.DataFrame()
 for file in paths_to_random:
+    print(file)
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
 
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
@@ -433,7 +434,7 @@ df_random = predictions_random.set_index(tweets_random.tweet_id).rename(columns=
 #     os.makedirs(os.path.join(root_path,'pred_output', column))
 
 df_random.to_csv(
-os.path.join(root_path,'pred_output',column, 'random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
+os.path.join(root_path,'pred_output', column, 'random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'))
 
 print('time taken:', str(time.time() - start_time), 'seconds')
 
