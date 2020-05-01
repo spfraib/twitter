@@ -3,14 +3,18 @@
 #SBATCH --job-name=dhaval_test
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=30GB
+#SBATCH --mem=20GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
 
-module purge
+#module purge
 #module load jupyter-kernels/py2.7
-module load jupyter-kernels/py3.5
-module load miniconda
+#module load jupyter-kernels/py3.5
+#module load miniconda
+
+module purge
+module load anaconda3/2019.10
+source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 
 port=$(shuf -i 10000-65500 -n 1)
 
@@ -54,12 +58,12 @@ if [ "$SLURM_JOBTMP" != "" ]; then
     export XDG_RUNTIME_DIR=$SLURM_JOBTMP
 fi
 
-source ~/miniconda3/bin/activate worldbank
-source activate worldbank
-conda activate worldbank
+#source ~/miniconda3/bin/activate worldbank
+#source activate worldbank
+#conda activate worldbank
 
-echo "past source"
-echo "shell" $0
+echo "imported conda, starting jupyter"
+#echo "shell" $0
 
 jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 
