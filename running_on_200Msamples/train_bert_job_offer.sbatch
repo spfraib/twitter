@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=dvalpred200Msamples
+#SBATCH --job-name=dvalpred200Msamplesjob_offer
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10GB
