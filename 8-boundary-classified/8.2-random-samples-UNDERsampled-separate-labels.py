@@ -199,18 +199,6 @@ learner = create_model(column, best_epochs[column])
 print('load model:', str(time.time() - start_time), 'seconds')
 
 
-# import re
-# with open('/proc/meminfo') as f:
-#     meminfo = f.read()
-# matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
-# if matched:
-#     mem_total_kB = int(matched.groups()[0])
-#
-# print('[model] memory available (GB):', mem_total_kB / 1024 / 1024)
-#
-
-
-
 def get_env_var(varname, default):
     if os.environ.get(varname) != None:
         var = int(os.environ.get(varname))
@@ -265,7 +253,7 @@ for file in paths_to_filtered:
     print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_filtered.shape)
-    # break
+    break
 
 tweets_filtered = tweets_filtered[:100]
 
@@ -288,7 +276,7 @@ for file in paths_to_random:
     print(file)
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_random.shape)
-    # break
+    break
 
 tweets_random = tweets_random[:100]
 
