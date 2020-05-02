@@ -332,6 +332,7 @@ for file in paths_to_filtered:
     print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_filtered.shape)
+    break
 
 # tweets_filtered = tweets_filtered[:100]
 
@@ -353,6 +354,8 @@ tweets_random=pd.DataFrame()
 for file in paths_to_random:
     print(file)
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
+    print(tweets_random.shape)
+    break
 
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
