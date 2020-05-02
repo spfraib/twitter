@@ -253,9 +253,9 @@ for file in paths_to_filtered:
     print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_filtered.shape)
-    break
+    # break
 
-tweets_filtered = tweets_filtered[:100]
+# tweets_filtered = tweets_filtered[:100]
 
 print('time taken to load keyword filtered sample:', str(time.time() - start_time), 'seconds')
 print(tweets_filtered.shape)
@@ -276,9 +276,9 @@ for file in paths_to_random:
     print(file)
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_random.shape)
-    break
+    # break
 
-tweets_random = tweets_random[:100]
+# tweets_random = tweets_random[:100]
 
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
@@ -304,12 +304,7 @@ print('per tweet:', (time.time() - start_time)/tweets_random.shape[0], 'seconds'
 print('Save Predictions of Filtered Tweets:')
 start_time = time.time()
 
-# df_filtered = pd.DataFrame(
-# [dict(prediction) for prediction in predictions_filtered],
-# index=tweets_filtered.tweet_id).rename(columns={
-#         '0':'pos_model',
-#         '1':'neg_model',
-# })
+
 
 df_filtered = predictions_filtered.set_index(tweets_filtered.tweet_id).rename(columns={
         '0':'pos_model',
@@ -329,12 +324,7 @@ print('time taken:', str(time.time() - start_time), 'seconds')
 print('Save Predictions of Random Tweets:')
 start_time = time.time()
 
-# df_random = pd.DataFrame(
-# [dict(prediction) for prediction in predictions_random],
-# index=tweets_random.tweet_id).rename(columns={
-#         '0':'pos_model',
-#         '1':'neg_model',
-# })
+
 
 df_random = predictions_random.set_index(tweets_random.tweet_id).rename(columns={
         '0':'pos_model',
