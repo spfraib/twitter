@@ -6,73 +6,6 @@ import sys
 import os
 
 column = sys.argv[1]
-
-# def get_env_var(varname,default):
-#
-#     if os.environ.get(varname) != None:
-#         var = int(os.environ.get(varname))
-#         print(varname,':', var)
-#     else:
-#         var = default
-#         print(varname,':', var,'(Default)')
-#     return var
-#
-# # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-# SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID',0)
-# SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID',0)
-# SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
-
-####################################################################################################################################
-# loading the model
-####################################################################################################################################
-
-
-import time
-
-start_time = time.time()
-from transformers import BertTokenizer
-from pathlib import Path
-import torch
-
-from box import Box
-import pandas as pd
-import collections
-import os
-from tqdm import tqdm, trange
-# import sys
-import random
-import numpy as np
-# import apex
-from sklearn.model_selection import train_test_split
-
-import datetime
-
-import sys
-import pickle
-
-sys.path.append('../')
-
-from fast_bert.modeling import BertForMultiLabelSequenceClassification
-from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
-    convert_examples_to_features
-from fast_bert.learner_cls import BertLearner
-# from fast_bert.metrics import accuracy_multilabel, accuracy_thresh, fbeta, roc_auc, accuracy
-from fast_bert.metrics import *
-import matplotlib.pyplot as plt
-
-torch.cuda.empty_cache()
-
-pd.set_option('display.max_colwidth', -1)
-run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
-
-# !/usr/bin/env python
-# coding: utf-8
-# run using: sbatch --array=0-9 7.9-get-predictions-from-BERT.sh
-
-import sys
-import os
-
-column = sys.argv[1]
 # column = 'is_unemployed'
 
 
@@ -332,9 +265,9 @@ for file in paths_to_filtered:
     print(file)
     tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_filtered.shape)
-    break
+    # break
 
-# tweets_filtered = tweets_filtered[:100]
+tweets_filtered = tweets_filtered[:100]
 
 print('time taken to load keyword filtered sample:', str(time.time() - start_time), 'seconds')
 print(tweets_filtered.shape)
@@ -355,25 +288,12 @@ for file in paths_to_random:
     print(file)
     tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
     print(tweets_random.shape)
-    break
+    # break
+
+tweets_random = tweets_random[:100]
 
 print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
-
-# tweets_random = tweets_random[:100]
-#
-# # In[ ]:
-#
-# import re
-# with open('/proc/meminfo') as f:
-#     meminfo = f.read()
-# matched = re.search(r'^MemTotal:\s+(\d+)', meminfo)
-# if matched:
-#     mem_total_kB = int(matched.groups()[0])
-#
-# print('[loaded tweets] memory available (GB):', mem_total_kB / 1024 / 1024)
-
-
 
 print('Predictions of Filtered Tweets:')
 start_time = time.time()
