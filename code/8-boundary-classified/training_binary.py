@@ -42,17 +42,17 @@ pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
 
-if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
 
-if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column)):
-    os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(column)):
+    os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
 
-LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column))
+LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
 print('LOG_PATH', LOG_PATH)
 DATA_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
 LABEL_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
+OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
 FINETUNED_PATH = None
 
 args = Box({
