@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=dvalpred200Msamples_job_search
+#SBATCH --job-name=training_job_search
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
@@ -47,7 +47,7 @@ cd /scratch/da2734/twitter/code/8-boundary-classified/
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
-python -u training_binary.py is_hired_1mo > /scratch/da2734/twitter/jobs/training_binary/logs/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
+python -u training_binary.py job_search > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_job_search.log 2>&1
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'running'
 exit

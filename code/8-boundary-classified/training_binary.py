@@ -30,30 +30,33 @@ from fast_bert.learner_cls import BertLearner
 from fast_bert.metrics import *
 
 column = sys.argv[1]
+# column = 'is_unemployed'
 
 # for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
 print(column, 'creating model and loading..')
 
-torch.cuda.empty_cache() 
+torch.cuda.empty_cache()
 
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-if not os.path.exists('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
 
-if not os.path.exists('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column))
 
-LOG_PATH = Path('/scratch/da2734/twitter/batch/model_log_binary_pos_neg_{}/'.format(column))
-DATA_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_OVERsampled/')
-LABEL_PATH = Path('/scratch/da2734/twitter/mturk_mar6/data_binary_class_balanced_OVERsampled/')
-OUTPUT_PATH = Path('/scratch/da2734/twitter/mturk_mar6/output_binary_class_balanced_OVERsampled{}'.format(column))
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column)):
+    os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
+
+LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/model_log_binary_pos_neg_{}/'.format(column))
+print('LOG_PATH', LOG_PATH)
+DATA_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
+LABEL_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
+OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
 FINETUNED_PATH = None
 
 args = Box({
-    "run_text": "labor mturk ar 6 binary",
+    "run_text": "labor mturk may 5 binary",
     "train_size": -1,
     "val_size": -1,
     "log_path": LOG_PATH,
