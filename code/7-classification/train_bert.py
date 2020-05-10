@@ -39,7 +39,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--user", type=str, help="dhaval or manu")
-    parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo"
+    parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo")
     parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
     args = parser.parse_args()
     return args
