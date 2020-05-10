@@ -110,7 +110,7 @@ args = Box({
 import logging
 
 logfile = str(LOG_PATH/'log-{}-{}.txt'.format(run_start_time, args["run_text"]))
-
+os.makedirs(os.path.dirname(logfile), exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
