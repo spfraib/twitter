@@ -53,10 +53,10 @@ if pre_args.user == "dhaval":
     OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_every_epoch/')
 
 elif pre_args.user == "manu":
-    LOG_PATH=Path('X')
-    DATA_PATH=Path('X')
-    LABEL_PATH=Path('X')
-    OUTPUT_PATH=Path('X')
+    LOG_PATH=Path('twitter/data/manu_test/training_results/log/')
+    DATA_PATH=Path('twitter/data/manu_test/training_data/')
+    LABEL_PATH=Path('twitter/data/manu_test/training_data/')
+    OUTPUT_PATH=Path('twitter/data/manu_test/training_results/output/')
 # LOG_PATH=Path('../mturk_mar6/log/')
 # DATA_PATH=Path('../mturk_mar6/data')
 # LABEL_PATH=Path('../mturk_mar6/data/')
