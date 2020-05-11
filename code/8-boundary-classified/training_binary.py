@@ -23,12 +23,16 @@ import datetime
 import sys
 import argparse
 
-sys.path.append(os.path.abspath("twitter/code/fast_bert"))
-from modeling import BertForMultiLabelSequenceClassification
-from data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
-    convert_examples_to_features
-from learner_cls import BertLearner
-from metrics import *
+sys.path.append('../')
+os.system("python3 modeling.py")
+os.system("python3 data_cls.py")
+os.system("python3 learner_cls.py")
+os.system("python3 metrics.py")
+#from fast_bert.modeling import BertForMultiLabelSequenceClassification
+#from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
+#    convert_examples_to_features
+#from fast_bert.learner_cls import BertLearner
+#from fast_bert.metrics import *
 
 
 def get_args_from_command_line():
