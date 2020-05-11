@@ -23,7 +23,8 @@ import datetime
 import sys
 import argparse
 
-sys.path.append('../')
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(CURRENT_DIR))
 from fast_bert.modeling import BertForMultiLabelSequenceClassification
 from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
     convert_examples_to_features
