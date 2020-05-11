@@ -41,6 +41,10 @@ def get_args_from_command_line():
     parser.add_argument("--user", type=str, help="dhaval or manu")
     parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo")
     parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
+    parser.add_argument("--input_data_folder", type=str)
+    parser.add_argument("--results_folder", type=str)
+    parser.add_argument("--data_description", type=str)
+    parser.add_argument("--label", type=str)
     args = parser.parse_args()
     return args
 
@@ -53,10 +57,10 @@ if pre_args.user == "dhaval":
     OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_every_epoch/')
 
 elif pre_args.user == "manu":
-    LOG_PATH=Path('/home/manuto/twitter/data/manu_test/training_results/log/')
-    DATA_PATH=Path('/home/manuto/twitter/data/manu_test/training_data/')
-    LABEL_PATH=Path('/home/manuto/twitter/data/manu_test/training_data/')
-    OUTPUT_PATH=Path('/home/manuto/twitter/data/manu_test/training_results/output/')
+    LOG_PATH=Path(os.path.join(pre_args.results_folder,'log/'))
+    DATA_PATH=Path(pre_args.input_data_folder)
+    LABEL_PATH=Path(pre_args.input_data_folder)
+    OUTPUT_PATH=Path(os.path.join(pre_args.results_folder,'output/'))
 # LOG_PATH=Path('../mturk_mar6/log/')
 # DATA_PATH=Path('../mturk_mar6/data')
 # LABEL_PATH=Path('../mturk_mar6/data/')
@@ -65,7 +69,7 @@ elif pre_args.user == "manu":
 FINETUNED_PATH = None
 
 args = Box({
-    "run_text": "multilabel toxic comments with freezable layers",
+    "run_text": pre_args.data_description,
     "train_size": -1,
     "val_size": -1,
     "log_path": LOG_PATH,
@@ -137,8 +141,8 @@ databunch = BertDataBunch(
                         args['data_dir'],
                         LABEL_PATH,
                         args.model_name,
-                        train_file='train.csv',
-                        val_file='val.csv',
+                        train_file='train_{}.csv'.format(pre_args.label),
+                        val_file='val_{}.csv'.format(pre_args.label),
                         # test_data='test.csv',
                         #name of the column in the train file that containts the tweet text
                         text_col="text",
