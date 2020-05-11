@@ -21,14 +21,14 @@ from sklearn.model_selection import train_test_split
 import datetime
 
 import sys
-
-sys.path.append('../')
-from fast_bert.modeling import BertForMultiLabelSequenceClassification
-from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
-    convert_examples_to_features
-from fast_bert.learner_cls import BertLearner
-from fast_bert.metrics import *
 import argparse
+
+sys.path.append(os.path.abspath("twitter/code/fast_bert"))
+from modeling import BertForMultiLabelSequenceClassification
+from data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
+    convert_examples_to_features
+from learner_cls import BertLearner
+from metrics import *
 
 
 def get_args_from_command_line():
