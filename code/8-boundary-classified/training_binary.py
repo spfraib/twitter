@@ -24,10 +24,10 @@ import sys
 import argparse
 
 sys.path.append('../')
-os.system("python3 modeling.py")
-os.system("python3 data_cls.py")
-os.system("python3 learner_cls.py")
-os.system("python3 metrics.py")
+exec(open("twitter/code/fast_bert/modeling.py").read())
+exec(open("twitter/code/fast_bert/data_cls.py").read())
+exec(open("twitter/code/fast_bert/learner_cls.py").read())
+exec(open("twitter/code/fast_bert/metrics.py").read())
 #from fast_bert.modeling import BertForMultiLabelSequenceClassification
 #from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
 #    convert_examples_to_features
