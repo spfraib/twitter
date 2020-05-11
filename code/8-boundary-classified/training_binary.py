@@ -72,6 +72,13 @@ elif pre_args.user == "manu":
     if not os.path.exists(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label))):
         os.makedirs(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label)))
 
+    LOG_PATH = Path(os.path.join(pre_args.results_folder,'log_{}/'.format(pre_args.label)))
+    print('LOG_PATH', LOG_PATH)
+    DATA_PATH = Path(pre_args.input_data_folder)
+    LABEL_PATH = Path(pre_args.input_data_folder)
+    OUTPUT_PATH = Path(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label)))
+    FINETUNED_PATH = None
+
 args = Box({
     "run_text": pre_args.training_description,
     "train_size": -1,
