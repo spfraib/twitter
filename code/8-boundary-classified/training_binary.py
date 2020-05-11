@@ -28,6 +28,8 @@ from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, Multi
     convert_examples_to_features
 from fast_bert.learner_cls import BertLearner
 from fast_bert.metrics import *
+import argparse
+
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
