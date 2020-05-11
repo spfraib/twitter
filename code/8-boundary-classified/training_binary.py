@@ -38,6 +38,7 @@ def get_args_from_command_line():
     parser.add_argument("--user", type=str, help="dhaval or manu")
     parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo")
     parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
+    parser.add_argument("--batch_size", type=int)
     parser.add_argument("--input_data_folder", type=str)
     parser.add_argument("--results_folder", type=str)
     parser.add_argument("--training_description", type=str)
@@ -96,8 +97,8 @@ args = Box({
     "do_train": True,
     "do_eval": True,
     "do_lower_case": True,
-    "train_batch_size": 8,
-    "eval_batch_size": 16,
+    "train_batch_size": pre_args.batch_size,
+    "eval_batch_size": pre_args.batch_size,
     "learning_rate": 5e-5,
     "num_train_epochs": pre_args.num_train_epochs,
     "warmup_proportion": 0.0,
