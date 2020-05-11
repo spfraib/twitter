@@ -24,15 +24,11 @@ import sys
 import argparse
 
 sys.path.append('../')
-exec(open("twitter/code/fast_bert/modeling.py").read())
-exec(open("twitter/code/fast_bert/data_cls.py").read())
-exec(open("twitter/code/fast_bert/learner_cls.py").read())
-exec(open("twitter/code/fast_bert/metrics.py").read())
-#from fast_bert.modeling import BertForMultiLabelSequenceClassification
-#from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
-#    convert_examples_to_features
-#from fast_bert.learner_cls import BertLearner
-#from fast_bert.metrics import *
+from twitter.code.fast_bert.modeling import BertForMultiLabelSequenceClassification
+from twitter.code.fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
+    convert_examples_to_features
+from twitter.code.fast_bert.learner_cls import BertLearner
+from twitter.code.fast_bert.metrics import *
 
 
 def get_args_from_command_line():
