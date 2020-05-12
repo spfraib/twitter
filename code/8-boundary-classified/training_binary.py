@@ -21,70 +21,42 @@ from sklearn.model_selection import train_test_split
 import datetime
 
 import sys
-import argparse
 
-CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(CURRENT_DIR))
+sys.path.append('../')
 from fast_bert.modeling import BertForMultiLabelSequenceClassification
 from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
     convert_examples_to_features
 from fast_bert.learner_cls import BertLearner
 from fast_bert.metrics import *
 
+column = sys.argv[1]
+# column = 'is_unemployed'
 
-def get_args_from_command_line():
-    """Parse the command line arguments."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--user", type=str, help="dhaval or manu")
-    parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo")
-    parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
-    parser.add_argument("--batch_size", type=int)
-    parser.add_argument("--input_data_folder", type=str)
-    parser.add_argument("--results_folder", type=str)
-    parser.add_argument("--training_description", type=str)
-    parser.add_argument("--label", type=str)
-    args = parser.parse_args()
-    return args
+# for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
-pre_args = get_args_from_command_line()
-
-
-print(pre_args.label, 'creating model and loading..')
+print(column, 'creating model and loading..')
 
 torch.cuda.empty_cache()
 
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-if pre_args.user == "dhaval":
-    if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(pre_args.label)):
-        os.makedirs('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(pre_args.label))
 
-    if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(pre_args.label)):
-        os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(pre_args.label))
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column)):
+    os.makedirs('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
 
-    LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
-    print('LOG_PATH', LOG_PATH)
-    DATA_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-    LABEL_PATH = Path('/scratch/da2734/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-    OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models/models_may5_7Klabels_removed_allzeros/output_{}'.format(column))
-    FINETUNED_PATH = None
+if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column)):
+    os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column))
 
-elif pre_args.user == "manu":
-    if not os.path.exists(os.path.join(pre_args.results_folder,'logs_{}/'.format(pre_args.label))):
-        os.makedirs(os.path.join(pre_args.results_folder,'log_{}/'.format(pre_args.label)))
-    if not os.path.exists(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label))):
-        os.makedirs(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label)))
-
-    LOG_PATH = Path(os.path.join(pre_args.results_folder,'log_{}/'.format(pre_args.label)))
-    print('LOG_PATH', LOG_PATH)
-    DATA_PATH = Path(pre_args.input_data_folder)
-    LABEL_PATH = Path(pre_args.input_data_folder)
-    OUTPUT_PATH = Path(os.path.join(pre_args.results_folder,'output_{}'.format(pre_args.label)))
-    FINETUNED_PATH = None
+LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
+print('LOG_PATH', LOG_PATH)
+DATA_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
+LABEL_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
+OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column))
+FINETUNED_PATH = None
 
 args = Box({
-    "run_text": pre_args.training_description,
+    "run_text": "labor mturk may 11 binary",
     "train_size": -1,
     "val_size": -1,
     "log_path": LOG_PATH,
@@ -97,10 +69,10 @@ args = Box({
     "do_train": True,
     "do_eval": True,
     "do_lower_case": True,
-    "train_batch_size": pre_args.batch_size,
-    "eval_batch_size": pre_args.batch_size,
+    "train_batch_size": 8,
+    "eval_batch_size": 16,
     "learning_rate": 5e-5,
-    "num_train_epochs": pre_args.num_train_epochs,
+    "num_train_epochs": 50,
     "warmup_proportion": 0.0,
     "no_cuda": False,
     "local_rank": -1,
@@ -121,7 +93,7 @@ args = Box({
     "seed": 42,
     "loss_scale": 128,
     "task_name": 'intent',
-    "model_name": pre_args.model_name,
+    "model_name": 'bert-base-uncased',
     "model_type": 'bert'
 })
 
@@ -154,9 +126,9 @@ databunch = BertDataBunch(
     args['data_dir'],
     LABEL_PATH,
     args.model_name,
-    train_file='train_{}.csv'.format(pre_args.label),
-    val_file='val_{}.csv'.format(pre_args.label),
-    label_file='label_{}.csv'.format(pre_args.label),
+    train_file='train_{}.csv'.format(column),
+    val_file='val_{}.csv'.format(column),
+    label_file='label_{}.csv'.format(column),
     # test_data='test.csv',
     text_col="text",  # this is the name of the column in the train file that containts the tweet text
     label_col=label_cols,
