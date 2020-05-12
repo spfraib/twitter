@@ -1,12 +1,60 @@
-# gets all this setup
+"""
+This script launches the training of a BERT-based binary text classification model and saves the trained model
+in a designated folder.
+
+How to use the script in the command line:
+python3 training_binary.py
+    --input_data_folder <INPUT_DATA_FOLDER> \
+    --results_folder <RESULTS_FOLDER> \
+    --training_description <TRAINING_DESCRIPTION> \
+    --label <LABEL>
+    --model_name <MODEL_NAME> \
+    --num_train_epochs <NUM_TRAIN_EPOCHS> \
+    --train_batch_size <TRAIN_BATCH_SIZE> \
+    --eval_batch_size <EVAL_BATCH_SIZE> \
+    --learning_rate <LEARNING_RATE>
+Where:
+<INPUT_DATA_FOLDER> : Path to the folder containing the data (compulsory). The folder must contain 3 CSV files
+(train_{<LABEL>}.csv, val_{<LABEL>}.csv et label_{<LABEL>}.csv. These files can be generated from the raw files by
+using the 8.0.3-preparing_mturk_data-BALANCED undersampled-may11_9Klabels.ipynb notebook in the 8-boundary-classified
+folder.
+
+<RESULTS_FOLDER>: Folder where both the logs, the results and the model files will be stored. (compulsory)
+
+<TRAINING_DESCRIPTION>: Customized name to differentiate trainings (compulsory)
+
+<LABEL>: The label to train on. In our case, there are 5 possibilities: lost_job_1mo, is_unemployed, job_search,
+is_hired_1mo or job_offer.
+
+<MODEL_NAME>: Name of the model to use from the Hugging Face model library. The list of available models can be found
+here: https://huggingface.co/models
+
+<NUM_TRAIN_EPOCHS>: The number of training epochs.
+
+<TRAIN_BATCH_SIZE>: The training batch size (optional). Default value is 8
+
+<EVAL_BATCH_SIZE>: The evaluation batch size (optional). Default value is 16
+
+<LEARNING_RATE>: The learning rate (optional). Default value is 5e-5.
+
+
+
+Example usage:
+python3 training_binary.py \
+ --input_data_folder /content/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros \
+ --results_folder /content/drive/My Drive/twitter_bert_results_may5 \
+ --training_description manu_test_may5 \
+ --label lost_job_1mo \
+ --model_name DeepPavlov/bert-base-cased-conversational \
+ --num_train_epochs 20 \
+
+"""
+
 import time
-
 start_time = time.time()
-
 from transformers import BertTokenizer
 from pathlib import Path
 import torch
-
 from box import Box
 import pandas as pd
 import collections
@@ -15,48 +63,59 @@ from tqdm import tqdm, trange
 import sys
 import random
 import numpy as np
-# import apex
 from sklearn.model_selection import train_test_split
-
 import datetime
-
 import sys
+import argparse
 
-sys.path.append('../')
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(CURRENT_DIR))
 from fast_bert.modeling import BertForMultiLabelSequenceClassification
 from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, MultiLabelTextProcessor, \
     convert_examples_to_features
 from fast_bert.learner_cls import BertLearner
 from fast_bert.metrics import *
 
-column = sys.argv[1]
-# column = 'is_unemployed'
 
-# for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
+def get_args_from_command_line():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input_data_folder", type=str)
+    parser.add_argument("--results_folder", type=str)
+    parser.add_argument("--training_description", type=str)
+    parser.add_argument("--label", type=str)
+    parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo", default="bert-base-cased")
+    parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
+    parser.add_argument("--train_batch_size", type=int, default=8)
+    parser.add_argument("--eval_batch_size", type=int, default=16)
+    parser.add_argument("--learning_rate", type=float, default=5e-5)
+    args = parser.parse_args()
+    return args
 
-print(column, 'creating model and loading..')
+
+pre_args = get_args_from_command_line()
+
+print(pre_args.label, 'creating model and loading..')
 
 torch.cuda.empty_cache()
 
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
+if not os.path.exists(os.path.join(pre_args.results_folder, 'logs_{}'.format(pre_args.label))):
+    os.makedirs(os.path.join(pre_args.results_folder, 'log_{}'.format(pre_args.label)))
+if not os.path.exists(os.path.join(pre_args.results_folder, 'output_{}'.format(pre_args.label))):
+    os.makedirs(os.path.join(pre_args.results_folder, 'output_{}'.format(pre_args.label)))
 
-if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column)):
-    os.makedirs('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
-
-if not os.path.exists('/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column)):
-    os.makedirs(      '/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column))
-
-LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_binary_pos_neg_{}/'.format(column))
+LOG_PATH = Path(os.path.join(pre_args.results_folder, 'log_{}/'.format(pre_args.label)))
 print('LOG_PATH', LOG_PATH)
-DATA_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-LABEL_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column))
+DATA_PATH = Path(pre_args.input_data_folder)
+LABEL_PATH = Path(pre_args.input_data_folder)
+OUTPUT_PATH = Path(os.path.join(pre_args.results_folder, 'output_{}'.format(pre_args.label)))
 FINETUNED_PATH = None
 
 args = Box({
-    "run_text": "labor mturk may 11 binary",
+    "run_text": pre_args.training_description,
     "train_size": -1,
     "val_size": -1,
     "log_path": LOG_PATH,
@@ -69,10 +128,10 @@ args = Box({
     "do_train": True,
     "do_eval": True,
     "do_lower_case": True,
-    "train_batch_size": 8,
-    "eval_batch_size": 16,
-    "learning_rate": 5e-5,
-    "num_train_epochs": 50,
+    "train_batch_size": pre_args.train_batch_size,
+    "eval_batch_size": pre_args.eval_batch_size,
+    "learning_rate": pre_args.learning_rate,
+    "num_train_epochs": pre_args.num_train_epochs,
     "warmup_proportion": 0.0,
     "no_cuda": False,
     "local_rank": -1,
@@ -93,7 +152,7 @@ args = Box({
     "seed": 42,
     "loss_scale": 128,
     "task_name": 'intent',
-    "model_name": 'bert-base-uncased',
+    "model_name": pre_args.model_name,
     "model_type": 'bert'
 })
 
@@ -120,15 +179,15 @@ if torch.cuda.device_count() > 1:
 else:
     args.multi_gpu = False
 
-label_cols = ['class'] #this is the name of the column in the train and val csv files where the labels are
+label_cols = ['class']  # this is the name of the column in the train and val csv files where the labels are
 
 databunch = BertDataBunch(
     args['data_dir'],
     LABEL_PATH,
     args.model_name,
-    train_file='train_{}.csv'.format(column),
-    val_file='val_{}.csv'.format(column),
-    label_file='label_{}.csv'.format(column),
+    train_file='train_{}.csv'.format(pre_args.label),
+    val_file='val_{}.csv'.format(pre_args.label),
+    label_file='label_{}.csv'.format(pre_args.label),
     # test_data='test.csv',
     text_col="text",  # this is the name of the column in the train file that containts the tweet text
     label_col=label_cols,
@@ -166,6 +225,5 @@ learner = BertLearner.from_pretrained_model(
     logging_steps=0)
 
 learner.fit(args.num_train_epochs, args.learning_rate, validate=True)  # this trains the model
-
 
 #     break
