@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=dvalpred200Msampleslost_job_1mo
+#SBATCH --job-name=lost_job_1mo
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
@@ -42,13 +42,13 @@ source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 echo "pyenv activated"
 #echo "shell" $0
 
-cd /scratch/da2734/twitter/8-boundary-classified/
+cd /scratch/da2734/twitter/10-deploy-100M-samples/
 
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 #python -u training_binary.py is_hired_1mo > /scratch/da2734/twitter/batch/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
-srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py lost_job_1mo > /scratch/da2734/twitter/running_on_200Msamples/array_logs/lost_job_1mo/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u 10-deploying-100M-random-filetered-keywords.py lost_job_1mo > /scratch/da2734/twitter/running_on_200Msamples/array_logs/lost_job_1mo/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'running'
 
 exit
