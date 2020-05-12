@@ -3,7 +3,7 @@ This script launches the training of a BERT-based binary text classification mod
 in a designated folder.
 
 How to use the script in the command line:
-python3 train_binary.py
+python3 training_binary.py
     --input_data_folder <INPUT_DATA_FOLDER> \
     --results_folder <RESULTS_FOLDER> \
     --training_description <TRAINING_DESCRIPTION> \
@@ -40,7 +40,7 @@ here: https://huggingface.co/models
 
 
 Example usage:
-python3 train_binary.py \
+python3 training_binary.py \
  --input_data_folder /content/twitter/data/may5_7Klabels/data_binary_pos_neg_balanced_removed_allzeros \
  --results_folder /content/drive/My Drive/twitter_bert_results_may5 \
  --training_description manu_test_may5 \
