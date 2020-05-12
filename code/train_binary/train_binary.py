@@ -102,8 +102,8 @@ torch.cuda.empty_cache()
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-if not os.path.exists(os.path.join(pre_args.results_folder, 'logs_{}/'.format(pre_args.label))):
-    os.makedirs(os.path.join(pre_args.results_folder, 'log_{}/'.format(pre_args.label)))
+if not os.path.exists(os.path.join(pre_args.results_folder, 'logs_{}'.format(pre_args.label))):
+    os.makedirs(os.path.join(pre_args.results_folder, 'log_{}'.format(pre_args.label)))
 if not os.path.exists(os.path.join(pre_args.results_folder, 'output_{}'.format(pre_args.label))):
     os.makedirs(os.path.join(pre_args.results_folder, 'output_{}'.format(pre_args.label)))
 
