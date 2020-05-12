@@ -42,7 +42,7 @@ source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 echo "pyenv activated"
 #echo "shell" $0
 
-cd /scratch/da2734/twitter/10-deploy-100M-samples/
+cd /scratch/da2734/twitter/code/10-deploy-100M-samples/
 
 pwd
 
