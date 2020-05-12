@@ -27,40 +27,17 @@ from fast_bert.data_cls import BertDataBunch, InputExample, InputFeatures, \
 MultiLabelTextProcessor, convert_examples_to_features
 from fast_bert.learner_cls import BertLearner
 from fast_bert.metrics import *
-import argparse
 
 torch.cuda.empty_cache()
 
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
+LOG_PATH=Path('/scratch/da2734/twitter/mturk_mar6/log/')
+DATA_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data')
+LABEL_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data/')
+OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_every_epoch/')
 
-def get_args_from_command_line():
-    """Parse the command line arguments."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--user", type=str, help="dhaval or manu")
-    parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo")
-    parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
-    parser.add_argument("--input_data_folder", type=str)
-    parser.add_argument("--results_folder", type=str)
-    parser.add_argument("--data_description", type=str)
-    parser.add_argument("--label", type=str)
-    args = parser.parse_args()
-    return args
-
-pre_args = get_args_from_command_line()
-
-if pre_args.user == "dhaval":
-    LOG_PATH=Path('/scratch/da2734/twitter/mturk_mar6/log/')
-    DATA_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data')
-    LABEL_PATH=Path('/scratch/da2734/twitter/mturk_mar6/data/')
-    OUTPUT_PATH=Path('/scratch/da2734/twitter/mturk_mar6/output_every_epoch/')
-
-elif pre_args.user == "manu":
-    LOG_PATH=Path(os.path.join(pre_args.results_folder,'log/'))
-    DATA_PATH=Path(pre_args.input_data_folder)
-    LABEL_PATH=Path(pre_args.input_data_folder)
-    OUTPUT_PATH=Path(os.path.join(pre_args.results_folder,'output/'))
 # LOG_PATH=Path('../mturk_mar6/log/')
 # DATA_PATH=Path('../mturk_mar6/data')
 # LABEL_PATH=Path('../mturk_mar6/data/')
@@ -69,7 +46,7 @@ elif pre_args.user == "manu":
 FINETUNED_PATH = None
 
 args = Box({
-    "run_text": pre_args.data_description,
+    "run_text": "multilabel toxic comments with freezable layers",
     "train_size": -1,
     "val_size": -1,
     "log_path": LOG_PATH,
@@ -86,7 +63,7 @@ args = Box({
     "train_batch_size": 8,
     "eval_batch_size": 16,
     "learning_rate": 5e-5,
-    "num_train_epochs": pre_args.num_train_epochs,
+    "num_train_epochs": 100,
     "warmup_proportion": 0.0,
 #     "no_cuda": False,
     "local_rank": -1,
@@ -107,14 +84,14 @@ args = Box({
     "seed": 42,
     "loss_scale": 128,
     "task_name": 'intent',
-    "model_name": pre_args.model_name,
+    "model_name": 'bert-base-uncased',
     "model_type": 'bert'
 })
 
 import logging
 
 logfile = str(LOG_PATH/'log-{}-{}.txt'.format(run_start_time, args["run_text"]))
-os.makedirs(os.path.dirname(logfile), exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -141,8 +118,8 @@ databunch = BertDataBunch(
                         args['data_dir'],
                         LABEL_PATH,
                         args.model_name,
-                        train_file='train_{}.csv'.format(pre_args.label),
-                        val_file='val_{}.csv'.format(pre_args.label),
+                        train_file='train.csv',
+                        val_file='val.csv',
                         # test_data='test.csv',
                         #name of the column in the train file that containts the tweet text
                         text_col="text",
