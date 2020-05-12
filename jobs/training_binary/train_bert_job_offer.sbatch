@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=training_job_offer
+#SBATCH --job-name=job_offer
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=10GB
