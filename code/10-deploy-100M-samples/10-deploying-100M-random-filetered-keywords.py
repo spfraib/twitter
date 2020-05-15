@@ -53,17 +53,17 @@ torch.cuda.empty_cache()
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-root_path='/scratch/da2734/twitter/running_on_200Msamples/'
+root_path='/scratch/da2734/twitter/jobs/running_on_200Msamples/'
 
 
 def create_model(columnm, epoch):
-    if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column)):
-        os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column))
+    if not os.path.exists('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column)):
+        os.makedirs('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column))
 
     # if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column)):
     #     os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column))
 
-    LOG_PATH = Path('/scratch/da2734/twitter/running_on_200Msamples/log_running_on_samples/'.format(column))
+    LOG_PATH = Path('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column))
     DATA_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
     LABEL_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
     OUTPUT_PATH = Path(
@@ -241,8 +241,8 @@ print('Load Filtered Tweets:')
 start_time = time.time()
 
 paths_to_filtered=list(np.array_split(
-                        glob(os.path.join(path_to_data,'filtered','*.parquet')),
-                        # glob(os.path.join(path_to_data,'filtered_10perct_sample','*.parquet')),
+                        # glob(os.path.join(path_to_data,'filtered','*.parquet')),
+                        glob(os.path.join(path_to_data,'filtered_10perct_sample','*.parquet')),
                         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
                        )
 print('#files:', len(paths_to_filtered))
@@ -265,8 +265,8 @@ print('Load Random Tweets:')
 start_time = time.time()
 
 paths_to_random=list(np.array_split(
-                        glob(os.path.join(path_to_data,'random','*.parquet')),
-                        # glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
+                        # glob(os.path.join(path_to_data,'random','*.parquet')),
+                        glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
                         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 print('#files:', len(paths_to_random))
 
