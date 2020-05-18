@@ -7,7 +7,8 @@ python3 training_binary.py
     --input_data_folder <INPUT_DATA_FOLDER> \
     --results_folder <RESULTS_FOLDER> \
     --training_description <TRAINING_DESCRIPTION> \
-    --label <LABEL>
+    --label <LABEL> \
+    --model_type <MODEL_TYPE> \
     --model_name <MODEL_NAME> \
     --num_train_epochs <NUM_TRAIN_EPOCHS> \
     --train_batch_size <TRAIN_BATCH_SIZE> \
@@ -21,19 +22,21 @@ folder.
 
 <RESULTS_FOLDER>: Folder where both the logs, the results and the model files will be stored. (compulsory)
 
-<TRAINING_DESCRIPTION>: Customized name to differentiate trainings (compulsory)
+<TRAINING_DESCRIPTION>: Customized name to differentiate trainings (compulsory).
 
 <LABEL>: The label to train on. In our case, there are 5 possibilities: lost_job_1mo, is_unemployed, job_search,
 is_hired_1mo or job_offer.
+
+<MODEL_TYPE>: The type of model architecture (BERT, ALBERT, etc..).
 
 <MODEL_NAME>: Name of the model to use from the Hugging Face model library. The list of available models can be found
 here: https://huggingface.co/models
 
 <NUM_TRAIN_EPOCHS>: The number of training epochs.
 
-<TRAIN_BATCH_SIZE>: The training batch size (optional). Default value is 8
+<TRAIN_BATCH_SIZE>: The training batch size (optional). Default value is 8.
 
-<EVAL_BATCH_SIZE>: The evaluation batch size (optional). Default value is 16
+<EVAL_BATCH_SIZE>: The evaluation batch size (optional). Default value is 16.
 
 <LEARNING_RATE>: The learning rate (optional). Default value is 5e-5.
 
@@ -84,6 +87,7 @@ def get_args_from_command_line():
     parser.add_argument("--results_folder", type=str)
     parser.add_argument("--training_description", type=str)
     parser.add_argument("--label", type=str)
+    parser.add_argument("--model_type", type=str, default="bert")
     parser.add_argument("--model_name", type=str, help="The name of the BERT model in the HuggingFace repo", default="bert-base-cased")
     parser.add_argument("--num_train_epochs", type=int, help="Number of epochs")
     parser.add_argument("--train_batch_size", type=int, default=8)
@@ -153,7 +157,7 @@ args = Box({
     "loss_scale": 128,
     "task_name": 'intent',
     "model_name": pre_args.model_name,
-    "model_type": 'bert'
+    "model_type": pre_args.model_type
 })
 
 import logging
