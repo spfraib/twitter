@@ -57,10 +57,10 @@ root_path='/scratch/da2734/twitter/jobs/running_on_200Msamples/'
 
 
 def create_model(columnm, epoch):
-    if not os.path.exists('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples_10pct_{}/'.format(column)):
-        os.makedirs('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples_10pct_{}/'.format(column))
+    if not os.path.exists('/scratch/da2734/twitter/jobs/running_on_200Msamples/logs/log_running_on_samples_10pct_{}/'.format(column)):
+        os.makedirs('/scratch/da2734/twitter/jobs/running_on_200Msamples/logs/log_running_on_samples_10pct_{}/'.format(column))
 
-    LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_running_on_samples_10pct_{}/'.format(column))
+    LOG_PATH = Path('/scratch/da2734/twitter/jobs/running_on_200Msamples/logs/log_running_on_samples_10pct_{}/'.format(column))
     print('LOG_PATH', LOG_PATH)
     DATA_PATH = Path('/scratch/da2734/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced/')
     LABEL_PATH = Path('/scratch/da2734/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced/')
