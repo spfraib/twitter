@@ -47,7 +47,7 @@ cd /scratch/da2734/twitter/code/8-boundary-classified/
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
-python -u training_binary.py lost_job_1mo > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_lost_job_1mo.log 2>&1
+python -u training_binary_dhaval.py lost_job_1mo > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_lost_job_1mo.log 2>&1
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'running'
 exit
