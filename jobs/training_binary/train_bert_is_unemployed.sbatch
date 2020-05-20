@@ -42,12 +42,11 @@ source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 echo "pyenv activated"
 #echo "shell" $0
 
-cd /scratch/da2734/twitter/code/8-boundary-classified/
-
+cd /scratch/da2734/twitter/code/8-training_binary/
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
-python -u training_binary.py is_unemployed > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_is_unemployed.log 2>&1
+python -u training_binary_dhaval.py is_unemployed > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_is_unemployed.log 2>&1
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'running'
 exit
