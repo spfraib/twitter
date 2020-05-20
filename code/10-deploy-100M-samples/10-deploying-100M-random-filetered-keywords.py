@@ -57,17 +57,14 @@ root_path='/scratch/da2734/twitter/jobs/running_on_200Msamples/'
 
 
 def create_model(columnm, epoch):
-    if not os.path.exists('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column)):
-        os.makedirs('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column))
+    if not os.path.exists('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples_10pct_{}/'.format(column)):
+        os.makedirs('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples_10pct_{}/'.format(column))
 
-    # if not os.path.exists('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column)):
-    #     os.makedirs('/scratch/da2734/twitter/running_on_200Msamples/output_binary_{}'.format(column))
-
-    LOG_PATH = Path('/scratch/da2734/twitter/jobs/running_on_200Msamples/log_running_on_samples/'.format(column))
-    DATA_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-    LABEL_PATH = Path('/scratch/da2734/twitter/data/may11_9Klabels/data_binary_pos_neg_balanced_removed_allzeros/')
-    OUTPUT_PATH = Path(
-        '/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}'.format(column))
+    LOG_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/logs/log_running_on_samples_10pct_{}/'.format(column))
+    print('LOG_PATH', LOG_PATH)
+    DATA_PATH = Path('/scratch/da2734/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced/')
+    LABEL_PATH = Path('/scratch/da2734/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced/')
+    OUTPUT_PATH = Path('/scratch/da2734/twitter/jobs/training_binary/models_may20_9Klabels/output_{}'.format(column))
     FINETUNED_PATH = None
 
     args = Box({
@@ -170,7 +167,7 @@ def create_model(columnm, epoch):
 
     learner = BertLearner.from_pretrained_model(
         databunch,
-        pretrained_path='/scratch/da2734/twitter/jobs/training_binary/models_may11_9Klabels_removed_allzeros/output_{}/model_out_{}/'.format(column, epoch),
+        pretrained_path='/scratch/da2734/twitter/jobs/training_binary/models_may20_9Klabels/output_{}/model_out_{}/'.format(column, epoch),
         metrics=metrics,
         device=device,
         logger=logger,
@@ -185,12 +182,20 @@ def create_model(columnm, epoch):
     return learner
 
 
+# best_epochs = {
+#     'is_hired_1mo':8,
+#     'lost_job_1mo':5,
+#     'job_offer':4,
+#     'is_unemployed':3,
+#     'job_search':6
+# }
+
 best_epochs = {
-    'is_hired_1mo':8,
-    'lost_job_1mo':5,
-    'job_offer':4,
+    'is_hired_1mo':6,
+    'lost_job_1mo':4,
+    'job_offer':3,
     'is_unemployed':3,
-    'job_search':6
+    'job_search':4
 }
 
 start = time.time()
