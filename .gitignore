@@ -18,3 +18,6 @@ misc
 *.json
 *.txt
 *.bin
+*.csv
+*.parquet
+*.log
