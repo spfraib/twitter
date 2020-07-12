@@ -1,2 +1,9 @@
 .DS_Store
 .ipynb_checkpoints
+*.idea
+*.csv
+*.pickle
+*.pkl
+*.parquet
+*.orc
+
