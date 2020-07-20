@@ -13,7 +13,6 @@ python3 classification.py
     --train_data_path <TRAIN_DATA_PATH> \
     --eval_data_path <EVAL_DATA_PATH> \
     --num_labels <NUM_LABELS> \
-    --run_name <RUN_NAME> \
     --model_name <MODEL_NAME> \
     --model_type <MODEL_TYPE> \
     --output_dir <OUTPUT_DIR> \
@@ -24,7 +23,6 @@ Where:
 
 <NUM_LABELS>: Number of classes in the classification problem (default=2)
 
-<RUN_NAME>: Customized name to differentiate different saved models (required)
 
 <MODEL_NAME>: Name of the model to use (required)
 
@@ -40,7 +38,6 @@ python classification.py \
 --eval_data_path twitter-labor-data/data/jun_27_iter1/BERT/new_train_test_split_with_data_iter0/val_is_hired_1mo.csv \
 --output_dir trained_bert-base-cased_is_hired_1mo_jun_27_iter1 \
 --num_labels 2 \
---run_name some_funny_name \
 --num_train_epochs 20
 --model_name bert \
 --model_type bert-base-cased
@@ -71,8 +68,6 @@ def get_args_from_command_line():
     parser.add_argument("--eval_data_path", type=str, help="Path to the evaluation data. Must be in csv format.",
                         default="")
     parser.add_argument("--num_labels", type=int, default=2)
-    parser.add_argument("--run_name", type=str,
-                        help="Define customized run name to find it back in saved models folder.")
     parser.add_argument("--num_train_epochs", type=int)
     parser.add_argument("--model_name", type=str,
                         help="Select the model to use.", default='bert')
@@ -113,14 +108,13 @@ def check_command_line_args(args: dict) -> dict:
     return args
 
 
-def prepare_filepath_for_storing_model(output_dir: str, run_name: str) -> str:
+def prepare_filepath_for_storing_model(output_dir: str) -> str:
     """Prepare the filepath where the trained model will be stored.
 
-    :param output_dir: Directory where to store outputs (dataset splits + trained models).
-    :param run_name: Customized name to differentiate different saved models.
+    :param output_dir: Directory where to store outputs (trained models).
     :return: path_to_store_model: Path where to store the trained model.
     """
-    path_to_store_model = os.path.join(output_dir, run_name, 'models')
+    path_to_store_model = os.path.join(output_dir, 'models')
     if not os.path.exists(path_to_store_model):
         os.makedirs(path_to_store_model)
     return path_to_store_model
@@ -158,7 +152,7 @@ if __name__ == "__main__":
     verify_column_type(train_df)
     verify_column_type(eval_df)
     # Prepare paths
-    path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir, run_name=args.run_name)
+    path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir)
     path_to_store_best_model = prepare_filepath_for_storing_best_model(path_to_store_model)
     # Create a ClassificationModel
     model = ClassificationModel(args.model_type, args.model_name, num_labels=args.num_labels,
