@@ -50,7 +50,10 @@ import pandas as pd
 from pandas.api.types import is_string_dtype
 from pandas.api.types import is_numeric_dtype
 from sklearn.model_selection import train_test_split
+from sklearn import metrics
 import sklearn
+from scipy.special import softmax
+import numpy as np
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -157,7 +160,7 @@ if __name__ == "__main__":
     # Create a ClassificationModel
     model = ClassificationModel(args.model_type, args.model_name, num_labels=args.num_labels,
                                 args={'overwrite_output_dir': True, 'evaluate_during_training': True,
-                                      'save_model_every_epoch': False, 'save_eval_checkpoints': False,
+                                      'save_model_every_epoch': True, 'save_eval_checkpoints': False,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
@@ -173,3 +176,23 @@ if __name__ == "__main__":
     # Train the model
     model.train_model(train_df, eval_df=eval_df, output_dir=path_to_store_model, **eval_metrics)
     logging.info("The training of the model is done")
+
+    # Evaluate the best model (in terms of evaluation loss)
+    best_model = ClassificationModel(args.model_type, path_to_store_best_model)
+    result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
+    scores = np.array([softmax(element)[1] for element in model_outputs])
+    # Compute AUC
+    fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], scores, pos_label=2)
+    auc = metrics.auc(fpr, tpr)
+    # Centralize evaluation results in a dictionary
+    eval_results_dict = {'evaluation_data_path': args.eval_data_path,
+                         'precision': metrics.precision_score(eval_df['class'], scores),
+                         'recall': metrics.recall_score(eval_df['class'], scores),
+                         'f1': metrics.f1_score(eval_df['class'], scores),
+                         'auc': auc
+                         }
+    # Save evaluation results to CSV
+    path_to_store_eval_results = os.path.join(path_to_store_best_model, 'eval_results_replicated.csv')
+    pd.DataFrame.from_dict(eval_results_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
+    logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
+    
