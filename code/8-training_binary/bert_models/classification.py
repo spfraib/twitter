@@ -75,8 +75,7 @@ def get_args_from_command_line():
     parser.add_argument("--model_name", type=str,
                         help="Select the model to use.", default='bert')
     parser.add_argument("--model_type", type=str, default='bert-base-cased')
-    parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models",
-                        default=OUTPUTS_FOLDER)
+    parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
 
     args = parser.parse_args()
     return args
