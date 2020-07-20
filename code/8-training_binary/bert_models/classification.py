@@ -194,4 +194,8 @@ if __name__ == "__main__":
     path_to_store_eval_results = os.path.join(path_to_store_best_model, 'eval_results_replicated.csv')
     pd.DataFrame.from_dict(eval_results_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
     logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
+    # Save scores
+    eval_df['{}_scores'.format(args.model_type)] = scores
+    path_to_store_scores = os.path.join(path_to_store_best_model, 'val_with_scores.csv')
+    eval_df.to_csv(path_to_store_scores, index=False)
     
