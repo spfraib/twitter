@@ -4,13 +4,25 @@ DATA_FOLDER=$1
 MODEL_NAME=$2
 MODEL_TYPE=$3
 
+SLASH=/
 if [[ ${MODEL_TYPE} == *"/"* ]]
 then
-    MODEL_SUBFOLDER=${MODEL_TYPE##*/}
+  MODEL_TYPE_WITHOUT_SLASH=${MODEL_TYPE//[${SLASH}]/_}
 else
-    MODEL_SUBFOLDER=${MODEL_TYPE}
+  MODEL_TYPE_WITHOUT_SLASH=${MODEL_TYPE}
+fi
 
-SBATCH --job-name=training_bert_models
+if [[ ${DATA_FOLDER} == *"/"* ]]
+then
+    DATA_FOLDER_WITHOUT_SLASH=${DATA_FOLDER//[${SLASH}]/_}
+else
+    DATA_FOLDER_WITHOUT_SLASH=${DATA_FOLDER}
+fi
+
+TIMESTAMP=$(date +%s)
+DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
+
+SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
 SBATCH --nodes=1
 SBATCH --cpus-per-task=1
 SBATCH --mem=20GB
@@ -19,40 +31,77 @@ SBATCH --gres=gpu:1
 
 # when the job ends, send me an email at this email address.
 # replace with your email address, and uncomment that line if you really need to receive an email.
+SBATCH --mail-type=BEGIN
 SBATCH --mail-type=END
 SBATCH --mail-user=manuel.tonneau@mailbox.org
 
-# both standard output and standard error are directed to the same file.
-# It will be placed in the directory I submitted the job from and will
-# have a name like slurm_12345.out
-#SBATCH --output=slurm_%j.out
-
+# Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
 source /scratch/mt4493/twitter_labor/code/training_env/bin/activate
-#module load jupyter-kernels/py2.7
-#module load jupyter-kernels/py3.5
-#module load miniconda
+echo "virtualenv activated"
+
+#create output folder
+mkdir /scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${TIMESTAMP}
+OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${TIMESTAMP}
+echo "Output folder created: ${OUTPUT_DIR}"
 
 
-#/usr/bin/ssh -N -f -R $port:localhost:$port log-0
-#/usr/bin/ssh -N -f -R $port:localhost:$port log-1
+echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
+python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+ --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
+ --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
+ --model_name ${MODEL_NAME} \
+ --model_type ${MODEL_TYPE} \
+ --num_train_epochs 20 \
+ --output_dir ${OUTPUT_DIR} \
+ --timestamp ${TIMESTAMP}
+echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
+echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
+python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+ --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
+ --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
+ --model_name ${MODEL_NAME} \
+ --model_type ${MODEL_TYPE} \
+ --num_train_epochs 20 \
+ --output_dir ${OUTPUT_DIR} \
+ --timestamp ${TIMESTAMP}
+echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
-#unset XDG_RUNTIME_DIR
-#if [ "$SLURM_JOBTMP" != "" ]; then
-#    export XDG_RUNTIME_DIR=$SLURM_JOBTMP
-#fi
+echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
+python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+ --train_data_path ${DATA_PATH}/train_job_search.csv \
+ --eval_data_path ${DATA_PATH}/val_job_search.csv \
+ --model_name ${MODEL_NAME} \
+ --model_type ${MODEL_TYPE} \
+ --num_train_epochs 20 \
+ --output_dir ${OUTPUT_DIR} \
+ --timestamp ${TIMESTAMP}
+echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
-echo "pyenv activated"
-#echo "shell" $0
+echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
+python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+ --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
+ --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
+ --model_name ${MODEL_NAME} \
+ --model_type ${MODEL_TYPE} \
+ --num_train_epochs 20 \
+ --output_dir ${OUTPUT_DIR} \
+ --timestamp ${TIMESTAMP}
+echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
-cd /scratch/mt4493/twitter/code/8-training_binary/bert_models
-pwd
+echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
+python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+ --train_data_path ${DATA_PATH}/train_job_offer.csv \
+ --eval_data_path ${DATA_PATH}/val_job_offer.csv \
+ --model_name ${MODEL_NAME} \
+ --model_type ${MODEL_TYPE} \
+ --num_train_epochs 20 \
+ --output_dir ${OUTPUT_DIR} \
+ --timestamp ${TIMESTAMP}
+echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
 
-#jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
-#python -u training_binary_dhaval.py is_hired_1mo > /scratch/da2734/twitter/jobs/training_binary/terminal_logs/train_bert_binary_separate_models_is_hired_1mo.log 2>&1
-python3 classification.py
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'running'
 exit
