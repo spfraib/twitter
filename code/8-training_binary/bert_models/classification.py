@@ -79,7 +79,7 @@ def get_args_from_command_line():
     parser.add_argument("--model_type", type=str, default='bert-base-cased')
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--timestamp", type=str, help="Timestamp when batch is launched", default = "0")
-    parser.add_argument("--use_cuda", type=bool, help="Whether to use cuda", default = True)
+    parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default = 1)
 
     args = parser.parse_args()
     return args
@@ -160,8 +160,13 @@ if __name__ == "__main__":
     # Prepare paths
     path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir)
     path_to_store_best_model = prepare_filepath_for_storing_best_model(path_to_store_model)
+    # Whether to use_cuda
+    if args.use_cuda == 1:
+        use_cuda = True
+    elif args.use_cuda ==0:
+        use_cuda = False
     # Create a ClassificationModel
-    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=args.use_cuda,
+    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
                                 args={'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': False,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
