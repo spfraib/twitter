@@ -159,7 +159,7 @@ if __name__ == "__main__":
     path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir)
     path_to_store_best_model = prepare_filepath_for_storing_best_model(path_to_store_model)
     # Create a ClassificationModel
-    model = ClassificationModel(args.model_type, args.model_name, num_labels=args.num_labels,
+    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels,
                                 args={'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': False,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
@@ -179,7 +179,7 @@ if __name__ == "__main__":
     logging.info("The training of the model is done")
 
     # Evaluate the best model (in terms of evaluation loss)
-    best_model = ClassificationModel(args.model_type, path_to_store_best_model)
+    best_model = ClassificationModel(args.model_name, path_to_store_best_model)
     result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
     scores = np.array([softmax(element)[1] for element in model_outputs])
     # Compute AUC
