@@ -53,7 +53,7 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP} > /scratch/mt4493/twitter_labor/code/twitter/jobs/bert_models/test.log 2>&1
+ --timestamp ${TIMESTAMP} > /scratch/mt4493/twitter_labor/code/twitter/jobs/bert_models/test.log 
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
