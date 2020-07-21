@@ -54,6 +54,8 @@ from sklearn import metrics
 import sklearn
 from scipy.special import softmax
 import numpy as np
+from datetime import datetime
+import time
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -184,18 +186,28 @@ if __name__ == "__main__":
     fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], scores, pos_label=2)
     auc = metrics.auc(fpr, tpr)
     # Centralize evaluation results in a dictionary
-    eval_results_dict = {'evaluation_data_path': args.eval_data_path,
+    eval_results_dict = {'date_time': datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                         'model_type': args.model_type,
+                         'evaluation_data_path': args.eval_data_path,
                          'precision': metrics.precision_score(eval_df['class'], scores),
                          'recall': metrics.recall_score(eval_df['class'], scores),
                          'f1': metrics.f1_score(eval_df['class'], scores),
                          'auc': auc
                          }
-    # Save evaluation results to CSV
-    path_to_store_eval_results = os.path.join(path_to_store_best_model, 'eval_results_replicated.csv')
+    # Save evaluation results
+    timestamp = str(int(time.time()))
+    if "/" in args.model_type:
+        args.model_type = args.model_type.replace('/','_')
+    name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
+    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'evaluation', name_val_file + "_" + str(timestamp) + '_{}_results.csv'.format(args.model_type))
+    if not os.path.exists(os.path.abspath(path_to_store_eval_results)):
+        os.makedirs(os.path.abspath(path_to_store_eval_results))
     pd.DataFrame.from_dict(eval_results_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
     logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
-    path_to_store_scores = os.path.join(path_to_store_best_model, 'val_with_scores.csv')
+    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'scores', name_val_file + "_" + str(timestamp) + "_{}_scores.csv".format(args.model_type))
+    if not os.path.exists(os.path.abspath(path_to_store_scores)):
+        os.makedirs(os.path.abspath(path_to_store_scores))
     eval_df.to_csv(path_to_store_scores, index=False)
-    
+    logging.info("The scores were saved at {}".format(path_to_store_scores))
