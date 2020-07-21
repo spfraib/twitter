@@ -161,7 +161,7 @@ if __name__ == "__main__":
     path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir)
     path_to_store_best_model = prepare_filepath_for_storing_best_model(path_to_store_model)
     # Create a ClassificationModel
-    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels,
+    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=args.use_cuda,
                                 args={'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': False,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
@@ -169,7 +169,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_patience": 3,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True, 'use_cuda': args.use_cuda})
+                                      "early_stopping_metric_minimize": True})
     # Define evaluation metrics
     eval_metrics = {
         "precision": sklearn.metrics.precision_score,
