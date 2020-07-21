@@ -1,4 +1,14 @@
 #!/bin/bash
+#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=20GB
+#SBATCH --time=24:00:00
+#SBATCH --gres=gpu:1
+#SBATCH --output=slurm_%j.out
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user=manuel.tonneau@mailbox.org
 
 DATA_FOLDER=$1
 MODEL_NAME=$2
@@ -21,19 +31,6 @@ fi
 
 TIMESTAMP=$(date +%s)
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
-
-#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
-#SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
-#SBATCH --time=24:00:00
-#SBATCH --gres=gpu:1
-#SBATCH --output=slurm_%j.out
-# when the job ends, send me an email at this email address.
-# replace with your email address, and uncomment that line if you really need to receive an email.
-#SBATCH --mail-type=BEGIN
-#SBATCH --mail-type=END
-#SBATCH --mail-user=manuel.tonneau@mailbox.org
 
 # Load packages and activate virtual environment
 module purge
