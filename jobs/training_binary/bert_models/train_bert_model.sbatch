@@ -28,7 +28,7 @@ SBATCH --cpus-per-task=1
 SBATCH --mem=20GB
 SBATCH --time=24:00:00
 SBATCH --gres=gpu:1
-
+SBATCH --output=slurm_%j.out
 # when the job ends, send me an email at this email address.
 # replace with your email address, and uncomment that line if you really need to receive an email.
 SBATCH --mail-type=BEGIN
