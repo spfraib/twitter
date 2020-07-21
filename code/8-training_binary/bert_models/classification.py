@@ -79,6 +79,8 @@ def get_args_from_command_line():
     parser.add_argument("--model_type", type=str, default='bert-base-cased')
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--timestamp", type=str, help="Timestamp when batch is launched", default = "0")
+    parser.add_argument("--use_cuda", type=bool, help="Whether to use cuda", default = True)
+
     args = parser.parse_args()
     return args
 
@@ -167,7 +169,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_patience": 3,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True})
+                                      "early_stopping_metric_minimize": True, 'use_cuda': args.use_cuda})
     # Define evaluation metrics
     eval_metrics = {
         "precision": sklearn.metrics.precision_score,
