@@ -22,18 +22,18 @@ fi
 TIMESTAMP=$(date +%s)
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
 
-SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
-SBATCH --nodes=1
-SBATCH --cpus-per-task=1
-SBATCH --mem=20GB
-SBATCH --time=24:00:00
-SBATCH --gres=gpu:1
-SBATCH --output=slurm_%j.out
+#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=20GB
+#SBATCH --time=24:00:00
+#SBATCH --gres=gpu:1
+#SBATCH --output=slurm_%j.out
 # when the job ends, send me an email at this email address.
 # replace with your email address, and uncomment that line if you really need to receive an email.
-SBATCH --mail-type=BEGIN
-SBATCH --mail-type=END
-SBATCH --mail-user=manuel.tonneau@mailbox.org
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user=manuel.tonneau@mailbox.org
 
 # Load packages and activate virtual environment
 module purge
@@ -104,5 +104,4 @@ python3 classification.py \
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
 
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
-echo 'running'
 exit
