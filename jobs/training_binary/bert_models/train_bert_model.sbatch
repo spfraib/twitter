@@ -46,9 +46,10 @@ mkdir /scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_$
 OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${TIMESTAMP}
 echo "Output folder created: ${OUTPUT_DIR}"
 
+cd /scratch/mt4493/twitter_labor/code/twitter/code/8-training_binary/bert_models
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+python3 classification.py \
  --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
  --model_name ${MODEL_NAME} \
@@ -59,7 +60,7 @@ python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classif
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
-python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+python3 classification.py \
  --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
  --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
  --model_name ${MODEL_NAME} \
@@ -70,7 +71,7 @@ python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classif
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
-python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+python3 classification.py \
  --train_data_path ${DATA_PATH}/train_job_search.csv \
  --eval_data_path ${DATA_PATH}/val_job_search.csv \
  --model_name ${MODEL_NAME} \
@@ -81,7 +82,7 @@ python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classif
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+python3 classification.py \
  --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
  --model_name ${MODEL_NAME} \
@@ -92,7 +93,7 @@ python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classif
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
-python3 /scratch/mt4493/twitter_labor/code/8-training_binary/bert_models/classification.py \
+python3 classification.py \
  --train_data_path ${DATA_PATH}/train_job_offer.csv \
  --eval_data_path ${DATA_PATH}/val_job_offer.csv \
  --model_name ${MODEL_NAME} \
