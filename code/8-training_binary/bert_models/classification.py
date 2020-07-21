@@ -78,7 +78,7 @@ def get_args_from_command_line():
                         help="Select the model to use.", default='bert')
     parser.add_argument("--model_type", type=str, default='bert-base-cased')
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
-
+    parser.add_argument("--timestamp", type=str, help="Timestamp when batch is launched", default = "0")
     args = parser.parse_args()
     return args
 
@@ -195,7 +195,7 @@ if __name__ == "__main__":
                          'auc': auc
                          }
     # Save evaluation results
-    timestamp = str(int(time.time()))
+    timestamp = args.timestamp
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/','_')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
