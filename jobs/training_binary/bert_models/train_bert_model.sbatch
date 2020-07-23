@@ -2,7 +2,7 @@
 DATA_FOLDER=$1
 MODEL_NAME=$2
 MODEL_TYPE=$3
-TIMESTAMP=$(date "+%F-%T")
+TIMESTAMP=$(date +%s)
 #SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}_${TIMESTAMP}
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -53,7 +53,7 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP} 
+ --timestamp ${TIMESTAMP}
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
