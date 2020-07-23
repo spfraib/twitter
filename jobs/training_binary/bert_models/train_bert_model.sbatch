@@ -2,7 +2,7 @@
 DATA_FOLDER=$1
 MODEL_NAME=$2
 MODEL_TYPE=$3
-TIMESTAMP=$(date +%s)
+TIMESTAMP=$(date "+%F-%T")
 #SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}_${TIMESTAMP}
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
