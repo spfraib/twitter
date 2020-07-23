@@ -204,9 +204,9 @@ if __name__ == "__main__":
                                                            tz=pytz.timezone('Europe/Berlin')),
                          'model_type': args.model_type,
                          'evaluation_data_path': args.eval_data_path,
-                         'precision': metrics.precision_score(eval_df['class'], scores),
-                         'recall': metrics.recall_score(eval_df['class'], scores),
-                         'f1': metrics.f1_score(eval_df['class'], scores),
+                         'precision': metrics.precision_score(eval_df['labels'], scores),
+                         'recall': metrics.recall_score(eval_df['labels'], scores),
+                         'f1': metrics.f1_score(eval_df['labels'], scores),
                          'auc': auc
                          }
     # Save evaluation results
