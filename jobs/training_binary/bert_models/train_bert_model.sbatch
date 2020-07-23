@@ -1,5 +1,9 @@
 #!/bin/bash
-#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}
+DATA_FOLDER=$1
+MODEL_NAME=$2
+MODEL_TYPE=$3
+TIMESTAMP=$(date +%s)
+#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}_${TIMESTAMP}
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
@@ -10,9 +14,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
 
-DATA_FOLDER=$1
-MODEL_NAME=$2
-MODEL_TYPE=$3
 
 SLASH=/
 if [[ ${MODEL_TYPE} == *"/"* ]]
@@ -29,7 +30,6 @@ else
     DATA_FOLDER_WITHOUT_SLASH=${DATA_FOLDER}
 fi
 
-TIMESTAMP=$(date +%s)
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
 
 # Load packages and activate virtual environment
