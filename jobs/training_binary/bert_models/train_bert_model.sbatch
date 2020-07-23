@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH --job-name=training_${3}_${1}_%j
+#SBATCH --job-name=training_$3_$1_$(date +%s)
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
-#SBATCH --output=slurm_%j.out
+#SBATCH --output=slurm_%j_$(date +%s).out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
