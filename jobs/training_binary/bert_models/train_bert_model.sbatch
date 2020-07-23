@@ -40,7 +40,7 @@ source /scratch/mt4493/twitter_labor/code/training_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
-mkdir /scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
+mkdir /scratch/mt4493/twitter_labor/trained_models/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"
 OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
 echo "Output folder created: ${OUTPUT_DIR}"
 
@@ -53,7 +53,7 @@ python3 classification.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
- --output_dir ${OUTPUT_DIR} \
+ --output_dir ${OUTPUT_DIR}/lost_job_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
@@ -65,7 +65,7 @@ python3 classification.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
- --output_dir ${OUTPUT_DIR} \
+ --output_dir ${OUTPUT_DIR}/is_unemployed \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
@@ -77,7 +77,7 @@ python3 classification.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
- --output_dir ${OUTPUT_DIR} \
+ --output_dir ${OUTPUT_DIR}/job_search \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
@@ -89,7 +89,7 @@ python3 classification.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
- --output_dir ${OUTPUT_DIR} \
+ --output_dir ${OUTPUT_DIR}/is_hired_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
@@ -101,7 +101,7 @@ python3 classification.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
- --output_dir ${OUTPUT_DIR} \
+ --output_dir ${OUTPUT_DIR}/job_offer \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
