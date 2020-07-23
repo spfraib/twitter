@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=training_$3_$1_%j
+#SBATCH --job-name=training_berts_%j
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
@@ -13,8 +13,8 @@
 DATA_FOLDER=$1
 MODEL_NAME=$2
 MODEL_TYPE=$3
-TIMESTAMP=${SLURM_JOB_ID}
-echo ${TIMESTAMP}
+TIMESTAMP=$(date +%s)
+JOB_ID=${SLURM_JOB_ID}
 
 SLASH=/
 if [[ ${MODEL_TYPE} == *"/"* ]]
@@ -40,8 +40,8 @@ source /scratch/mt4493/twitter_labor/code/training_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
-mkdir /scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${TIMESTAMP}
-OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${TIMESTAMP}
+mkdir /scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
+OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
 echo "Output folder created: ${OUTPUT_DIR}"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/8-training_binary/bert_models
@@ -54,7 +54,8 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP}
+ --slurm_job_timestamp ${TIMESTAMP} \
+ --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
@@ -65,7 +66,8 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP}
+ --slurm_job_timestamp ${TIMESTAMP} \
+ --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
@@ -76,7 +78,8 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP}
+ --slurm_job_timestamp ${TIMESTAMP} \
+ --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
@@ -87,7 +90,8 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP}
+ --slurm_job_timestamp ${TIMESTAMP} \
+ --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
@@ -98,7 +102,8 @@ python3 classification.py \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
  --output_dir ${OUTPUT_DIR} \
- --timestamp ${TIMESTAMP}
+ --slurm_job_timestamp ${TIMESTAMP} \
+ --slurm_job_id ${JOB_ID}
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
 
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
