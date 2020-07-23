@@ -193,7 +193,7 @@ if __name__ == "__main__":
     result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
     scores = np.array([softmax(element)[1] for element in model_outputs])
     # Compute AUC
-    fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], scores, pos_label=2)
+    fpr, tpr, thresholds = metrics.roc_curve(eval_df['labels'], scores, pos_label=2)
     auc = metrics.auc(fpr, tpr)
     # Centralize evaluation results in a dictionary
     slurm_job_timestamp = args.slurm_job_timestamp
