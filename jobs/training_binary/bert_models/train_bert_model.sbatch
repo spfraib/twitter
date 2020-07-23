@@ -1,9 +1,5 @@
 #!/bin/bash
-DATA_FOLDER=$1
-MODEL_NAME=$2
-MODEL_TYPE=$3
-TIMESTAMP=$(date +%s)
-#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}_${TIMESTAMP}
+#SBATCH --job-name=training_${3}_${1}_%j
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=20GB
@@ -13,6 +9,13 @@ TIMESTAMP=$(date +%s)
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
+
+DATA_FOLDER=$1
+MODEL_NAME=$2
+MODEL_TYPE=$3
+TIMESTAMP=$(date +%s)
+echo "Timestamp: ${TIMESTAMP}"
+#SBATCH --job-name=training_${MODEL_TYPE}_${DATA_FOLDER}_${TIMESTAMP}
 
 
 SLASH=/
