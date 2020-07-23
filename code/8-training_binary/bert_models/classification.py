@@ -56,6 +56,7 @@ from scipy.special import softmax
 import numpy as np
 from datetime import datetime
 import time
+import pytz
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -78,8 +79,10 @@ def get_args_from_command_line():
                         help="Select the model to use.", default='bert')
     parser.add_argument("--model_type", type=str, default='bert-base-cased')
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
-    parser.add_argument("--timestamp", type=str, help="Timestamp when batch is launched", default = "0")
-    parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default = 1)
+    parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
+    parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
+
+    parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
 
     args = parser.parse_args()
     return args
@@ -163,7 +166,7 @@ if __name__ == "__main__":
     # Whether to use_cuda
     if args.use_cuda == 1:
         use_cuda = True
-    elif args.use_cuda ==0:
+    elif args.use_cuda == 0:
         use_cuda = False
     # Create a ClassificationModel
     model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
@@ -193,7 +196,12 @@ if __name__ == "__main__":
     fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], scores, pos_label=2)
     auc = metrics.auc(fpr, tpr)
     # Centralize evaluation results in a dictionary
-    eval_results_dict = {'date_time': datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+    slurm_job_timestamp = args.slurm_job_timestamp
+    slurm_job_id = args.slurm_job_id
+    eval_results_dict = {'slurm_job_id': slurm_job_id,
+                         'slurm_job_timestamp': slurm_job_timestamp,
+                         'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(slurm_job_timestamp),
+                                                           tz=pytz.timezone('Europe/Berlin')),
                          'model_type': args.model_type,
                          'evaluation_data_path': args.eval_data_path,
                          'precision': metrics.precision_score(eval_df['class'], scores),
@@ -202,18 +210,21 @@ if __name__ == "__main__":
                          'auc': auc
                          }
     # Save evaluation results
-    timestamp = args.timestamp
     if "/" in args.model_type:
-        args.model_type = args.model_type.replace('/','_')
+        args.model_type = args.model_type.replace('/', '_')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
-    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'evaluation', name_val_file + "_" + str(timestamp) + '_{}_results.csv'.format(args.model_type))
+    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'training_results',
+                                              '{}_'.format(args.model_type) + str(slurm_job_id),
+                                              name_val_file + '_evaluation.csv')
     if not os.path.exists(os.path.abspath(path_to_store_eval_results)):
         os.makedirs(os.path.abspath(path_to_store_eval_results))
     pd.DataFrame.from_dict(eval_results_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
     logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
-    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'scores', name_val_file + "_" + str(timestamp) + "_{}_scores.csv".format(args.model_type))
+    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'training_results',
+                                        '{}_'.format(args.model_type) + str(slurm_job_id),
+                                        name_val_file + "_scores.csv")
     if not os.path.exists(os.path.abspath(path_to_store_scores)):
         os.makedirs(os.path.abspath(path_to_store_scores))
     eval_df.to_csv(path_to_store_scores, index=False)
