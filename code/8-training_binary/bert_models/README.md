@@ -25,5 +25,9 @@ $ cd apex
 $ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
 ```
 
+In case the first version causes mistakes, another possible solution to install apex is to replace the final line by:
+
+`$ pip install -v --no-cache-dir ./`
+
 We are now ready to start training.
 
