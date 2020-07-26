@@ -214,7 +214,7 @@ if __name__ == "__main__":
     scores = np.array([softmax(element)[1] for element in model_outputs])
     y_pred = np.vectorize(convert_score_to_predictions)(scores)
     # Compute AUC
-    fpr, tpr, thresholds = metrics.roc_curve(eval_df['labels'], scores, pos_label=2)
+    fpr, tpr, thresholds = metrics.roc_curve(eval_df['labels'], scores)
     auc_eval = metrics.auc(fpr, tpr)
     # Centralize evaluation results in a dictionary
     slurm_job_timestamp = args.slurm_job_timestamp
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         scores = np.array([softmax(element)[1] for element in model_outputs])
         y_pred = np.vectorize(convert_score_to_predictions)(scores)
         # Compute AUC
-        fpr, tpr, thresholds = metrics.roc_curve(holdout_df['labels'], scores, pos_label=2)
+        fpr, tpr, thresholds = metrics.roc_curve(holdout_df['labels'], scores)
         auc_holdout = metrics.auc(fpr, tpr)
         # Centralize evaluation results in a dictionary
         eval_results_holdout_set_dict = {'slurm_job_id': slurm_job_id,
@@ -296,4 +296,4 @@ if __name__ == "__main__":
         if not os.path.exists(os.path.dirname(path_to_store_holdout_scores)):
             os.makedirs(os.path.dirname(path_to_store_holdout_scores))
         holdout_df.to_csv(path_to_store_holdout_scores, index=False)
-        logging.info("The scores for the holdout set were saved at {}".format(path_to_store_scores))
+        logging.info("The scores for the holdout set were saved at {}".format(path_to_store_holdout_scores))
