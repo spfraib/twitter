@@ -73,6 +73,8 @@ def get_args_from_command_line():
                         default="")
     parser.add_argument("--eval_data_path", type=str, help="Path to the evaluation data. Must be in csv format.",
                         default="")
+    parser.add_argument("--holdout_data_path", type=str, help="Path to the holdout data. Must be in csv format.",
+                        default="")
     parser.add_argument("--num_labels", type=int, default=2)
     parser.add_argument("--num_train_epochs", type=int)
     parser.add_argument("--model_name", type=str,
