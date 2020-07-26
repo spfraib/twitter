@@ -137,6 +137,11 @@ def prepare_filepath_for_storing_best_model(path_to_store_model: str) -> str:
         os.makedirs(path_to_store_best_model)
     return path_to_store_best_model
 
+def convert_score_to_predictions(score, threshold):
+    if score > threshold:
+        return 1
+    elif score <= threshold:
+        return 0
 
 if __name__ == "__main__":
     # Define args from command line
@@ -205,6 +210,7 @@ if __name__ == "__main__":
     # EVALUATION ON EVALUATION SET
     result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
     scores = np.array([softmax(element)[1] for element in model_outputs])
+    y_pred = np.vectorize(convert_score_to_predictions)(scores)
     # Compute AUC
     fpr, tpr, thresholds = metrics.roc_curve(eval_df['labels'], scores, pos_label=2)
     auc_eval = metrics.auc(fpr, tpr)
@@ -218,9 +224,9 @@ if __name__ == "__main__":
                                                                                                'Europe/Berlin'))),
                                   'model_type': args.model_type,
                                   'evaluation_data_path': args.eval_data_path,
-                                  'precision': metrics.precision_score(eval_df['labels'], scores),
-                                  'recall': metrics.recall_score(eval_df['labels'], scores),
-                                  'f1': metrics.f1_score(eval_df['labels'], scores),
+                                  'precision': metrics.precision_score(eval_df['labels'], y_pred),
+                                  'recall': metrics.recall_score(eval_df['labels'], y_pred),
+                                  'f1': metrics.f1_score(eval_df['labels'], y_pred),
                                   'auc': auc_eval
                                   }
     # Save evaluation results on eval set
@@ -250,6 +256,7 @@ if __name__ == "__main__":
     if args.holdout_data_path:
         result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df)
         scores = np.array([softmax(element)[1] for element in model_outputs])
+        y_pred = np.vectorize(convert_score_to_predictions)(scores)
         # Compute AUC
         fpr, tpr, thresholds = metrics.roc_curve(holdout_df['labels'], scores, pos_label=2)
         auc_holdout = metrics.auc(fpr, tpr)
@@ -262,9 +269,9 @@ if __name__ == "__main__":
                                                                         'Europe/Berlin'))),
                                          'model_type': args.model_type,
                                          'holdout_data_path': args.holdout_data_path,
-                                         'precision': metrics.precision_score(holdout_df['labels'], scores),
-                                         'recall': metrics.recall_score(holdout_df['labels'], scores),
-                                         'f1': metrics.f1_score(holdout_df['labels'], scores),
+                                         'precision': metrics.precision_score(holdout_df['labels'], y_pred),
+                                         'recall': metrics.recall_score(holdout_df['labels'], y_pred),
+                                         'f1': metrics.f1_score(holdout_df['labels'], y_pred),
                                          'auc': auc_holdout
                                          }
         # Save evaluation results on holdout set
