@@ -213,7 +213,7 @@ if __name__ == "__main__":
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '_')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
-    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'training_results',
+    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'results',
                                               '{}_'.format(args.model_type) + str(slurm_job_id),
                                               name_val_file + '_evaluation.csv')
     if not os.path.exists(os.path.abspath(path_to_store_eval_results)):
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
-    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'training_results',
+    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
                                         '{}_'.format(args.model_type) + str(slurm_job_id),
                                         name_val_file + "_scores.csv")
     if not os.path.exists(os.path.abspath(path_to_store_scores)):
