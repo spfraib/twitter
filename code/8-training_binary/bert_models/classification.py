@@ -146,20 +146,29 @@ if __name__ == "__main__":
     # Import data
     train_df = pd.read_csv(args.train_data_path, lineterminator='\n')
     eval_df = pd.read_csv(args.eval_data_path, lineterminator='\n')
+    holdout_df = pd.read_csv(args.holdout_data_path, lineterminator='\n')
     # Reformat the data
     train_df = train_df[["text", "class"]]
     eval_df = eval_df[["text", "class"]]
+    holdout_df = holdout_df[['text','class']]
     train_df.columns = ['text', 'labels']
     eval_df.columns = ['text', 'labels']
+    holdout_df.columns = ['text', 'labels']
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
+    print("********** Holdout shape: ", holdout_df.shape[0], " **********")
+
     # Make sure the DataFrame contains the necessary columns
     verify_data_format(train_df)
     verify_data_format(eval_df)
+    verify_data_format(holdout_df)
+
     # Make sure the columns have the right type
     verify_column_type(train_df)
     verify_column_type(eval_df)
+    verify_data_format(holdout_df)
+
     # Prepare paths
     path_to_store_model = prepare_filepath_for_storing_model(output_dir=args.output_dir)
     path_to_store_best_model = prepare_filepath_for_storing_best_model(path_to_store_model)
@@ -187,18 +196,19 @@ if __name__ == "__main__":
     # Train the model
     model.train_model(train_df, eval_df=eval_df, output_dir=path_to_store_model, **eval_metrics)
     logging.info("The training of the model is done")
-
-    # Evaluate the best model (in terms of evaluation loss)
+    # Load best model (in terms of evaluation loss)
     best_model = ClassificationModel(args.model_name, path_to_store_best_model)
+
+    # EVALUATION ON EVALUATION SET
     result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
     scores = np.array([softmax(element)[1] for element in model_outputs])
     # Compute AUC
     fpr, tpr, thresholds = metrics.roc_curve(eval_df['labels'], scores, pos_label=2)
-    auc = metrics.auc(fpr, tpr)
+    auc_eval = metrics.auc(fpr, tpr)
     # Centralize evaluation results in a dictionary
     slurm_job_timestamp = args.slurm_job_timestamp
     slurm_job_id = args.slurm_job_id
-    eval_results_dict = {'slurm_job_id': slurm_job_id,
+    eval_results_eval_set_dict = {'slurm_job_id': slurm_job_id,
                          'slurm_job_timestamp': slurm_job_timestamp,
                          'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
                                                            tz=pytz.timezone('Europe/Berlin'))),
@@ -207,9 +217,9 @@ if __name__ == "__main__":
                          'precision': metrics.precision_score(eval_df['labels'], scores),
                          'recall': metrics.recall_score(eval_df['labels'], scores),
                          'f1': metrics.f1_score(eval_df['labels'], scores),
-                         'auc': auc
+                         'auc': auc_eval
                          }
-    # Save evaluation results
+    # Save evaluation results on eval set
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '_')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
@@ -218,14 +228,51 @@ if __name__ == "__main__":
                                               name_val_file + '_evaluation.csv')
     if not os.path.exists(os.path.abspath(path_to_store_eval_results)):
         os.makedirs(os.path.abspath(path_to_store_eval_results))
-    pd.DataFrame.from_dict(eval_results_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
-    logging.info("The evaluation is done. The results were saved at {}".format(path_to_store_eval_results))
+    pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['value']).to_csv(path_to_store_eval_results)
+    logging.info("The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
-    path_to_store_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+    path_to_store_eval_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
                                         '{}_'.format(args.model_type) + str(slurm_job_id),
                                         name_val_file + "_scores.csv")
-    if not os.path.exists(os.path.abspath(path_to_store_scores)):
-        os.makedirs(os.path.abspath(path_to_store_scores))
-    eval_df.to_csv(path_to_store_scores, index=False)
-    logging.info("The scores were saved at {}".format(path_to_store_scores))
+    if not os.path.exists(os.path.abspath(path_to_store_eval_scores)):
+        os.makedirs(os.path.abspath(path_to_store_eval_scores))
+    eval_df.to_csv(path_to_store_eval_scores, index=False)
+    logging.info("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
+
+    # EVALUATION ON HOLDOUT SET
+    result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df)
+    scores = np.array([softmax(element)[1] for element in model_outputs])
+    # Compute AUC
+    fpr, tpr, thresholds = metrics.roc_curve(holdout_df['labels'], scores, pos_label=2)
+    auc_holdout = metrics.auc(fpr, tpr)
+    # Centralize evaluation results in a dictionary
+    eval_results_holdout_set_dict = {'slurm_job_id': slurm_job_id,
+                         'slurm_job_timestamp': slurm_job_timestamp,
+                         'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
+                                                           tz=pytz.timezone('Europe/Berlin'))),
+                         'model_type': args.model_type,
+                         'holdout_data_path': args.holdout_data_path,
+                         'precision': metrics.precision_score(holdout_df['labels'], scores),
+                         'recall': metrics.recall_score(holdout_df['labels'], scores),
+                         'f1': metrics.f1_score(holdout_df['labels'], scores),
+                         'auc': auc_holdout
+                         }
+    # Save evaluation results on holdout set
+    name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
+    path_to_store_holdout_results = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+                                              '{}_'.format(args.model_type) + str(slurm_job_id),
+                                              name_holdout_file + '_evaluation.csv')
+    if not os.path.exists(os.path.abspath(path_to_store_holdout_results)):
+        os.makedirs(os.path.abspath(path_to_store_holdout_results))
+    pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(path_to_store_holdout_results)
+    logging.info("The evaluation on the holdout set is done. The results were saved at {}".format(path_to_store_holdout_results))
+    # Save scores
+    holdout_df['{}_scores'.format(args.model_type)] = scores
+    path_to_store_holdout_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+                                        '{}_'.format(args.model_type) + str(slurm_job_id),
+                                        name_holdout_file + "_scores.csv")
+    if not os.path.exists(os.path.abspath(path_to_store_holdout_scores)):
+        os.makedirs(os.path.abspath(path_to_store_holdout_scores))
+    holdout_df.to_csv(path_to_store_holdout_scores, index=False)
+    logging.info("The scores for the holdout set were saved at {}".format(path_to_store_scores))
