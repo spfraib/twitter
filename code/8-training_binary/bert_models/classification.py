@@ -137,10 +137,10 @@ def prepare_filepath_for_storing_best_model(path_to_store_model: str) -> str:
         os.makedirs(path_to_store_best_model)
     return path_to_store_best_model
 
-def convert_score_to_predictions(score, threshold):
-    if score > threshold:
+def convert_score_to_predictions(score):
+    if score > 0.5:
         return 1
-    elif score <= threshold:
+    elif score <= 0.5:
         return 0
 
 if __name__ == "__main__":
