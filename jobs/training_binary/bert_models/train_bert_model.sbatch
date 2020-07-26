@@ -32,7 +32,7 @@ else
 fi
 
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
-
+HOLDOUT_DATA_FOLDER=/scratch/mt4493/twitter_labor/twitter-labor-data/data/jul23_iter0/preprocessed
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
@@ -50,6 +50,7 @@ echo '***********************STARTING TRAINING ON LABEL lost_job_1mo************
 python3 classification.py \
  --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
+ --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_lost_job_1mo.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
@@ -62,6 +63,7 @@ echo '***********************STARTING TRAINING ON LABEL is_unemployed***********
 python3 classification.py \
  --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
  --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
+ --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_unemployed.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
@@ -74,6 +76,7 @@ echo '***********************STARTING TRAINING ON LABEL job_search**************
 python3 classification.py \
  --train_data_path ${DATA_PATH}/train_job_search.csv \
  --eval_data_path ${DATA_PATH}/val_job_search.csv \
+ --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_search.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
@@ -86,6 +89,7 @@ echo '***********************STARTING TRAINING ON LABEL is_hired_1mo************
 python3 classification.py \
  --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
+ --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_hired_1mo.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
@@ -98,6 +102,7 @@ echo '***********************STARTING TRAINING ON LABEL job_offer***************
 python3 classification.py \
  --train_data_path ${DATA_PATH}/train_job_offer.csv \
  --eval_data_path ${DATA_PATH}/val_job_offer.csv \
+ --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_offer.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 20 \
