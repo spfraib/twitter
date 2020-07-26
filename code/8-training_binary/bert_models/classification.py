@@ -200,8 +200,8 @@ if __name__ == "__main__":
     slurm_job_id = args.slurm_job_id
     eval_results_dict = {'slurm_job_id': slurm_job_id,
                          'slurm_job_timestamp': slurm_job_timestamp,
-                         'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp)),
-                                                           tz=pytz.timezone('Europe/Berlin')),
+                         'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
+                                                           tz=pytz.timezone('Europe/Berlin'))),
                          'model_type': args.model_type,
                          'evaluation_data_path': args.eval_data_path,
                          'precision': metrics.precision_score(eval_df['labels'], scores),
