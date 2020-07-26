@@ -137,11 +137,13 @@ def prepare_filepath_for_storing_best_model(path_to_store_model: str) -> str:
         os.makedirs(path_to_store_best_model)
     return path_to_store_best_model
 
+
 def convert_score_to_predictions(score):
     if score > 0.5:
         return 1
     elif score <= 0.5:
         return 0
+
 
 if __name__ == "__main__":
     # Define args from command line
@@ -233,22 +235,22 @@ if __name__ == "__main__":
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '_')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
-    path_to_store_eval_results = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+    path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                               '{}_'.format(args.model_type) + str(slurm_job_id),
                                               name_val_file + '_evaluation.csv')
-    if not os.path.exists(os.path.abspath(path_to_store_eval_results)):
-        os.makedirs(os.path.abspath(path_to_store_eval_results))
+    if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
+        os.makedirs(os.path.dirname(path_to_store_eval_results))
     pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['value']).to_csv(
         path_to_store_eval_results)
     logging.info(
         "The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
-    path_to_store_eval_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+    path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                              '{}_'.format(args.model_type) + str(slurm_job_id),
                                              name_val_file + "_scores.csv")
-    if not os.path.exists(os.path.abspath(path_to_store_eval_scores)):
-        os.makedirs(os.path.abspath(path_to_store_eval_scores))
+    if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
+        os.makedirs(os.path.dirname(path_to_store_eval_scores))
     eval_df.to_csv(path_to_store_eval_scores, index=False)
     logging.info("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
 
@@ -276,11 +278,11 @@ if __name__ == "__main__":
                                          }
         # Save evaluation results on holdout set
         name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
-        path_to_store_holdout_results = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+        path_to_store_holdout_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                                      '{}_'.format(args.model_type) + str(slurm_job_id),
                                                      name_holdout_file + '_evaluation.csv')
-        if not os.path.exists(os.path.abspath(path_to_store_holdout_results)):
-            os.makedirs(os.path.abspath(path_to_store_holdout_results))
+        if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
+            os.makedirs(os.path.dirname(path_to_store_holdout_results))
         pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(
             path_to_store_holdout_results)
         logging.info(
@@ -288,10 +290,10 @@ if __name__ == "__main__":
                 path_to_store_holdout_results))
         # Save scores
         holdout_df['{}_scores'.format(args.model_type)] = scores
-        path_to_store_holdout_scores = os.path.join(os.path.abspath(args.eval_data_path), 'results',
+        path_to_store_holdout_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                                     '{}_'.format(args.model_type) + str(slurm_job_id),
                                                     name_holdout_file + "_scores.csv")
-        if not os.path.exists(os.path.abspath(path_to_store_holdout_scores)):
-            os.makedirs(os.path.abspath(path_to_store_holdout_scores))
+        if not os.path.exists(os.path.dirname(path_to_store_holdout_scores)):
+            os.makedirs(os.path.dirname(path_to_store_holdout_scores))
         holdout_df.to_csv(path_to_store_holdout_scores, index=False)
         logging.info("The scores for the holdout set were saved at {}".format(path_to_store_scores))
