@@ -6,6 +6,8 @@ import datetime
 import sys
 import shutil
 import glob
+from datetime import datetime
+import pytz
 
 import data_utils as utils
 import tensorflow as tf
@@ -18,6 +20,7 @@ from ekphrasis.dicts.emoticons import emoticons
 
 from data_utils import IMDBDataset
 from text_cnn import TextCNN
+from sklearn import metrics
 
 # Parameters
 # ==================================================
@@ -34,7 +37,7 @@ tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 
 
 # Training parameters
 tf.flags.DEFINE_integer("batch_size", 128, "Batch Size (default: 64)")
-tf.flags.DEFINE_integer("num_epochs", 100, "Number of training epochs (default: 200)")
+tf.flags.DEFINE_integer("num_epochs", 40, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 500, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 1000, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 3, "Number of checkpoints to store (default: 5)")
@@ -43,9 +46,12 @@ tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device 
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
 tf.flags.DEFINE_boolean("preprocessing", False, "Whether to preprocess tweets or not")
 # Specifics
-tf.flags.DEFINE_string("data_path",
+tf.flags.DEFINE_string("training_data_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced",
                        "path to train and val data")
+tf.flags.DEFINE_string("holdout_data_path",
+                       None,
+                       "path to holdout data")
 tf.flags.DEFINE_string("embeddings_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/embeddings.npy",
                        "path to embeddings npy file")
@@ -53,32 +59,16 @@ tf.flags.DEFINE_string("label", "is_unemployed", "Label to train on")
 tf.flags.DEFINE_string("vocab_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/vocab.pckl",
                        "Path pickle file")
-tf.flags.DEFINE_string("run_name", "default_run_name", "Name of folder in runs folder where models are saved")
 tf.flags.DEFINE_string("output_dir", "", "Output directory where models are saved")
+tf.flags.DEFINE_string("slurm_job_timestamp", "", "Timestamp when job is launched")
+tf.flags.DEFINE_string("slurm_job_id", "", "ID of the job that ran training")
 
 
-FLAGS = tf.flags.FLAGS
-FLAGS(sys.argv)
-print("\nParameters:")
-for attr, value in sorted(FLAGS.__flags.items()):
-    print("{}={}".format(attr.upper(), value))
-print("")
-
-# Data Preparation
-print("Loading Dataset ...")
-
-data_path = FLAGS.data_path
-train_df = pd.read_csv(os.path.join(data_path, "train_{}.csv".format(FLAGS.label)), lineterminator = '\n')
-eval_df = pd.read_csv(os.path.join(data_path, "val_{}.csv".format(FLAGS.label)), lineterminator= '\n')
-
-
+# UTILS
 
 def tokenizer(text):
     return [wdict.get(w.lower(), 0) for w in text.split(' ')]
 
-
-with open(FLAGS.vocab_path, 'rb') as dfile:
-    wdict = pickle.load(dfile)
 
 text_processor = TextPreProcessor(
     # terms that will be normalized
@@ -110,17 +100,9 @@ text_processor = TextPreProcessor(
     dicts=[emoticons]
 )
 
+
 def ekphrasis_preprocessing(tweet):
     return " ".join(text_processor.pre_process_doc(tweet))
-
-if FLAGS.preprocessing:
-    train_df['text'] = train_df['text'].apply(ekphrasis_preprocessing)
-    eval_df['text'] = eval_df['text'].apply(ekphrasis_preprocessing)
-    print("***********Text was successfully preprocessed***********")
-
-
-train_df['text_tokenized'] = train_df['text'].apply(tokenizer)
-eval_df['text_tokenized'] = eval_df['text'].apply(tokenizer)
 
 
 def pad_dataset(dataset, maxlen):
@@ -129,24 +111,12 @@ def pad_dataset(dataset, maxlen):
          for r in dataset])
 
 
-x_train = pad_dataset(train_df.text_tokenized.values.tolist(), 128)
-x_dev = pad_dataset(eval_df.text_tokenized.values.tolist(), 128)
-
-
 def create_label(label):
     if label == 1:
         return [0, 1]
     elif label == 0:
         return [1, 0]
 
-
-y_train = np.array((train_df['class'].apply(create_label)).values.tolist())
-y_dev = np.array((eval_df['class'].apply(create_label)).values.tolist())
-
-vocab_size = len(wdict)
-embedding_path = FLAGS.embeddings_path
-embedding = utils.load_embeddings(embedding_path, vocab_size, FLAGS.embedding_dim)
-print("Embeddings loaded, Vocabulary Size: {:d}. Starting training ...".format(vocab_size))
 
 def prepare_filepath_for_storing_model(output_dir: str) -> str:
     """Prepare the filepath where the trained model will be stored.
@@ -158,6 +128,95 @@ def prepare_filepath_for_storing_model(output_dir: str) -> str:
     if not os.path.exists(path_to_store_model):
         os.makedirs(path_to_store_model)
     return path_to_store_model
+
+
+def train_step(x_batch, y_batch):
+    """
+    A single training step
+    """
+    feed_dict = {
+        cnn.input_x: x_batch,
+        cnn.input_y: y_batch,
+        cnn.dropout_keep_prob: FLAGS.dropout_keep_prob
+    }
+    _, step, summaries, loss, accuracy, precision, recall, auc = sess.run(
+        [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc],
+        feed_dict)
+    time_str = datetime.datetime.now().isoformat()
+    print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss,
+                                                                                           accuracy, precision,
+                                                                                           recall, auc))
+    train_summary_writer.add_summary(summaries, step)
+
+
+def dev_step(x_batch, y_batch, writer=None):
+    """
+    Evaluates model on a dev set
+    """
+    feed_dict = {
+        cnn.input_x: x_batch,
+        cnn.input_y: y_batch,
+        cnn.dropout_keep_prob: 1.0
+    }
+    step, summaries, loss, accuracy, precision, recall, auc = sess.run(
+        [global_step, dev_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc], feed_dict)
+    time_str = datetime.datetime.now().isoformat()
+    print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss,
+                                                                                           accuracy, precision,
+                                                                                           recall, auc))
+    if writer:
+        writer.add_summary(summaries, step)
+    return loss
+
+
+# Load arguments
+FLAGS = tf.flags.FLAGS
+FLAGS(sys.argv)
+print("\nParameters:")
+for attr, value in sorted(FLAGS.__flags.items()):
+    print("{}={}".format(attr.upper(), value))
+print("")
+
+# Data Preparation
+print("Loading Dataset ...")
+
+training_data_path = FLAGS.training_data_path
+train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)), lineterminator='\n')
+eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)), lineterminator='\n')
+if FLAGS.holdout_data_path:
+    holdout_df = pd.read_csv(os.path.join(FLAGS.holdout_data_path, "holdout_{}.csv".format(FLAGS.label)),
+                             lineterminator='\n')
+# Load vocabulary
+with open(FLAGS.vocab_path, 'rb') as dfile:
+    wdict = pickle.load(dfile)
+
+# Perform preprocessing
+if FLAGS.preprocessing:
+    train_df['text'] = train_df['text'].apply(ekphrasis_preprocessing)
+    eval_df['text'] = eval_df['text'].apply(ekphrasis_preprocessing)
+    if FLAGS.holdout_data_path:
+        holdout_df['text'] = holdout_df['text'].apply(ekphrasis_preprocessing)
+    print("***********Text was successfully preprocessed***********")
+
+# Tokenize and prepare input data
+train_df['text_tokenized'] = train_df['text'].apply(tokenizer)
+eval_df['text_tokenized'] = eval_df['text'].apply(tokenizer)
+
+x_train = pad_dataset(train_df.text_tokenized.values.tolist(), 128)
+x_dev = pad_dataset(eval_df.text_tokenized.values.tolist(), 128)
+
+y_train = np.array((train_df['class'].apply(create_label)).values.tolist())
+y_dev = np.array((eval_df['class'].apply(create_label)).values.tolist())
+
+if FLAGS.holdout_data_path:
+    holdout_df['text_tokenized'] = holdout_df['text'].apply(tokenizer)
+    x_holdout = pad_dataset(holdout_df.text_tokenized.values.tolist(), 128)
+    y_holdout = np.array((holdout_df['class'].apply(create_label)).values.tolist())
+
+vocab_size = len(wdict)
+embedding_path = FLAGS.embeddings_path
+embedding = utils.load_embeddings(embedding_path, vocab_size, FLAGS.embedding_dim)
+print("Embeddings loaded, Vocabulary Size: {:d}. Starting training ...".format(vocab_size))
 
 # Training
 with tf.Graph().as_default():
@@ -194,7 +253,6 @@ with tf.Graph().as_default():
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
         out_dir = prepare_filepath_for_storing_model(output_dir=args.output_dir)
-        #out_dir = os.path.abspath(os.path.join(FLAGS.output_dir, FLAGS.run_name))
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss, accuracy, precision
@@ -205,7 +263,8 @@ with tf.Graph().as_default():
         auc_summary = tf.summary.scalar("auc", cnn.auc)
 
         # Train Summaries
-        train_summary_op = tf.summary.merge([loss_summary, acc_summary, grad_summaries_merged, precision_summary, recall_summary, auc_summary])
+        train_summary_op = tf.summary.merge(
+            [loss_summary, acc_summary, grad_summaries_merged, precision_summary, recall_summary, auc_summary])
         train_summary_dir = os.path.join(out_dir, "summaries", "train")
         train_summary_writer = tf.summary.FileWriter(train_summary_dir, sess.graph)
 
@@ -215,7 +274,7 @@ with tf.Graph().as_default():
         dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
         # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
-        checkpoint_dir = os.path.abspath(os.path.join(out_dir, "checkpoints"))
+        checkpoint_dir = os.path.abspath(os.path.join(out_dir, "best_model"))
         checkpoint_prefix = os.path.join(checkpoint_dir, "model")
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -228,41 +287,6 @@ with tf.Graph().as_default():
         sess.run(tf.global_variables_initializer())
         sess.run(tf.local_variables_initializer())
         sess.run(cnn.embedding_init, feed_dict={cnn.embedding_placeholder: embedding})
-
-
-        def train_step(x_batch, y_batch):
-            """
-            A single training step
-            """
-            feed_dict = {
-                cnn.input_x: x_batch,
-                cnn.input_y: y_batch,
-                cnn.dropout_keep_prob: FLAGS.dropout_keep_prob
-            }
-            _, step, summaries, loss, accuracy, precision, recall, auc = sess.run(
-                [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc], feed_dict)
-            time_str = datetime.datetime.now().isoformat()
-            print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss, accuracy, precision, recall, auc))
-            train_summary_writer.add_summary(summaries, step)
-
-
-        def dev_step(x_batch, y_batch, writer=None):
-            """
-            Evaluates model on a dev set
-            """
-            feed_dict = {
-                cnn.input_x: x_batch,
-                cnn.input_y: y_batch,
-                cnn.dropout_keep_prob: 1.0
-            }
-            step, summaries, loss, accuracy, precision, recall, auc = sess.run(
-                [global_step, dev_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc], feed_dict)
-            time_str = datetime.datetime.now().isoformat()
-            print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss, accuracy, precision, recall, auc))
-            if writer:
-                writer.add_summary(summaries, step)
-            return loss
-
 
         # Generate batches
         batches = utils.batch_iter(
@@ -289,6 +313,136 @@ with tf.Graph().as_default():
                             os.remove(f)
                     print("Removed former best model")
 
-            #if current_step % FLAGS.checkpoint_every == 0:
+            # if current_step % FLAGS.checkpoint_every == 0:
             #    path = saver.save(sess, checkpoint_prefix, global_step=current_step)
             #    print("Saved model checkpoint to {}\n".format(path))
+
+# Evaluation
+print('*************Training is done. Starting evaluation*************')
+checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
+graph = tf.Graph()
+with graph.as_default():
+    session_conf = tf.ConfigProto(
+        allow_soft_placement=allow_soft_placement,
+        log_device_placement=log_device_placement)
+    sess = tf.Session(config=session_conf)
+    with sess.as_default():
+        # Load the saved meta graph and restore variables
+        saver = tf.train.import_meta_graph("{}.meta".format(checkpoint_file))
+        saver.restore(sess, checkpoint_file)
+
+        # Get the placeholders from the graph by name
+        input_x = graph.get_operation_by_name("input_x").outputs[0]
+        # input_y = graph.get_operation_by_name("input_y").outputs[0]
+        dropout_keep_prob = graph.get_operation_by_name("dropout_keep_prob").outputs[0]
+
+        # Tensors we want to evaluate
+        predictions = graph.get_operation_by_name("output/predictions").outputs[0]
+        predictions_proba = graph.get_operation_by_name("output/predictions_proba").outputs[0]
+        # predictions_proba = predictions_proba[:, 1]
+        # Generate batches for one epoch
+        batches_dev = utils.batch_iter(list(x_dev), batch_size, 1, shuffle=False)
+        if FLAGS.holdout_data_path:
+            batches_holdout = utils.batch_iter(list(x_holdout), batch_size, 1, shuffle=False)
+
+        # Collect the predictions here
+        all_predictions_eval = []
+        all_predictions_proba_eval = []
+        all_predictions_holdout = []
+        all_predictions_proba_holdout = []
+        for x_dev_batch in batches_dev:
+            batch_predictions = sess.run(predictions, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
+            batch_predictions_proba = sess.run(predictions_proba, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
+            all_predictions_eval = np.concatenate([all_predictions_eval, batch_predictions])
+            all_predictions_proba_eval = np.concatenate([all_predictions_proba_eval, batch_predictions_proba[:, 1]])
+        if FLAGS.holdout_data_path:
+            for x_holdout_batch in batches_holdout:
+                batch_predictions = sess.run(predictions, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
+                batch_predictions_proba = sess.run(predictions_proba, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
+                all_predictions_holdout = np.concatenate([all_predictions_holdout, batch_predictions])
+                all_predictions_proba_holdout = np.concatenate(
+                    [all_predictions_proba_holdout, batch_predictions_proba[:, 1]])
+
+# Save eval set results
+if all_predictions_eval is not None:
+    print("Predictions on evaluation set done")
+    print("Total number of evaluation examples in evaluation set: {}".format(len(all_predictions_proba_eval)))
+    eval_df['glove_cnn_scores'] = all_predictions_proba_eval
+
+if FLAGS.holdout_data_path:
+    if all_predictions_holdout is not None:
+        print("Predictions on holdout set done")
+        print("Total number of evaluation examples in holdout set: {}".format(len(all_predictions_proba_holdout)))
+        holdout_df['glove_cnn_scores'] = all_predictions_proba_holdout
+
+slurm_job_timestamp = FLAGS.slurm_job_timestamp
+slurm_job_id = FLAGS.slurm_job_id
+# Compute AUC
+fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], all_predictions_proba_eval)
+auc_eval = metrics.auc(fpr, tpr)
+# Build final results dictionary
+eval_results_eval_set_dict = {'slurm_job_id': slurm_job_id,
+                              'slurm_job_timestamp': slurm_job_timestamp,
+                              'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
+                                                                                       tz=pytz.timezone(
+                                                                                           'Europe/Berlin'))),
+                              'model_type': 'GloVe + CNN',
+                              'evaluation_data_path': os.path.join(training_data_path,
+                                                                   'val_{}.csv'.format(FLAGS.label)),
+                              'precision': metrics.precision_score(eval_df['class'], all_predictions_eval),
+                              'recall': metrics.recall_score(eval_df['class'], all_predictions_eval),
+                              'f1': metrics.f1_score(eval_df['class'], all_predictions_eval),
+                              'auc': auc_eval
+                              }
+# Save eval set results in CSV
+name_val_file = 'val_{}.csv'.format(FLAGS.label)
+path_to_store_eval_results = os.path.join(training_data_path, 'results',
+                                          'GloVe_CNN_' + str(slurm_job_id),
+                                          name_val_file + '_evaluation.csv')
+if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
+    os.makedirs(os.path.dirname(path_to_store_eval_results))
+pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['value']).to_csv(
+    path_to_store_eval_results)
+print("The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
+# Save eval scores to CSV
+path_to_store_eval_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(slurm_job_id),
+                                         name_val_file + '_scores.csv')
+
+eval_df.to_csv(path_to_store_eval_scores, index=False)
+logging.info("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
+
+if FLAGS.holdout_data_path:
+    # Compute AUC
+    fpr, tpr, thresholds = metrics.roc_curve(holdout_df['class'], all_predictions_proba_holdout)
+    auc_holdout = metrics.auc(fpr, tpr)
+    # Build final results dictionary
+    eval_results_holdout_set_dict = {'slurm_job_id': slurm_job_id,
+                                     'slurm_job_timestamp': slurm_job_timestamp,
+                                     'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
+                                                                                              tz=pytz.timezone(
+                                                                                                  'Europe/Berlin'))),
+                                     'model_type': 'GloVe + CNN',
+                                     'holdout_data_path': os.path.join(FLAGS.holdout_data_path,
+                                                                       'holdout_{}.csv'.format(FLAGS.label)),
+                                     'precision': metrics.precision_score(holdout_df['class'], all_predictions_holdout),
+                                     'recall': metrics.recall_score(holdout_df['class'], all_predictions_holdout),
+                                     'f1': metrics.f1_score(holdout_df['class'], all_predictions_holdout),
+                                     'auc': auc_holdout
+                                     }
+    # Save eval set results in CSV
+    name_holdout_file = 'holdout_{}.csv'.format(FLAGS.label)
+    path_to_store_holdout_results = os.path.join(training_data_path, 'results',
+                                                 'GloVe_CNN_' + str(slurm_job_id),
+                                                 name_holdout_file + '_evaluation.csv')
+    if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
+        os.makedirs(os.path.dirname(path_to_store_holdout_results))
+    pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(
+        path_to_store_holdout_results)
+    print(
+        "The evaluation on the holdout set is done. The results were saved at {}".format(path_to_store_holdout_results))
+    # Save eval scores to CSV
+    path_to_store_holdout_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(slurm_job_id),
+                                                name_holdout_file + '_scores.csv')
+
+    holdout_df.to_csv(path_to_store_holdout_scores, index=False)
+    logging.info("The scores for the holdout set were saved at {}".format(path_to_store_holdout_scores))
