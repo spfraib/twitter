@@ -47,10 +47,10 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 tf.flags.DEFINE_boolean("preprocessing", True, "Whether to preprocess tweets or not")
 # Specifics
 tf.flags.DEFINE_string("training_data_path",
-                       "/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/may20_9Klabels/data_binary_pos_neg_balanced",
+                       "may20_9Klabels/data_binary_pos_neg_balanced",
                        "path to train and val data")
 tf.flags.DEFINE_string("holdout_data_path",
-                       None,
+                       '/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/jul23_iter0/preprocessed',
                        "path to holdout data")
 tf.flags.DEFINE_string("embeddings_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/embeddings.npy",
@@ -59,7 +59,7 @@ tf.flags.DEFINE_string("label", "is_unemployed", "Label to train on")
 tf.flags.DEFINE_string("vocab_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/vocab.pckl",
                        "Path pickle file")
-tf.flags.DEFINE_string("output_dir", "/home/manuto/Documents/world_bank/bert_twitter_labor/data/trained_glove_models/test", "Output directory where models are saved")
+tf.flags.DEFINE_string("output_dir", "/home/manuto/Documents/world_bank/bert_twitter_labor/data/trained_glove_models/GloVe_CNN_<DATA_PATH>_<JOB_ID>", "Output directory where models are saved")
 tf.flags.DEFINE_string("slurm_job_timestamp", "1595779138", "Timestamp when job is launched")
 tf.flags.DEFINE_string("slurm_job_id", "0", "ID of the job that ran training")
 
@@ -182,10 +182,16 @@ eval_train = False
 allow_soft_placement = True
 log_device_placement = False
 
+slurm_job_timestamp = FLAGS.slurm_job_timestamp
+slurm_job_id = FLAGS.slurm_job_id
+
 # Data Preparation
 print("Loading Dataset ...")
 
-training_data_path = FLAGS.training_data_path
+training_data_path = os.path.join('/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data', FLAGS.training_data_path)
+if '/' in FLAGS.training_data_path:
+    training_data_path_no_slash = FLAGS.training_data_path.replace('/', '_')
+
 train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
 eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
 if FLAGS.holdout_data_path:
@@ -257,7 +263,7 @@ with tf.Graph().as_default():
 
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
-        out_dir = prepare_filepath_for_storing_model(output_dir=FLAGS.output_dir)
+        out_dir = FLAGS.output_dir
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss, accuracy, precision
@@ -279,7 +285,7 @@ with tf.Graph().as_default():
         dev_summary_writer = tf.summary.FileWriter(dev_summary_dir, sess.graph)
 
         # Checkpoint directory. Tensorflow assumes this directory already exists so we need to create it
-        checkpoint_dir = os.path.abspath(os.path.join(out_dir, "best_model"))
+        checkpoint_dir = os.path.abspath(os.path.join(out_dir, 'models', "best_model"))
         checkpoint_prefix = os.path.join(checkpoint_dir, "model")
         if not os.path.exists(checkpoint_dir):
             os.makedirs(checkpoint_dir)
@@ -362,8 +368,8 @@ with graph.as_default():
             all_predictions_proba_eval = np.concatenate([all_predictions_proba_eval, batch_predictions_proba[:, 1]])
         if FLAGS.holdout_data_path:
             for x_holdout_batch in batches_holdout:
-                batch_predictions = sess.run(predictions, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
-                batch_predictions_proba = sess.run(predictions_proba, {input_x: x_dev_batch, dropout_keep_prob: 1.0})
+                batch_predictions = sess.run(predictions, {input_x: x_holdout_batch, dropout_keep_prob: 1.0})
+                batch_predictions_proba = sess.run(predictions_proba, {input_x: x_holdout_batch, dropout_keep_prob: 1.0})
                 all_predictions_holdout = np.concatenate([all_predictions_holdout, batch_predictions])
                 all_predictions_proba_holdout = np.concatenate(
                     [all_predictions_proba_holdout, batch_predictions_proba[:, 1]])
@@ -380,8 +386,7 @@ if FLAGS.holdout_data_path:
         print("Total number of evaluation examples in holdout set: {}".format(len(all_predictions_proba_holdout)))
         holdout_df['glove_cnn_scores'] = all_predictions_proba_holdout
 
-slurm_job_timestamp = FLAGS.slurm_job_timestamp
-slurm_job_id = FLAGS.slurm_job_id
+
 # Compute AUC
 fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], all_predictions_proba_eval)
 auc_eval = metrics.auc(fpr, tpr)
