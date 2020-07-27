@@ -36,7 +36,7 @@ tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (defau
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
 
 # Training parameters
-tf.flags.DEFINE_integer("batch_size", 128, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 128, "Batch Size")
 tf.flags.DEFINE_integer("num_epochs", 40, "Number of training epochs (default: 200)")
 tf.flags.DEFINE_integer("evaluate_every", 500, "Evaluate model on dev set after this many steps (default: 100)")
 tf.flags.DEFINE_integer("checkpoint_every", 1000, "Save model after this many steps (default: 100)")
@@ -44,10 +44,10 @@ tf.flags.DEFINE_integer("num_checkpoints", 3, "Number of checkpoints to store (d
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
 tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on devices")
-tf.flags.DEFINE_boolean("preprocessing", False, "Whether to preprocess tweets or not")
+tf.flags.DEFINE_boolean("preprocessing", True, "Whether to preprocess tweets or not")
 # Specifics
 tf.flags.DEFINE_string("training_data_path",
-                       "/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/data/may20_9Klabels/data_binary_pos_neg_balanced",
+                       "/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/may20_9Klabels/data_binary_pos_neg_balanced",
                        "path to train and val data")
 tf.flags.DEFINE_string("holdout_data_path",
                        None,
@@ -59,9 +59,9 @@ tf.flags.DEFINE_string("label", "is_unemployed", "Label to train on")
 tf.flags.DEFINE_string("vocab_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/vocab.pckl",
                        "Path pickle file")
-tf.flags.DEFINE_string("output_dir", "", "Output directory where models are saved")
-tf.flags.DEFINE_string("slurm_job_timestamp", "", "Timestamp when job is launched")
-tf.flags.DEFINE_string("slurm_job_id", "", "ID of the job that ran training")
+tf.flags.DEFINE_string("output_dir", "/home/manuto/Documents/world_bank/bert_twitter_labor/data/trained_glove_models/test", "Output directory where models are saved")
+tf.flags.DEFINE_string("slurm_job_timestamp", "1595779138", "Timestamp when job is launched")
+tf.flags.DEFINE_string("slurm_job_id", "0", "ID of the job that ran training")
 
 
 # UTILS
@@ -72,7 +72,7 @@ def tokenizer(text):
 
 text_processor = TextPreProcessor(
     # terms that will be normalized
-    normalize=['url', 'email', 'le npercent', 'money', 'phone', 'user',
+    normalize=['url', 'email', 'percent', 'money', 'phone', 'user',
                'time', 'url', 'date', 'number'],
     # terms that will be annotated
     annotate={"hashtag", "allcaps", "elongated", "repeated",
@@ -142,7 +142,7 @@ def train_step(x_batch, y_batch):
     _, step, summaries, loss, accuracy, precision, recall, auc = sess.run(
         [train_op, global_step, train_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc],
         feed_dict)
-    time_str = datetime.datetime.now().isoformat()
+    time_str = datetime.now().isoformat()
     print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss,
                                                                                            accuracy, precision,
                                                                                            recall, auc))
@@ -160,7 +160,7 @@ def dev_step(x_batch, y_batch, writer=None):
     }
     step, summaries, loss, accuracy, precision, recall, auc = sess.run(
         [global_step, dev_summary_op, cnn.loss, cnn.accuracy, cnn.precision, cnn.recall, cnn.auc], feed_dict)
-    time_str = datetime.datetime.now().isoformat()
+    time_str = datetime.now().isoformat()
     print("{}: step {}, loss {:g}, acc {:g}, precision {:g}, recall {:g}, auc {:g}".format(time_str, step, loss,
                                                                                            accuracy, precision,
                                                                                            recall, auc))
@@ -168,21 +168,26 @@ def dev_step(x_batch, y_batch, writer=None):
         writer.add_summary(summaries, step)
     return loss
 
-
 # Load arguments
 FLAGS = tf.flags.FLAGS
 FLAGS(sys.argv)
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
-print("")
+batch_size = FLAGS.batch_size
+# Evaluate on all training data
+eval_train = False
+
+# Misc Parameters
+allow_soft_placement = True
+log_device_placement = False
 
 # Data Preparation
 print("Loading Dataset ...")
 
 training_data_path = FLAGS.training_data_path
-train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)), lineterminator='\n')
-eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)), lineterminator='\n')
+train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
+eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
 if FLAGS.holdout_data_path:
     holdout_df = pd.read_csv(os.path.join(FLAGS.holdout_data_path, "holdout_{}.csv".format(FLAGS.label)),
                              lineterminator='\n')
@@ -252,7 +257,7 @@ with tf.Graph().as_default():
 
         # Output directory for models and summaries
         timestamp = str(int(time.time()))
-        out_dir = prepare_filepath_for_storing_model(output_dir=args.output_dir)
+        out_dir = prepare_filepath_for_storing_model(output_dir=FLAGS.output_dir)
         print("Writing to {}\n".format(out_dir))
 
         # Summaries for loss, accuracy, precision
@@ -395,7 +400,7 @@ eval_results_eval_set_dict = {'slurm_job_id': slurm_job_id,
                               'auc': auc_eval
                               }
 # Save eval set results in CSV
-name_val_file = 'val_{}.csv'.format(FLAGS.label)
+name_val_file = 'val_{}'.format(FLAGS.label)
 path_to_store_eval_results = os.path.join(training_data_path, 'results',
                                           'GloVe_CNN_' + str(slurm_job_id),
                                           name_val_file + '_evaluation.csv')
@@ -409,7 +414,7 @@ path_to_store_eval_scores = os.path.join(training_data_path, 'results', 'GloVe_C
                                          name_val_file + '_scores.csv')
 
 eval_df.to_csv(path_to_store_eval_scores, index=False)
-logging.info("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
+print("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
 
 if FLAGS.holdout_data_path:
     # Compute AUC
@@ -430,7 +435,7 @@ if FLAGS.holdout_data_path:
                                      'auc': auc_holdout
                                      }
     # Save eval set results in CSV
-    name_holdout_file = 'holdout_{}.csv'.format(FLAGS.label)
+    name_holdout_file = 'holdout_{}'.format(FLAGS.label)
     path_to_store_holdout_results = os.path.join(training_data_path, 'results',
                                                  'GloVe_CNN_' + str(slurm_job_id),
                                                  name_holdout_file + '_evaluation.csv')
@@ -445,4 +450,4 @@ if FLAGS.holdout_data_path:
                                                 name_holdout_file + '_scores.csv')
 
     holdout_df.to_csv(path_to_store_holdout_scores, index=False)
-    logging.info("The scores for the holdout set were saved at {}".format(path_to_store_holdout_scores))
+    print("The scores for the holdout set were saved at {}".format(path_to_store_holdout_scores))
