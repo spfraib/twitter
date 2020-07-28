@@ -59,7 +59,9 @@ tf.flags.DEFINE_string("label", "is_unemployed", "Label to train on")
 tf.flags.DEFINE_string("vocab_path",
                        "/home/manuto/Documents/world_bank/bert_twitter_labor/data/glove_embeddings/vocab.pckl",
                        "Path pickle file")
-tf.flags.DEFINE_string("output_dir", "/home/manuto/Documents/world_bank/bert_twitter_labor/data/trained_glove_models/GloVe_CNN_<DATA_PATH>_<JOB_ID>", "Output directory where models are saved")
+tf.flags.DEFINE_string("output_dir",
+                       "/home/manuto/Documents/world_bank/bert_twitter_labor/data/trained_glove_models/GloVe_CNN_<DATA_PATH>_<JOB_ID>",
+                       "Output directory where models are saved")
 tf.flags.DEFINE_string("slurm_job_timestamp", "1595779138", "Timestamp when job is launched")
 tf.flags.DEFINE_string("slurm_job_id", "0", "ID of the job that ran training")
 
@@ -168,32 +170,24 @@ def dev_step(x_batch, y_batch, writer=None):
         writer.add_summary(summaries, step)
     return loss
 
+
 # Load arguments
 FLAGS = tf.flags.FLAGS
 FLAGS(sys.argv)
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
-batch_size = FLAGS.batch_size
-# Evaluate on all training data
-eval_train = False
-
-# Misc Parameters
-allow_soft_placement = True
-log_device_placement = False
-
-slurm_job_timestamp = FLAGS.slurm_job_timestamp
-slurm_job_id = FLAGS.slurm_job_id
 
 # Data Preparation
 print("Loading Dataset ...")
 
-training_data_path = os.path.join('/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data', FLAGS.training_data_path)
+training_data_path = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/',
+                                  FLAGS.training_data_path)
 if '/' in FLAGS.training_data_path:
     training_data_path_no_slash = FLAGS.training_data_path.replace('/', '_')
 
-train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
-eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)))#, lineterminator='\n')
+train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)))  # , lineterminator='\n')
+eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)))  # , lineterminator='\n')
 if FLAGS.holdout_data_path:
     holdout_df = pd.read_csv(os.path.join(FLAGS.holdout_data_path, "holdout_{}.csv".format(FLAGS.label)),
                              lineterminator='\n')
@@ -334,8 +328,8 @@ checkpoint_file = tf.train.latest_checkpoint(checkpoint_dir)
 graph = tf.Graph()
 with graph.as_default():
     session_conf = tf.ConfigProto(
-        allow_soft_placement=allow_soft_placement,
-        log_device_placement=log_device_placement)
+        allow_soft_placement=FLAGS.allow_soft_placement,
+        log_device_placement=FLAGS.log_device_placement)
     sess = tf.Session(config=session_conf)
     with sess.as_default():
         # Load the saved meta graph and restore variables
@@ -352,9 +346,9 @@ with graph.as_default():
         predictions_proba = graph.get_operation_by_name("output/predictions_proba").outputs[0]
         # predictions_proba = predictions_proba[:, 1]
         # Generate batches for one epoch
-        batches_dev = utils.batch_iter(list(x_dev), batch_size, 1, shuffle=False)
+        batches_dev = utils.batch_iter(list(x_dev), FLAGS.batch_size, 1, shuffle=False)
         if FLAGS.holdout_data_path:
-            batches_holdout = utils.batch_iter(list(x_holdout), batch_size, 1, shuffle=False)
+            batches_holdout = utils.batch_iter(list(x_holdout), FLAGS.batch_size, 1, shuffle=False)
 
         # Collect the predictions here
         all_predictions_eval = []
@@ -369,7 +363,8 @@ with graph.as_default():
         if FLAGS.holdout_data_path:
             for x_holdout_batch in batches_holdout:
                 batch_predictions = sess.run(predictions, {input_x: x_holdout_batch, dropout_keep_prob: 1.0})
-                batch_predictions_proba = sess.run(predictions_proba, {input_x: x_holdout_batch, dropout_keep_prob: 1.0})
+                batch_predictions_proba = sess.run(predictions_proba,
+                                                   {input_x: x_holdout_batch, dropout_keep_prob: 1.0})
                 all_predictions_holdout = np.concatenate([all_predictions_holdout, batch_predictions])
                 all_predictions_proba_holdout = np.concatenate(
                     [all_predictions_proba_holdout, batch_predictions_proba[:, 1]])
@@ -386,14 +381,13 @@ if FLAGS.holdout_data_path:
         print("Total number of evaluation examples in holdout set: {}".format(len(all_predictions_proba_holdout)))
         holdout_df['glove_cnn_scores'] = all_predictions_proba_holdout
 
-
 # Compute AUC
 fpr, tpr, thresholds = metrics.roc_curve(eval_df['class'], all_predictions_proba_eval)
 auc_eval = metrics.auc(fpr, tpr)
 # Build final results dictionary
-eval_results_eval_set_dict = {'slurm_job_id': slurm_job_id,
-                              'slurm_job_timestamp': slurm_job_timestamp,
-                              'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
+eval_results_eval_set_dict = {'slurm_job_id': FLAGS.slurm_job_id,
+                              'slurm_job_timestamp': FLAGS.slurm_job_timestamp,
+                              'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(FLAGS.slurm_job_timestamp),
                                                                                        tz=pytz.timezone(
                                                                                            'Europe/Berlin'))),
                               'model_type': 'GloVe + CNN',
@@ -407,7 +401,7 @@ eval_results_eval_set_dict = {'slurm_job_id': slurm_job_id,
 # Save eval set results in CSV
 name_val_file = 'val_{}'.format(FLAGS.label)
 path_to_store_eval_results = os.path.join(training_data_path, 'results',
-                                          'GloVe_CNN_' + str(slurm_job_id),
+                                          'GloVe_CNN_' + str(FLAGS.slurm_job_id),
                                           name_val_file + '_evaluation.csv')
 if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
     os.makedirs(os.path.dirname(path_to_store_eval_results))
@@ -415,7 +409,7 @@ pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['val
     path_to_store_eval_results)
 print("The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
 # Save eval scores to CSV
-path_to_store_eval_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(slurm_job_id),
+path_to_store_eval_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(FLAGS.slurm_job_id),
                                          name_val_file + '_scores.csv')
 
 eval_df.to_csv(path_to_store_eval_scores, index=False)
@@ -426,11 +420,12 @@ if FLAGS.holdout_data_path:
     fpr, tpr, thresholds = metrics.roc_curve(holdout_df['class'], all_predictions_proba_holdout)
     auc_holdout = metrics.auc(fpr, tpr)
     # Build final results dictionary
-    eval_results_holdout_set_dict = {'slurm_job_id': slurm_job_id,
-                                     'slurm_job_timestamp': slurm_job_timestamp,
-                                     'slurm_job_Berlin_date_time': str(datetime.fromtimestamp(int(slurm_job_timestamp),
-                                                                                              tz=pytz.timezone(
-                                                                                                  'Europe/Berlin'))),
+    eval_results_holdout_set_dict = {'slurm_job_id': FLAGS.slurm_job_id,
+                                     'slurm_job_timestamp': FLAGS.slurm_job_timestamp,
+                                     'slurm_job_Berlin_date_time': str(
+                                         datetime.fromtimestamp(int(FLAGS.slurm_job_timestamp),
+                                                                tz=pytz.timezone(
+                                                                    'Europe/Berlin'))),
                                      'model_type': 'GloVe + CNN',
                                      'holdout_data_path': os.path.join(FLAGS.holdout_data_path,
                                                                        'holdout_{}.csv'.format(FLAGS.label)),
@@ -442,7 +437,7 @@ if FLAGS.holdout_data_path:
     # Save eval set results in CSV
     name_holdout_file = 'holdout_{}'.format(FLAGS.label)
     path_to_store_holdout_results = os.path.join(training_data_path, 'results',
-                                                 'GloVe_CNN_' + str(slurm_job_id),
+                                                 'GloVe_CNN_' + str(FLAGS.slurm_job_id),
                                                  name_holdout_file + '_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
         os.makedirs(os.path.dirname(path_to_store_holdout_results))
@@ -451,7 +446,7 @@ if FLAGS.holdout_data_path:
     print(
         "The evaluation on the holdout set is done. The results were saved at {}".format(path_to_store_holdout_results))
     # Save eval scores to CSV
-    path_to_store_holdout_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(slurm_job_id),
+    path_to_store_holdout_scores = os.path.join(training_data_path, 'results', 'GloVe_CNN_' + str(FLAGS.slurm_job_id),
                                                 name_holdout_file + '_scores.csv')
 
     holdout_df.to_csv(path_to_store_holdout_scores, index=False)
