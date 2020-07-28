@@ -44,7 +44,7 @@ In the case of GloVe + CNN, only the best model in terms of evaluation loss is s
 ### Performance metrics and scores:
 
 For each class and training round, four CSVs are saved:
-- one with performance metrics (Precision/Recall/F1/AUC) on evaluation set, including metadata such as job_id, date and time, path of data used. It is called `val_${class}_evaluation.csv`. 
+- one with performance metrics (Precision/Recall/F1/AUC) on evaluation set (including metadata such as job_id, date and time, path of data used). It is called `val_${class}_evaluation.csv`. 
 - one with performances metrics (//) on holdout set ( // ). It is called `holdout_${class}_evaluation.csv`. 
 - one with scores for the evaluation set. It is called `val_${class}_scores.csv`. 
 - one with scores for the holdout set. It is called `holdout_${class}_scores.csv`. 
