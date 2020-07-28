@@ -8,6 +8,7 @@ import shutil
 import glob
 from datetime import datetime
 import pytz
+import data_utils as utils
 
 import tensorflow as tf
 import numpy as np
