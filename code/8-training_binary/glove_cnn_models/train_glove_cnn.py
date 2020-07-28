@@ -9,7 +9,6 @@ import glob
 from datetime import datetime
 import pytz
 
-import data_utils as utils
 import tensorflow as tf
 import numpy as np
 import pandas as pd
@@ -18,7 +17,6 @@ from ekphrasis.classes.preprocessor import TextPreProcessor
 from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
 
-from data_utils import IMDBDataset
 from text_cnn import TextCNN
 from sklearn import metrics
 
