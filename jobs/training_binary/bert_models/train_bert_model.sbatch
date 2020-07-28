@@ -47,7 +47,7 @@ echo "Output folder created: ${OUTPUT_DIR}"
 cd /scratch/mt4493/twitter_labor/code/twitter/code/8-training_binary/bert_models
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 classification.py \
+python3 train_bert.py \
  --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_lost_job_1mo.csv \
@@ -60,7 +60,7 @@ python3 classification.py \
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
-python3 classification.py \
+python3 train_bert.py \
  --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
  --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_unemployed.csv \
@@ -73,7 +73,7 @@ python3 classification.py \
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
-python3 classification.py \
+python3 train_bert.py \
  --train_data_path ${DATA_PATH}/train_job_search.csv \
  --eval_data_path ${DATA_PATH}/val_job_search.csv \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_search.csv \
@@ -86,7 +86,7 @@ python3 classification.py \
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 classification.py \
+python3 train_bert.py \
  --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_hired_1mo.csv \
@@ -99,7 +99,7 @@ python3 classification.py \
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
-python3 classification.py \
+python3 train_bert.py \
  --train_data_path ${DATA_PATH}/train_job_offer.csv \
  --eval_data_path ${DATA_PATH}/val_job_offer.csv \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_offer.csv \

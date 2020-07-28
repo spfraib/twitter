@@ -10,8 +10,6 @@
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
 
 DATA_FOLDER=$1
-MODEL_NAME=$2
-MODEL_TYPE=$3
 TIMESTAMP=$(date +%s)
 JOB_ID=${SLURM_JOB_ID}
 
@@ -40,7 +38,7 @@ echo "Output folder created: ${OUTPUT_DIR}"
 cd /scratch/mt4493/twitter_labor/code/twitter/code/8-training_binary/glove_cnn_models
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 train.py \
+python3 train_glove_cnn.py \
  --num_epochs 100 \
  --evaluate_every 10 \
  --training_data_path "${DATA_FOLDER}" \
@@ -48,14 +46,14 @@ python3 train.py \
  --embeddings_path ${GLOVE_FILES_PATH}/embeddings.npy \
  --vocab_path ${GLOVE_FILES_PATH}/vocab.pckl \
  --label lost_job_1mo \
- --output_dir "${OUTPUT_DIR}" \
+ --output_dir ${OUTPUT_DIR}/lost_job_1mo \
  --slurm_job_timestamp "${TIMESTAMP}" \
  --slurm_job_id "${JOB_ID}"
 
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
-python3 train.py \
+python3 train_glove_cnn.py \
  --num_epochs 100 \
  --evaluate_every 10 \
  --training_data_path "${DATA_FOLDER}" \
@@ -63,13 +61,13 @@ python3 train.py \
  --embeddings_path ${GLOVE_FILES_PATH}/embeddings.npy \
  --vocab_path ${GLOVE_FILES_PATH}/vocab.pckl \
  --label is_unemployed \
- --output_dir "${OUTPUT_DIR}" \
+ --output_dir ${OUTPUT_DIR}/is_unemployed \
  --slurm_job_timestamp "${TIMESTAMP}" \
  --slurm_job_id "${JOB_ID}"
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
-python3 train.py \
+python3 train_glove_cnn.py \
  --num_epochs 100 \
  --evaluate_every 10 \
  --training_data_path "${DATA_FOLDER}" \
@@ -77,13 +75,13 @@ python3 train.py \
  --embeddings_path ${GLOVE_FILES_PATH}/embeddings.npy \
  --vocab_path ${GLOVE_FILES_PATH}/vocab.pckl \
  --label job_search \
- --output_dir "${OUTPUT_DIR}" \
+ --output_dir ${OUTPUT_DIR}/job_search \
  --slurm_job_timestamp "${TIMESTAMP}" \
  --slurm_job_id "${JOB_ID}"
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 train.py \
+python3 train_glove_cnn.py \
  --num_epochs 100 \
  --evaluate_every 10 \
  --training_data_path "${DATA_FOLDER}" \
@@ -91,13 +89,13 @@ python3 train.py \
  --embeddings_path ${GLOVE_FILES_PATH}/embeddings.npy \
  --vocab_path ${GLOVE_FILES_PATH}/vocab.pckl \
  --label is_hired_1mo \
- --output_dir "${OUTPUT_DIR}" \
+ --output_dir ${OUTPUT_DIR}/is_hired_1mo \
  --slurm_job_timestamp "${TIMESTAMP}" \
  --slurm_job_id "${JOB_ID}"
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
-python3 train.py \
+python3 train_glove_cnn.py \
  --num_epochs 100 \
  --evaluate_every 10 \
  --training_data_path "${DATA_FOLDER}" \
@@ -105,7 +103,7 @@ python3 train.py \
  --embeddings_path ${GLOVE_FILES_PATH}/embeddings.npy \
  --vocab_path ${GLOVE_FILES_PATH}/vocab.pckl \
  --label job_offer \
- --output_dir "${OUTPUT_DIR}" \
+ --output_dir ${OUTPUT_DIR}/job_offer \
  --slurm_job_timestamp "${TIMESTAMP}" \
  --slurm_job_id "${JOB_ID}"
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'

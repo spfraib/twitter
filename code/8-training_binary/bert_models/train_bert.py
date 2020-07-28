@@ -9,7 +9,7 @@ The default model specs are listed here: https://github.com/ThilinaRajapakse/sim
 
 
 How to use the script in the command line:
-python3 classification.py
+python3 train_bert.py
     --train_data_path <TRAIN_DATA_PATH> \
     --eval_data_path <EVAL_DATA_PATH> \
     --num_labels <NUM_LABELS> \
@@ -33,7 +33,7 @@ A list can be found here: https://github.com/ThilinaRajapakse/simpletransformers
 
 
 Example usage:
-python classification.py \
+python train_bert.py \
 --train_data_path twitter-labor-data/data/jun_27_iter1/BERT/new_train_test_split_with_data_iter0/train_is_hired_1mo.csv \
 --eval_data_path twitter-labor-data/data/jun_27_iter1/BERT/new_train_test_split_with_data_iter0/val_is_hired_1mo.csv \
 --output_dir trained_bert-base-cased_is_hired_1mo_jun_27_iter1 \
