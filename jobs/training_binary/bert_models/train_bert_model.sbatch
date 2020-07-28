@@ -5,7 +5,7 @@
 #SBATCH --mem=20GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
-#SBATCH --output=slurm_%j.out
+#SBATCH --output=slurm_training_berts_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
