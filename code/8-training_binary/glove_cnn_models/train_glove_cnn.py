@@ -185,8 +185,8 @@ training_data_path = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-d
 if '/' in FLAGS.training_data_path:
     training_data_path_no_slash = FLAGS.training_data_path.replace('/', '_')
 
-train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)))  # , lineterminator='\n')
-eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)))  # , lineterminator='\n')
+train_df = pd.read_csv(os.path.join(training_data_path, "train_{}.csv".format(FLAGS.label)), lineterminator='\n')
+eval_df = pd.read_csv(os.path.join(training_data_path, "val_{}.csv".format(FLAGS.label)) , lineterminator='\n')
 if FLAGS.holdout_data_path:
     holdout_df = pd.read_csv(os.path.join(FLAGS.holdout_data_path, "holdout_{}.csv".format(FLAGS.label)),
                              lineterminator='\n')
