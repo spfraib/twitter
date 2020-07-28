@@ -31,3 +31,39 @@ In case the first version causes mistakes, another possible solution to install 
 
 We are now ready to start training.
 
+## Training command:
+
+To train a binary BERT-based classifier on all 5 classes on the cluster, run:
+
+`sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE>`
+
+with:
+- <DATA_FOLDER_NAME>: the name of the folder in `twitter-labor-data/data` where the train/val CSVs are stored (e.g. `jul23_iter0/preprocessed`)
+- <MODEL_NAME>: the BERT-based model architecture used. By default, it is always set to `bert`. 
+- <MODEL_TYPE>: the type of BERT-based model used (e.g. `DeepPavlov/bert-base-cased-conversational` for ConvBERT). This refers to the name of the model on the HuggingFace hub. The whole list can be found [here](https://huggingface.co/transformers/pretrained_models.html). 
+
+The batch file can be found at: `/scratch/mt4493/twitter_labor/twitter/jobs/training_binary/bert_models/`. 
+
+## Results:
+
+### Models:
+
+The trained models are automatically saved at: 
+
+`/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE}_${DATA_FOLDER_NAME}_${SLURM_JOB_ID}`.
+
+A version of the model is saved for each epoch i at `${MODEL_TYPE}_${DATA_FOLDER_NAME}_${SLURM_JOB_ID}/${class}/models/checkpoint-${NB_STEPS}-epoch-${i}` where `class` is in `['lost_job_1mo', 'is_hired_1mo', 'job_search', 'job_offer', 'is_unemployed']`. 
+
+The best model in terms of evaluation loss is saved in the folder: `${MODEL_TYPE}_${DATA_FOLDER_NAME}_${SLURM_JOB_ID}/${class}/models/best_model`. 
+
+### Performance metrics and scores:
+
+For each class and training round, four CSVs are saved:
+- one with performance metrics (Precision/Recall/F1/AUC) on evaluation set, including metadata such as job_id, date and time, path of data used. It is called `val_${class}_evaluation.csv`. 
+- one with performances metrics (//) on holdout set ( // ). It is called `holdout_${class}_evaluation.csv`. 
+- one with scores for the evaluation set. It is called `val_${class}_scores.csv`. 
+- one with scores for the holdout set. It is called `holdout_${class}_scores.csv`. 
+
+Note that Precision/Recall/F1 are computed for a threshold of 0.5.
+
+These four CSVs are saved at: `twitter_labor_data/data/${DATA_FOLDER_NAME}/results/<MODEL_TYPE>_<SLURM_JOB_IB>`. 
