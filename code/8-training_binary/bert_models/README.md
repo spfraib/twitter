@@ -38,7 +38,7 @@ To train a binary BERT-based classifier on all 5 classes on the cluster, run:
 `$ sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE>`
 
 with:
-- <DATA_FOLDER_NAME>: the name of the folder in `twitter-labor-data/data` where the train/val CSVs are stored (e.g. `jul23_iter0/preprocessed`)
+- <DATA_FOLDER_NAME>: the name of the folder in [twitter-labor-data/data](https://github.com/manueltonneau/twitter-labor-data/tree/master/data) where the train/val CSVs are stored (e.g. `jul23_iter0/preprocessed`)
 - <MODEL_NAME>: the BERT-based model architecture used. By default, it is always set to `bert`. 
 - <MODEL_TYPE>: the type of BERT-based model used (e.g. `DeepPavlov/bert-base-cased-conversational` for ConvBERT). This refers to the name of the model on the HuggingFace hub. The whole list can be found [here](https://huggingface.co/transformers/pretrained_models.html). 
 
