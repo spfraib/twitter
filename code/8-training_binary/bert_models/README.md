@@ -1,4 +1,4 @@
-# Training
+# Fine-tuning BERT-based models
 
 ## Preliminary steps:
 
