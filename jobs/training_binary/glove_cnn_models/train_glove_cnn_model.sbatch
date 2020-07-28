@@ -27,7 +27,7 @@ GLOVE_FILES_PATH=/scratch/mt4493/twitter_labor/code/twitter/code/8-training_bina
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
-source /scratch/mt4493/twitter_labor/code/glove_cnn_training_env/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/glove_cnn_training_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
