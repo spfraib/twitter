@@ -2,7 +2,7 @@
 #SBATCH --job-name=training_glove_cnn
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
+#SBATCH --mem=10GB
 #SBATCH --time=24:00:00
 #SBATCH --output=slurm_training_glove_cnn_%j.out
 #SBATCH --mail-type=BEGIN
