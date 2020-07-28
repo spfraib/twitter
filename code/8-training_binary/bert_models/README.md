@@ -35,7 +35,7 @@ We are now ready to start training.
 
 To train a binary BERT-based classifier on all 5 classes on the cluster, run:
 
-`sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE>`
+`$ sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE>`
 
 with:
 - <DATA_FOLDER_NAME>: the name of the folder in `twitter-labor-data/data` where the train/val CSVs are stored (e.g. `jul23_iter0/preprocessed`)
