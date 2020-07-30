@@ -5,6 +5,7 @@
 *.zip
 *.pickle
 *.pkl
+*.pckl
 *.parquet
 *.orc
-
+*.npy
