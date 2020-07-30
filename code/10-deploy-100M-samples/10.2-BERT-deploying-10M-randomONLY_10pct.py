@@ -51,7 +51,7 @@ from sklearn.preprocessing import scale
 
 
 # sys.path.append('../')
-sys.path.append('../8-training_binary/simple_transformers/')
+sys.path.append('../8-training_binary/bert_models/')
 
 from simpletransformers.classification import ClassificationModel
 
