@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH --job-name=DAoNNX
+#SBATCH --job-name=oNNX
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=5
 #SBATCH --mem=5GB
-#SBATCH --time=48:00:00
+#SBATCH --time=24:00:00
 #SBATCH --gres=gpu:0
 
 # when the job ends, send me an email at this email address.
@@ -51,9 +51,9 @@ cd /scratch/da2734/twitter/code/10-deploy-100M-samples/
 
 pwd
 
-srun time python -u 10.6-ONNX-BERT-deploying-100M_random_ONLY_iteration1_dhaval.py > /scratch/da2734/twitter/jobs/running_on_200Msamples/iteration1/logs/dhaval/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
-cd inte
-echo 'running'
+echo 'running inference..'
+srun time python -u 10.7-ONNX-BERT-deploying-100M_random_ONLY_iteration2.py --model_path /scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model --output_path /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/inference_output/iteration2/output > /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/inference_output/iteration2/logs/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+echo 'done'
 
 exit
 
