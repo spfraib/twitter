@@ -9,3 +9,5 @@
 *.parquet
 *.orc
 *.npy
+__pycache__
+*.out
