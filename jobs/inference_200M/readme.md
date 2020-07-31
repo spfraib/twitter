@@ -1,5 +1,26 @@
 
 # code to run onnx on 100M samples
+
+
+## 1. convert pytorch models to onnx
+- python onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model 
+note: the {} is important to be used to specify label of model AND make sure you have permisions to write to Manu's folder
+
+## 2. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 sbatch --array=0-600 ONYX_BERT_labels_deploy_100M_random.sbatch
 
 - you might be able to explore larger arrays - 1000 give me an slurm admin error, but I also get 162 machines max at the same time so it doens't matter much
