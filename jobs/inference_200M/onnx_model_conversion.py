@@ -1,5 +1,4 @@
-from IPython.core.display import display, HTML
-display(HTML("<style>.container { width:100% !important; }</style>"))
+# code to convert saved pytorch models to optimized+quantized onnx models for faster inference
 
 import torch
 import onnxruntime as ort
@@ -21,10 +20,13 @@ from onnxruntime_tools import optimizer
 from quantize import quantize, QuantizationMode
 
 
+model_path_from_terminal = sys.argv[1] 
+# e.g. '/scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model'
+
 for label in ["lost_job_1mo","is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
     print(label)
-    model_path = '/scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model'.format(label)
+    model_path = model_path_from_terminal.format(label)
     onnx_path = model_path+'/onnx/'.format(label)
 
     try:
