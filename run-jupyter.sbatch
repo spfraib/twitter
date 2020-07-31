@@ -69,6 +69,9 @@ export GENSIM_DATA_DIR=/scratch/da2734/twitter/code/11-baseline/logit_glove/down
 
 echo $GENSIM_DATA_DIR
 
+cd /scratch/da2734/
+
+
 jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
 
 
