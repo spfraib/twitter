@@ -11,3 +11,4 @@
 *.npy
 __pycache__
 *.out
+*.pyc
