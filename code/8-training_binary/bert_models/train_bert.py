@@ -190,7 +190,7 @@ if __name__ == "__main__":
     # Create a ClassificationModel
     ## Define arguments
     classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
-                                      'save_model_every_epoch': True, 'save_eval_checkpoints': False,
+                                      'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
