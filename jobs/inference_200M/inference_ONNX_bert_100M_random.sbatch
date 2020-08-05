@@ -11,10 +11,9 @@
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
 
 MODEL_FOLDER=$1
-OUTPUT_FOLDER=$2
 
 MODEL_PATH=/scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}
-OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${OUTPUT_FOLDER}
+OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference
 # both standard output and standard error are directed to the same file.
 #SBATCH --output=slurm_inference_berts_%j.out
 
