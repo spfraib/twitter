@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-print('running 10.7-ONNX-BERT-deploying-100M_random_ONLY_iteration2.py')
+print('running inference_ONNX_bert_100M_random.py')
 
 import sys
 import os
@@ -121,11 +121,7 @@ def get_env_var(varname, default):
 # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
 SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
 SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
-
-# SLURM_JOB_ID = 123123123
-# SLURM_ARRAY_TASK_ID = 10
-# SLURM_ARRAY_TASK_COUNT = 500
-
+SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
 
 print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
 print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
@@ -159,8 +155,6 @@ for file in paths_to_random:
     tweets_random = pd.concat([tweets_random, pd.read_parquet(file)[['tweet_id', 'text']]])
     print(tweets_random.shape)
 
-#     break #DEBUG
-
 print('load random sample:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
 
@@ -171,13 +165,12 @@ tweets_random = tweets_random.drop_duplicates('text')
 print('drop duplicates:', str(time.time() - start_time), 'seconds')
 print(tweets_random.shape)
 
-# tweets_random = tweets_random[:20] #DEBUG
-
 start_time = time.time()
 print('converting to list')
 examples = tweets_random.text.values.tolist()
 
 print('convert to list:', str(time.time() - start_time), 'seconds')
+
 model_folder_name = op.basename(op.abspath(op.join(args.model_path, op.pardir, op.pardir, op.pardir)))
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
@@ -211,20 +204,20 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     ####################################################################################################################################        
     print('Save Predictions of random Tweets:')
     start_time = time.time()
-
-    if not os.path.exists(os.path.join(args.output_path, column)):
+    final_output_path = os.path.join(args.output_path, model_folder_name + "-" + SLURM_JOB_ID)
+    if not os.path.exists(os.path.join(final_output_path, column)):
         print('>>>> directory doesnt exists, creating it')
-        os.makedirs(os.path.join(args.output_path, column))
+        os.makedirs(os.path.join(final_output_path, column))
 
     predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
     predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
 
     print(predictions_random_df.head())
     predictions_random_df.to_csv(
-        os.path.join(args.output_path, column,
+        os.path.join(final_output_path, column,
                      str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.csv'))
 
-    print('saved to:\n', os.path.join(args.output_path, column,
+    print('saved to:\n', os.path.join(final_output_path, column,
                                       str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.csv'),
           'saved')
 
