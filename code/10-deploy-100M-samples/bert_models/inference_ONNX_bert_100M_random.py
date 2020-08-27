@@ -171,7 +171,7 @@ examples = tweets_random.text.values.tolist()
 
 print('convert to list:', str(time.time() - start_time), 'seconds')
 
-model_folder_name = op.basename(op.abspath(op.join(args.model_path, op.pardir, op.pardir, op.pardir)))
+#model_folder_name = os.path.basename(os.path.abspath(os.path.join(args.model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
@@ -179,7 +179,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     loop_start = time.time()
 
     model_path = args.model_path.format(column)
-    model_folder_name = op.basename(op.abspath(op.join(model_path, op.pardir, op.pardir, op.pardir)))
+    model_folder_name = os.path.basename(os.path.abspath(os.path.join(model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
 
     print(model_path)
     onnx_path = model_path + '/onnx/'
