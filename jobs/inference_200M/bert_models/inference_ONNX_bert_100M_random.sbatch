@@ -20,7 +20,7 @@ OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference
 module purge
 module load anaconda3/2019.10
 
-source /scratch/spf248/pyenv_dval_wb_twitter_as_sam/py3.7/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 echo "pyenv activated"
 #echo "shell" $0
