@@ -8,13 +8,13 @@
 
 ### 1. Convert PyTorch models to ONNX format:
 ```
-$ python onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/<MODEL_FOLDER>/{}/models/best_model
+$ sbatch /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/bert_models/onnx_model_conversion.sbatch <MODEL_FOLDER>
 ```
-where <MODEL_FOLDER> is the path to the folder containing the model file we want to convert to ONNX format.
+where <MODEL_FOLDER> is the path to the folder containing the model files we want to convert to ONNX format.
 
 An example usage is:
 ```
-$ python onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model
+$ sbatch onnx_model_conversion.sbatch DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11542883
 ```
 
 Note that the {} is important to specify label of model.
