@@ -36,7 +36,7 @@ cd /scratch/mt4493/twitter/code/10-deploy-100M-samples/bert_models
 pwd
 
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --output_path ${OUTPUT_PATH} > /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/inference_output/iteration2/logs/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --output_path ${OUTPUT_PATH} #> /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/inference_output/iteration2/logs/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
 
 exit
