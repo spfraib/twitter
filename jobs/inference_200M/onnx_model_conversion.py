@@ -13,7 +13,7 @@ import sys
 import shutil
 
 
-sys.path.append('/scratch/da2734/twitter/jobs/inference_200M/utils_for_inference')
+sys.path.append('/scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/utils_for_inference')
 from transformers.convert_graph_to_onnx import convert
 from transformers import BertConfig, BertTokenizer, BertTokenizerFast, BertForSequenceClassification
 from onnxruntime_tools import optimizer
