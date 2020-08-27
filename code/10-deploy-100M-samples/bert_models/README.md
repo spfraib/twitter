@@ -34,10 +34,17 @@ $ python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/mod
 
 where `MODEL_PATH=/scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}` and `OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference`.
 
-- for BERT, you need at least 5cpus for speeds ups. For GloVe, only 1 cpu is needed. 
+- For BERT, you need at least 5cpus for speeds ups. For GloVe, only 1 cpu is needed. 
 
 - To check on progress, run: `watch -n1 squeue -u <NETID>`
 
+## Results:
+
+### Inference files
+
+For each label <LABEL>, all tweets from the random set with their assigned probability are saved in `<OUTPUT_PATH>/<MODEL_FOLDER_NAME>-<SLURM_JOB_ID>/<LABEL>` in separate CSVs. 
+
+The CSV file names are defined as follows: `<NET_ID>_random-<SLURM_ARRAY_TASK_ID>.csv`. The CSVs contain the `tweet_id`, the probability to be negative (`first`) and positive (`second`). 
 
 ## TODO:
 1. move all code to Manu's repo (he'll need to set up git (?) and do a pull) so we can all read and write to his repo
