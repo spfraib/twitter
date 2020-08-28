@@ -83,7 +83,7 @@ def get_args_from_command_line():
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
     parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
-
+    parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
 
     args = parser.parse_args()
@@ -188,15 +188,20 @@ if __name__ == "__main__":
     elif args.use_cuda == 0:
         use_cuda = False
     # Create a ClassificationModel
-    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
-                                args={'overwrite_output_dir': True, 'evaluate_during_training': True,
-                                      'save_model_every_epoch': True, 'save_eval_checkpoints': False,
+    ## Define arguments
+    classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
+                                      'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
-                                      "early_stopping_patience": 3,
+                                      "early_stopping_patience": 4,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True})
+                                      "early_stopping_metric_minimize": True}
+    ## Allow for several evaluations per epoch
+    classification_args['evaluate_during_training_steps'] = train_df.shape[0] // (classification_args['train_batch_size'] * args.nb_evaluations_per_epoch)
+    ## Define the model
+    model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
+                                args=classification_args)
     # Define evaluation metrics
     eval_metrics = {
         "precision": sklearn.metrics.precision_score,
