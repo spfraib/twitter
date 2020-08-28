@@ -204,7 +204,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     ####################################################################################################################################        
     print('Save Predictions of random Tweets:')
     start_time = time.time()
-    final_output_path = os.path.join(args.output_path, model_folder_name + "-" + SLURM_JOB_ID)
+    final_output_path = os.path.join(args.output_path, model_folder_name + "-" + str(SLURM_JOB_ID))
     if not os.path.exists(os.path.join(final_output_path, column)):
         print('>>>> directory doesnt exists, creating it')
         os.makedirs(os.path.join(final_output_path, column))
