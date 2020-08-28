@@ -8,7 +8,7 @@
 #SBATCH --output=slurm_training_berts_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=manuel.tonneau@mailbox.org
+#SBATCH --mail-user=mt4493@nyu.edu
 
 DATA_FOLDER=$1
 MODEL_NAME=$2

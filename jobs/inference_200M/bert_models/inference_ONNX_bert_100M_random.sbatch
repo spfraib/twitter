@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=manuel.tonneau@mailbox.org
+#SBATCH --mail-user=mt4493@nyu.edu
 
 MODEL_FOLDER=$1
 
