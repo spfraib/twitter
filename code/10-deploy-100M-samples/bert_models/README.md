@@ -21,7 +21,7 @@ Note that the {} is important to specify label of model.
 
 ### 2. Run inference
 ```
-$ sbatch --array=0-3000 inference_ONNX_bert_100M_random.sbatch <MODEL_FOLDER>
+$ sbatch --array=0-900 inference_ONNX_bert_100M_random.sbatch <MODEL_FOLDER>
 ```
 
 where <MODEL_FOLDER> is the path to the folder inside `/scratch/mt4493/twitter_labor/trained_models/` containing the model file we want to use for inference (e.g. `jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989`).
