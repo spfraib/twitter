@@ -13,7 +13,11 @@
 MODEL_FOLDER=$1
 
 MODEL_PATH=/scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}
-OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference
+JOB_ID=${SLURM_JOB_ID}
+OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${MODEL_FOLDER}-${JOB_ID}
+OUTPUT_MODELS=${OUTPUT_PATH}/output
+OUTPUT_LOGS=${OUTPUT_PATH}/logs
+
 # both standard output and standard error are directed to the same file.
 #SBATCH --output=slurm_inference_berts_%j.out
 
@@ -36,7 +40,7 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/10-deploy-100M-samples/bert_m
 pwd
 
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --output_path ${OUTPUT_PATH} #> /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/inference_output/iteration2/logs/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --output_path ${OUTPUT_MODELS} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
 
 exit

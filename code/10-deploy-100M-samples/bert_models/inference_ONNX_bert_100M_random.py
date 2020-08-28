@@ -179,7 +179,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     loop_start = time.time()
 
     model_path = args.model_path.format(column)
-    model_folder_name = os.path.basename(os.path.abspath(os.path.join(model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
+    #model_folder_name = os.path.basename(os.path.abspath(os.path.join(model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
 
     print(model_path)
     onnx_path = model_path + '/onnx/'
@@ -204,7 +204,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     ####################################################################################################################################        
     print('Save Predictions of random Tweets:')
     start_time = time.time()
-    final_output_path = os.path.join(args.output_path, model_folder_name + "-" + str(SLURM_JOB_ID))
+    final_output_path = args.output_path
     if not os.path.exists(os.path.join(final_output_path, column)):
         print('>>>> directory doesnt exists, creating it')
         os.makedirs(os.path.join(final_output_path, column))
@@ -212,8 +212,8 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
     predictions_random_df['tweet_id'] = tweets_random.tweet_id
     # reformat dataframe
-    predictions_random_df = predictions_random_df[['tweet_id','text','second']]
-    predictions_random_df.columns = ['tweet_id','text','score']
+    predictions_random_df = predictions_random_df[['tweet_id','second']]
+    predictions_random_df.columns = ['tweet_id','score']
 
     print(predictions_random_df.head())
     predictions_random_df.to_parquet(
