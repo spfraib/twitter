@@ -19,8 +19,8 @@ OUTPUT_MODELS=${OUTPUT_PATH}/output
 OUTPUT_LOGS=${OUTPUT_PATH}/logs
 
 # Create output folders if they don't exist
-mkdir -p OUTPUT_MODELS
-mkdir -p OUTPUT_LOGS
+mkdir -p ${OUTPUT_MODELS}
+mkdir -p ${OUTPUT_LOGS}
 
 # both standard output and standard error are directed to the same file.
 #SBATCH --output=slurm_inference_berts_%j.out
