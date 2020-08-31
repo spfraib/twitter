@@ -226,14 +226,12 @@ if __name__ == "__main__":
     overall_best_model_step = training_progress_scores_df['global_step'][training_progress_scores_df[['eval_loss']].idxmin()]
     if overall_best_model_step >= nb_steps_per_epoch:
         print("The best model is found at {} steps, therefore after the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
-        continue
     else:
         training_progress_scores_after_first_epoch_df = training_progress_scores_df[training_progress_scores_df['global_step'] >= nb_steps_per_epoch]
         best_model_after_first_epoch_step = training_progress_scores_after_first_epoch_df[training_progress_scores_after_first_epoch_df[['eval_loss']].idxmin()]
         ## Rename past best_model folder to best_model_overall
         if not os.path.isdir(path_to_store_best_model):
             print("There is no {} folder".format(path_to_store_best_model))
-            continue
         os.rename(path_to_store_best_model, os.path.join(os.path.dirname(path_to_store_best_model), 'overall_best_model'))
         ## Copy folder of best model at or after first epoch to best_model folder
         if best_model_after_first_epoch_step % nb_steps_per_epoch == 0:
