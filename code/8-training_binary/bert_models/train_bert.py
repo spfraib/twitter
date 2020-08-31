@@ -223,19 +223,21 @@ if __name__ == "__main__":
 
     # Find best model (in terms of evaluation loss) at or after the first epoch
     training_progress_scores_df = pd.read_csv(os.path.join(path_to_store_model, 'training_progress_scores.csv'))
-    overall_best_model_step = training_progress_scores_df['global_step'][training_progress_scores_df[['eval_loss']].idxmin()]
-    if overall_best_model_step >= nb_steps_per_epoch:
+    overall_best_model_step = training_progress_scores_df['global_step'][training_progress_scores_df[['eval_loss']].idxmin()[0]]
+    print('Nb steps per epoch: ', nb_steps_per_epoch)
+    print('Overall best model step: ', overall_best_model_step)
+    if int(overall_best_model_step) >= int(nb_steps_per_epoch):
         print("The best model is found at {} steps, therefore after the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
     else:
         training_progress_scores_after_first_epoch_df = training_progress_scores_df[training_progress_scores_df['global_step'] >= nb_steps_per_epoch]
-        best_model_after_first_epoch_step = training_progress_scores_after_first_epoch_df[training_progress_scores_after_first_epoch_df[['eval_loss']].idxmin()]
+        best_model_after_first_epoch_step = training_progress_scores_after_first_epoch_df[training_progress_scores_after_first_epoch_df[['eval_loss']].idxmin()[0]]
         ## Rename past best_model folder to best_model_overall
         if not os.path.isdir(path_to_store_best_model):
             print("There is no {} folder".format(path_to_store_best_model))
         os.rename(path_to_store_best_model, os.path.join(os.path.dirname(path_to_store_best_model), 'overall_best_model'))
         ## Copy folder of best model at or after first epoch to best_model folder
-        if best_model_after_first_epoch_step % nb_steps_per_epoch == 0:
-            epoch_number = best_model_after_first_epoch_step / nb_steps_per_epoch
+        if int(best_model_after_first_epoch_step) % int(nb_steps_per_epoch) == 0:
+            epoch_number = int(best_model_after_first_epoch_step) / int(nb_steps_per_epoch)
             best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}-epoch-{}'.format(str(best_model_after_first_epoch_step), str(epoch_number)))
         else:
             best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}'.format(str(best_model_after_first_epoch_step)))
