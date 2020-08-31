@@ -53,7 +53,7 @@ python3 train_bert.py \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_lost_job_1mo.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
- --num_train_epochs 20 \
+ --num_train_epochs 10 \
  --output_dir ${OUTPUT_DIR}/lost_job_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -66,7 +66,7 @@ python3 train_bert.py \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_unemployed.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
- --num_train_epochs 20 \
+ --num_train_epochs 10 \
  --output_dir ${OUTPUT_DIR}/is_unemployed \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -79,7 +79,7 @@ python3 train_bert.py \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_search.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
- --num_train_epochs 20 \
+ --num_train_epochs 10 \
  --output_dir ${OUTPUT_DIR}/job_search \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -92,7 +92,7 @@ python3 train_bert.py \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_is_hired_1mo.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
- --num_train_epochs 20 \
+ --num_train_epochs 10 \
  --output_dir ${OUTPUT_DIR}/is_hired_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -105,7 +105,7 @@ python3 train_bert.py \
  --holdout_data_path ${HOLDOUT_DATA_FOLDER}/holdout_job_offer.csv \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
- --num_train_epochs 20 \
+ --num_train_epochs 10 \
  --output_dir ${OUTPUT_DIR}/job_offer \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
