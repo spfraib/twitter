@@ -44,6 +44,9 @@ with:
 
 The batch file can be found at: `/scratch/mt4493/twitter_labor/twitter/jobs/training_binary/bert_models/`. 
 
+Example command: 
+
+`$ sbatch train_bert_model.sbatch jul23_iter0/preprocessed bert DeepPavlov/bert-base-cased-conversational`
 ## Results:
 
 ### Models:
