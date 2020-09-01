@@ -67,7 +67,7 @@ from ekphrasis.dicts.emoticons import emoticons
 pd.set_option('display.max_colwidth', -1)
 run_start_time = datetime.datetime.today().strftime('%Y-%m-%d_%H-%M-%S')
 
-root_path='/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/jobs/running_on_200Msamples/'
+root_path= '/archive/jobs/running_on_200Msamples/'
 
 
 
