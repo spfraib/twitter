@@ -42,7 +42,7 @@ with:
 - <MODEL_NAME>: the BERT-based model architecture used. By default, it is always set to `bert`. 
 - <MODEL_TYPE>: the type of BERT-based model used (e.g. `DeepPavlov/bert-base-cased-conversational` for ConvBERT). This refers to the shortcut name of the model on the HuggingFace hub. The whole list can be found [here](https://huggingface.co/transformers/pretrained_models.html). 
 
-The batch file can be found at: `/scratch/mt4493/twitter_labor/twitter/jobs/training_binary/bert_models/`. 
+The batch file can be found at: `/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models`. 
 
 Example command: 
 
