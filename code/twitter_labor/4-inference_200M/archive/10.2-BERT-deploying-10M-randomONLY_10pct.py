@@ -2,7 +2,7 @@
 # coding: utf-8
 # run using: sbatch --array=0-9 7.9-get-predictions-from-BERT.sh
 
-print('started 10.2-BERT-deploying-1M-filteredONLY_1pct.py')
+print('started 10.2-BERT-deploying-1M-randomONLY_1pct.py')
 
 import sys
 import os
@@ -51,7 +51,7 @@ from sklearn.preprocessing import scale
 
 
 # sys.path.append('../')
-sys.path.append('../8-training_binary/bert_models/')
+sys.path.append('../twitter_labor/2-model_training/bert_models/')
 
 from simpletransformers.classification import ClassificationModel
 
@@ -112,39 +112,39 @@ import numpy as np
 path_to_data='/scratch/spf248/twitter/data/classification/US/'
 
 
-print('Load filtered Tweets:')
-# filtered contains 7.3G of data!!
+print('Load Random Tweets:')
+# random contains 7.3G of data!!
 start_time = time.time()
 
-paths_to_filtered=list(np.array_split(
-                        # glob(os.path.join(path_to_data,'filtered','*.parquet')),
-                        glob(os.path.join(path_to_data,'filtered_10perct_sample','*.parquet')),
-#                         glob(os.path.join(path_to_data,'filtered_1perct_sample','*.parquet')),
+paths_to_random=list(np.array_split(
+                        # glob(os.path.join(path_to_data,'random','*.parquet')),
+                        glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
+#                         glob(os.path.join(path_to_data,'random_1perct_sample','*.parquet')),
                         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-print('#files:', len(paths_to_filtered))
+print('#files:', len(paths_to_random))
 
-tweets_filtered=pd.DataFrame()
-for file in paths_to_filtered:
+tweets_random=pd.DataFrame()
+for file in paths_to_random:
     print(file)
-    tweets_filtered=pd.concat([tweets_filtered,pd.read_parquet(file)[['tweet_id','text']]])
-    print(tweets_filtered.shape)
+    tweets_random=pd.concat([tweets_random,pd.read_parquet(file)[['tweet_id','text']]])
+    print(tweets_random.shape)
 
     
 #     break
-# tweets_filtered = tweets_filtered[:100]
+# tweets_random = tweets_random[:100]
 
 
 
-print('time taken to load filtered sample:', str(time.time() - start_time), 'seconds')
-print(tweets_filtered.shape)
+print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
+print(tweets_random.shape)
 
 
 print('dropping duplicates:')
-# filtered contains 7.3G of data!!
+# random contains 7.3G of data!!
 start_time = time.time()
-tweets_filtered = tweets_filtered.drop_duplicates('text')
-print('time taken to load filtered sample:', str(time.time() - start_time), 'seconds')
-print(tweets_filtered.shape)
+tweets_random = tweets_random.drop_duplicates('text')
+print('time taken to load random sample:', str(time.time() - start_time), 'seconds')
+print(tweets_random.shape)
 
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
@@ -194,16 +194,16 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
 
 
 
-    print('Predictions of filtered Tweets:')
+    print('Predictions of Random Tweets:')
     start_time = time.time()
-    #     predictions_filtered = learner.predict_batch(tweets_filtered['text'].values.tolist())
-#     predictions_filtered = clf.predict_proba(filtered_data_vecs_glove_mean)
-    predictions, predictions_filtered = model.predict(tweets_filtered['text'].values.tolist())
-#     print(type(predictions_filtered))
-    # print(predictions_filtered)
+    #     predictions_random = learner.predict_batch(tweets_random['text'].values.tolist())
+#     predictions_random = clf.predict_proba(random_data_vecs_glove_mean)
+    predictions, predictions_random = model.predict(tweets_random['text'].values.tolist())
+#     print(type(predictions_random))
+    # print(predictions_random)
 
     print('time taken:', str(time.time() - start_time), 'seconds')
-    print('per tweet:', (time.time() - start_time)/tweets_filtered.shape[0], 'seconds')
+    print('per tweet:', (time.time() - start_time)/tweets_random.shape[0], 'seconds')
 
     # In[ ]:
 
@@ -238,12 +238,12 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     #     print('time taken:', str(time.time() - start_time), 'seconds')
 
 
-    print('Save Predictions of filtered Tweets:')
+    print('Save Predictions of Random Tweets:')
     start_time = time.time()
-    # predictions_filtered_df = pd.DataFrame(data=predictions_filtered, columns = ['neg', 'pos'])
-    predictions_filtered_df = pd.DataFrame(data=predictions_filtered, columns = ['first', 'second'])
-    df_filtered = predictions_filtered_df.set_index(tweets_filtered.tweet_id)
-    # df_filtered = predictions_filtered.set_index(tweets_filtered.tweet_id).rename(columns={
+    # predictions_random_df = pd.DataFrame(data=predictions_random, columns = ['neg', 'pos'])
+    predictions_random_df = pd.DataFrame(data=predictions_random, columns = ['first', 'second'])
+    df_random = predictions_random_df.set_index(tweets_random.tweet_id)
+    # df_random = predictions_random.set_index(tweets_random.tweet_id).rename(columns={
     #         '0':'pos_model',
     #         '1':'neg_model',
     # })
@@ -251,12 +251,12 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     # if not os.path.exists(os.path.join(root_path,'pred_output_10pct_sample', column)):
     #     os.makedirs(os.path.join(root_path,'pred_output_10pct_sample', column))
 
-    df_filtered.to_csv(
-        # os.path.join(root_path,'pred_output', column, 'filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv')
-        os.path.join(root_path,'pred_output_10pct_sample_BERT', column, 'filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv')
+    df_random.to_csv(
+        # os.path.join(root_path,'pred_output', column, 'random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv')
+        os.path.join(root_path,'pred_output_10pct_sample_BERT', column, 'random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv')
         )
 
-#     print(os.path.join(root_path,'pred_output_1pct_sample_BERT', column, 'filtered'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'), 'saved')
+#     print(os.path.join(root_path,'pred_output_1pct_sample_BERT', column, 'random'+'-'+str(SLURM_JOB_ID)+'-'+str(SLURM_ARRAY_TASK_ID)+'.csv'), 'saved')
 
     print('time taken:', str(time.time() - start_time), 'seconds')
 

@@ -42,7 +42,7 @@ source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 echo "pyenv activated"
 #echo "shell" $0
 
-cd /scratch/da2734/twitter/code/8-training_binary/
+cd /scratch/da2734/twitter/code/twitter_labor/2-model_training/
 pwd
 
 #jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)

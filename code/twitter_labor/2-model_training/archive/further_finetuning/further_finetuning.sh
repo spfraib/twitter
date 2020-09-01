@@ -3,13 +3,13 @@
 MODEL_NAME_FOLDER='bert-base-cased-conversational'
 DATA_FOLDER='may28_data'
 PREPROCESSED='0'
-PARQUET_PATH='twitter/code/8-training_binary/saved_data'
+PARQUET_PATH='twitter/code/twitter_labor/model_training/saved_data'
 DATA_PATH='twitter/data/may20_9Klabels/data_binary_pos_neg_balanced'
 MODEL_PATH='results_simpletransformers_bert-base-cased-conversational_may20_9Klabels_0/DeepPavlov'
 mkdir results_simpletransformers_${MODEL_NAME_FOLDER}_${DATA_FOLDER}_${PREPROCESSED}
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py \
+python3 twitter/code/twitter_labor/model_training/further_finetuning/further_finetuning.py \
  --parquet_folder_path ${PARQUET_PATH} \
  --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
  --run_name bert-base-cased-conversational_may28_lost_job_1mo \
@@ -22,7 +22,7 @@ python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py 
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
-python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py \
+python3 twitter/code/twitter_labor/model_training/further_finetuning/further_finetuning.py \
  --parquet_folder_path ${PARQUET_PATH} \
  --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
  --run_name bert-base-cased-conversational_may28_is_unemployed \
@@ -35,7 +35,7 @@ python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py 
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
-python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py \
+python3 twitter/code/twitter_labor/model_training/further_finetuning/further_finetuning.py \
  --parquet_folder_path ${PARQUET_PATH} \
  --eval_data_path ${DATA_PATH}/val_job_search.csv \
  --run_name bert-base-cased-conversational_may28_job_search \
@@ -48,7 +48,7 @@ python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py 
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py \
+python3 twitter/code/twitter_labor/model_training/further_finetuning/further_finetuning.py \
  --parquet_folder_path ${PARQUET_PATH} \
  --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
  --run_name bert-base-cased-conversational_may28_is_hired_1mo \
@@ -61,7 +61,7 @@ python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py 
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
-python3 twitter/code/8-training_binary/further_finetuning/further_finetuning.py \
+python3 twitter/code/twitter_labor/model_training/further_finetuning/further_finetuning.py \
  --parquet_folder_path ${PARQUET_PATH} \
  --eval_data_path ${DATA_PATH}/val_job_offer.csv \
  --run_name bert-base-cased-conversational_may28_job_offer \
