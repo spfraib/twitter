@@ -180,7 +180,7 @@ for attr, value in sorted(FLAGS.__flags.items()):
 # Data Preparation
 print("Loading Dataset ...")
 
-training_data_path = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/',
+training_data_path = os.path.join('/scratch/mt4493/2-twitter_labor/twitter-labor-data/data/',
                                   FLAGS.training_data_path)
 if '/' in FLAGS.training_data_path:
     training_data_path_no_slash = FLAGS.training_data_path.replace('/', '_')

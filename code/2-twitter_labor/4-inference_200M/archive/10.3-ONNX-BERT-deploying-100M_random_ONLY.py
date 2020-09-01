@@ -25,7 +25,7 @@ print('libs loaded')
 # column = 'is_unemployed'
 
 
-root_path='/scratch/mt4493/twitter_labor/code/twitter/jobs/inference/running_on_200Msamples/'
+root_path='/scratch/mt4493/2-twitter_labor/code/twitter/jobs/inference/running_on_200Msamples/'
 
 ####################################################################################################################################
 # HELPER FUNCTIONS
@@ -180,8 +180,8 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     print('\n\n!!!!!', column)
     loop_start = time.time()
 
-    model_path = '/scratch/mt4493/twitter_labor/trained_models/iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/'.format(column)
-    onnx_path =  '/scratch/mt4493/twitter_labor/trained_models/iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/onnx'.format(column)
+    model_path = '/scratch/mt4493/2-twitter_labor/trained_models/iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/'.format(column)
+    onnx_path =  '/scratch/mt4493/2-twitter_labor/trained_models/iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/onnx'.format(column)
     #onnx_path = '/scratch/da2734/twitter/jobs/onnx/results_simpletransformers_jun3_10Klabels_0_all_labels/{}/onnx/'.format(column)
 
     ####################################################################################################################################

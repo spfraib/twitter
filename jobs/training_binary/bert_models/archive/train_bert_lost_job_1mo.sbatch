@@ -42,7 +42,7 @@ source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 echo "pyenv activated"
 #echo "shell" $0
 
-cd /scratch/da2734/twitter/code/twitter_labor/2-model_training/
+cd /scratch/da2734/twitter/code/2-twitter_labor/2-model_training/
 
 pwd
 

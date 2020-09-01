@@ -47,7 +47,7 @@ echo "pyenv activated"
 
 #echo what
 
-cd /scratch/da2734/twitter/code/twitter_labor/4-inference_200M/
+cd /scratch/da2734/twitter/code/2-twitter_labor/4-inference_200M/
 
 pwd
 

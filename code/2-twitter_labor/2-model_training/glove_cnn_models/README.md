@@ -11,7 +11,7 @@ $ source env_name/bin/activate
 
 - Install the necessary packages:
 ```
-$ cd twitter/code/twitter_labor/model_training/glove_cnn_models #in case you haven't cd into the present folder yet
+$ cd twitter/code/2-twitter_labor/model_training/glove_cnn_models #in case you haven't cd into the present folder yet
 $ pip install -r requirements.txt
 ```
 

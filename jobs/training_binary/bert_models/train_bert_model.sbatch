@@ -44,7 +44,7 @@ mkdir /scratch/mt4493/twitter_labor/trained_models/"${MODEL_TYPE_WITHOUT_SLASH}"
 OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
 echo "Output folder created: ${OUTPUT_DIR}"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/twitter_labor/2-model_training/bert_models
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
 python3 train_bert.py \

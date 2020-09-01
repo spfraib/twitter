@@ -13,7 +13,7 @@ import sys
 import shutil
 
 
-sys.path.append('/scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/utils_for_inference')
+sys.path.append('/scratch/mt4493/2-twitter_labor/code/twitter/jobs/inference_200M/utils_for_inference')
 from transformers.convert_graph_to_onnx import convert
 from transformers import BertConfig, BertTokenizer, BertTokenizerFast, BertForSequenceClassification
 from onnxruntime_tools import optimizer
@@ -21,7 +21,7 @@ from quantize import quantize, QuantizationMode
 
 
 model_path_from_terminal = sys.argv[1] 
-# e.g. '/scratch/mt4493/twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model'
+# e.g. '/scratch/mt4493/2-twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model'
 
 for label in ["lost_job_1mo","is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
