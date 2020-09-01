@@ -23,7 +23,7 @@ else
 fi
 
 HOLDOUT_DATA_FOLDER=/scratch/mt4493/twitter_labor/twitter-labor-data/data/jul23_iter0/preprocessed
-GLOVE_FILES_PATH=/scratch/mt4493/twitter_labor/code/twitter/code/twitter_labor/2-model_training/glove_cnn_models/glove_files
+GLOVE_FILES_PATH=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/glove_cnn_models/glove_files
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
@@ -35,7 +35,7 @@ mkdir /scratch/mt4493/twitter_labor/trained_models/"GloVe_CNN"_"${DATA_FOLDER_WI
 OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/"GloVe_CNN"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"
 echo "Output folder created: ${OUTPUT_DIR}"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/twitter_labor/2-model_training/glove_cnn_models
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/glove_cnn_models
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
 python3 train_glove_cnn.py \

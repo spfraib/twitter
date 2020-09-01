@@ -17,7 +17,7 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/twitter_labor/4-inference_200M/bert_models
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
 python3 onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}/{}/models/best_model
 
