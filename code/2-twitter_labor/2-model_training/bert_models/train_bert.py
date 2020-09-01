@@ -206,7 +206,7 @@ if __name__ == "__main__":
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
                                       "early_stopping_metric_minimize": True}
     ## Allow for several evaluations per epoch
-    nb_steps_per_epoch = train_df.shape[0] / classification_args['train_batch_size']
+    nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
     classification_args['evaluate_during_training_steps'] = int(nb_steps_per_epoch // args.nb_evaluations_per_epoch)
     ## Define the model
     model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
