@@ -43,7 +43,7 @@ Based on the [blog post](https://medium.com/microsoftazure/accelerate-your-nlp-p
 - Run the following command:
 
 ```
-python3 twitter/code/10-deploy-100M-samples/onnx_predict.py \ 
+python3 twitter/code/twitter_labor/4-inference/onnx_predict.py \ 
 --onnx_model_path test_dhaval_onnx/convbert_jun3_is_hired1mo_7.onnx \ 
 --text <EXAMPLE_INPUT_TEXT_IN_STR_FORMAT>
 ``` 

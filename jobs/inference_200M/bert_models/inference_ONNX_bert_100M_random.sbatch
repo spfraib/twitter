@@ -39,7 +39,7 @@ echo "pyenv activated"
 
 #echo what
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/10-deploy-100M-samples/bert_models
+cd /scratch/mt4493/twitter_labor/code/twitter/code/twitter_labor/4-inference_200M/bert_models
 
 pwd
 

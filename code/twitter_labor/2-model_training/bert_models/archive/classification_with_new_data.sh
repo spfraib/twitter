@@ -5,7 +5,7 @@ MODEL_TYPE=$2
 MODEL_NAME=$3
 PREPROCESSED=$4
 NEW_TRAIN_TEST_SPLIT=$5
-PARQUET_PATH='twitter/code/8-training_binary/saved_data'
+PARQUET_PATH='twitter/code/twitter_labor/model_training/saved_data'
 
 if [[ ${MODEL_NAME} == *"/"* ]]
 then
@@ -32,7 +32,7 @@ fi
 mkdir results_simpletransformers_${MODEL_NAME_FOLDER}_${DATA_FOLDER}_${PREPROCESSED}_new_data_combined_split
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 twitter/code/8-training_binary/simple_transformers/classification.py \
+python3 twitter/code/twitter_labor/model_training/simple_transformers/classification.py \
  --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
  --preprocessed_input ${PREPROCESSED} \
@@ -48,7 +48,7 @@ python3 twitter/code/8-training_binary/simple_transformers/classification.py \
  echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed**************************************************'
-python3 twitter/code/8-training_binary/simple_transformers/classification.py \
+python3 twitter/code/twitter_labor/model_training/simple_transformers/classification.py \
  --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
  --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
  --preprocessed_input ${PREPROCESSED} \
@@ -64,7 +64,7 @@ python3 twitter/code/8-training_binary/simple_transformers/classification.py \
 echo '***********************DONE TRAINING ON LABEL is_unemployed******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search*****************************************************'
-python3 twitter/code/8-training_binary/simple_transformers/classification.py \
+python3 twitter/code/twitter_labor/model_training/simple_transformers/classification.py \
  --train_data_path ${DATA_PATH}/train_job_search.csv \
  --eval_data_path ${DATA_PATH}/val_job_search.csv \
  --preprocessed_input ${PREPROCESSED} \
@@ -80,7 +80,7 @@ python3 twitter/code/8-training_binary/simple_transformers/classification.py \
 echo '***********************DONE TRAINING ON LABEL job_search*********************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 twitter/code/8-training_binary/simple_transformers/classification.py \
+python3 twitter/code/twitter_labor/model_training/simple_transformers/classification.py \
  --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
  --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
  --preprocessed_input ${PREPROCESSED} \
@@ -96,7 +96,7 @@ python3 twitter/code/8-training_binary/simple_transformers/classification.py \
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer******************************************************'
-python3 twitter/code/8-training_binary/simple_transformers/classification.py \
+python3 twitter/code/twitter_labor/model_training/simple_transformers/classification.py \
  --train_data_path ${DATA_PATH}/train_job_offer.csv \
  --eval_data_path ${DATA_PATH}/val_job_offer.csv \
  --preprocessed_input ${PREPROCESSED} \
