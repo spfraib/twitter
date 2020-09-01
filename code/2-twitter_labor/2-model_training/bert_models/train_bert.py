@@ -237,14 +237,14 @@ if __name__ == "__main__":
         os.rename(path_to_store_best_model, os.path.join(os.path.dirname(path_to_store_best_model), 'overall_best_model'))
         ## Copy folder of best model at or after first epoch to best_model folder
         if int(best_model_after_first_epoch_step) % int(nb_steps_per_epoch) == 0:
-            epoch_number = int(best_model_after_first_epoch_step) / int(nb_steps_per_epoch)
+            epoch_number = int(best_model_after_first_epoch_step / nb_steps_per_epoch)
             best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}-epoch-{}'.format(str(best_model_after_first_epoch_step), str(epoch_number)))
         else:
             best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}'.format(str(best_model_after_first_epoch_step)))
         copy_folder(best_model_after_first_epoch_path, path_to_store_best_model)
         print("The best model is found at {} steps, therefore before the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
-        print("The best model at or after the first epoch is found at {} steps.".format(best_model_after_first_epoch_step),
-              "The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
+        print("The best model at or after the first epoch is found at {} steps.".format(best_model_after_first_epoch_step))
+        print("The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
 
     # Load best model (in terms of evaluation loss)
     best_model = ClassificationModel(args.model_name, path_to_store_best_model)
