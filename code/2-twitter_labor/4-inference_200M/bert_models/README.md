@@ -8,7 +8,7 @@
 
 ### 1. Convert PyTorch models to ONNX format:
 ```
-$ sbatch /scratch/mt4493/twitter_labor/code/twitter/jobs/inference_200M/bert_models/onnx_model_conversion.sbatch <MODEL_FOLDER>
+$ sbatch /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/onnx_model_conversion.sbatch <MODEL_FOLDER>
 ```
 where <MODEL_FOLDER> is the path to the folder containing the model files we want to convert to ONNX format.
 
