@@ -33,7 +33,7 @@ if __name__ == "__main__":
         inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
         full_inference_df = pd.concat(pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
         full_inference_with_text_df = full_inference_df.join(full_random_df)
-        output_parquet_path = os.path.join(args.inference_output_folder, "{}_all.parquet".format(column))
+        output_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         full_inference_with_text_df.to_parquet(output_parquet_path)
         print("All data with text and scores saved at {}".format(output_parquet_path))
 
