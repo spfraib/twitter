@@ -190,7 +190,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     ####################################################################################################################################
     print('Predictions of random Tweets:')
     start_time = time.time()
-    onnx_labels = inference(onnx_path + 'bert_optimized.onnx',
+    onnx_labels = inference(onnx_path + 'bert_optimized_ONNXquantized.onnx',
                             model_path,
                             examples,
                             fast_tokenizer=True,
