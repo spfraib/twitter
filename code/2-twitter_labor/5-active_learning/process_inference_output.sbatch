@@ -7,7 +7,7 @@
 #SBATCH --output=slurm_merge_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=manuel.tonneau@mailbox.org
+#SBATCH --mail-user=mt4493@nyu.edu
 
 INFERENCE_FOLDER=$1
 
