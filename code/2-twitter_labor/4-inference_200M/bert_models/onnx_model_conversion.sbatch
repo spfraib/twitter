@@ -4,6 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --mem=10GB
 #SBATCH --gres=gpu:0
+#SBATCH --output=slurm_ONNX_conversion_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=manuel.tonneau@mailbox.org
