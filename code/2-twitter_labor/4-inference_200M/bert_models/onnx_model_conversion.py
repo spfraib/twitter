@@ -11,21 +11,19 @@ import torch.nn.functional as F
 import onnx
 import sys
 import shutil
-
+from onnxruntime.quantization import QuantizationMode, quantize
 
 sys.path.append('/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/utils_for_inference')
 from transformers.convert_graph_to_onnx import convert
 from transformers import BertConfig, BertTokenizer, BertTokenizerFast, BertForSequenceClassification
 from onnxruntime_tools import optimizer
-from quantize import quantize, QuantizationMode
-
 
 model_path_from_terminal = sys.argv[1] 
 # e.g. '/scratch/mt4493/2-twitter_labor/trained_models/iter0/jul23_iter0/DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_11232989/{}/models/best_model'
 
 for label in ["lost_job_1mo","is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
-    print(label)
+    print('*****************************{}*****************************'.format(label))
     model_path = model_path_from_terminal.format(label)
     onnx_path = model_path+'/onnx/'.format(label)
 
@@ -55,9 +53,9 @@ for label in ["lost_job_1mo","is_unemployed", "job_search", "is_hired_1mo", "job
 
     print('>> quantizing..')    
     model = onnx.load(onnx_path+'/converted.onnx')
-    quantized_model = quantize(model, quantization_mode=QuantizationMode.IntegerOps, static=False)
-    optimized_quantized_onnx_model_path = os.path.join(os.path.dirname(optimized_onnx_model_path), 'bert_optimized_quantized.onnx')
-    onnx.save(quantized_model, optimized_quantized_onnx_model_path)
+    quantized_model = quantize(model=model, quantization_mode=QuantizationMode.IntegerOps, force_fusions=True, symmetric_weight=True)
+    optimized_quantized_onnx_model_path = os.path.join(os.path.dirname(optimized_onnx_model_path), 'bert_optimized_ONNXquantized.onnx')
+    onnx.save_model(quantized_model, optimized_quantized_onnx_model_path)
     print('Quantized&optimized model saved at :', optimized_quantized_onnx_model_path)
     
     # break
