@@ -2,9 +2,13 @@
 .ipynb_checkpoints
 *.idea
 *.csv
+*.zip
 *.pickle
 *.pkl
 *.pckl
 *.parquet
 *.orc
 *.npy
+__pycache__
+*.out
+*.pyc
