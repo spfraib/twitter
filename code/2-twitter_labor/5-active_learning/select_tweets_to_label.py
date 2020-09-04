@@ -6,7 +6,8 @@ import numpy as np
 import pytz
 import pyarrow
 from pathlib import Path
-from transformers import BertTokenizer, BertModel, BertConfig, BertForTokenClassification, pipeline, AutoModelForTokenClassification, AutoTokenizer
+from transformers import BertTokenizer, BertModel, BertConfig, BertForTokenClassification, pipeline, \
+    AutoModelForTokenClassification, AutoTokenizer
 import torch
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -18,17 +19,23 @@ logger = logging.getLogger(__name__)
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--inference_output_folder", type=str, help="Path to the inference data. Must be in csv format.",
+    parser.add_argument("--inference_output_folder", type=str,
+                        help="Path to the inference data. Must be in csv format.",
                         default="")
     parser.add_argument("--N_exploit", type=int, help="Number of tweets to label for exploitation.", default="")
-    parser.add_argument("--N_explore_kw", type=int, help="Number of tweets to label for keyword exploration.", default="")
+    parser.add_argument("--N_explore_kw", type=int, help="Number of tweets to label for keyword exploration.",
+                        default="")
     parser.add_argument("--K_tw_exploit", type=int, help="Number of top tweets to study for exploitation.", default="")
-    parser.add_argument("--K_tw_explore_kw", type=int, help="Number of top tweets to study for keyword exploration.", default="")
-    parser.add_argument("--K_tw_explore_sent", type=int, help="Number of top tweets to study for sentence exploration.", default="")
-    parser.add_argument("--K_kw_explore", type=int, help="Number of keywords to select per top tweet for keyword exploration.", default="")
+    parser.add_argument("--K_tw_explore_kw", type=int, help="Number of top tweets to study for keyword exploration.",
+                        default="")
+    parser.add_argument("--K_tw_explore_sent", type=int, help="Number of top tweets to study for sentence exploration.",
+                        default="")
+    parser.add_argument("--K_kw_explore", type=int,
+                        help="Number of keywords to select per top tweet for keyword exploration.", default="")
 
     args = parser.parse_args()
     return args
+
 
 def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
     """Run an input sequence through the BERT model, collect and average attention scores per token and return token with most average attention."""
@@ -42,7 +49,10 @@ def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
     attention_scores_dict = dict()
     for token_position in range(len(tokenized_input_sequence)):
         attention_scores_dict[token_position] = attention_average_scores_per_token[token_position].item()
-    return {'token_index': max(attention_scores_dict, key=attention_scores_dict.get), 'token_str': tokenized_input_sequence[max(attention_scores_dict, key=attention_scores_dict.get)]}
+    print(attention_scores_dict)
+    return {'token_index': max(attention_scores_dict, key=attention_scores_dict.get),
+            'token_str': tokenized_input_sequence[max(attention_scores_dict, key=attention_scores_dict.get)]}
+
 
 def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     selected_keywords_list = list()
@@ -51,13 +61,11 @@ def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     return selected_keywords_list
 
 
-
-
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     mlm_pipeline = pipeline('fill-mask', model='bert-base-uncased', tokenizer='bert-base-uncased',
-                             config='bert-base-uncased', topk=10)
+                            config='bert-base-uncased', topk=10)
     for column in ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']:
         # Load model, config and tokenizer
         config = BertConfig.from_pretrained(PATH_MODEL_FOLDER, output_hidden_states=True, output_attentions=True)
@@ -76,15 +84,13 @@ if __name__ == "__main__":
             tweet_str = exploration_kw_data_df['text'][tweet_rank]
             tokenized_tweet = tokenizer.tokenize(tweet)
             # Determine the token with the highest average attention and replace it with a [MASK] token
-            attention_token_index = get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer,input_sequence=tokenize_tweet)['token_index']
+            attention_token_index = \
+            get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenize_tweet)[
+                'token_index']
             tokenized_tweet[attention_token_index] = '[MASK]'
             # Do MLM and select the top K_kw_explore keywords
             mlm_results_list = mlm_pipeline(' '.join(tokenized_tweet))
             selected_keywords_list = extract_keywords_from_mlm_results(mlm_results_list, args.K_kw_explore)
             # For each keyword W, draw a random sample of nb_tweets_per_keyword tweets containing W
             for selected_keyword in selected_keywords_list:
-                ## Don't forget to lower
-
-
-
-
+        ## Don't forget to lower
