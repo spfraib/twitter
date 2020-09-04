@@ -57,7 +57,7 @@ def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
 def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     selected_keywords_list = list()
     for rank_mlm_keyword in range(K_kw_explore):
-        selected_keywords.append(mlm_results_list[rank_mlm_keyword]['token_str'])
+        selected_keywords_list.append(mlm_results_list[rank_mlm_keyword]['token_str'])
     return selected_keywords_list
 
 
@@ -85,7 +85,7 @@ if __name__ == "__main__":
             tokenized_tweet = tokenizer.tokenize(tweet)
             # Determine the token with the highest average attention and replace it with a [MASK] token
             attention_token_index = \
-            get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenize_tweet)[
+            get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenized_tweet)[
                 'token_index']
             tokenized_tweet[attention_token_index] = '[MASK]'
             # Do MLM and select the top K_kw_explore keywords
