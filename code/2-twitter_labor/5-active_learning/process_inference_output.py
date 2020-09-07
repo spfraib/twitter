@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--inference_output_folder", type=str, help="Path to the inference data. Must be in csv format.",
+    parser.add_argument("--inference_output_folder", type=str, help="Path to the inference data. Must be in parquet format.",
                         default="")
     args = parser.parse_args()
     return args
