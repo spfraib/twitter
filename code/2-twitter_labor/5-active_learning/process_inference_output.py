@@ -30,6 +30,7 @@ if __name__ == "__main__":
     full_random_df = full_random_df.set_index(['tweet_id'])
     print("Loaded all random data")
     for column in ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']:
+        print(column)
         inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
         full_inference_df = pd.concat(pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
         full_inference_with_text_df = full_inference_df.join(full_random_df)
