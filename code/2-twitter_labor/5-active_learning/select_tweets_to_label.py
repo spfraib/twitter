@@ -54,6 +54,14 @@ def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
             'token_str': tokenized_input_sequence[max(attention_scores_dict, key=attention_scores_dict.get)]}
 
 
+
+def word_count(df, column):
+    df = df[:label2rank[column]]
+    df_wordcount = df.explode('tokenized_text')
+    df_wordcount = df_wordcount['tokenized_text'].value_counts().rename_axis('word').reset_index(
+        name='count_top_tweets')
+    
+
 def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     selected_keywords_list = list()
     for rank_mlm_keyword in range(K_kw_explore):
@@ -66,7 +74,17 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     mlm_pipeline = pipeline('fill-mask', model='bert-base-uncased', tokenizer='bert-base-uncased',
                             config='bert-base-uncased', topk=10)
-    for column in ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']:
+    labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
+    base_rates = [
+        1.7342911457049017e-05,
+        0.0003534645020523677,
+        0.005604641971672389,
+        0.00015839552996469054,
+        1.455338466552472e-05]
+    N_random = 92114009
+    base_ranks = [int(x * N_random) for x in base_rates]
+    label2rank = dict(zip(labels, base_ranks))
+    for column in labels:
         # Load model, config and tokenizer
         config = BertConfig.from_pretrained(PATH_MODEL_FOLDER, output_hidden_states=True, output_attentions=True)
         tokenizer = BertTokenizer.from_pretrained(PATH_MODEL_FOLDER)
@@ -74,7 +92,8 @@ if __name__ == "__main__":
         # Load data
         input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         all_data_df = pd.read_parquet(input_parquet_path)
-        all_data_df = all_data_df.sort_values("score", inplace=True).reset_index()
+        all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index()
+        all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
         # exploit
         exploit_data_df = all_data_df[:args.N_exploit]
         # exploration (attention version)
