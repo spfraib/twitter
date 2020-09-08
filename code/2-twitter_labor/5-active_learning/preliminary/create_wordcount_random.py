@@ -36,4 +36,3 @@ if __name__ == "__main__":
     full_random_df = full_random_df.explode('tokenized_text')
     #-> rename word_count
     full_random_count_df = full_random_df['tokenized_text'].value_counts().rename_axis('unique_values').reset_index(name='counts')
-    
