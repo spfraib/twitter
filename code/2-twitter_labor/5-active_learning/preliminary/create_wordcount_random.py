@@ -31,8 +31,9 @@ if __name__ == "__main__":
     full_random_df = full_random_df.set_index(['tweet_id'])
     print("Loaded all random data")
     # Load tokenizer and tokenize text
-    tokenizer = BertTokenizer.from_pretrained(PATH_MODEL_FOLDER)
+    tokenizer = BertTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
     full_random_df['tokenized_text'] = full_random_df['text'].apply(tokenizer.tokenize)
     full_random_df = full_random_df.explode('tokenized_text')
-    #-> rename word_count
-    full_random_count_df = full_random_df['tokenized_text'].value_counts().rename_axis('unique_values').reset_index(name='counts')
+    full_random_count_df = full_random_df['tokenized_text'].value_counts().rename_axis('word').reset_index(name='count')
+    full_random_count_df.to_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet', index=False)
+
