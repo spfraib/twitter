@@ -9,6 +9,9 @@ from pathlib import Path
 from transformers import BertTokenizer, BertModel, BertConfig, BertForTokenClassification, pipeline, \
     AutoModelForTokenClassification, AutoTokenizer
 import torch
+import nltk
+from nltk.corpus import stopwords
+import string
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -54,19 +57,56 @@ def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
             'token_str': tokenized_input_sequence[max(attention_scores_dict, key=attention_scores_dict.get)]}
 
 
-def word_count(df, column):
-    df = df[:label2rank[column]]
-    df_wordcount = df.explode('tokenized_text')
-    df_wordcount = df_wordcount['tokenized_text'].value_counts().rename_axis('word').reset_index(
-        name='count_top_tweets')
-
-
 def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     selected_keywords_list = list()
     for rank_mlm_keyword in range(K_kw_explore):
         selected_keywords_list.append(mlm_results_list[rank_mlm_keyword]['token_str'])
     return selected_keywords_list
 
+
+def drop_stopwords_punctuation(df):
+    punctuation_list = [i for i in string.punctuation]
+    all_stops = stopwords.words('english') + punctuation_list
+    df = df[~df['word'].isin(all_stops)].reset_index(drop=True)
+    return df
+
+
+def calculate_lift(top_df, nb_keywords):
+    top_wordcount_df = top_df.explode('tokenized_text')
+    top_wordcount_df = top_wordcount_df['tokenized_text'].value_counts().rename_axis(
+        'word').reset_index(name='count_top_tweets')
+    full_random_wordcount_df = pd.read_parquet(
+        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
+    wordcount_df = top_wordcount_df.join(full_random_wordcount_df, on=['word'])
+    wordcount_df = drop_stopwords_punctuation(wordcount_df)
+    wordcount_df['lift'] = (wordcount_df['count_top_tweets'] / wordcount_df[
+        'count']) * N_random / label2rank[column]
+    wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index()
+    # Keep only word with lift > 1
+    wordcount_df = wordcount_df[wordcount_df['lift'] > 1]
+    if wordcount_df.shape[0] < nb_keywords:
+        return wordcount_df['word'].tolist()
+    else:
+        return wordcount_df['word'][:nb_keywords].tolist()
+
+
+
+def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase):
+    if not lowercase:
+        tweets_containing_keyword_df = data_df[data_df['text'].str.contains(keyword)].reset_index(drop=True)
+    else:
+        tweets_containing_keyword_df = data_df[data_df['lowercased_text'].str.contains(keyword)].reset_index(drop=True)
+    if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
+        print("Only {} tweets containing keyword {} (< {}). Sending all of them to labelling.".format(
+            str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
+        return tweets_containing_keyword_df
+    else:
+        return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword)
+
+def mlm_with_selected_keywords(top_df, model_name, keyword_list, topk):
+    mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
+             config=model_name, topk=topk)
+    for keyword in keyword_list:
 
 if __name__ == "__main__":
     # Define args from command line
@@ -88,35 +128,25 @@ if __name__ == "__main__":
         config = BertConfig.from_pretrained(PATH_MODEL_FOLDER, output_hidden_states=True, output_attentions=True)
         tokenizer = BertTokenizer.from_pretrained(PATH_MODEL_FOLDER)
         model = BertModel.from_pretrained(PATH_MODEL_FOLDER, config=config)
-        # Load data
+        # Load data, drop RT and tokenize text
         input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         all_data_df = pd.read_parquet(input_parquet_path)
-        all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index()
+        all_data_df = all_data_df[~all_data_df.text.str.contains("RT", na=False)].reset_index(drop=True)
+        all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index(drop=True)
         all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
+        all_data_df['lowercased_text'] = all_data_df['text'].str.lower()
         # exploit (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.N_exploit]
         # explore (w/ keyword lift; final data in explore_kw_data_df)
+        ## identify top lift keywords
         nb_tweets_per_keyword = int(args.N_explore_kw / args.K_kw_explore)
-        explore_kw_data_df = all_data_df[:args.K_tw_explore_kw]
-        explore_kw_wordcount_df = explore_kw_data_df.explode('tokenized_text')
-        explore_kw_wordcount_df = explore_kw_wordcount['tokenized_text'].value_counts().rename_axis(
-            'word').reset_index(name='count_top_tweets')
-        full_random_wordcount_df = pd.read_parquet(
-            '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
-        explore_kw_wordcount_df = explore_kw_wordcount_df.join(full_random_wordcount_df, on=['word'])
-        explore_kw_wordcount_df['lift'] = (explore_kw_wordcount_df['count_top_tweets'] /
-                                               explore_kw_wordcount_df['count']) * N_random / label2rank[column]
-        explore_kw_wordcount_df = explore_kw_wordcount_df.sort_values(by=["lift"],
-                                                                              ascending=False).reset_index()
-        selected_keywords_list = explore_kw_wordcount_df['word'][:args.K_kw_explore].tolist()
-        for selected_keyword in selected_keywords_list:
-            tweets_containing_keyword_df = all_data_df[all_data_df['text'].str.contains(keyword)]
-            if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
-                print("Only {} tweets containing keyword {} (< {}). Sending all of them to labelling.".format(
-                    str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
-                explore_kw_data_df = tweets_containing_keyword_df
-            else:
-                explore_kw_data_df = tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword)
+        explore_kw_data_df = all_data_df[:label2rank[column]]
+        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=10)
+        ## for each top lift keyword X, identify Y top tweets containing X and do MLM
+
+
+        explore_kw_data_df = sample_tweets_containing_selected_keywords(selected_keywords_list, nb_tweets_per_keyword,
+                                                                        explore_kw_data_df)
 
         # explore (attention version)
         # explore_kw_data_df = all_data_df[:args.K_tw_explore_kw]
