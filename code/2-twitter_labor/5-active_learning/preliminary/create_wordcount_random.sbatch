@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=merge_inference_output
+#SBATCH --job-name=wordcount_random
 #SBATCH --nodes=1
 #SBATCH --mem=50GB
 #SBATCH --gres=gpu:0
