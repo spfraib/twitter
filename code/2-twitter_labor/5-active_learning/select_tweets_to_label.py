@@ -31,7 +31,7 @@ def get_args_from_command_line():
     parser.add_argument("--K_tw_explore_sent", type=int, help="Number of top tweets to study for sentence exploration.",
                         default="")
     parser.add_argument("--K_kw_explore", type=int,
-                        help="Number of keywords to select per top tweet for keyword exploration.", default="")
+                        help="Number of keywords to select for keyword exploration.", default="")
 
     args = parser.parse_args()
     return args
@@ -60,7 +60,7 @@ def word_count(df, column):
     df_wordcount = df.explode('tokenized_text')
     df_wordcount = df_wordcount['tokenized_text'].value_counts().rename_axis('word').reset_index(
         name='count_top_tweets')
-    
+
 
 def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
     selected_keywords_list = list()
@@ -96,20 +96,32 @@ if __name__ == "__main__":
         all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
         # exploit
         exploit_data_df = all_data_df[:args.N_exploit]
-        # exploration (attention version)
+        # exploration (keyword lift)
         exploration_kw_data_df = all_data_df[:args.K_tw_explore_kw]
-        nb_tweets_per_keyword = args.N_explore_kw // (args.K_tw_explore_kw * args.K_kw_explore)
-        for tweet_rank in range(exploration_kw_data_df.shape[0]):
-            tweet_str = exploration_kw_data_df['text'][tweet_rank]
-            tokenized_tweet = tokenizer.tokenize(tweet)
-            # Determine the token with the highest average attention and replace it with a [MASK] token
-            attention_token_index = \
-            get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenized_tweet)[
-                'token_index']
-            tokenized_tweet[attention_token_index] = '[MASK]'
-            # Do MLM and select the top K_kw_explore keywords
-            mlm_results_list = mlm_pipeline(' '.join(tokenized_tweet))
-            selected_keywords_list = extract_keywords_from_mlm_results(mlm_results_list, args.K_kw_explore)
-            # For each keyword W, draw a random sample of nb_tweets_per_keyword tweets containing W
-            for selected_keyword in selected_keywords_list:
+        exploration_kw_wordcount_df = exploration_kw_data_df.explode('tokenized_text')
+        exploration_kw_wordcount_df = exploration_kw_wordcount['tokenized_text'].value_counts().rename_axis('word').reset_index(name='count_top_tweets')
+        full_random_wordcount_df = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
+        exploration_kw_wordcount_df = exploration_kw_wordcount_df.join(full_random_wordcount_df, on=['word'])
+        exploration_kw_wordcount_df['lift'] = (exploration_kw_wordcount_df['count_top_tweets'] / exploration_kw_wordcount_df['count']) * N_random/label2rank[column]
+        exploration_kw_wordcount_df = exploration_kw_wordcount_df.sort_values(by=["lift"], ascending=False).reset_index()
+        selected_keywords_list = exploration_kw_wordcount_df['word'][:args.K_kw_explore].tolist()
+
+
+
+        # exploration (attention version)
+        #exploration_kw_data_df = all_data_df[:args.K_tw_explore_kw]
+        #nb_tweets_per_keyword = args.N_explore_kw // (args.K_tw_explore_kw * args.K_kw_explore)
+        #for tweet_rank in range(exploration_kw_data_df.shape[0]):
+        #    tweet_str = exploration_kw_data_df['text'][tweet_rank]
+        #    tokenized_tweet = tokenizer.tokenize(tweet)
+        #    # Determine the token with the highest average attention and replace it with a [MASK] token
+        #    attention_token_index = \
+        #    get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenized_tweet)[
+        #        'token_index']
+        #    tokenized_tweet[attention_token_index] = '[MASK]'
+        #    # Do MLM and select the top K_kw_explore keywords
+        #    mlm_results_list = mlm_pipeline(' '.join(tokenized_tweet))
+        #    selected_keywords_list = extract_keywords_from_mlm_results(mlm_results_list, args.K_kw_explore)
+        #    # For each keyword W, draw a random sample of nb_tweets_per_keyword tweets containing W
+        #    for selected_keyword in selected_keywords_list:
         ## Don't forget to lower
