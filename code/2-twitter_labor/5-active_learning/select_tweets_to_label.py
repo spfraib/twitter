@@ -90,23 +90,40 @@ def calculate_lift(top_df, nb_keywords):
         return wordcount_df['word'][:nb_keywords].tolist()
 
 
-
 def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase):
     if not lowercase:
         tweets_containing_keyword_df = data_df[data_df['text'].str.contains(keyword)].reset_index(drop=True)
     else:
         tweets_containing_keyword_df = data_df[data_df['lowercased_text'].str.contains(keyword)].reset_index(drop=True)
+    tweets_containing_keyword_df = tweets_containing_keyword_df.sort_values(by=["score"], ascending=False).reset_index(
+        drop=True)
     if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
         print("Only {} tweets containing keyword {} (< {}). Sending all of them to labelling.".format(
             str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
         return tweets_containing_keyword_df
     else:
-        return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword)
+        return tweets_containing_keyword_df[:nb_tweets_per_keyword]
 
-def mlm_with_selected_keywords(top_df, model_name, keyword_list, topk):
+
+def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_keyword, nb_keywords_per_tweet):
+    """
+    For each keyword K in the keyword_list list, select nb_tweets_per_keyword tweets containing the keyword.
+    For each of the nb_tweets_per_keyword tweets, do masked language on keyword K.
+    Retain the top nb_keywords_per_tweet keywords from MLM and store them in the final_selected_keywords list.
+    """
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
-             config=model_name, topk=topk)
+                            config=model_name, topk=nb_keywords_per_tweet)
+    final_selected_keywords = list()
     for keyword in keyword_list:
+        tweets_containing_keyword_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
+                                                                                  top_df, lowercase=False)
+        for tweet_index in range(tweets_containing_keyword_df.shape[0]):
+            tweet = tweets_containing_keyword_df['text'][tweet_index]
+            tweet = tweet.replace(keyword, '[MASK]')
+            mlm_results_list = mlm_pipeline(tweet)
+            final_selected_keywords = + extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet)
+    return final_selected_keywords
+
 
 if __name__ == "__main__":
     # Define args from command line
@@ -135,16 +152,20 @@ if __name__ == "__main__":
         all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index(drop=True)
         all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
         all_data_df['lowercased_text'] = all_data_df['text'].str.lower()
-        # exploit (final data in exploit_data_df)
+        # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.N_exploit]
-        # explore (w/ keyword lift; final data in explore_kw_data_df)
+        # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
         nb_tweets_per_keyword = int(args.N_explore_kw / args.K_kw_explore)
         explore_kw_data_df = all_data_df[:label2rank[column]]
         top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=10)
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
-
-
+        final_selected_keywords = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
+                                                             keyword_list=top_lift_keywords_list,
+                                                             nb_tweets_per_keyword=nb_tweets_per_keyword,
+                                                             nb_keywords_per_tweet=1
+                                                             )
+        
         explore_kw_data_df = sample_tweets_containing_selected_keywords(selected_keywords_list, nb_tweets_per_keyword,
                                                                         explore_kw_data_df)
 
