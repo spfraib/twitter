@@ -28,7 +28,7 @@ if __name__ == "__main__":
     print("test", flush=True)
     # Define args from command line
     args = get_args_from_command_line()
-    # Import inference data
+    # Import data from random set
     random_data_dir = Path('/scratch/spf248/twitter/data/classification/US/random')
     full_random_df = pd.concat(pd.read_parquet(parquet_file, columns=['tweet_id', 'text']) for parquet_file in
                                random_data_dir.glob('*.parquet'))
