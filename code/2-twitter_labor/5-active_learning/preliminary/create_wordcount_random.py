@@ -33,7 +33,8 @@ if __name__ == "__main__":
     # Load tokenizer and tokenize text
     tokenizer = BertTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
     full_random_df['tokenized_text'] = full_random_df['text'].apply(tokenizer.tokenize)
+    print("Tokenized text")
     full_random_df = full_random_df.explode('tokenized_text')
     full_random_count_df = full_random_df['tokenized_text'].value_counts().rename_axis('word').reset_index(name='count')
     full_random_count_df.to_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet', index=False)
-
+    print("Saved word count to /scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet'")
