@@ -165,7 +165,7 @@ if __name__ == "__main__":
                                                              nb_tweets_per_keyword=nb_tweets_per_keyword,
                                                              nb_keywords_per_tweet=1
                                                              )
-        
+
         explore_kw_data_df = sample_tweets_containing_selected_keywords(selected_keywords_list, nb_tweets_per_keyword,
                                                                         explore_kw_data_df)
 
