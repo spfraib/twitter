@@ -13,21 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
-def get_args_from_command_line():
-    """Parse the command line arguments."""
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--inference_output_folder", type=str,
-                        help="Path to the inference data. Must be in csv format.",
-                        default="")
-    args = parser.parse_args()
-    return args
-
-
 if __name__ == "__main__":
-    print("test", flush=True)
-    # Define args from command line
-    args = get_args_from_command_line()
     # Import data from random set
     random_data_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_chunks_with_operations')
     rank = 0
@@ -40,7 +26,7 @@ if __name__ == "__main__":
             wordcount_df = df
         else:
             wordcount_df = wordcount_df.add(df, fill_value=0)
-        rank =+ 1
+        rank = + 1
 
     wordcount_df.to_parquet(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet', index=False)
