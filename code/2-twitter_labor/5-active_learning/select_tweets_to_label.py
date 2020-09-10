@@ -12,6 +12,10 @@ import torch
 import nltk
 from nltk.corpus import stopwords
 import string
+from nltk.util import skipgrams
+from ekphrasis.classes.preprocessor import TextPreProcessor
+from ekphrasis.classes.tokenizer import SocialTokenizer
+from ekphrasis.dicts.emoticons import emoticons
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -143,6 +147,42 @@ def eliminate_keywords_contained_in_positives_from_training(keyword_list, column
             final_keyword_list.append(keyword)
     return final_keyword_list
 
+def k_skip_n_grams(sent, k, n):
+    return list(skipgrams(sent, k=k, n=n))
+
+
+text_processor = TextPreProcessor(
+    # terms that will be normalized
+    normalize=['url', 'email', 'percent', 'money', 'phone', 'user',
+               'time', 'url', 'date', 'number'],
+    # terms that will be annotated
+    annotate={"hashtag", "allcaps", "elongated","repeated",
+              'emphasis', 'censored'},
+    fix_html=True,  # fix HTML tokens
+
+    # corpus from which the word statistics are going to be used
+    # for word segmentation
+    segmenter="twitter",
+
+    # corpus from which the word statistics are going to be used
+    # for spell correction
+    corrector="twitter",
+
+    unpack_hashtags=True,  # perform word segmentation on hashtags
+    unpack_contractions=True,  # Unpack contractions (can't -> can not)
+    spell_correct_elong=False,  # spell correction for elongated words
+
+    # select a tokenizer. You can use SocialTokenizer, or pass your own
+    # the tokenizer, should take as input a string and return a list of tokens
+    tokenizer=SocialTokenizer(lowercase=True).tokenize,
+
+    # list of dictionaries, for replacing tokens extracted from the text,
+    # with other expressions. You can pass more than one dictionaries.
+    dicts=[emoticons]
+)
+
+def ekphrasis_preprocessing(tweet):
+    return " ".join(text_processor.pre_process_doc(tweet))
 
 if __name__ == "__main__":
     # Define args from command line
@@ -171,13 +211,15 @@ if __name__ == "__main__":
         all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index(drop=True)
         all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
         all_data_df['lowercased_text'] = all_data_df['text'].str.lower()
+        all_data_df['tokenized_preprocessed_text'] = all_data_df['text'].apply(text_processor.pre_process_doc)
+        top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.N_exploit]
         exploit_data_df['source'] = 'exploit'
         # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
         final_nb_tweets_per_keyword = int(args.N_explore_kw / args.K_kw_explore)
-        explore_kw_data_df = all_data_df[:label2rank[column]]
+        explore_kw_data_df = top_df
         top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=10)
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
@@ -201,21 +243,19 @@ if __name__ == "__main__":
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_keyword_df, ignore_index=True)
 
         # SENTENCE EXPLORATION
-        
-        # explore (attention version)
-        # explore_kw_data_df = all_data_df[:args.K_tw_explore_kw]
-        # nb_tweets_per_keyword = args.N_explore_kw // (args.K_tw_explore_kw * args.K_kw_explore)
-        # for tweet_rank in range(explore_kw_data_df.shape[0]):
-        #    tweet_str = explore_kw_data_df['text'][tweet_rank]
-        #    tokenized_tweet = tokenizer.tokenize(tweet)
-        #    # Determine the token with the highest average attention and replace it with a [MASK] token
-        #    attention_token_index = \
-        #    get_token_in_sequence_with_most_attention(model=model, tokenizer=tokenizer, input_sequence=tokenized_tweet)[
-        #        'token_index']
-        #    tokenized_tweet[attention_token_index] = '[MASK]'
-        #    # Do MLM and select the top K_kw_explore keywords
-        #    mlm_results_list = mlm_pipeline(' '.join(tokenized_tweet))
-        #    selected_keywords_list = extract_keywords_from_mlm_results(mlm_results_list, args.K_kw_explore)
-        #    # For each keyword W, draw a random sample of nb_tweets_per_keyword tweets containing W
-        #    for selected_keyword in selected_keywords_list:
-        ## Don't forget to lower
+        explore_st_data_df = top_df
+        explore_st_data_df['skipgrams'] = explore_st_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=2, n=3)
+        skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
+        skipgrams_count['share_specific_tokens'] = skipgrams_count['skipgrams'].apply(
+            lambda token_list: sum('<' in token for token in [str(i) for i in token_list]) / len(token_list))
+        skipgrams_count['share_punctuation'] = skipgrams_count['skipgrams'].apply(
+            lambda token_list: len(list(set(token_list).intersection(punctuation_list))) / len(token_list))
+        skipgrams_count['total_share_irrelevant_tokens'] = skipgrams_count['share_specific_tokens'] + skipgrams_count[
+            'share_punctuation']
+        skipgrams_count = skipgrams_count[skipgrams_count['total_share_irrelevant_tokens']<(2/3)].reset_index(drop=True)
+
+
+
+
+
+
