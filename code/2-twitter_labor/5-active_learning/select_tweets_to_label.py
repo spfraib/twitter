@@ -203,9 +203,7 @@ if __name__ == "__main__":
     label2rank = dict(zip(labels, base_ranks))
     for column in labels:
         # Load model, config and tokenizer
-        config = BertConfig.from_pretrained(PATH_MODEL_FOLDER, output_hidden_states=True, output_attentions=True)
-        tokenizer = BertTokenizer.from_pretrained(PATH_MODEL_FOLDER)
-        model = BertModel.from_pretrained(PATH_MODEL_FOLDER, config=config)
+        tokenizer = BertTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
         # Load data, drop RT and tokenize text
         input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         all_data_df = pd.read_parquet(input_parquet_path)
@@ -214,6 +212,8 @@ if __name__ == "__main__":
         all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
         all_data_df['lowercased_text'] = all_data_df['text'].str.lower()
         all_data_df['tokenized_preprocessed_text'] = all_data_df['text'].apply(text_processor.pre_process_doc)
+        all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=2,
+                                                                                                  n=3)
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.N_exploit]
@@ -245,8 +245,8 @@ if __name__ == "__main__":
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_keyword_df, ignore_index=True)
 
         # SENTENCE EXPLORATION
+        nb_top_structures = 10
         explore_st_data_df = top_df
-        explore_st_data_df['skipgrams'] = explore_st_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=2, n=3)
         skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
         skipgrams_count['share_specific_tokens'] = skipgrams_count['skipgrams'].apply(
             lambda token_list: sum('<' in token for token in [str(i) for i in token_list]) / len(token_list))
@@ -256,7 +256,12 @@ if __name__ == "__main__":
             'share_punctuation']
         skipgrams_count = skipgrams_count[skipgrams_count['total_share_irrelevant_tokens']<(2/3)].reset_index(drop=True)
         top_structures_dict = dict(skipgrams_count['skipgrams'].value_counts(dropna=False))
-        
+        top_structures_list = [item[0] for item in Counter(top_structures_dict).most_common(nb_top_structures)]
+        for top_structure in top_structures_list:
+            all_data_df =
+
+
+
 
 
 
