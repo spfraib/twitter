@@ -5,7 +5,7 @@
 #SBATCH --mem=250GB
 #SBATCH --gres=gpu:0
 #SBATCH --output=slurm_wordcount_random_%j.out
-#SBATCH --time=5:00:00
+#SBATCH --time=24:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
