@@ -29,7 +29,7 @@ if __name__ == "__main__":
         rank = + 1
 
     wordcount_df.to_parquet(
-        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet', index=False)
+        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
     print(
         "Saved word count to /scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet'",
         flush=True)
