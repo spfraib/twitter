@@ -43,7 +43,6 @@ if __name__ == "__main__":
                                                                               ascending=False).reset_index()
         output_folder_path = os.path.join(args.inference_output_folder, column)
         all_data_path = os.path.join(output_folder_path, "{}_all_sorted.parquet".format(column))
-        chunks_data_path = os.path.join(output_folder_path, 'sorted_chunks')
         # save all data
         full_inference_with_text_df.to_parquet(all_data_path)
         print("All data with text and scores for label {} saved at {}".format(column, all_data_path))
