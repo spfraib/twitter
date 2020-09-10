@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=wordcount_random
 #SBATCH --nodes=1
-#SBATCH --mem=250GB
+#SBATCH --mem=20GB
 #SBATCH --gres=gpu:0
 #SBATCH --output=slurm_wordcount_random_%j.out
 #SBATCH --time=24:00:00
