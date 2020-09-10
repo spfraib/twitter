@@ -47,13 +47,3 @@ if __name__ == "__main__":
         # save all data
         full_inference_with_text_df.to_parquet(all_data_path)
         print("All data with text and scores for label {} saved at {}".format(column, all_data_path))
-        # save sorted chunks
-        if not os.path.exists(chunks_data_path):
-            os.makedirs(chunks_data_path)
-        for chunk_inference_with_text_df in np.array_split(full_inference_with_text_df, 1000):
-            start_index = chunk_inference_with_text_df.index.start
-            end_index = chunk_inference_with_text_df.index.end
-            chunk_inference_with_text_df = chunk_inference_with_text_df.reset_index()
-            chunk_path = os.path.join(chunks_data_path,
-                                      '{}_sorted_chunk_{}_{}.parquet'.format(column, str(start_index), str(end_index)))
-            chunk_inference_with_text_df.to_parquet(chunk_path)
