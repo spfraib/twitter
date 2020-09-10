@@ -29,18 +29,20 @@ if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     # Import data from random set
-    random_data_dir = Path('/scratch/spf248/twitter/data/classification/US/random')
-    full_random_df = pd.concat(pd.read_parquet(parquet_file, columns=['tweet_id', 'text']) for parquet_file in
-                               random_data_dir.glob('*.parquet'))
-    full_random_df = full_random_df.set_index(['tweet_id'])
-    print("Loaded all random data", flush=True)
-    # Load tokenizer and tokenize text
-    tokenizer = BertTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
-    full_random_df['tokenized_text'] = full_random_df['text'].apply(tokenizer.tokenize)
-    print("Tokenized text", flush=True)
-    full_random_df = full_random_df.explode('tokenized_text')
-    full_random_count_df = full_random_df['tokenized_text'].value_counts().rename_axis('word').reset_index(name='count')
-    full_random_count_df.to_parquet(
+    random_data_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_chunks_with_operations')
+    rank = 0
+    for parquet_file in random_data_dir.glob('*.parquet'):
+        df = pd.read_parquet(parquet_file, columns=['tweet_id', 'text', 'convbert_tokenized_text'])
+        df = df.explode('convbert_tokenized_text')
+        df = df['convbert_tokenized_text'].value_counts().rename_axis('word').reset_index(name='count')
+        df = df.set_index('word')
+        if rank == 0:
+            wordcount_df = df
+        else:
+            wordcount_df = wordcount_df.add(df, fill_value=0)
+        rank =+ 1
+
+    wordcount_df.to_parquet(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet', index=False)
     print(
         "Saved word count to /scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet'",
