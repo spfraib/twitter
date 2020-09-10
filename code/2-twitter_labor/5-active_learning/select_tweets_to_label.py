@@ -16,6 +16,8 @@ from nltk.util import skipgrams
 from ekphrasis.classes.preprocessor import TextPreProcessor
 from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
+from collections import Counter
+
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -253,7 +255,8 @@ if __name__ == "__main__":
         skipgrams_count['total_share_irrelevant_tokens'] = skipgrams_count['share_specific_tokens'] + skipgrams_count[
             'share_punctuation']
         skipgrams_count = skipgrams_count[skipgrams_count['total_share_irrelevant_tokens']<(2/3)].reset_index(drop=True)
-
+        top_structures_dict = dict(skipgrams_count['skipgrams'].value_counts(dropna=False))
+        
 
 
 
