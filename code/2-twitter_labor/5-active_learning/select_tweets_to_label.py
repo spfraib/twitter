@@ -29,6 +29,8 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--inference_output_folder", type=str,
                         help="Path to the inference folder containing the merged parquet file.")
+    parser.add_argument("--tweets_to_label_output_path", type=str,
+                        help="Path to the inference folder containing the merged parquet file.")
     parser.add_argument("--k_skipgram", type=int, help="k from k-skip-n-gram", default=2)
     parser.add_argument("--n_skipgram", type=int, help="n from k-skip-n-gram", default=3)
     parser.add_argument("--nb_tweets_exploit", type=int,
@@ -221,6 +223,7 @@ def k_skip_n_grams(sent, k, n):
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
+    inference_folder_name = os.path.basename(os.path.dirname(args.inference_output_folder))
     # Calculate base rates
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     base_rates = [
@@ -308,5 +311,5 @@ if __name__ == "__main__":
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_structure_df, ignore_index=True)
 
         # Save tweets to label
-
-        # Save results from active learning
+        output_path = os.path.join(tweets_to_label_output_path, inference_folder_name, '{}_to_label.csv'.format(column))
+        tweets_to_label.to_csv(output_path)
