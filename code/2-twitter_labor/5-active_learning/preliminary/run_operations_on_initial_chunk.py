@@ -86,7 +86,7 @@ if __name__ == "__main__":
     chunk_df['tokenized_preprocessed_text'] = chunk_df['text'].apply(text_processor.pre_process_doc)
     # Compute all k-skip-n-grams
     #chunk['skipgrams'] = chunk_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=2,
-                                                                       n=3)
+    #                                                                   n=3)
     # Save to parquet
     output_path = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_chunks_with_operations',
                                '{}_random-{}.parquet'.format(str(getpass.getuser()), str(SLURM_ARRAY_TASK_ID)))
