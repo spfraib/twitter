@@ -18,7 +18,6 @@ from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
 
-
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
@@ -29,7 +28,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--inference_output_folder", type=str,
-                        help="Path to the inference data. Must be in csv format.",
+                        help="Path to the inference folder containing the parquet files.",
                         default="")
     parser.add_argument("--N_exploit", type=int, help="Number of tweets to label for exploitation.", default="")
     parser.add_argument("--N_explore_kw", type=int, help="Number of tweets to label for keyword explore.",
@@ -81,8 +80,8 @@ def drop_stopwords_punctuation(df):
 
 
 def calculate_lift(top_df, nb_keywords):
-    top_wordcount_df = top_df.explode('tokenized_text')
-    top_wordcount_df = top_wordcount_df['tokenized_text'].value_counts().rename_axis(
+    top_wordcount_df = top_df.explode('convbert_tokenized_text')
+    top_wordcount_df = top_wordcount_df['convbert_tokenized_text'].value_counts().rename_axis(
         'word').reset_index(name='count_top_tweets')
     full_random_wordcount_df = pd.read_parquet(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
@@ -149,6 +148,7 @@ def eliminate_keywords_contained_in_positives_from_training(keyword_list, column
             final_keyword_list.append(keyword)
     return final_keyword_list
 
+
 def k_skip_n_grams(sent, k, n):
     return list(skipgrams(sent, k=k, n=n))
 
@@ -158,7 +158,7 @@ text_processor = TextPreProcessor(
     normalize=['url', 'email', 'percent', 'money', 'phone', 'user',
                'time', 'url', 'date', 'number'],
     # terms that will be annotated
-    annotate={"hashtag", "allcaps", "elongated","repeated",
+    annotate={"hashtag", "allcaps", "elongated", "repeated",
               'emphasis', 'censored'},
     fix_html=True,  # fix HTML tokens
 
@@ -183,14 +183,18 @@ text_processor = TextPreProcessor(
     dicts=[emoticons]
 )
 
+
 def ekphrasis_preprocessing(tweet):
     return " ".join(text_processor.pre_process_doc(tweet))
+
 
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
+    # Define MLM pipline
     mlm_pipeline = pipeline('fill-mask', model='bert-base-uncased', tokenizer='bert-base-uncased',
                             config='bert-base-uncased', topk=10)
+    # Calculate base rates
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     base_rates = [
         1.7342911457049017e-05,
@@ -204,30 +208,27 @@ if __name__ == "__main__":
     for column in labels:
         # Load model, config and tokenizer
         tokenizer = BertTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
-        # Load data, drop RT and tokenize text
-        input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
+        # Load data, compute skipgrams
+        input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all_sorted.parquet".format(column))
         all_data_df = pd.read_parquet(input_parquet_path)
-        all_data_df = all_data_df[~all_data_df.text.str.contains("RT", na=False)].reset_index(drop=True)
-        all_data_df = all_data_df.sort_values(by=["score"], ascending=False).reset_index(drop=True)
-        all_data_df['tokenized_text'] = all_data_df['text'].apply(tokenizer.tokenize)
-        all_data_df['lowercased_text'] = all_data_df['text'].str.lower()
-        all_data_df['tokenized_preprocessed_text'] = all_data_df['text'].apply(text_processor.pre_process_doc)
-        all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=2,
-                                                                                                  n=3)
+        all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=TO_BE_DEFINED,
+                                                                           n=TO_BE_DEFINED)
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.N_exploit]
+        exploit_data_df = exploit_data_df[['tweet_id','text']]
         exploit_data_df['source'] = 'exploit'
+        exploit_data_df['label'] = column
         # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
-        final_nb_tweets_per_keyword = int(args.N_explore_kw / args.K_kw_explore)
+        final_nb_tweets_per_keyword = TO_BE_DEFINED
         explore_kw_data_df = top_df
-        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=10)
+        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=TO_BE_DEFINED)
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
-                                                            nb_tweets_per_keyword=1,
-                                                            nb_keywords_per_tweet=5, lowercase=True
+                                                            nb_tweets_per_keyword=TO_BE_DEFINED,
+                                                            nb_keywords_per_tweet=TO_BE_DEFINED, lowercase=True
                                                             )
         ## diversity constraint (iteration 0)
         final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_keywords_list,
@@ -239,31 +240,36 @@ if __name__ == "__main__":
                 keyword=final_keyword,
                 nb_tweets_per_keyword=final_nb_tweets_per_keyword,
                 data_df=all_data_df, lowercase=True)
+            sample_tweets_containing_final_keyword_df = sample_tweets_containing_final_keyword_df[['tweet_id','text']]
             sample_tweets_containing_final_keyword_df['label'] = column
             sample_tweets_containing_final_keyword_df['keyword'] = keyword
             sample_tweets_containing_final_keyword_df['source'] = 'explore_keyword'
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_keyword_df, ignore_index=True)
 
         # SENTENCE EXPLORATION
-        nb_top_structures = 10
+        nb_top_structures = TO_BE_DEFINED
         explore_st_data_df = top_df
         skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
+        # Drop k-skip-n-grams for which 2n/3 or more tokens are special characters (special tokens from preprocessing such as <hashtag> or punctuation)
         skipgrams_count['share_specific_tokens'] = skipgrams_count['skipgrams'].apply(
             lambda token_list: sum('<' in token for token in [str(i) for i in token_list]) / len(token_list))
         skipgrams_count['share_punctuation'] = skipgrams_count['skipgrams'].apply(
             lambda token_list: len(list(set(token_list).intersection(punctuation_list))) / len(token_list))
         skipgrams_count['total_share_irrelevant_tokens'] = skipgrams_count['share_specific_tokens'] + skipgrams_count[
             'share_punctuation']
-        skipgrams_count = skipgrams_count[skipgrams_count['total_share_irrelevant_tokens']<(2/3)].reset_index(drop=True)
+        skipgrams_count = skipgrams_count[skipgrams_count['total_share_irrelevant_tokens'] < (2 / 3)].reset_index(
+            drop=True)
+        # Store top k-skip-n-grams in a list
         top_structures_dict = dict(skipgrams_count['skipgrams'].value_counts(dropna=False))
-        top_structures_list = [item[0] for item in Counter(top_structures_dict).most_common(nb_top_structures)]
+        top_structures_list = [item[0] for item in Counter(top_structures_dict).most_common(TO_BE_DEFINED)]
         for top_structure in top_structures_list:
-            all_data_df =
-
-
-
-
-
-
-
+            all_data_df["{}_in_skipgrams".format(top_structure)] = [single_top_structure in single_structure_list for
+                                                                    single_top_structure, single_structure_list in
+                                                                    zip([top_structure] * all_data_df.shape[0], all_data_df['skipgrams'])]
+            sample_tweets_containing_final_structure_df = all_data_df[all_data_df["{}_in_skipgrams".format(top_structure)]].reset_index(drop=True)
+            sample_tweets_containing_final_structure_df['label'] = column
+            sample_tweets_containing_final_structure_df['k-skip-n-gram'] = top_structure
+            sample_tweets_containing_final_structure_df['source'] = 'explore_sentence'
+            tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_structure_df, ignore_index=True)
+        
 
