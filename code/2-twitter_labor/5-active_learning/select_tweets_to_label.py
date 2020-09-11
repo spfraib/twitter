@@ -31,8 +31,6 @@ def get_args_from_command_line():
                         help="Path to the inference folder containing the merged parquet file.")
     parser.add_argument("--tweets_to_label_output_path", type=str,
                         help="Path to the inference folder containing the merged parquet file.")
-    parser.add_argument("--k_skipgram", type=int, help="k from k-skip-n-gram", default=2)
-    parser.add_argument("--n_skipgram", type=int, help="n from k-skip-n-gram", default=3)
     parser.add_argument("--nb_tweets_exploit", type=int,
                         help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
@@ -48,7 +46,8 @@ def get_args_from_command_line():
                         help="Number of top-lift k-skip-n-grams to keep (Sentence exploration). ")
     parser.add_argument("--nb_tweets_per_kskipngrams", type=int,
                         help="Number of tweets to send to labelling per k-skip-n-gram (Sentence exploration). ")
-
+    parser.add_argument("--k_skipgram", type=int, help="k from k-skip-n-gram (Sentence exploration).", default=2)
+    parser.add_argument("--n_skipgram", type=int, help="n from k-skip-n-gram (Sentence exploration).", default=3)
     args = parser.parse_args()
     return args
 
