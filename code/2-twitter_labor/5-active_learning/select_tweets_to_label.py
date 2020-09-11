@@ -310,5 +310,8 @@ if __name__ == "__main__":
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_structure_df, ignore_index=True)
 
         # Save tweets to label
-        output_path = os.path.join(tweets_to_label_output_path, inference_folder_name, '{}_to_label.csv'.format(column))
-        tweets_to_label.to_csv(output_path)
+        output_folder_path = os.path.join(tweets_to_label_output_path, inference_folder_name)
+        if not os.path.exists(output_folder_path):
+            os.makedirs(output_folder_path)
+        output_file_path = os.path.join(output_folder_path,'{}_to_label.csv'.format(column))
+        tweets_to_label.to_csv(output_file_path)
