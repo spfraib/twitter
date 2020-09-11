@@ -28,18 +28,24 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--inference_output_folder", type=str,
-                        help="Path to the inference folder containing the parquet files.",
-                        default="")
-    parser.add_argument("--N_exploit", type=int, help="Number of tweets to label for exploitation.", default="")
-    parser.add_argument("--N_explore_kw", type=int, help="Number of tweets to label for keyword explore.",
-                        default="")
-    parser.add_argument("--K_tw_exploit", type=int, help="Number of top tweets to study for exploitation.", default="")
-    parser.add_argument("--K_tw_explore_kw", type=int, help="Number of top tweets to study for keyword explore.",
-                        default="")
-    parser.add_argument("--K_tw_explore_sent", type=int, help="Number of top tweets to study for sentence explore.",
-                        default="")
-    parser.add_argument("--K_kw_explore", type=int,
-                        help="Number of keywords to select for keyword explore.", default="")
+                        help="Path to the inference folder containing the merged parquet file.")
+    parser.add_argument("--k_skipgram", type=int, help="k from k-skip-n-gram", default=2)
+    parser.add_argument("--n_skipgram", type=int, help="n from k-skip-n-gram", default=3)
+    parser.add_argument("--nb_tweets_exploit", type=int,
+                        help="Number of tweets from exploit part to send to labelling (Exploit).")
+    parser.add_argument("--nb_top_lift_kw", type=int,
+                        help="Number of top-lift keywords to keep for MLM (Keyword exploration).")
+    parser.add_argument("--nb_tweets_per_kw_mlm", type=int,
+                        help="Number of tweets to use per keyword to do MLM (Keyword exploration).",
+                        default=1)
+    parser.add_argument("--nb_kw_per_tweet_mlm", type=int,
+                        help="Number of keywords to extract from MLM for each tweet (Keyword exploration). ")
+    parser.add_argument("--nb_tweets_per_kw_final", type=int,
+                        help="Number of tweets to send to labelling per keyword outputted by MLM (Keyword exploration).")
+    parser.add_argument("--nb_top_kskipngrams", type=int,
+                        help="Number of top-lift k-skip-n-grams to keep (Sentence exploration). ")
+    parser.add_argument("--nb_tweets_per_kskipngrams", type=int,
+                        help="Number of tweets to send to labelling per k-skip-n-gram (Sentence exploration). ")
 
     args = parser.parse_args()
     return args
@@ -98,7 +104,7 @@ def calculate_lift(top_df, nb_keywords):
         return wordcount_df['word'][:nb_keywords].tolist()
 
 
-def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase):
+def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
     if not lowercase:
         tweets_containing_keyword_df = data_df[data_df['text'].str.contains(keyword)].reset_index(drop=True)
     else:
@@ -110,7 +116,10 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
             str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
         return tweets_containing_keyword_df
     else:
-        return tweets_containing_keyword_df[:nb_tweets_per_keyword]
+        if not random:
+            return tweets_containing_keyword_df[:nb_tweets_per_keyword]
+        elif random:
+            return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword)
 
 
 def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_keyword, nb_keywords_per_tweet,
@@ -127,7 +136,7 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
         keyword_list = [keyword.lower() for keyword in keyword_list]
     for keyword in keyword_list:
         tweets_containing_keyword_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
-                                                                                  top_df, lowercase)
+                                                                                  top_df, lowercase, random=False)
         for tweet_index in range(tweets_containing_keyword_df.shape[0]):
             tweet = tweets_containing_keyword_df['text'][tweet_index]
             tweet = tweet.replace(keyword, '[MASK]')
@@ -153,47 +162,9 @@ def k_skip_n_grams(sent, k, n):
     return list(skipgrams(sent, k=k, n=n))
 
 
-text_processor = TextPreProcessor(
-    # terms that will be normalized
-    normalize=['url', 'email', 'percent', 'money', 'phone', 'user',
-               'time', 'url', 'date', 'number'],
-    # terms that will be annotated
-    annotate={"hashtag", "allcaps", "elongated", "repeated",
-              'emphasis', 'censored'},
-    fix_html=True,  # fix HTML tokens
-
-    # corpus from which the word statistics are going to be used
-    # for word segmentation
-    segmenter="twitter",
-
-    # corpus from which the word statistics are going to be used
-    # for spell correction
-    corrector="twitter",
-
-    unpack_hashtags=True,  # perform word segmentation on hashtags
-    unpack_contractions=True,  # Unpack contractions (can't -> can not)
-    spell_correct_elong=False,  # spell correction for elongated words
-
-    # select a tokenizer. You can use SocialTokenizer, or pass your own
-    # the tokenizer, should take as input a string and return a list of tokens
-    tokenizer=SocialTokenizer(lowercase=True).tokenize,
-
-    # list of dictionaries, for replacing tokens extracted from the text,
-    # with other expressions. You can pass more than one dictionaries.
-    dicts=[emoticons]
-)
-
-
-def ekphrasis_preprocessing(tweet):
-    return " ".join(text_processor.pre_process_doc(tweet))
-
-
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
-    # Define MLM pipline
-    mlm_pipeline = pipeline('fill-mask', model='bert-base-uncased', tokenizer='bert-base-uncased',
-                            config='bert-base-uncased', topk=10)
     # Calculate base rates
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     base_rates = [
@@ -211,43 +182,44 @@ if __name__ == "__main__":
         # Load data, compute skipgrams
         input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all_sorted.parquet".format(column))
         all_data_df = pd.read_parquet(input_parquet_path)
-        all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=TO_BE_DEFINED,
-                                                                           n=TO_BE_DEFINED)
+        all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=args.k_skipgram,
+                                                                                    n=args.n_skipgram)
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
-        exploit_data_df = all_data_df[:args.N_exploit]
-        exploit_data_df = exploit_data_df[['tweet_id','text']]
+        exploit_data_df = all_data_df[:args.nb_tweets_exploit]
+        exploit_data_df = exploit_data_df[['tweet_id', 'text']]
         exploit_data_df['source'] = 'exploit'
         exploit_data_df['label'] = column
         # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
-        final_nb_tweets_per_keyword = TO_BE_DEFINED
         explore_kw_data_df = top_df
-        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=TO_BE_DEFINED)
+        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=args.nb_top_lift_kw)
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
-                                                            nb_tweets_per_keyword=TO_BE_DEFINED,
-                                                            nb_keywords_per_tweet=TO_BE_DEFINED, lowercase=True
+                                                            nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm_explore_kw,
+                                                            nb_keywords_per_tweet=5 * args.nb_kw_per_tweet_mlm,
+                                                            lowercase=True
                                                             )
         ## diversity constraint (iteration 0)
         final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_keywords_list,
                                                                                                column)
+        ## select nb_kw_per_tweet_mlm keywords from list of final keywords
+        final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
         ## select final tweets
         tweets_to_label = exploit_data_df
         for final_keyword in final_selected_keywords_list:
             sample_tweets_containing_final_keyword_df = sample_tweets_containing_selected_keywords(
                 keyword=final_keyword,
-                nb_tweets_per_keyword=final_nb_tweets_per_keyword,
-                data_df=all_data_df, lowercase=True)
-            sample_tweets_containing_final_keyword_df = sample_tweets_containing_final_keyword_df[['tweet_id','text']]
+                nb_tweets_per_keyword=args.nb_tweets_per_kw_final,
+                data_df=all_data_df, lowercase=True, random=True)
+            sample_tweets_containing_final_keyword_df = sample_tweets_containing_final_keyword_df[['tweet_id', 'text']]
             sample_tweets_containing_final_keyword_df['label'] = column
             sample_tweets_containing_final_keyword_df['keyword'] = keyword
             sample_tweets_containing_final_keyword_df['source'] = 'explore_keyword'
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_keyword_df, ignore_index=True)
 
         # SENTENCE EXPLORATION
-        nb_top_structures = TO_BE_DEFINED
         explore_st_data_df = top_df
         skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
         # Drop k-skip-n-grams for which 2n/3 or more tokens are special characters (special tokens from preprocessing such as <hashtag> or punctuation)
@@ -261,15 +233,24 @@ if __name__ == "__main__":
             drop=True)
         # Store top k-skip-n-grams in a list
         top_structures_dict = dict(skipgrams_count['skipgrams'].value_counts(dropna=False))
-        top_structures_list = [item[0] for item in Counter(top_structures_dict).most_common(TO_BE_DEFINED)]
+        top_structures_list = [item[0] for item in Counter(top_structures_dict).most_common(args.nb_top_kskipngrams)]
+        # For each top structure, identify tweets containing structure, sample and store in tweets_to_label dataframe
         for top_structure in top_structures_list:
             all_data_df["{}_in_skipgrams".format(top_structure)] = [single_top_structure in single_structure_list for
                                                                     single_top_structure, single_structure_list in
-                                                                    zip([top_structure] * all_data_df.shape[0], all_data_df['skipgrams'])]
-            sample_tweets_containing_final_structure_df = all_data_df[all_data_df["{}_in_skipgrams".format(top_structure)]].reset_index(drop=True)
+                                                                    zip([top_structure] * all_data_df.shape[0],
+                                                                        all_data_df['skipgrams'])]
+            sample_tweets_containing_final_structure_df = all_data_df[
+                all_data_df["{}_in_skipgrams".format(top_structure)]].reset_index(drop=True)
+            sample_tweets_containing_final_structure_df = sample_tweets_containing_final_structure_df.sample(
+                n=args.nb_tweets_per_kskipngrams).reset_index(drop=True)
+            sample_tweets_containing_final_structure_df = sample_tweets_containing_final_structure_df[
+                ['tweet_id', 'text']]
             sample_tweets_containing_final_structure_df['label'] = column
             sample_tweets_containing_final_structure_df['k-skip-n-gram'] = top_structure
             sample_tweets_containing_final_structure_df['source'] = 'explore_sentence'
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_structure_df, ignore_index=True)
-        
 
+        # Save tweets to label
+        
+        # Save results from active learning
