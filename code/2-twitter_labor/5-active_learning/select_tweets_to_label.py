@@ -71,21 +71,27 @@ def get_token_in_sequence_with_most_attention(model, tokenizer, input_sequence):
             'token_str': tokenized_input_sequence[max(attention_scores_dict, key=attention_scores_dict.get)]}
 
 
-def extract_keywords_from_mlm_results(mlm_results_list, K_kw_explore):
-    selected_keywords_list = list()
-    for rank_mlm_keyword in range(K_kw_explore):
-        selected_keywords_list.append(mlm_results_list[rank_mlm_keyword]['token_str'])
-    return selected_keywords_list
-
-
 def drop_stopwords_punctuation(df):
+    """
+    Drop rows containing stopwords or punctuation in the word column of the input dataframe.
+    :param df: input pandas DataFrame, must contain a word column
+    :return: pandas DataFrame without rows containing stopwords or punctuation
+    """
     punctuation_list = [i for i in string.punctuation]
     all_stops = stopwords.words('english') + punctuation_list
     df = df[~df['word'].isin(all_stops)].reset_index(drop=True)
     return df
 
 
-def calculate_lift(top_df, nb_keywords):
+def calculate_lift(top_df, nb_top_lift_kw):
+    """
+    Calculate keyword lift for each word appearing in top tweets.
+    To do so, calculate word count for top tweets, then join with word count from random set and calculate lift.
+    :param top_df: pandas DataFrame containing top tweets (based on the base rate estimate)
+    :param nb_top_lift_kw: number of high lift keywords to retain (
+    :return: either all keywords with lift > 1 if there is less than nb_top_lift_kw keywords
+    or the top nb_top_lift_kw keywords with lift > 1.
+    """
     top_wordcount_df = top_df.explode('convbert_tokenized_text')
     top_wordcount_df = top_wordcount_df['convbert_tokenized_text'].value_counts().rename_axis(
         'word').reset_index(name='count_top_tweets')
@@ -98,17 +104,28 @@ def calculate_lift(top_df, nb_keywords):
     wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index()
     # Keep only word with lift > 1
     wordcount_df = wordcount_df[wordcount_df['lift'] > 1]
-    if wordcount_df.shape[0] < nb_keywords:
+    if wordcount_df.shape[0] < nb_top_lift_kw:
         return wordcount_df['word'].tolist()
     else:
-        return wordcount_df['word'][:nb_keywords].tolist()
+        return wordcount_df['word'][:nb_top_lift_kw].tolist()
 
 
 def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
+    """
+    Identify tweets containing a certain keyword and take either the top nb_tweets_per_keyword tweets in terms of score
+    or a random sample of nb_tweets_per_keywords tweets containing this keyword.
+    :param keyword: keyword to look for in tweets
+    :param nb_tweets_per_keyword: the number of tweets to retain for one keyword
+    :param data_df: the pandas DataFrame containing the tweets. Must have the columns text, lowercased_text and score
+    :param lowercase: whether to match a lowercased keyword with a lowercased tweet (if True) or not
+    :param random: whether to take a random sample (if True) or top tweets
+    :return: a pandas DataFrame with nb_tweets_per_keyword tweets or less containing the keyword
+    """
     if not lowercase:
         tweets_containing_keyword_df = data_df[data_df['text'].str.contains(keyword)].reset_index(drop=True)
     else:
-        tweets_containing_keyword_df = data_df[data_df['lowercased_text'].str.contains(keyword)].reset_index(drop=True)
+        tweets_containing_keyword_df = data_df[data_df['lowercased_text'].str.contains(keyword.lower())].reset_index(
+            drop=True)
     tweets_containing_keyword_df = tweets_containing_keyword_df.sort_values(by=["score"], ascending=False).reset_index(
         drop=True)
     if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
@@ -119,7 +136,24 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
         if not random:
             return tweets_containing_keyword_df[:nb_tweets_per_keyword]
         elif random:
-            return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword)
+            return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword).reset_index(drop=True)
+
+
+def extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet):
+    """
+    Extract keywords from list of dictionaries outputted by MLM and retain only sub-word token (without ##, no punctuation).
+    :param mlm_results_list: list of dictionaries outputted by MLM pipeline
+    :param nb_keywords_per_tweet: the number of keywords to retain per MLM operation
+    :return: a list of the selected keywords from MLM results
+    """
+    selected_keywords_list = list()
+    punctuation_list = [i for i in string.punctuation]
+    for rank_mlm_keyword in range(nb_keywords_per_tweet):
+        keyword = mlm_results_list[rank_mlm_keyword]['token_str']
+        keyword = keyword.replace('##', '')
+        if keyword not in punctuation_list:
+            selected_keywords_list.append(keyword)
+    return selected_keywords_list
 
 
 def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_keyword, nb_keywords_per_tweet,
@@ -128,6 +162,13 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     For each keyword K in the keyword_list list, select nb_tweets_per_keyword tweets containing the keyword.
     For each of the nb_tweets_per_keyword tweets, do masked language on keyword K.
     Retain the top nb_keywords_per_tweet keywords from MLM and store them in the final_selected_keywords list.
+    :param top_df: pandas DataFrame containing top tweets (based on the based rate estimate)
+    :param model_name: the BERT-based model from the Hugging Face model hub to use for MLM (complete list of names can be found here: https://huggingface.co/models
+    :param keyword_list: the high-lift keywords to do MLM on
+    :param nb_tweets_per_keyword: the number of tweets to retain for MLM per input keyword
+    :param nb_keywords_per_tweet: the number of keywords to retain for each tweet used to do MLM
+    :param lowercase: whether to lowercase input keywords
+    :return: a list of keywords combining all results from MLM
     """
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
                             config=model_name, topk=nb_keywords_per_tweet)
@@ -141,11 +182,19 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
             tweet = tweets_containing_keyword_df['text'][tweet_index]
             tweet = tweet.replace(keyword, '[MASK]')
             mlm_results_list = mlm_pipeline(tweet)
-            final_selected_keywords_list = + extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet)
+            final_selected_keywords_list = + extract_keywords_from_mlm_results(mlm_results_list,
+                                                                               nb_keywords_per_tweet=nb_keywords_per_tweet)
     return final_selected_keywords_list
 
 
 def eliminate_keywords_contained_in_positives_from_training(keyword_list, column):
+    """
+    Identify keywords in keyword_list contained in tweets labelled as positive for the training set of a given class.
+    Delete these keywords from the input keyword_list
+    :param keyword_list: List of keywords to look for in positives from the training set
+    :param column: Class (e.g. lost_job_1mo, is_hired_1mo)
+    :return: the inputted keyword_list without, if any, the keywords found in positives from the training set.
+    """
     train_df = pd.read_csv(
         os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/jul23_iter0/preprocessed',
                      'train_{}.csv'.format(column)),
@@ -159,6 +208,13 @@ def eliminate_keywords_contained_in_positives_from_training(keyword_list, column
 
 
 def k_skip_n_grams(sent, k, n):
+    """
+    Apply the skipgrams method from NLTK and return the results in list format.
+    :param sent: input sentence in which to look for k-skip-n-grams
+    :param k: k parameter from k-skip-n-grams
+    :param n: n parameter from k-skip-n-grams
+    :return: a list containing all the k-skip-n-grams found in sent
+    """
     return list(skipgrams(sent, k=k, n=n))
 
 
@@ -193,7 +249,7 @@ if __name__ == "__main__":
         # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
         explore_kw_data_df = top_df
-        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_keywords=args.nb_top_lift_kw)
+        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
@@ -252,5 +308,5 @@ if __name__ == "__main__":
             tweets_to_label = tweets_to_label.append(sample_tweets_containing_final_structure_df, ignore_index=True)
 
         # Save tweets to label
-        
+
         # Save results from active learning
