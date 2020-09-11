@@ -30,7 +30,7 @@ def get_args_from_command_line():
     parser.add_argument("--inference_output_folder", type=str,
                         help="Path to the inference folder containing the merged parquet file.")
     parser.add_argument("--tweets_to_label_output_path", type=str,
-                        help="Path to the inference folder containing the merged parquet file.")
+                        help="Path to the folder where the tweets to label are saved.")
     parser.add_argument("--nb_tweets_exploit", type=int,
                         help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
