@@ -224,7 +224,7 @@ def drop_tweet_if_already_labelled(data_df):
     :param data_df:
     :return:
     """
-    
+
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
