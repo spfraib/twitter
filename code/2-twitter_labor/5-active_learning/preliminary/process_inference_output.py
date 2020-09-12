@@ -46,3 +46,7 @@ if __name__ == "__main__":
         # save all data
         full_inference_with_text_df.to_parquet(all_data_path)
         print("All data with text and scores for label {} saved at {}".format(column, all_data_path))
+        # save sample
+        full_inference_with_text_df = full_inference_with_text_df[:500000]
+        top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
+        full_inference_with_text_df.to_parquet(top_sample_data_path)
