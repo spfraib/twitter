@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --mem=100GB
 #SBATCH --gres=gpu:0
-#SBATCH --output=slurm_wordcount_random_%j.out
+#SBATCH --output=slurm_merge_inference_output_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
