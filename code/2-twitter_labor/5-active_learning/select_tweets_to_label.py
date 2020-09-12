@@ -33,6 +33,8 @@ def get_args_from_command_line():
                         help="Path to the folder where the tweets to label are saved.")
     parser.add_argument("--train_data_folder", type=str,
                         help="Path of folder when train and val data are stored.")
+    parser.add_argument("--exploit_method", type=str,
+                        help="Method chosen for the exploit part")
     parser.add_argument("--nb_tweets_exploit", type=int,
                         help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
@@ -220,6 +222,7 @@ def k_skip_n_grams(sent, k, n):
     """
     return list(skipgrams(sent, k=k, n=n))
 
+
 def drop_tweet_if_already_labelled(data_df, column, train_data_folder):
     """
     For each column, drop tweets that were already labelled from the random set used for active learning.
@@ -236,6 +239,33 @@ def drop_tweet_if_already_labelled(data_df, column, train_data_folder):
     data_df = data_df.set_index('tweet_id')
     data_df = data_df.drop(already_labelled_index)
     return data_df.reset_index()
+
+
+def exploit_part(all_data_df, top_df, method, nb_tweets_exploit, column):
+    """
+    Select tweets to label as part of the exploit part, given the chosen selection method.
+    :param all_data_df: pandas DataFrame containing the whole random set
+    :param top_df: pandas DataFrame containing the top tweets (based on the base rate calculation)
+    :param method: the version of the exploitation process.
+    - 'random_sample_top_tweets': take a random sample of nb_tweets_exploit tweets in the top_df
+    - 'sample_base_rank': take nb_tweets_exploit tweets around the base rank
+    - 'top_tweets': take nb_tweets_exploit tweets starting from the top of the distribution
+    :param nb_tweets_exploit: number of tweets to label for the exploit part
+    :param column: class
+    :return: pandas DataFrame containing tweets to label (tweet_id and text)
+    """
+    if method == "random_sample_top_tweets":
+        exploit_data_df = top_df.sample(n=nb_tweets_exploit).reset_index(drop=True)
+    elif method == "sample_base_rank":
+        base_rank = label2rank[column]
+        interval = int(nb_tweets_exploit / 2)
+        exploit_data_df = all_data_df[base_rank - interval:base_rank + interval]
+    elif method == "top_tweets":
+        exploit_data_df = all_data_df[:nb_tweets_exploit]
+    exploit_data_df = exploit_data_df[['tweet_id', 'text']]
+    exploit_data_df['source'] = 'exploit'
+    exploit_data_df['label'] = column
+    return exploit_data_df
 
 
 if __name__ == "__main__":
@@ -261,13 +291,12 @@ if __name__ == "__main__":
         all_data_df = pd.read_parquet(input_parquet_path)
         all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=args.k_skipgram,
                                                                                     n=args.n_skipgram)
-        all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column, train_data_folder=args.train_data_folder)
+        all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column,
+                                                     train_data_folder=args.train_data_folder)
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
-        exploit_data_df = all_data_df[:args.nb_tweets_exploit]
-        exploit_data_df = exploit_data_df[['tweet_id', 'text']]
-        exploit_data_df['source'] = 'exploit'
-        exploit_data_df['label'] = column
+        exploit_data_df = exploit_part(all_data_df=all_data_df, top_df=top_df, method=args.exploit_method,
+                                       nb_tweets_exploit=args.nb_tweets_exploit, column=column)
         # KEYWORD EXPLORATION (w/ keyword lift; final data in explore_kw_data_df)
         ## identify top lift keywords
         explore_kw_data_df = top_df
@@ -333,5 +362,5 @@ if __name__ == "__main__":
         output_folder_path = os.path.join(tweets_to_label_output_path, inference_folder_name)
         if not os.path.exists(output_folder_path):
             os.makedirs(output_folder_path)
-        output_file_path = os.path.join(output_folder_path,'{}_to_label.csv'.format(column))
+        output_file_path = os.path.join(output_folder_path, '{}_to_label.csv'.format(column))
         tweets_to_label.to_csv(output_file_path)
