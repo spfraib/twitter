@@ -72,7 +72,7 @@ if __name__ == "__main__":
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
     # Define paths and load data
     random_chunks_paths = list(
-        np.array_split(glob(os.path.join(random_folder_path, 'random', '*.parquet')), SLURM_ARRAY_TASK_COUNT)[
+        np.array_split(glob(os.path.join(random_folder_path, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[
             SLURM_ARRAY_TASK_ID])
     chunk_df = pd.DataFrame()
     for file in random_chunks_paths:
