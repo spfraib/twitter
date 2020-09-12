@@ -33,6 +33,7 @@ if __name__ == "__main__":
                                for parquet_file in random_data_dir.glob('*.parquet'))
     full_random_df = full_random_df.set_index(['tweet_id'])
     print("Loaded all random data")
+    labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     for column in labels:
         print(column)
         inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
