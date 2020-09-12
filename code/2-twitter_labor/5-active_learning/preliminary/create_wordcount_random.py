@@ -27,7 +27,7 @@ if __name__ == "__main__":
         else:
             wordcount_df = wordcount_df.add(df, fill_value=0)
         rank = + 1
-
+    wordcount_df = wordcount_df.reset_index()
     wordcount_df.to_parquet(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
     print(
