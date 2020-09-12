@@ -31,6 +31,8 @@ def get_args_from_command_line():
                         help="Path to the inference folder containing the merged parquet file.")
     parser.add_argument("--tweets_to_label_output_path", type=str,
                         help="Path to the folder where the tweets to label are saved.")
+    parser.add_argument("--train_data_folder", type=str,
+                        help="Path of folder when train and val data are stored.")
     parser.add_argument("--nb_tweets_exploit", type=int,
                         help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
@@ -218,12 +220,23 @@ def k_skip_n_grams(sent, k, n):
     """
     return list(skipgrams(sent, k=k, n=n))
 
-def drop_tweet_if_already_labelled(data_df):
+def drop_tweet_if_already_labelled(data_df, column, train_data_folder):
     """
+    For each column, drop tweets that were already labelled from the random set used for active learning.
+    :param data_df: pandas DataFrame containing the random set
+    :param column: class
+    :param train_data_folder: folder where the train/val data is stored
+    :return: pandas DataFrame containing the random set without the tweets that were already labelled
+    """
+    train_df = pd.read_csv(os.path.join(train_data_folder, 'train_{}.csv'.format(column)), lineterminator='\n')
+    train_df = train_df.set_index('tweet_id')
+    val_df = pd.read_csv(os.path.join(train_data_folder, 'val_{}.csv'.format(column)), lineterminator='\n')
+    val_df = val_df.set_index('tweet_id')
+    already_labelled_index = train_df.index.append(val_df.index)
+    data_df = data_df.set_index('tweet_id')
+    data_df = data_df.drop(already_labelled_index)
+    return data_df.reset_index()
 
-    :param data_df:
-    :return:
-    """
 
 if __name__ == "__main__":
     # Define args from command line
@@ -248,6 +261,7 @@ if __name__ == "__main__":
         all_data_df = pd.read_parquet(input_parquet_path)
         all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=args.k_skipgram,
                                                                                     n=args.n_skipgram)
+        all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column, train_data_folder=args.train_data_folder)
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = all_data_df[:args.nb_tweets_exploit]
