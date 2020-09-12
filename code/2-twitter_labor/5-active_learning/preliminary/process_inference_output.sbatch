@@ -5,6 +5,7 @@
 #SBATCH --mem=200GB
 #SBATCH --gres=gpu:0
 #SBATCH --output=slurm_merge_inference_output_%j.out
+#SBATCH --time=24:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
