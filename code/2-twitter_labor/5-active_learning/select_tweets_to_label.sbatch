@@ -24,6 +24,7 @@ python3 select_tweets_to_label.py \
 --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output \
 --tweets_to_label_output_path /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/tweets_to_label \
 --train_data_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER} \
+--exploit_method 'top_tweets' \
 --nb_tweets_exploit X \
 --nb_top_lift_kw X \
 --nb_tweets_per_kw_mlm X \
