@@ -34,7 +34,7 @@ def get_args_from_command_line():
     parser.add_argument("--train_data_folder", type=str,
                         help="Path of folder when train and val data are stored.")
     parser.add_argument("--exploit_method", type=str,
-                        help="Method chosen for the exploit part")
+                        help="Method chosen for the exploit part", default='top_tweets')
     parser.add_argument("--nb_tweets_exploit", type=int,
                         help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
