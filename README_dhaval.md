@@ -3,7 +3,7 @@
 # Note that:
 
 # Description of active learning code:
-What `code/2-twitter_labor/5-active_learning/select_tweets_to_label.py` does:
+What `code/2-twitter_labor/5-active_learning/select_tweets_to_label.py` doesCreate :
 - Load all data from the random set (with operations such as tokenized text, etc..)
 - Compute skipgrams (this can be outsourced to `preliminary/run_operations_on_initial_chunk.py` when we have figured out which `k` and `n` we use)
 - Drop tweets if they are already labelled (i.e.: if their tweet ID appear in the training or evaluation set used at this iteration)
