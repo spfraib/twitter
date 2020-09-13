@@ -1,12 +1,14 @@
 # Overview of where we're at:
 
-- The commands to run only once (cf [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#commands-to-run-only-once)) are both done.
-- The command to run before each iteration (cf [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#to-run-after-each-iteration) ) has been launched on my account but hasn't started yet. You need this to do active learning.
-- I have detailed the active learning command in the [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#active-learning-1). To launch this, you will first have to define all the parameters in the [batch file](https://github.com/spfraib/twitter/blob/manu_active_learning/code/2-twitter_labor/5-active_learning/select_tweets_to_label.sbatch).
-- I have not merged the `manu_active_learning` branch in case there are other modifications to make. The up-to-date code is on `manu_active_learning`.
-- I haven't been able to test my [active learning code](https://github.com/spfraib/twitter/blob/manu_active_learning/code/2-twitter_labor/5-active_learning/select_tweets_to_label.py). I have written a detailed explanation of the code line per line though, that you can find down below.
+- For active learning:
+    - The commands to run only once (cf [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#commands-to-run-only-once)) are both done.
+    - The command to run before each iteration (cf [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#to-run-after-each-iteration) ) has been launched on my account but hasn't started yet. You need this to do active learning.
+    - I have detailed the active learning command in the [README](https://github.com/spfraib/twitter/tree/manu_active_learning/code/2-twitter_labor/5-active_learning#active-learning-1). To launch this, you will first have to define all the parameters in the [batch file](https://github.com/spfraib/twitter/blob/manu_active_learning/code/2-twitter_labor/5-active_learning/select_tweets_to_label.sbatch).
+    - I have not merged the `manu_active_learning` branch in case there are other modifications to make. The up-to-date code is on `manu_active_learning`.
+    - I haven't been able to test my [active learning code](https://github.com/spfraib/twitter/blob/manu_active_learning/code/2-twitter_labor/5-active_learning/select_tweets_to_label.py). I have written a detailed explanation of the code line per line though, that you can find down below.
+    - Different active learning methods could potentially pick up the same tweets. We will have to drop duplicates at the end of the py file to make sure we don't send two times the same tweet to labelling (not yet implemented). 
+
 - I haven't been able to implement the `further-fine-tuning`. I have found how to make it work though. You just have to modify the name of the folder you import the fine-tuned model from, to then further fine-tune it (see [this issue](https://github.com/ThilinaRajapakse/simpletransformers/issues/428)).
-- Different active learning methods could potentially pick up the same tweets. We will have to drop duplicates at the end of the py file to make sure we don't send two times the same tweet to labelling (not yet implemented). 
 - There is not yet a complete agreement on the whole methodology. I list below a few points of disagreement:
     - The exploit part: Sam presented three possibilities for this, I implemented them all, see code documentation for more info.
     - You mentioned you only wanted to pick models as best_model at every epoch finish. We can discuss this but this is not how best_models are picked up so far (so far, best_model = model with lowest evaluation loss at or after the first epoch.)
