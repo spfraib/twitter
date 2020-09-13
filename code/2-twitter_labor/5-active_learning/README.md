@@ -17,3 +17,14 @@ Before starting the active learning methodology, we must:
 
 `sbatch process_inference_output.sbatch ${INFERENCE_FOLDER}`
 
+## Active learning:
+
+After defining the hyperparameters in the `select_tweets_to_label.sbatch` file, run:
+
+`sbatch select_tweets_to_label.sbatch ${INFERENCE_FOLDER} ${DATA_FOLDER}` 
+
+where:
+
+- `${INFERENCE_FOLDER}` refers to the name of the folder where the inference data is in `/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference` (e.g. `DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_12207397-12226078`)
+- `${DATA_FOLDER}` refers to the name of the folder where the training/validation data is stored in `/scratch/mt4493/twitter_labor/twitter-labor-data/data` (e.g. `jul23_iter0/preprocessed`).
+
