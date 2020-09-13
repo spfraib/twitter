@@ -176,7 +176,7 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     :return: a list of keywords combining all results from MLM
     """
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
-                            config=model_name, topk=5 * nb_keywords_per_tweet)
+                            config=model_name, topk=nb_keywords_per_tweet)
     final_selected_keywords_list = list()
     if lowercase:
         keyword_list = [keyword.lower() for keyword in keyword_list]
@@ -303,7 +303,7 @@ if __name__ == "__main__":
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
                                                             nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm_explore_kw,
-                                                            nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
+                                                            nb_keywords_per_tweet=5*args.nb_kw_per_tweet_mlm,
                                                             lowercase=True
                                                             )
         ## diversity constraint (iteration 0)
