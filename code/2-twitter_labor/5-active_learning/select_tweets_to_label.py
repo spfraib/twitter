@@ -175,6 +175,18 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     :param lowercase: whether to lowercase input keywords
     :return: a list of keywords combining all results from MLM
     """
+
+    # run mask on all tweets but then do bootstrap
+    # bootstrap:
+    #     take random sample with replacement of top tweets
+    #     take top 10 words that come out of the mask
+    # take the top 10 by global boostrap count
+    # do the 1/100K threshold like before
+
+    # pick the top 10-20 most frequent in the 100M
+    TODO
+
+
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
                             config=model_name, topk=nb_keywords_per_tweet)
     final_selected_keywords_list = list()
@@ -305,7 +317,7 @@ if __name__ == "__main__":
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
-                                                            nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm_explore_kw,
+                                                            nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm_explore_kw incorrect name,
                                                             nb_keywords_per_tweet=5*args.nb_kw_per_tweet_mlm,
                                                             lowercase=True
                                                             )
