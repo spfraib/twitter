@@ -121,7 +121,7 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
     or a random sample of nb_tweets_per_keywords tweets containing this keyword.
     :param keyword: keyword to look for in tweets
     :param nb_tweets_per_keyword: the number of tweets to retain for one keyword
-    :param data_df: the pandas DataFrame containing the tweets. Must have the columns text, lowercased_text and score
+    :param data_df: the pandas DataFrame containing the tweets. Must have the columns: text, lowercased_text and score
     :param lowercase: whether to match a lowercased keyword with a lowercased tweet (if True) or not
     :param random: whether to take a random sample (if True) or top tweets
     :return: a pandas DataFrame with nb_tweets_per_keyword tweets or less containing the keyword
@@ -187,12 +187,14 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
             tweet = tweets_containing_keyword_df['text'][tweet_index]
             tweet = tweet.replace(keyword, '[MASK]')
             mlm_results_list = mlm_pipeline(tweet)
+            # TODO check that extract_keywords_from_mlm_results works correctly?
             final_selected_keywords_list = + extract_keywords_from_mlm_results(mlm_results_list,
                                                                                nb_keywords_per_tweet=nb_keywords_per_tweet)
     return final_selected_keywords_list
 
 
 def eliminate_keywords_contained_in_positives_from_training(keyword_list, column):
+    # TODO too drastic to eliminate all keywords completely?
     """
     Identify keywords in keyword_list contained in tweets labelled as positive for the training set of a given class.
     Delete these keywords from the input keyword_list
@@ -291,6 +293,7 @@ if __name__ == "__main__":
                                                                                     n=args.n_skipgram)
         all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column,
                                                      train_data_folder=args.train_data_folder)
+        # TODO: is this data already sorted by column? otherwise this is not selecting the top tweets
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
         exploit_data_df = exploit_part(all_data_df=all_data_df, top_df=top_df, method=args.exploit_method,
@@ -327,7 +330,8 @@ if __name__ == "__main__":
         # SENTENCE EXPLORATION
         explore_st_data_df = top_df
         skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
-        # Drop k-skip-n-grams for which 2n/3 or more tokens are special characters (special tokens from preprocessing such as <hashtag> or punctuation)
+        # Drop k-skip-n-grams for which 2/3 or more tokens are special characters (special tokens from preprocessing such as <hashtag> or punctuation)
+        # TODO understand what exactly is going on here!
         skipgrams_count['share_specific_tokens'] = skipgrams_count['skipgrams'].apply(
             lambda token_list: sum('<' in token for token in [str(i) for i in token_list]) / len(token_list))
         skipgrams_count['share_punctuation'] = skipgrams_count['skipgrams'].apply(
