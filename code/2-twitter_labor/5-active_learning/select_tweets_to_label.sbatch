@@ -3,7 +3,6 @@
 #SBATCH --job-name=active_learning
 #SBATCH --nodes=1
 #SBATCH --mem=100GB
-#SBATCH --gres=gpu:0
 #SBATCH --output=slurm_active_learning_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -25,13 +24,13 @@ python3 select_tweets_to_label.py \
 --tweets_to_label_output_path /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/tweets_to_label \
 --train_data_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER} \
 --exploit_method 'top_tweets' \
---nb_tweets_exploit X \
---nb_top_lift_kw X \
---nb_tweets_per_kw_mlm X \
+--nb_tweets_exploit 100 \ #if they are all positive, increase to a larger value
+--nb_top_lift_kw 10 \ #min between 10 and the number of keywords that has lift > 1, check that these keywords have freq (% of tweets where keywords where it appears) more than 1/100K
+--nb_tweets_per_kw_mlm 10 \
 --nb_kw_per_tweet_mlm X \
 --nb_tweets_per_kw_final X \
 --nb_top_kskipngrams X \
 --nb_tweets_per_kskipngrams X \
---k_skipgram X \
---n_skipgram X \
+--k_skipgram 1-2 \ num of words in sentence that you remove
+--n_skipgram 3-4 \ num of words that you select
 
