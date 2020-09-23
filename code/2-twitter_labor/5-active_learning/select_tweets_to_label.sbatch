@@ -33,7 +33,9 @@ python3 select_tweets_to_label.py \
 --nb_tweets_per_kw_final 30 \
 --nb_top_kskipngrams 5 \
 --nb_tweets_per_kskipngrams 30 \
---k_skipgram 2 \ num of words in sentence that you remove
---n_skipgram 4 \ num of words that you select
+#num of words in sentence that you remove
+--k_skipgram 2 \
+# num of words that you select
+--n_skipgram 4
 
 #add hooks to save tweets at each step to see things
