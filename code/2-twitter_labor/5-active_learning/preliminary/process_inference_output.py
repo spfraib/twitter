@@ -50,6 +50,8 @@ if __name__ == "__main__":
             pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
         print('read all inference', time.time() - start)
 
+        print(full_inference_df.head())
+
         start = time.time()
         full_inference_df = full_inference_df.set_index('tweet_id')
         print("set index", time.time() - start)
