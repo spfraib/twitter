@@ -6,6 +6,7 @@ import numpy as np
 import pytz
 import pyarrow
 from pathlib import Path
+import time
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -27,36 +28,55 @@ if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     # Import inference data
+    start = time.time()
     print('starting')
     random_data_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_chunks_with_operations')
     full_random_df = pd.concat(pd.read_parquet(parquet_file, columns=['tweet_id', 'text', 'convbert_tokenized_text',
                                                                       'lowercased_text', 'tokenized_preprocessed_text'])
                                for parquet_file in random_data_dir.glob('*.parquet'))
-    print('read full_random_df', full_random_df.shape)
+    print('read full_random_df', full_random_df.shape, time.time() - start)
+
+    start = time.time()
     full_random_df = full_random_df.set_index('tweet_id')
-    print("Loaded all random data")
+    print("set index", time.time() - start)
+
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     for column in labels:
         print('>>>', column)
+
+        start = time.time()
         inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
-        print('reading all inference')
         full_inference_df = pd.concat(
             pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
+        print('read all inference', time.time() - start)
+
+        start = time.time()
         full_inference_df = full_inference_df.set_index('tweet_id')
-        print('joining')
+        print("set index", time.time() - start)
+
+        start = time.time()
         full_inference_with_text_df = full_inference_df.join(full_random_df)
-        print('sorting')
+        print('joined', time.time() - start)
+
+        start = time.time()
         full_inference_with_text_df = full_inference_with_text_df.sort_values(by=["score"],
                                                                               ascending=False).reset_index()
+        print('sorted', time.time() - start)
+        print(full_inference_with_text_df.head())
+
+        start = time.time()
         output_folder_path = os.path.join(args.inference_output_folder, column)
         all_data_path = os.path.join(output_folder_path, "{}_all_sorted.parquet".format(column))
+
         # save all data
         print('saving')
-        print(full_inference_with_text_df.head())
         full_inference_with_text_df.to_parquet(all_data_path)
-        print("All data with text and scores for label {} saved at {}".format(column, all_data_path))
+        print("All data with text and scores for label {} saved at {}".format(column, all_data_path), time.time() - start)
+
         # save sample
         print('sample saving')
+        start = time.time()
         full_inference_with_text_df = full_inference_with_text_df[:500000]
         top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
         full_inference_with_text_df.to_parquet(top_sample_data_path)
+        print('saved sample', time.time() - start)
