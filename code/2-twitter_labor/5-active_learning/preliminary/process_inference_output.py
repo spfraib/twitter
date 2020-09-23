@@ -8,6 +8,9 @@ import pyarrow
 from pathlib import Path
 import time
 
+pd.set_option('display.max_columns', None)
+
+
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
@@ -35,10 +38,10 @@ if __name__ == "__main__":
                                                                       'lowercased_text', 'tokenized_preprocessed_text'])
                                for parquet_file in random_data_dir.glob('*.parquet'))
     print('read full_random_df', full_random_df.shape, time.time() - start)
-
-    start = time.time()
-    full_random_df = full_random_df.set_index('tweet_id')
-    print("set index", time.time() - start)
+    print(full_random_df.head())
+    # start = time.time()
+    # full_random_df = full_random_df.set_index('tweet_id')
+    # print("set index", time.time() - start)
 
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     for column in labels:
@@ -57,7 +60,10 @@ if __name__ == "__main__":
         # print("set index", time.time() - start)
 
         start = time.time()
-        full_inference_with_text_df = full_inference_df.join(full_random_df)
+        full_inference_with_text_df = full_inference_df.join(full_random_df,
+                                                             left_on = 'tweet_id',
+                                                             right_on = 'tweet_id'
+                                                             )
         print('joined', time.time() - start)
 
         start = time.time()
