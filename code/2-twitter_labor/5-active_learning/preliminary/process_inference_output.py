@@ -27,28 +27,36 @@ if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     # Import inference data
+    print('starting')
     random_data_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_chunks_with_operations')
     full_random_df = pd.concat(pd.read_parquet(parquet_file, columns=['tweet_id', 'text', 'convbert_tokenized_text',
                                                                       'lowercased_text', 'tokenized_preprocessed_text'])
                                for parquet_file in random_data_dir.glob('*.parquet'))
+    print('read full_random_df', full_random_df.shape)
     full_random_df = full_random_df.set_index('tweet_id')
     print("Loaded all random data")
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     for column in labels:
-        print(column)
+        print('>>>', column)
         inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
+        print('reading all inference')
         full_inference_df = pd.concat(
             pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
         full_inference_df = full_inference_df.set_index('tweet_id')
+        print('joining')
         full_inference_with_text_df = full_inference_df.join(full_random_df)
+        print('sorting')
         full_inference_with_text_df = full_inference_with_text_df.sort_values(by=["score"],
                                                                               ascending=False).reset_index()
         output_folder_path = os.path.join(args.inference_output_folder, column)
         all_data_path = os.path.join(output_folder_path, "{}_all_sorted.parquet".format(column))
         # save all data
+        print('saving')
+        print(full_inference_with_text_df.head())
         full_inference_with_text_df.to_parquet(all_data_path)
         print("All data with text and scores for label {} saved at {}".format(column, all_data_path))
         # save sample
+        print('sample saving')
         full_inference_with_text_df = full_inference_with_text_df[:500000]
         top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
         full_inference_with_text_df.to_parquet(top_sample_data_path)
