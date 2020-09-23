@@ -299,8 +299,12 @@ if __name__ == "__main__":
     label2rank = dict(zip(labels, base_ranks))
     for column in labels:
         # Load data, compute skipgrams
-        input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all_sorted.parquet".format(column))
+        print('loading tweets...', "{}_all.parquet".format(column))
+        # input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
+        input_parquet_path = os.path.join(args.inference_output_folder, column, "sample_{}_all.parquet".format(column))
+        #DEBUG
         all_data_df = pd.read_parquet(input_parquet_path)
+        print('loaded', all_data_df.shape)
         all_data_df['skipgrams'] = all_data_df['tokenized_preprocessed_text'].apply(k_skip_n_grams, k=args.k_skipgram,
                                                                                     n=args.n_skipgram)
         all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column,
@@ -317,7 +321,7 @@ if __name__ == "__main__":
         ## for each top lift keyword X, identify Y top tweets containing X and do MLM
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
-                                                            nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm_explore_kw incorrect name,
+                                                            nb_tweets_per_keyword=args.nb_kw_per_tweet_mlm,
                                                             nb_keywords_per_tweet=5*args.nb_kw_per_tweet_mlm,
                                                             lowercase=True
                                                             )
@@ -378,3 +382,5 @@ if __name__ == "__main__":
             os.makedirs(output_folder_path)
         output_file_path = os.path.join(output_folder_path, '{}_to_label.csv'.format(column))
         tweets_to_label.to_csv(output_file_path)
+
+        break #DEBUG for just one column

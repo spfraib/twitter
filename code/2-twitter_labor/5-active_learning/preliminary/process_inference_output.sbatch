@@ -20,6 +20,6 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/preliminary
 
-python3 process_inference_output.py --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output
+python3 process_inference_output.py --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output > /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/process_inference_output.log 2>&1
 
 
