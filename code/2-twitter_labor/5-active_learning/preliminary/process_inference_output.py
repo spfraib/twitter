@@ -80,3 +80,5 @@ if __name__ == "__main__":
         top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
         full_inference_with_text_df.to_parquet(top_sample_data_path)
         print('saved sample', time.time() - start)
+
+        del full_inference_with_text_df
