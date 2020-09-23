@@ -2,13 +2,12 @@
 
 #SBATCH --job-name=merge_inference_output
 #SBATCH --nodes=1
-#SBATCH --mem=200GB
-#SBATCH --gres=gpu:0
+#SBATCH --mem=60GB
 #SBATCH --output=slurm_merge_inference_output_%j.out
-#SBATCH --time=24:00:00
+#SBATCH --time=96:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=mt4493@nyu.edu
+#SBATCH --mail-user=nuclearr.d@gmail.com
 
 INFERENCE_FOLDER=$1
 
