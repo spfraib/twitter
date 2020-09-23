@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=merge_inference_output
 #SBATCH --nodes=1
-#SBATCH --mem=60GB
+#SBATCH --mem=100GB
 #SBATCH --output=slurm_merge_inference_output_%j.out
 #SBATCH --time=96:00:00
 #SBATCH --mail-type=BEGIN
