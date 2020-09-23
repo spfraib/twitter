@@ -60,7 +60,7 @@ if __name__ == "__main__":
         # print("set index", time.time() - start)
 
         start = time.time()
-        full_inference_with_text_df = full_inference_df.join(full_random_df,
+        full_inference_with_text_df = full_inference_df.merge(full_random_df,
                                                              left_on = 'tweet_id',
                                                              right_on = 'tweet_id'
                                                              )
