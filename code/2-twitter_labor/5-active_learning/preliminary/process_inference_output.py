@@ -93,6 +93,12 @@ if __name__ == "__main__":
 
         # save sample
         print('sample saving')
+        """
+        TODO: this keeps breaking even on 100GB of memory         
+        /opt/slurm/data/slurmd/job12703504/slurm_script: line 22: 143310 Killed                  
+        python3 -u process_inference_output.py --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output > /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/process_inference_output.log 2>&1
+        slurmstepd: error: Detected 1 oom-kill event(s) in step 12703504.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler
+        """
         start = time.time()
         sample = full_inference_with_text_df[:500000]
         top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
@@ -105,56 +111,3 @@ if __name__ == "__main__":
         del full_inference_with_text_df
 
     #     break
-
-
-
-
-
-
-    # labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
-    # for column in labels:
-    #     print('>>>', column)
-    #
-    #     start = time.time()
-    #     inference_data_dir = Path(os.path.join(args.inference_output_folder, column))
-    #     full_inference_df = pd.concat(
-    #         pd.read_parquet(parquet_file) for parquet_file in inference_data_dir.glob('*.parquet'))
-    #     print('read all inference', time.time() - start)
-    #
-    #     print(full_inference_df.head())
-    #
-    #     # start = time.time()
-    #     # full_inference_df = full_inference_df.set_index('tweet_id')
-    #     # print("set index", time.time() - start)
-    #
-    #     start = time.time()
-    #     full_inference_with_text_df = full_inference_df.merge(full_random_df,
-    #                                                          left_on = 'tweet_id',
-    #                                                          right_on = 'tweet_id'
-    #                                                          )
-    #     print('joined', time.time() - start)
-    #
-    #     start = time.time()
-    #     full_inference_with_text_df = full_inference_with_text_df.sort_values(by=["score"],
-    #                                                                           ascending=False).reset_index()
-    #     print('sorted', time.time() - start)
-    #     print(full_inference_with_text_df.head())
-    #
-    #     start = time.time()
-    #     output_folder_path = os.path.join(args.inference_output_folder, column)
-    #     all_data_path = os.path.join(output_folder_path, "{}_all_sorted.parquet".format(column))
-    #
-    #     # save all data
-    #     print('saving')
-    #     full_inference_with_text_df.to_parquet(all_data_path)
-    #     print("All data with text and scores for label {} saved at {}".format(column, all_data_path), time.time() - start)
-    #
-    #     # save sample
-    #     print('sample saving')
-    #     start = time.time()
-    #     full_inference_with_text_df = full_inference_with_text_df[:500000]
-    #     top_sample_data_path = os.path.join(output_folder_path, "{}_top_sample_sorted.parquet".format(column))
-    #     full_inference_with_text_df.to_parquet(top_sample_data_path)
-    #     print('saved sample', time.time() - start)
-    #
-    #     del full_inference_with_text_df

@@ -28,3 +28,23 @@ where:
 - `${INFERENCE_FOLDER}` refers to the name of the folder where the inference data is in `/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference` (e.g. `DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_12207397-12226078`)
 - `${DATA_FOLDER}` refers to the name of the folder where the training/validation data is stored in `/scratch/mt4493/twitter_labor/twitter-labor-data/data` (e.g. `jul23_iter0/preprocessed`).
 
+# Dhaval update:
+I had server issues (/scratch was down for about 1 week ) so I did not 
+make as much progress as I wanted but here goes:
+- We came up with candidate parameters to run in select_tweets_to_label.sbatch
+- I went thru `select_tweets_to_label.py` in detail and verified that generally 
+the code is correct. After talking with Sam and Nir, we suggested a number of 
+improvements (e.g. bootstrapping, checking keywords for their frequency, etc) 
+that are included as TODO comments in the code. I am not 100% confident about the 
+n-k skipgram part though as it is hard to really get a sense of what is 
+going on without playing with data samples.
+- As I was starting on these changes, I found out that `process_inference_output.sbatch`
+never ran/finished. I have been working since Tuesday to put it to run but there
+were a number of bugs. As of last night I think there are not bugs anymore but 
+the code is still crashing on 100GB of RAM and I have a job pending (from your account)
+for an instance with 200GB of RAM. If we don't get an instance to run it, we
+probably should instead change the code to do it in spark. It looks like the 
+saving to pickle is what is causing out of memory issues weirdly. Please see 
+TODO/error in the code. btw I had to change to pickle because of parquet 
+unit limits (since some cells are long lists..))
+
