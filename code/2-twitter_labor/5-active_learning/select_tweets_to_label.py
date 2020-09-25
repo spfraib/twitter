@@ -23,6 +23,15 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# TODO although we decided on starting values for the parameters, it's unclear what the correct values should be. Nir
+#  suggests that we start with these parameters and save the output of each stage of this script to look at whether
+#  the outputs we are getting make sense. e.g. :
+#  - look at the values of final_selected_keywords_list to see if the keywords are meaninful
+#  - look at the skip gram results to see if they are not too obvious/degenerate
+#  - look at the nb_tweets_exploit top tweets to see if they really will help with training, etc
+
+
+
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -184,7 +193,11 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     # do the 1/100K threshold like before
 
     # pick the top 10-20 most frequent in the 100M
-    TODO
+    # TODO check the freq of the keywords in final_selected_keywords_list and make sure that they are more than
+    #  1/100K and that the keywords have lift > 1 (otherwise they are not important). freq here is defined as %
+    #  of tweets where keywords where it appears
+
+    # TODO number 2: do this over bootstraps from the random sample to make sure we are not overfitting
 
 
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
@@ -206,7 +219,6 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
 
 
 def eliminate_keywords_contained_in_positives_from_training(keyword_list, column):
-    # TODO too drastic to eliminate all keywords completely?
     """
     Identify keywords in keyword_list contained in tweets labelled as positive for the training set of a given class.
     Delete these keywords from the input keyword_list
@@ -268,6 +280,12 @@ def exploit_part(all_data_df, top_df, method, nb_tweets_exploit, column):
     :param column: class
     :return: pandas DataFrame containing tweets to label (tweet_id and text)
     """
+    # TODO: if all the tweets selecting are positive (high positive probability, expand until we start seeing a big
+    #  decay. Do it manually first to see if this is even a problem (look at top nb_tweets_exploit tweet's scores
+    #  and see if any are low enough
+
+    # TODO number 2: do this over bootstraps from the random sample to make sure we are not overfitting
+
     if method == "random_sample_top_tweets":
         exploit_data_df = top_df.sample(n=nb_tweets_exploit).reset_index(drop=True)
     elif method == "sample_base_rank":
@@ -309,6 +327,7 @@ if __name__ == "__main__":
                                                                                     n=args.n_skipgram)
         all_data_df = drop_tweet_if_already_labelled(data_df=all_data_df, column=column,
                                                      train_data_folder=args.train_data_folder)
+
         # TODO: is this data already sorted by column? otherwise this is not selecting the top tweets
         top_df = all_data_df[:label2rank[column]]
         # EXPLOITATION (final data in exploit_data_df)
@@ -347,7 +366,8 @@ if __name__ == "__main__":
         explore_st_data_df = top_df
         skipgrams_count = explore_st_data_df.explode('skipgrams').reset_index(drop=True)
         # Drop k-skip-n-grams for which 2/3 or more tokens are special characters (special tokens from preprocessing such as <hashtag> or punctuation)
-        # TODO understand what exactly is going on here!
+        # TODO Dhaval has not looked through this section very carefully yet (hard to do without even sample data)!
+        # TODO number 2: unclear what the correct n and k should be. TBD by playing with the data
         skipgrams_count['share_specific_tokens'] = skipgrams_count['skipgrams'].apply(
             lambda token_list: sum('<' in token for token in [str(i) for i in token_list]) / len(token_list))
         skipgrams_count['share_punctuation'] = skipgrams_count['skipgrams'].apply(

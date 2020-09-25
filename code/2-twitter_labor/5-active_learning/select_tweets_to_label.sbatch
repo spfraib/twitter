@@ -24,18 +24,13 @@ python3 select_tweets_to_label.py \
 --tweets_to_label_output_path /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/tweets_to_label \
 --train_data_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER} \
 --exploit_method 'top_tweets' \
-#if they are all positive, increase to a larger value
 --nb_tweets_exploit 100 \
-#min between 10 and the number of keywords that has lift > 1, check that these keywords have freq (% of tweets where keywords where it appears) more than 1/100K
 --nb_top_lift_kw 10 \
 --nb_tweets_per_kw_mlm 10 \
 --nb_kw_per_tweet_mlm 3 \
 --nb_tweets_per_kw_final 30 \
 --nb_top_kskipngrams 5 \
 --nb_tweets_per_kskipngrams 30 \
-#num of words in sentence that you remove
 --k_skipgram 2 \
-# num of words that you select
 --n_skipgram 4
 
-#add hooks to save tweets at each step to see things
