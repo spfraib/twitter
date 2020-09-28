@@ -24,3 +24,4 @@ ${CODE_FOLDER}/process_inference_output_spark.py \
 echo "PySpark script done. Copying output data to scratch."
 hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output/joined
 echo "Copying data finished."
+
