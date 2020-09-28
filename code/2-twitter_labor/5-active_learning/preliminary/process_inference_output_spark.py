@@ -5,6 +5,7 @@ from pyspark.sql import Window
 from pyspark.sql.types import *
 import subprocess
 import argparse
+import os
 
 try:
     spark
