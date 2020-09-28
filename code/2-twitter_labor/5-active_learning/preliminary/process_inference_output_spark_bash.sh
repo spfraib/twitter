@@ -10,7 +10,7 @@ export PYTHONIOENCODING=utf8
 
 hdfs dfs -put /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
 echo "Loaded inference data on Hadoop. Launching the PySpark script"
-CODE_FOLDER=/home/mt4493/twitter
+CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/preliminary
 
 spark-submit --master yarn --deploy-mode cluster --conf spark.yarn.submit.waitAppCompletion=false \
 --conf spark.serializer=org.apache.spark.serializer.KryoSerializer --conf spark.speculation=false \
