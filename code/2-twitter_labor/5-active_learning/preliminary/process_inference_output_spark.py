@@ -6,6 +6,12 @@ from pyspark.sql.types import *
 import subprocess
 import argparse
 
+try:
+    spark
+except NameError:
+    spark = SparkSession.builder.appName("").getOrCreate()
+
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -18,6 +24,7 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 def run_cmd(args_list):
     """
     run linux commands
@@ -29,14 +36,15 @@ def run_cmd(args_list):
     s_return = proc.returncode
     return s_return, s_output, s_err
 
+
 # Define base rates
 labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
 base_rates = [
-        1.7342911457049017e-05,
-        0.0003534645020523677,
-        0.005604641971672389,
-        0.00015839552996469054,
-        1.455338466552472e-05]
+    1.7342911457049017e-05,
+    0.0003534645020523677,
+    0.005604641971672389,
+    0.00015839552996469054,
+    1.455338466552472e-05]
 N_random = 92114009
 base_ranks = [int(x * N_random) for x in base_rates]
 label2rank = dict(zip(labels, base_ranks))
@@ -53,6 +61,6 @@ if __name__ == "__main__":
         # prepare paths and save
         output_folder_path = os.path.join(args.inference_output_folder, 'joined', column)
         top_tweets_output_folder_path = os.path.join(output_folder_path, f"top_tweets_{column}")
-        run_cmd(['hdfs','dfs','-mkdir','-p',top_tweets_output_folder_path])
+        run_cmd(['hdfs', 'dfs', '-mkdir', '-p', top_tweets_output_folder_path])
         top_tweets_df.coalesce(1).write.mode("overwrite").parquet(top_tweets_output_folder_path)
         inference_with_text_df.write.mode("overwrite").parquet(output_folder_path)
