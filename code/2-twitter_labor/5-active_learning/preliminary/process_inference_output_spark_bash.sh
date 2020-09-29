@@ -26,12 +26,11 @@ echo "Submitted Spark job"
 
 applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=$JOB_NAME '{ if( $2 == tmpJob) print $1 }')
 MINUTE_COUNT=0
-while [ ! -z $applicationId ]
-do
+while [ ! -z $applicationId ]; do
   echo "Waiting for job $JOB_NAME (application $applicationId) to be done to transfer output files to scratch. "
   echo "Already waited $MINUTE_COUNT minutes. "
   sleep 60
-  MINUTE_COUNT=$((MINUTE_COUNT+1))
+  MINUTE_COUNT=$((MINUTE_COUNT + 1))
   applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=$JOB_NAME '{ if( $2 == tmpJob) print $1 }')
 done
 echo "Job is done. Copying data."
