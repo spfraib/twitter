@@ -72,10 +72,11 @@ def calculate_lift(top_df, nb_top_lift_kw):
     wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index()
     # Keep only word with lift > 1
     wordcount_df = wordcount_df[wordcount_df['lift'] > 1]
+    keywords_with_lift_higher_1_list = list(wordcount_df['lift'].values())
     if wordcount_df.shape[0] < nb_top_lift_kw:
-        return wordcount_df['word'].tolist()
+        return wordcount_df['word'].tolist(), keywords_with_lift_higher_1_list
     else:
-        return wordcount_df['word'][:nb_top_lift_kw].tolist()
+        return wordcount_df['word'][:nb_top_lift_kw].tolist(), keywords_with_lift_higher_1_list
 
 
 def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
@@ -132,7 +133,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
         tweet = df['text'][tweet_index]
         tweet = tweet.replace(keyword, '[MASK]')
         mlm_results_list = mlm_pipeline(tweet)
-        df['mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
+        df['top_mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
                                                                             nb_keywords_per_tweet=nb_keywords_per_tweet)
     return df
 
@@ -149,7 +150,7 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     :param nb_keywords_per_tweet: the number of keywords to retain for each tweet used to do MLM
     :param lowercase: whether to lowercase input keywords
     :return: a dataframe containing all of the tweets containing at least one of the top-lift keywords in keyword_list
-    with a top_lift_keyword column indicating which top-lift keyword is contained in the tweet and a mlm_keywords
+    with a top_lift_keyword column indicating which top-lift keyword is contained in the tweet and a top_mlm_keywords
     column containing a list of nb_keywords_per_tweet keywords outputted from MLM.
     """
     if lowercase:
@@ -179,15 +180,21 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     return tweets_all_top_lift_keywords_df
 
 
-def bootstrapping(df, nb_samples ):
+def bootstrapping(df, nb_samples):
     top_lift_keywords_list = df.top_lift_keyword.unique()
+    final_results_dict = dict()
     for keyword in top_lift_keywords_list:
         tweets_containing_keyword_df = df.loc[df['top_lift_keyword']==keyword].reset_index(drop=True)
+        all_top_mlm_keywords_list = list()
         for sample_nb in range(nb_samples):
             tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(n=tweets_containing_keyword_df.shape[0],
                                                                                       replace=True)
+            all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
+        final_results_dict[keyword] = all_top_mlm_keywords_list
+    final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
+    keyword_count_dict = dict(Counter(final_results_list))
+    return keyword_count_dict
 
-    return final_selected_keywords_list
 
 if __name__ == "__main__":
     # Define args from command line
@@ -200,15 +207,23 @@ if __name__ == "__main__":
         print('loading tweets...', "{}_all.parquet".format(column))
         # input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         top_tweets_df = pd.read_parquet(top_tweets_path)
-
-        top_lift_keywords_list = calculate_lift(explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
-        # for each top lift keyword X, identify Y top tweets containing X and do MLM
-        selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
+        top_lift_keywords_list, keywords_with_lift_higher_1_list = calculate_lift(explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
+        # XXXXX
+        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
                                                             nb_tweets_per_keyword=args.nb_kw_per_tweet_mlm,
                                                             nb_keywords_per_tweet=5 * args.nb_kw_per_tweet_mlm,
                                                             lowercase=True
                                                             )
+        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=XXXX)
+        # keep only words with lift 1
+        keyword_count_dict = {k: keyword_count_dict[k] for k in keywords_with_lift_higher_1_list}
+        # TO DO: keep every word for which wordcount/total_nb_of_tweets > 1/100K
+
+
+        # keep top X tweets in terms of wordcount in the overall output of MLM
+
+
         # diversity constraint (iteration 0)
         final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_keywords_list,
                                                                                                column)
