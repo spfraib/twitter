@@ -11,7 +11,8 @@ export PYTHONIOENCODING=utf8
 hdfs dfs -put /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
 echo "Loaded inference data on Hadoop. Launching the PySpark script"
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/preliminary
-JOB_NAME=process_inference_output
+TIMESTAMP=$(date +%s)
+JOB_NAME=process_inference_output_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.yarn.submit.waitAppCompletion=false --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.speculation=false --conf spark.yarn.appMasterEnv.LANG=en_US.UTF-8 \
@@ -24,7 +25,7 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
 
 echo "Submitted Spark job"
 
-applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=$JOB_NAME '{ if( $2 == tmpJob) print $1 }')
+applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 echo "$applicationId"
 MINUTE_COUNT=0
 while [ ! -z $applicationId ]; do
@@ -32,7 +33,7 @@ while [ ! -z $applicationId ]; do
   echo "Already waited $MINUTE_COUNT minutes. "
   sleep 60
   MINUTE_COUNT=$((MINUTE_COUNT + 1))
-  applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=$JOB_NAME '{ if( $2 == tmpJob) print $1 }')
+  applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 done
 echo "Job isis done. Copying data."
 hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output/joined
