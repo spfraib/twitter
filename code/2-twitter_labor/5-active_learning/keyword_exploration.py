@@ -11,11 +11,13 @@ from ekphrasis.classes.preprocessor import TextPreProcessor
 from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
+import numpy as np
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
+
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -48,6 +50,7 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 def calculate_lift(top_df, nb_top_lift_kw):
     """
     Calculate keyword lift for each word appearing in top tweets.
@@ -73,6 +76,7 @@ def calculate_lift(top_df, nb_top_lift_kw):
         return wordcount_df['word'].tolist()
     else:
         return wordcount_df['word'][:nb_top_lift_kw].tolist()
+
 
 def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
     """
@@ -102,6 +106,7 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
         elif random:
             return tweets_containing_keyword_df.sample(n=nb_tweets_per_keyword).reset_index(drop=True)
 
+
 def extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet):
     """
     Extract keywords from list of dictionaries outputted by MLM and retain only sub-word token (without ##, no punctuation).
@@ -118,51 +123,70 @@ def extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet):
             selected_keywords_list.append(keyword)
     return selected_keywords_list
 
+
+def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
+    mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
+                            config=model_name, topk=nb_keywords_per_tweet)
+    df['mlm_keywords'] = np.nan
+    for tweet_index in range(df.shape[0]):
+        tweet = df['text'][tweet_index]
+        tweet = tweet.replace(keyword, '[MASK]')
+        mlm_results_list = mlm_pipeline(tweet)
+        df['mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
+                                                                            nb_keywords_per_tweet=nb_keywords_per_tweet)
+    return df
+
+
 def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_keyword, nb_keywords_per_tweet,
                                lowercase):
     """
     For each keyword K in the keyword_list list, select nb_tweets_per_keyword tweets containing the keyword.
     For each of the nb_tweets_per_keyword tweets, do masked language on keyword K.
-    Retain the top nb_keywords_per_tweet keywords from MLM and store them in the final_selected_keywords list.
     :param top_df: pandas DataFrame containing top tweets (based on the based rate estimate)
     :param model_name: the BERT-based model from the Hugging Face model hub to use for MLM (complete list of names can be found here: https://huggingface.co/models
     :param keyword_list: the high-lift keywords to do MLM on
     :param nb_tweets_per_keyword: the number of tweets to retain for MLM per input keyword
     :param nb_keywords_per_tweet: the number of keywords to retain for each tweet used to do MLM
     :param lowercase: whether to lowercase input keywords
-    :return: a list of keywords combining all results from MLM
+    :return: a dataframe containing all of the tweets containing at least one of the top-lift keywords in keyword_list
+    with a top_lift_keyword column indicating which top-lift keyword is contained in the tweet and a mlm_keywords
+    column containing a list of nb_keywords_per_tweet keywords outputted from MLM.
     """
-
-    # run mask on all tweets but then do bootstrap
-    # bootstrap:
-    #     take random sample with replacement of top tweets
-    #     take top 10 words that come out of the mask
-    # take the top 10 by global boostrap count
-    # do the 1/100K threshold like before
-
-    # pick the top 10-20 most frequent in the 100M
-    # TODO check the freq of the keywords in final_selected_keywords_list and make sure that they are more than
-    #  1/100K and that the keywords have lift > 1 (otherwise they are not important). freq here is defined as %
-    #  of tweets where keywords where it appears
-
-    # TODO number 2: do this over bootstraps from the random sample to make sure we are not overfitting
-
-
-    mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
-                            config=model_name, topk=nb_keywords_per_tweet)
-    final_selected_keywords_list = list()
     if lowercase:
         keyword_list = [keyword.lower() for keyword in keyword_list]
+    # create empty dataframe and then concat with column top_lift_keyword and column MLM_keywords (list)
+    # bootstrap in separate function
     for keyword in keyword_list:
-        tweets_containing_keyword_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
-                                                                                  top_df, lowercase, random=False)
-        for tweet_index in range(tweets_containing_keyword_df.shape[0]):
-            tweet = tweets_containing_keyword_df['text'][tweet_index]
-            tweet = tweet.replace(keyword, '[MASK]')
-            mlm_results_list = mlm_pipeline(tweet)
-            # TODO check that extract_keywords_from_mlm_results works correctly?
-            final_selected_keywords_list = + extract_keywords_from_mlm_results(mlm_results_list,
-                                                                               nb_keywords_per_tweet=nb_keywords_per_tweet)
+        if tweets_all_top_lift_keywords_df is None:
+            tweets_all_top_lift_keywords_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
+                                                                                         top_df, lowercase,
+                                                                                         random=False)
+            tweets_all_top_lift_keywords_df['top_lift_keyword'] = keyword
+            tweets_all_top_lift_keywords_df = mlm_with_given_keyword(df=tweets_all_top_lift_keywords_df,
+                                                                     keyword=keyword,
+                                                                     model_name=model_name,
+                                                                     nb_keywords_per_tweet=nb_keywords_per_tweet)
+        else:
+            tweets_containing_keyword_df = sample_tweets_containing_selected_keywords(keyword,
+                                                                                      nb_tweets_per_keyword,
+                                                                                      top_df, lowercase,
+                                                                                      random=False)
+            tweets_containing_keyword_df['top_lift_keyword'] = keyword
+            tweets_containing_keyword_df = mlm_with_given_keyword(df=tweets_containing_keyword_df, keyword=keyword,
+                                                                  model_name=model_name,
+                                                                  nb_keywords_per_tweet=nb_keywords_per_tweet)
+            tweets_all_top_lift_keywords_df = pd.concat([tweets_all_top_lift_keywords_df, tweets_containing_keyword_df])
+    return tweets_all_top_lift_keywords_df
+
+
+def bootstrapping(df, nb_samples ):
+    top_lift_keywords_list = df.top_lift_keyword.unique()
+    for keyword in top_lift_keywords_list:
+        tweets_containing_keyword_df = df.loc[df['top_lift_keyword']==keyword].reset_index(drop=True)
+        for sample_nb in range(nb_samples):
+            tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(n=tweets_containing_keyword_df.shape[0],
+                                                                                      replace=True)
+
     return final_selected_keywords_list
 
 if __name__ == "__main__":
@@ -182,7 +206,7 @@ if __name__ == "__main__":
         selected_keywords_list = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
                                                             keyword_list=top_lift_keywords_list,
                                                             nb_tweets_per_keyword=args.nb_kw_per_tweet_mlm,
-                                                            nb_keywords_per_tweet=5*args.nb_kw_per_tweet_mlm,
+                                                            nb_keywords_per_tweet=5 * args.nb_kw_per_tweet_mlm,
                                                             lowercase=True
                                                             )
         # diversity constraint (iteration 0)
@@ -192,4 +216,3 @@ if __name__ == "__main__":
         final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
 
         # save list of top keywords
-
