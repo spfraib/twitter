@@ -35,6 +35,6 @@ while [ ! -z $applicationId ]; do
   MINUTE_COUNT=$((MINUTE_COUNT + 1))
   applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 done
-echo "Job isis done. Copying data."
+echo "Job is done. Copying data."
 hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output/joined
 echo "Copying data finished."
