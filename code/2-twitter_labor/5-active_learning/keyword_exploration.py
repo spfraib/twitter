@@ -217,6 +217,7 @@ if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     inference_folder_name = os.path.basename(os.path.dirname(args.inference_output_folder))
+    labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
     for column in labels:
         top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column, f"top_tweets_{column}")
         top_tweets_filename = [file for file in os.listdir(top_tweets_folder_path) if file.endswith('.parquet')][0]
