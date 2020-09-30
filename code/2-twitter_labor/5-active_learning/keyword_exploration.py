@@ -24,7 +24,7 @@ def get_args_from_command_line():
                         help="Path to the folder where the tweets to label are saved.")
     parser.add_argument("--nb_top_lift_kw", type=int,
                         help="Number of top-lift keywords to keep for MLM (Keyword exploration).")
-    parser.add_argument("--nb_tweets_per_kw_mlm", type=int,
+    parser.add_argument("--nb_tweets_per_kw_mlm",
                         help="Number of tweets to use per keyword to do MLM (Keyword exploration).",
                         default="all")
     parser.add_argument("--nb_kw_per_tweet_mlm", type=int,
@@ -41,7 +41,7 @@ def get_args_from_command_line():
     return args
 
 
-def calculate_lift(top_df: pd.DataFrame, nb_top_lift_kw: int):
+def calculate_lift(top_df, nb_top_lift_kw):
     """
     Calculate keyword lift for each word appearing in top tweets.
     To do so, calculate word count for top tweets, then join with word count from random set and calculate lift.
@@ -70,7 +70,7 @@ def calculate_lift(top_df: pd.DataFrame, nb_top_lift_kw: int):
                :nb_top_lift_kw].tolist(), keywords_with_lift_higher_1_list, full_random_wordcount_df
 
 
-def sample_tweets_containing_selected_keywords(keyword: str, nb_tweets_per_keyword: int, data_df, lowercase, random):
+def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
     """
     Identify tweets containing a certain keyword and take either the top nb_tweets_per_keyword tweets in terms of score
     or a random sample of nb_tweets_per_keywords tweets containing this keyword.
