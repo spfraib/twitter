@@ -44,7 +44,7 @@ def drop_stopwords_punctuation(df):
     :return: pandas DataFrame without rows containing stopwords or punctuation
     """
     punctuation_list = [i for i in string.punctuation]
-    all_stops = stopwords.words('english') + punctuation_list
+    all_stops = stopwords.words('english') + punctuation_list + ['[UNK]']
     df = df[~df['word'].isin(all_stops)].reset_index(drop=True)
     return df
 
@@ -62,14 +62,14 @@ def calculate_lift(top_df, nb_top_lift_kw):
         'word').reset_index(name='count_top_tweets')
     full_random_wordcount_df = pd.read_parquet(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/wordcount_random/wordcount_random.parquet')
-    wordcount_df = top_wordcount_df.join(full_random_wordcount_df, on=['word'])
+    wordcount_df = top_wordcount_df.merge(full_random_wordcount_df, on=['word'])
     wordcount_df = drop_stopwords_punctuation(wordcount_df)
     wordcount_df['lift'] = (wordcount_df['count_top_tweets'] / wordcount_df[
         'count']) * N_random / label2rank[column]
-    wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index()
+    wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index(drop=True)
     # Keep only word with lift > 1
-    wordcount_df = wordcount_df[wordcount_df['lift'] > 1]
-    keywords_with_lift_higher_1_list = list(wordcount_df['lift'].values())
+    wordcount_df = wordcount_df.loc[wordcount_df['lift'] > 1].reset_index(drop=True)
+    keywords_with_lift_higher_1_list = list(wordcount_df['lift'].values)
     if wordcount_df.shape[0] < nb_top_lift_kw:
         return wordcount_df['word'].tolist(), keywords_with_lift_higher_1_list, full_random_wordcount_df
     else:
@@ -208,7 +208,7 @@ def bootstrapping(df, nb_samples):
                 replace=True)
             all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
         final_results_dict[keyword] = all_top_mlm_keywords_list
-    final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
+    final_results_list = [item for sublist in list(final_results_dict.values) for item in sublist]
     keyword_count_dict = dict(Counter(final_results_list))
     return keyword_count_dict
 
@@ -217,7 +217,17 @@ if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     inference_folder_name = os.path.basename(os.path.dirname(args.inference_output_folder))
+    # Calculate base rates
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
+    base_rates = [
+        1.7342911457049017e-05,
+        0.0003534645020523677,
+        0.005604641971672389,
+        0.00015839552996469054,
+        1.455338466552472e-05]
+    N_random = 92114009
+    base_ranks = [int(x * N_random) for x in base_rates]
+    label2rank = dict(zip(labels, base_ranks))
     for column in labels:
         top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column, f"top_tweets_{column}")
         top_tweets_filename = [file for file in os.listdir(top_tweets_folder_path) if file.endswith('.parquet')][0]
@@ -239,7 +249,7 @@ if __name__ == "__main__":
         full_random_wordcount_df['frequency'] = full_random_wordcount_df['wordcount'] / 100000000
         full_random_wordcount_df = full_random_wordcount_df.loc[
             full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
-        high_frequency_keywords_list = list(full_random_wordcount_df['word'].values())
+        high_frequency_keywords_list = list(full_random_wordcount_df['word'].values)
         keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
