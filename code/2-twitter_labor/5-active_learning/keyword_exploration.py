@@ -259,7 +259,7 @@ if __name__ == "__main__":
                                                                      )
         keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
         # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
-        full_random_wordcount_df['frequency'] = full_random_wordcount_df['wordcount'] / 100000000
+        full_random_wordcount_df['frequency'] = full_random_wordcount_df['count'] / N_random
         full_random_wordcount_df = full_random_wordcount_df.loc[
             full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
         high_frequency_keywords_list = list(full_random_wordcount_df['word'].values)
