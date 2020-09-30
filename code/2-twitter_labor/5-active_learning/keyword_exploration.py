@@ -37,7 +37,9 @@ def get_args_from_command_line():
     parser.add_argument("--nb_tweets_per_kw_final", type=int,
                         help="Number of tweets to send to labelling per keyword outputted by MLM (Keyword exploration).")
     parser.add_argument("--nb_bootstrapped_samples", type=int, help="Number of bootstrapped samples ")
-    parser.add_argument("--nb_final_candidate_kw", type=int, help="Number of top keywords in terms of wordcount that are kept at the end of the process.", default=10)
+    parser.add_argument("--nb_final_candidate_kw", type=int,
+                        help="Number of top keywords in terms of wordcount that are kept at the end of the process.",
+                        default=10)
 
     args = parser.parse_args()
     return args
@@ -121,6 +123,14 @@ def extract_keywords_from_mlm_results(mlm_results_list, nb_keywords_per_tweet):
 
 
 def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
+    """
+    Perform MLM on all tweets in df and save list of resulting keywords in a new column top_mlm_keywords.
+    :param df: pandas DataFrame containing only tweets that contain keyword
+    :param keyword: high-lift keyword of interest which will be replaced by a [MASK] token for MLM
+    :param model_name: name of BERT-based model used for MLM
+    :param nb_keywords_per_tweet: number of tweets to retain from top MLM results
+    :return: the df from the input with an extra column top_mlm_keywords containing the top nb_keywords_per_tweets MLM results in list format
+    """
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
                             config=model_name, topk=nb_keywords_per_tweet)
     df['mlm_keywords'] = np.nan
@@ -177,6 +187,13 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
 
 
 def bootstrapping(df, nb_samples):
+    """
+    For each top-lift keyword K, out of the X tweets containing K, produce nb_samples random samples (sampling with replacement).
+    For each random sample, collect the keywords resulting from MLM and append them to a list L.
+    :param df: a pandas DataFrame containing all tweets containing at least one top lift keyword (output of former function)
+    :param nb_samples: number of bootstrapped samples
+    :return: a dictionary containing the word count from list L (keys are words and values are word counts)
+    """
     top_lift_keywords_list = df.top_lift_keyword.unique()
     final_results_dict = dict()
     for keyword in top_lift_keywords_list:
@@ -219,7 +236,8 @@ if __name__ == "__main__":
         keyword_count_dict = {k: keyword_count_dict[k] for k in keywords_with_lift_higher_1_list}
         # keep every word for which wordcount/total_nb_of_tweets > 1/100K
         full_random_wordcount_df['frequency'] = full_random_wordcount_df['wordcount'] / 100000000
-        full_random_wordcount_df = full_random_wordcount_df.loc[full_random_wordcount_df['frequency'] > 1/100000].reset_index(drop=True)
+        full_random_wordcount_df = full_random_wordcount_df.loc[
+            full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
         high_frequency_keywords_list = list(full_random_wordcount_df['word'].values())
         keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
         # keep top tweets in terms of wordcount in the overall output of MLM
@@ -228,8 +246,8 @@ if __name__ == "__main__":
         # TO DO
 
         # diversity constraint (iteration 0)
-        #final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_key                                                                                   column)
+        # final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_key                                                                                   column)
         # select nb_kw_per_tweet_mlm keywords from list of final keywords
-        #final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
+        # final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
 
         # save list of top keywords
