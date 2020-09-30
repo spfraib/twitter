@@ -6,14 +6,11 @@ import torch
 import nltk
 from nltk.corpus import stopwords
 import string
-from nltk.util import skipgrams
-from ekphrasis.classes.preprocessor import TextPreProcessor
-from ekphrasis.classes.tokenizer import SocialTokenizer
-from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
 import numpy as np
 import pandas as pd
 import argparse
+import os
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -40,6 +37,16 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+def drop_stopwords_punctuation(df):
+    """
+    Drop rows containing stopwords or punctuation in the word column of the input dataframe.
+    :param df: input pandas DataFrame, must contain a word column
+    :return: pandas DataFrame without rows containing stopwords or punctuation
+    """
+    punctuation_list = [i for i in string.punctuation]
+    all_stops = stopwords.words('english') + punctuation_list
+    df = df[~df['word'].isin(all_stops)].reset_index(drop=True)
+    return df
 
 def calculate_lift(top_df, nb_top_lift_kw):
     """
