@@ -223,7 +223,7 @@ def bootstrapping(df, nb_samples):
                 replace=True)
             all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
         final_results_dict[keyword] = all_top_mlm_keywords_list
-    final_results_list = [item for sublist in list(final_results_dict.values) for item in sublist]
+    final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
     keyword_count_dict = dict(Counter(final_results_list))
     return keyword_count_dict
 
