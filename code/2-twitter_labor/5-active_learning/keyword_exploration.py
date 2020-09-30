@@ -145,7 +145,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
         tweet = df['text'][tweet_index]
         if tweet.count(keyword) > 1:
             n = random.randint(1, tweet.count(keyword))
-            tweet = tweet.replace(keyword, '[MASK]', n)
+            tweet = tweet.replace(keyword, '[MASK]', n).replace('[MASK]', keyword, n-1)
         else:
             tweet = tweet.replace(keyword, '[MASK]')
         try:
