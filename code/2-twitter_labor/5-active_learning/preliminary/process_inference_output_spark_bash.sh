@@ -8,6 +8,7 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
+hdfs dfs -mkdir -p /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/output
 hdfs dfs -put /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/output
 echo "Loaded inference data on Hadoop. Launching the PySpark script"
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/preliminary
@@ -26,8 +27,17 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
 echo "Submitted Spark job"
 
 applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
-echo "$applicationId"
+
 MINUTE_COUNT=0
+
+while [ -z $applicationId ]; do
+  echo "Waiting for job to appear in list of submitted applications"
+  sleep 60
+  MINUTE_COUNT=$((MINUTE_COUNT + 1))
+  applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
+done
+echo "Job has been detected and is running on application ${applicationId}."
+
 while [ ! -z $applicationId ]; do
   echo "Waiting for job $JOB_NAME (application $applicationId) to be done to transfer output files to scratch. "
   echo "Already waited $MINUTE_COUNT minutes. "
@@ -36,5 +46,6 @@ while [ ! -z $applicationId ]; do
   applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 done
 echo "Job is done. Copying data."
-hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output/joined
+mkdir -p /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output/joined
+hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/joined
 echo "Copying data finished."
