@@ -222,7 +222,7 @@ if __name__ == "__main__":
         full_random_wordcount_df = full_random_wordcount_df.loc[full_random_wordcount_df['frequency'] > 1/100000].reset_index(drop=True)
         high_frequency_keywords_list = list(full_random_wordcount_df['word'].values())
         keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
-        # keep top X tweets in terms of wordcount in the overall output of MLM
+        # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
 
         # TO DO
