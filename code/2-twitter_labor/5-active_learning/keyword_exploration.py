@@ -154,6 +154,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
                                                                                     nb_keywords_per_tweet=nb_keywords_per_tweet)
         except ValueError:
             print(f'Tweet giving ValueError during MLM pipeline: {tweet}')
+            print(f'Keyword is {keyword}')
             df['top_mlm_keywords'][tweet_index] = list()
     return df
 
