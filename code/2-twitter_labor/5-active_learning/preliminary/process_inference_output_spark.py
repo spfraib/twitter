@@ -60,8 +60,9 @@ if __name__ == "__main__":
         inference_with_text_df = inference_df.join(random_tweets_df, on='tweet_id')
         top_tweets_df = inference_with_text_df.sort(F.col("score").desc()).limit(label2rank[column])
         # prepare paths and save
-        output_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column)
-        top_tweets_output_folder_path = os.path.join(output_folder_path, f"top_tweets_{column}")
+        output_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column, 'joined_chunks')
+        top_tweets_output_folder_path = os.path.join(os.path.dirname(output_folder_path), f"top_tweets_{column}")
+        run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_folder_path])
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', top_tweets_output_folder_path])
         top_tweets_df.coalesce(1).write.mode("overwrite").parquet(top_tweets_output_folder_path)
         inference_with_text_df.write.mode("overwrite").parquet(output_folder_path)
