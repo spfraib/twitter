@@ -12,6 +12,7 @@ import pandas as pd
 import argparse
 import os
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -37,6 +38,7 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 def drop_stopwords_punctuation(df):
     """
     Drop rows containing stopwords or punctuation in the word column of the input dataframe.
@@ -47,6 +49,7 @@ def drop_stopwords_punctuation(df):
     all_stops = stopwords.words('english') + punctuation_list + ['[UNK]']
     df = df[~df['word'].isin(all_stops)].reset_index(drop=True)
     return df
+
 
 def calculate_lift(top_df, nb_top_lift_kw):
     """
@@ -140,9 +143,13 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
     for tweet_index in range(df.shape[0]):
         tweet = df['text'][tweet_index]
         tweet = tweet.replace(keyword, '[MASK]')
-        mlm_results_list = mlm_pipeline(tweet)
-        df['top_mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
-                                                                                nb_keywords_per_tweet=nb_keywords_per_tweet)
+        try:
+            mlm_results_list = mlm_pipeline(tweet)
+            df['top_mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
+                                                                                    nb_keywords_per_tweet=nb_keywords_per_tweet)
+        except ValueError:
+            print(f'Tweet giving ValueError during MLM pipeline: {tweet}')
+            df['top_mlm_keywords'][tweet_index] = list()
     return df
 
 
@@ -168,8 +175,10 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     tweets_all_top_lift_keywords_df = None
     for keyword in keyword_list:
         if tweets_all_top_lift_keywords_df is None:
-            tweets_all_top_lift_keywords_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
-                                                                                         top_df, lowercase,
+            tweets_all_top_lift_keywords_df = sample_tweets_containing_selected_keywords(keyword=keyword,
+                                                                                         nb_tweets_per_keyword=nb_tweets_per_keyword,
+                                                                                         data_df=top_df,
+                                                                                         lowercase=lowercase,
                                                                                          random=False)
             tweets_all_top_lift_keywords_df['top_lift_keyword'] = keyword
             tweets_all_top_lift_keywords_df = mlm_with_given_keyword(df=tweets_all_top_lift_keywords_df,
@@ -229,7 +238,8 @@ if __name__ == "__main__":
     base_ranks = [int(x * N_random) for x in base_rates]
     label2rank = dict(zip(labels, base_ranks))
     for column in labels:
-        top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column, f"top_tweets_{column}")
+        top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column,
+                                              f"top_tweets_{column}")
         top_tweets_filename = [file for file in os.listdir(top_tweets_folder_path) if file.endswith('.parquet')][0]
         # Load top tweets
         top_tweets_df = pd.read_parquet(os.path.join(top_tweets_folder_path, top_tweets_filename))
