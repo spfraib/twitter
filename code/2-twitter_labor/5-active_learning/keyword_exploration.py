@@ -224,8 +224,7 @@ def bootstrapping(df, nb_samples):
             all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
         final_results_dict[keyword] = all_top_mlm_keywords_list
     final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
-    keyword_count_dict = dict(Counter(final_results_list))
-    return keyword_count_dict
+    return dict(Counter(final_results_list))
 
 
 if __name__ == "__main__":
@@ -259,16 +258,17 @@ if __name__ == "__main__":
                                                                      lowercase=False
                                                                      )
         keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
-        # keep only words with lift strictly higher than 1
-        keyword_count_dict = {k: keyword_count_dict[k] for k in keywords_with_lift_higher_1_list}
-        # keep every word for which wordcount/total_nb_of_tweets > 1/100K
+        # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
         full_random_wordcount_df['frequency'] = full_random_wordcount_df['wordcount'] / 100000000
         full_random_wordcount_df = full_random_wordcount_df.loc[
             full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
         high_frequency_keywords_list = list(full_random_wordcount_df['word'].values)
-        keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
+        relevant_keywords_list = keywords_with_lift_higher_1_list + high_frequency_keywords_list
+        relevant_keywords_list = [k for k in relevant_keywords_list if k in keyword_count_dict.keys()]
+        keyword_count_dict = {k: keyword_count_dict[k] for k in list(set(relevant_keywords_list))}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
+        print(f'************{column}************')
         print(top_keyword_dict)
         # TO DO
 
