@@ -26,32 +26,24 @@ def get_args_from_command_line():
                         help="Path to the inference folder containing the merged parquet file.")
     parser.add_argument("--tweets_to_label_output_path", type=str,
                         help="Path to the folder where the tweets to label are saved.")
-    parser.add_argument("--train_data_folder", type=str,
-                        help="Path of folder when train and val data are stored.")
-    parser.add_argument("--exploit_method", type=str,
-                        help="Method chosen for the exploit part", default='top_tweets')
-    parser.add_argument("--nb_tweets_exploit", type=int,
-                        help="Number of tweets from exploit part to send to labelling (Exploit).")
     parser.add_argument("--nb_top_lift_kw", type=int,
                         help="Number of top-lift keywords to keep for MLM (Keyword exploration).")
     parser.add_argument("--nb_tweets_per_kw_mlm", type=int,
                         help="Number of tweets to use per keyword to do MLM (Keyword exploration).",
-                        default=1)
+                        default="all")
     parser.add_argument("--nb_kw_per_tweet_mlm", type=int,
-                        help="Number of keywords to extract from MLM for each tweet (Keyword exploration). ")
+                        help="Number of keywords to extract from MLM for each tweet (Keyword exploration). ",
+                        default=10)
     parser.add_argument("--nb_tweets_per_kw_final", type=int,
                         help="Number of tweets to send to labelling per keyword outputted by MLM (Keyword exploration).")
-    parser.add_argument("--nb_top_kskipngrams", type=int,
-                        help="Number of top-lift k-skip-n-grams to keep (Sentence exploration). ")
-    parser.add_argument("--nb_tweets_per_kskipngrams", type=int,
-                        help="Number of tweets to send to labelling per k-skip-n-gram (Sentence exploration). ")
-    parser.add_argument("--k_skipgram", type=int, help="k from k-skip-n-gram (Sentence exploration).", default=2)
-    parser.add_argument("--n_skipgram", type=int, help="n from k-skip-n-gram (Sentence exploration).", default=3)
+    parser.add_argument("--nb_bootstrapped_samples", type=int, help="Number of bootstrapped samples ")
+    parser.add_argument("--nb_final_candidate_kw", type=int, help="Number of top keywords in terms of wordcount that are kept at the end of the process.", default=10)
+
     args = parser.parse_args()
     return args
 
 
-def calculate_lift(top_df, nb_top_lift_kw):
+def calculate_lift(top_df: pd.DataFrame, nb_top_lift_kw: int):
     """
     Calculate keyword lift for each word appearing in top tweets.
     To do so, calculate word count for top tweets, then join with word count from random set and calculate lift.
@@ -74,12 +66,13 @@ def calculate_lift(top_df, nb_top_lift_kw):
     wordcount_df = wordcount_df[wordcount_df['lift'] > 1]
     keywords_with_lift_higher_1_list = list(wordcount_df['lift'].values())
     if wordcount_df.shape[0] < nb_top_lift_kw:
-        return wordcount_df['word'].tolist(), keywords_with_lift_higher_1_list
+        return wordcount_df['word'].tolist(), keywords_with_lift_higher_1_list, full_random_wordcount_df
     else:
-        return wordcount_df['word'][:nb_top_lift_kw].tolist(), keywords_with_lift_higher_1_list
+        return wordcount_df['word'][
+               :nb_top_lift_kw].tolist(), keywords_with_lift_higher_1_list, full_random_wordcount_df
 
 
-def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, data_df, lowercase, random):
+def sample_tweets_containing_selected_keywords(keyword: str, nb_tweets_per_keyword: int, data_df, lowercase, random):
     """
     Identify tweets containing a certain keyword and take either the top nb_tweets_per_keyword tweets in terms of score
     or a random sample of nb_tweets_per_keywords tweets containing this keyword.
@@ -100,6 +93,8 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
     if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
         print("Only {} tweets containing keyword {} (< {}). Sending all of them to labelling.".format(
             str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
+        return tweets_containing_keyword_df
+    elif nb_tweets_per_keyword == "all":
         return tweets_containing_keyword_df
     else:
         if not random:
@@ -134,7 +129,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
         tweet = tweet.replace(keyword, '[MASK]')
         mlm_results_list = mlm_pipeline(tweet)
         df['top_mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
-                                                                            nb_keywords_per_tweet=nb_keywords_per_tweet)
+                                                                                nb_keywords_per_tweet=nb_keywords_per_tweet)
     return df
 
 
@@ -157,6 +152,7 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
         keyword_list = [keyword.lower() for keyword in keyword_list]
     # create empty dataframe and then concat with column top_lift_keyword and column MLM_keywords (list)
     # bootstrap in separate function
+    tweets_all_top_lift_keywords_df = None
     for keyword in keyword_list:
         if tweets_all_top_lift_keywords_df is None:
             tweets_all_top_lift_keywords_df = sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword,
@@ -184,11 +180,12 @@ def bootstrapping(df, nb_samples):
     top_lift_keywords_list = df.top_lift_keyword.unique()
     final_results_dict = dict()
     for keyword in top_lift_keywords_list:
-        tweets_containing_keyword_df = df.loc[df['top_lift_keyword']==keyword].reset_index(drop=True)
+        tweets_containing_keyword_df = df.loc[df['top_lift_keyword'] == keyword].reset_index(drop=True)
         all_top_mlm_keywords_list = list()
         for sample_nb in range(nb_samples):
-            tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(n=tweets_containing_keyword_df.shape[0],
-                                                                                      replace=True)
+            tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(
+                n=tweets_containing_keyword_df.shape[0],
+                replace=True)
             all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
         final_results_dict[keyword] = all_top_mlm_keywords_list
     final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
@@ -201,33 +198,38 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     inference_folder_name = os.path.basename(os.path.dirname(args.inference_output_folder))
     for column in labels:
-        output_folder_path = os.path.join(args.inference_output_folder, 'joined', column)
+        output_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column)
         top_tweets_path = os.path.join(output_folder_path, f"top_tweets_{column}", 'XXXXXXXXXX')
         # Load data, compute skipgrams
         print('loading tweets...', "{}_all.parquet".format(column))
         # input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
         top_tweets_df = pd.read_parquet(top_tweets_path)
-        top_lift_keywords_list, keywords_with_lift_higher_1_list = calculate_lift(explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
+        top_lift_keywords_list, keywords_with_lift_higher_1_list, full_random_wordcount_df = calculate_lift(
+            explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
         # XXXXX
-        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=explore_kw_data_df, model_name='bert-base-cased',
-                                                            keyword_list=top_lift_keywords_list,
-                                                            nb_tweets_per_keyword=args.nb_kw_per_tweet_mlm,
-                                                            nb_keywords_per_tweet=5 * args.nb_kw_per_tweet_mlm,
-                                                            lowercase=True
-                                                            )
-        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=XXXX)
-        # keep only words with lift 1
+        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=explore_kw_data_df,
+                                                                     model_name='bert-base-cased',
+                                                                     keyword_list=top_lift_keywords_list,
+                                                                     nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm,
+                                                                     nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
+                                                                     lowercase=True
+                                                                     )
+        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
+        # keep only words with lift strictly higher than 1
         keyword_count_dict = {k: keyword_count_dict[k] for k in keywords_with_lift_higher_1_list}
-        # TO DO: keep every word for which wordcount/total_nb_of_tweets > 1/100K
-
-
+        # keep every word for which wordcount/total_nb_of_tweets > 1/100K
+        full_random_wordcount_df['frequency'] = full_random_wordcount_df['wordcount'] / 100000000
+        full_random_wordcount_df = full_random_wordcount_df.loc[full_random_wordcount_df['frequency'] > 1/100000].reset_index(drop=True)
+        high_frequency_keywords_list = list(full_random_wordcount_df['word'].values())
+        keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
         # keep top X tweets in terms of wordcount in the overall output of MLM
+        top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
 
+        # TO DO
 
         # diversity constraint (iteration 0)
-        final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_keywords_list,
-                                                                                               column)
+        #final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_key                                                                                   column)
         # select nb_kw_per_tweet_mlm keywords from list of final keywords
-        final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
+        #final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
 
         # save list of top keywords
