@@ -76,7 +76,7 @@ def calculate_lift(top_df, nb_top_lift_kw):
     wordcount_df = wordcount_df.sort_values(by=["lift"], ascending=False).reset_index(drop=True)
     # Keep only word with lift > 1
     wordcount_df = wordcount_df.loc[wordcount_df['lift'] > 1].reset_index(drop=True)
-    keywords_with_lift_higher_1_list = list(wordcount_df['lift'].values)
+    keywords_with_lift_higher_1_list = list(wordcount_df['word'].values)
     if wordcount_df.shape[0] < nb_top_lift_kw:
         return wordcount_df['word'].tolist(), keywords_with_lift_higher_1_list, full_random_wordcount_df
     else:
