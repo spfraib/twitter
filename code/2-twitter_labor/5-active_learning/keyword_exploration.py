@@ -95,11 +95,11 @@ def sample_tweets_containing_selected_keywords(keyword, nb_tweets_per_keyword, d
             drop=True)
     tweets_containing_keyword_df = tweets_containing_keyword_df.sort_values(by=["score"], ascending=False).reset_index(
         drop=True)
-    if tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
+    if nb_tweets_per_keyword == "all":
+        return tweets_containing_keyword_df
+    elif tweets_containing_keyword_df.shape[0] < nb_tweets_per_keyword:
         print("Only {} tweets containing keyword {} (< {}). Sending all of them to labelling.".format(
             str(tweets_containing_keyword_df.shape[0]), keyword, str(nb_tweets_per_keyword)))
-        return tweets_containing_keyword_df
-    elif nb_tweets_per_keyword == "all":
         return tweets_containing_keyword_df
     else:
         if not random:
