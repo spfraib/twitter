@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import argparse
 import os
+import random
 
 
 def get_args_from_command_line():
@@ -142,7 +143,11 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
     df['top_mlm_keywords'] = np.nan
     for tweet_index in range(df.shape[0]):
         tweet = df['text'][tweet_index]
-        tweet = tweet.replace(keyword, '[MASK]')
+        if tweet.count(keyword) > 1:
+            n = random.randint(1, tweet.count(keyword))
+            tweet = tweet.replace(keyword, '[MASK]', n)
+        else:
+            tweet = tweet.replace(keyword, '[MASK]')
         try:
             mlm_results_list = mlm_pipeline(tweet)
             df['top_mlm_keywords'][tweet_index] = extract_keywords_from_mlm_results(mlm_results_list,
@@ -250,7 +255,7 @@ if __name__ == "__main__":
                                                                      keyword_list=top_lift_keywords_list,
                                                                      nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm,
                                                                      nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
-                                                                     lowercase=True
+                                                                     lowercase=False
                                                                      )
         keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
         # keep only words with lift strictly higher than 1
