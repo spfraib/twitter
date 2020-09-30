@@ -14,7 +14,7 @@ hdfs dfs -mkdir -p /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
 hdfs dfs -put /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
 end_put=`date +%s`
 runtime_put=$((end_put-start_put))
-echo "Loaded inference data on Hadoop in $((runtime_put/60)) minutes. Launching the PySpark script"
+echo "Loaded inference data on Hadoop in $((runtime_put/60)) minutes. Submitting the Spark job"
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/preliminary
 TIMESTAMP=$(date +%s)
@@ -35,11 +35,11 @@ applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_
 
 
 while [ -z $applicationId ]; do
-  echo "Waiting for job to appear in list of submitted applications"
+  echo "Waiting for job ${JOB_NAME} to appear in list of submitted applications"
   sleep 10
   applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 done
-echo "Job has been detected and is running on application ${applicationId}."
+echo "Job ${JOB_NAME} has been detected and is running on application ${applicationId}."
 
 MINUTE_COUNT=0
 
@@ -51,6 +51,7 @@ while [ ! -z $applicationId ]; do
   applicationId=$(yarn application -list -appStates RUNNING | awk -v tmpJob=${JOB_NAME} '{ if( $2 == tmpJob) print $1 }')
 done
 echo "Job is done. Copying data."
+
 start_get=`date +%s`
 hdfs dfs -get /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/joined /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}
 end_get=`date +%s`
