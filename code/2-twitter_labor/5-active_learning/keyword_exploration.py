@@ -13,7 +13,7 @@ from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
 import numpy as np
 import pandas as pd
-
+import argparse
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
