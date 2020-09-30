@@ -19,7 +19,8 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning
 
-python3 keyword_exploration.py \
+python3 -u keyword_exploration.py \
 --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output \
---nb_top_lift_kw 10
+--nb_top_lift_kw 10 \
+> /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/keyword_exploration.log 2>&1
 
