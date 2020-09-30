@@ -36,7 +36,7 @@ def get_args_from_command_line():
                         default=10)
     parser.add_argument("--nb_tweets_per_kw_final", type=int,
                         help="Number of tweets to send to labelling per keyword outputted by MLM (Keyword exploration).")
-    parser.add_argument("--nb_bootstrapped_samples", type=int, help="Number of bootstrapped samples ")
+    parser.add_argument("--nb_bootstrapped_samples", type=int, help="Number of bootstrapped samples ", default=1000)
     parser.add_argument("--nb_final_candidate_kw", type=int,
                         help="Number of top keywords in terms of wordcount that are kept at the end of the process.",
                         default=10)
@@ -215,15 +215,12 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     inference_folder_name = os.path.basename(os.path.dirname(args.inference_output_folder))
     for column in labels:
-        output_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column)
-        top_tweets_path = os.path.join(output_folder_path, f"top_tweets_{column}", 'XXXXXXXXXX')
-        # Load data, compute skipgrams
-        print('loading tweets...', "{}_all.parquet".format(column))
-        # input_parquet_path = os.path.join(args.inference_output_folder, column, "{}_all.parquet".format(column))
-        top_tweets_df = pd.read_parquet(top_tweets_path)
+        top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column, f"top_tweets_{column}")
+        top_tweets_filename = [file for file in os.listdir(top_tweets_folder_path) if file.endswith('.parquet')][0]
+        # Load top tweets
+        top_tweets_df = pd.read_parquet(os.path.join(top_tweets_folder_path, top_tweets_filename))
         top_lift_keywords_list, keywords_with_lift_higher_1_list, full_random_wordcount_df = calculate_lift(
             explore_kw_data_df, nb_top_lift_kw=args.nb_top_lift_kw)
-        # XXXXX
         tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=explore_kw_data_df,
                                                                      model_name='bert-base-cased',
                                                                      keyword_list=top_lift_keywords_list,
@@ -242,7 +239,7 @@ if __name__ == "__main__":
         keyword_count_dict = {k: keyword_count_dict[k] for k in high_frequency_keywords_list}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
-
+        print(top_keyword_dict)
         # TO DO
 
         # diversity constraint (iteration 0)
