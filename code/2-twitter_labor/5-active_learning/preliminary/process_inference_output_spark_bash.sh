@@ -8,6 +8,7 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
+echo "Start loading inference data on Hadoop"
 start_put=`date +%s`
 hdfs dfs -mkdir -p /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
 hdfs dfs -put /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output /user/mt4493/twitter/inference/${INFERENCE_FOLDER}
