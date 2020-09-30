@@ -243,13 +243,16 @@ if __name__ == "__main__":
     base_ranks = [int(x * N_random) for x in base_rates]
     label2rank = dict(zip(labels, base_ranks))
     for column in labels:
+        print(f'************{column}************')
         top_tweets_folder_path = os.path.join(os.path.dirname(args.inference_output_folder), 'joined', column,
                                               f"top_tweets_{column}")
         top_tweets_filename = [file for file in os.listdir(top_tweets_folder_path) if file.endswith('.parquet')][0]
         # Load top tweets
         top_tweets_df = pd.read_parquet(os.path.join(top_tweets_folder_path, top_tweets_filename))
+        print("Loaded top tweets")
         top_lift_keywords_list, keywords_with_lift_higher_1_list, full_random_wordcount_df = calculate_lift(
             top_df=top_tweets_df, nb_top_lift_kw=args.nb_top_lift_kw)
+        print("Calculated lift")
         tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=top_tweets_df,
                                                                      model_name='bert-base-cased',
                                                                      keyword_list=top_lift_keywords_list,
@@ -257,7 +260,9 @@ if __name__ == "__main__":
                                                                      nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
                                                                      lowercase=False
                                                                      )
+        print("Ran MLM")
         keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
+        print("Performed bootstrapping")
         # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
         full_random_wordcount_df['frequency'] = full_random_wordcount_df['count'] / N_random
         full_random_wordcount_df = full_random_wordcount_df.loc[
@@ -268,7 +273,7 @@ if __name__ == "__main__":
         keyword_count_dict = {k: keyword_count_dict[k] for k in list(set(relevant_keywords_list))}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
-        print(f'************{column}************')
+        print("Final results:")
         print(top_keyword_dict)
         # TO DO
 
