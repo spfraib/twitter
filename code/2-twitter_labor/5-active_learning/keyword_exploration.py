@@ -35,6 +35,9 @@ def get_args_from_command_line():
     parser.add_argument("--nb_final_candidate_kw", type=int,
                         help="Number of top keywords in terms of wordcount that are kept at the end of the process.",
                         default=10)
+    parser.add_argument("--final_keywords_folder_path", type=int,
+                        help="Number of top keywords in terms of wordcount that are kept at the end of the process.",
+                        default=10)
 
     args = parser.parse_args()
     return args
@@ -253,29 +256,36 @@ if __name__ == "__main__":
         top_lift_keywords_list, keywords_with_lift_higher_1_list, full_random_wordcount_df = calculate_lift(
             top_df=top_tweets_df, nb_top_lift_kw=args.nb_top_lift_kw)
         print("Calculated lift")
-        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=top_tweets_df,
-                                                                     model_name='bert-base-cased',
-                                                                     keyword_list=top_lift_keywords_list,
-                                                                     nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm,
-                                                                     nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
-                                                                     lowercase=False
-                                                                     )
-        print("Ran MLM")
-        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
-        print("Performed bootstrapping")
-        # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
-        full_random_wordcount_df['frequency'] = full_random_wordcount_df['count'] / N_random
-        full_random_wordcount_df = full_random_wordcount_df.loc[
-            full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
-        high_frequency_keywords_list = list(full_random_wordcount_df['word'].values)
-        relevant_keywords_list = keywords_with_lift_higher_1_list + high_frequency_keywords_list
-        relevant_keywords_list = [k for k in relevant_keywords_list if k in keyword_count_dict.keys()]
-        keyword_count_dict = {k: keyword_count_dict[k] for k in list(set(relevant_keywords_list))}
-        # keep top tweets in terms of wordcount in the overall output of MLM
-        top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
-        print("Final results:")
-        print(top_keyword_dict)
-        # TO DO
+        print(keywords_with_lift_higher_1_list)
+
+        # tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=top_tweets_df,
+        #                                                              model_name='bert-base-cased',
+        #                                                              keyword_list=top_lift_keywords_list,
+        #                                                              nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm,
+        #                                                              nb_keywords_per_tweet=args.nb_kw_per_tweet_mlm,
+        #                                                              lowercase=False
+        #                                                              )
+        # print("Ran MLM")
+        # keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
+        # print("Performed bootstrapping")
+        # # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
+        # full_random_wordcount_df['frequency'] = full_random_wordcount_df['count'] / N_random
+        # full_random_wordcount_df = full_random_wordcount_df.loc[
+        #     full_random_wordcount_df['frequency'] > 1 / 100000].reset_index(drop=True)
+        # high_frequency_keywords_list = list(full_random_wordcount_df['word'].values)
+        # relevant_keywords_list = keywords_with_lift_higher_1_list + high_frequency_keywords_list
+        # relevant_keywords_list = [k for k in relevant_keywords_list if k in keyword_count_dict.keys()]
+        # keyword_count_dict = {k: keyword_count_dict[k] for k in list(set(relevant_keywords_list))}
+        # # keep top tweets in terms of wordcount in the overall output of MLM
+        # top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
+        # print("Final results:")
+        # print(top_keyword_dict)
+        # # Save whole results as parquet
+        # final_keyword_count_df = pd.DataFrame(keyword_count_dict.items(), columns=['word', 'wordcount'])
+        # final_keyword_count_df = final_keyword_count_df.sort_values(by=["wordcount"], ascending=False).reset_index(drop=True)
+        # final_keyword_count_path = os.path.join(args.final_keywords_folder_path, )
+        # final_keyword_count_df.to_parquet()
+        # # TO DO
 
         # diversity constraint (iteration 0)
         # final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_key                                                                                   column)
