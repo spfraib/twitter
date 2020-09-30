@@ -136,7 +136,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
     """
     mlm_pipeline = pipeline('fill-mask', model=model_name, tokenizer=model_name,
                             config=model_name, topk=nb_keywords_per_tweet)
-    df['mlm_keywords'] = np.nan
+    df['top_mlm_keywords'] = np.nan
     for tweet_index in range(df.shape[0]):
         tweet = df['text'][tweet_index]
         tweet = tweet.replace(keyword, '[MASK]')
