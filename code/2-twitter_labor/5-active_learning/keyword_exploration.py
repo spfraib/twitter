@@ -12,6 +12,7 @@ from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
 import numpy as np
+import pandas as pd
 
 
 def get_args_from_command_line():
