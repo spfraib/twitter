@@ -13,11 +13,6 @@ from ekphrasis.dicts.emoticons import emoticons
 from collections import Counter
 import numpy as np
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
