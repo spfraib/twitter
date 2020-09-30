@@ -235,7 +235,7 @@ if __name__ == "__main__":
         top_tweets_df = pd.read_parquet(os.path.join(top_tweets_folder_path, top_tweets_filename))
         top_lift_keywords_list, keywords_with_lift_higher_1_list, full_random_wordcount_df = calculate_lift(
             top_df=top_tweets_df, nb_top_lift_kw=args.nb_top_lift_kw)
-        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=explore_kw_data_df,
+        tweets_all_top_lift_keywords_df = mlm_with_selected_keywords(top_df=top_tweets_df,
                                                                      model_name='bert-base-cased',
                                                                      keyword_list=top_lift_keywords_list,
                                                                      nb_tweets_per_keyword=args.nb_tweets_per_kw_mlm,
