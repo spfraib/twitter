@@ -229,6 +229,24 @@ def bootstrapping(df, nb_samples):
     final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
     return dict(Counter(final_results_list))
 
+def eliminate_keywords_contained_in_positives_from_training(keyword_list, column):
+    """
+    Identify keywords in keyword_list contained in tweets labelled as positive for the training set of a given class.
+    Delete these keywords from the input keyword_list
+    :param keyword_list: List of keywords to look for in positives from the training set
+    :param column: Class (e.g. lost_job_1mo, is_hired_1mo)
+    :return: the inputted keyword_list without, if any, the keywords found in positives from the training set.
+    """
+    train_df = pd.read_csv(
+        os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/jul23_iter0/preprocessed',
+                     'train_{}.csv'.format(column)),
+        lineterminator='\n')
+    positive_train_df = train_df[train_df['class'] == 1].reset_index(drop=True)
+    final_keyword_list = list()
+    for keyword in keyword_list:
+        if positive_train_df['text'].str.contains(keyword).sum() == 0:
+            final_keyword_list.append(keyword)
+    return final_keyword_list
 
 if __name__ == "__main__":
     # Define args from command line
@@ -278,18 +296,24 @@ if __name__ == "__main__":
         keyword_count_dict = {k: keyword_count_dict[k] for k in list(set(relevant_keywords_list))}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
-        print("Final results:")
+        print("Final results before dropping keywords appearing in positives from training set:")
         print(top_keyword_dict)
-        # Save whole results as parquet
-        final_keyword_count_df = pd.DataFrame(keyword_count_dict.items(), columns=['word', 'wordcount'])
-        final_keyword_count_df = final_keyword_count_df.sort_values(by=["wordcount"], ascending=False).reset_index(drop=True)
-        final_keyword_count_path = os.path.join(args.final_keywords_folder_path, )
-        final_keyword_count_df.to_parquet()
-        # # TO DO
 
-        # diversity constraint (iteration 0)
-        # final_selected_keywords_list = eliminate_keywords_contained_in_positives_from_training(selected_key                                                                                   column)
-        # select nb_kw_per_tweet_mlm keywords from list of final keywords
-        # final_selected_keywords_list = final_selected_keywords_list[:args.nb_kw_per_tweet_mlm]
+        # diversity constraint (iteration 0): discard keywords contained in positives from training set
+        current_keyword_list = eliminate_keywords_contained_in_positives_from_training(keyword_list=list(keyword_count_dict.keys()),
+                                                                                       column=column)
+        keyword_count_dict = {k: keyword_count_dict[k] for k in current_keyword_list}
+        # keep top tweets in terms of wordcount in the overall output of MLM
+        top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
+        print("Final results after dropping keywords appearing in positives from training set:")
+        print(top_keyword_dict)
 
-        # save list of top keywords
+
+        # TO DO: Save whole results as parquet
+        # final_keyword_count_df = pd.DataFrame(keyword_count_dict.items(), columns=['word', 'wordcount'])
+        # final_keyword_count_df = final_keyword_count_df.sort_values(by=["wordcount"], ascending=False).reset_index(drop=True)
+        # final_keyword_count_path = os.path.join(args.final_keywords_folder_path, )
+        # final_keyword_count_df.to_parquet()
+
+        # TO DO: drop tweets that are already labelled
+
