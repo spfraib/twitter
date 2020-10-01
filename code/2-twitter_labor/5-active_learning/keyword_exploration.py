@@ -31,6 +31,8 @@ def get_args_from_command_line():
                         default=10)
     parser.add_argument("--nb_tweets_per_kw_final", type=int,
                         help="Number of tweets to send to labelling per keyword outputted by MLM (Keyword exploration).")
+    parser.add_argument("--bootstrapping_method", type=str,
+                        help="whether to bootstrap the MLM results of all keywords together or do it separately for each kw")
     parser.add_argument("--nb_bootstrapped_samples", type=int, help="Number of bootstrapped samples ", default=1000)
     parser.add_argument("--nb_final_candidate_kw", type=int,
                         help="Number of top keywords in terms of wordcount that are kept at the end of the process.",
@@ -148,7 +150,7 @@ def mlm_with_given_keyword(df, keyword, model_name, nb_keywords_per_tweet):
         tweet = df['text'][tweet_index]
         if tweet.count(keyword) > 1:
             n = random.randint(1, tweet.count(keyword))
-            tweet = tweet.replace(keyword, '[MASK]', n).replace('[MASK]', keyword, n-1)
+            tweet = tweet.replace(keyword, '[MASK]', n).replace('[MASK]', keyword, n - 1)
         else:
             tweet = tweet.replace(keyword, '[MASK]')
         try:
@@ -207,27 +209,42 @@ def mlm_with_selected_keywords(top_df, model_name, keyword_list, nb_tweets_per_k
     return tweets_all_top_lift_keywords_df
 
 
-def bootstrapping(df, nb_samples):
+def bootstrapping(df, nb_samples, method):
     """
-    For each top-lift keyword K, out of the X tweets containing K, produce nb_samples random samples (sampling with replacement).
+    If method is each_keyword_separately:
+    For each top-lift keyword K, out of the X tweets containing K, produce nb_samples random samples of size X (sampling with replacement).
     For each random sample, collect the keywords resulting from MLM and append them to a list L.
+
+    If method is all_keywords_together:
+    Out of the X tweets containing at least one top-lift keyword, produce nb_samples random samples of size X (sampling with replacement).
+    For each random sample, collect the keywords resulting from MLM and append them to a list L.
+
     :param df: a pandas DataFrame containing all tweets containing at least one top lift keyword (output of former function)
     :param nb_samples: number of bootstrapped samples
+    :param method: whether to bootstrap the MLM results of all keywords together or do it separately for each kw
     :return: a dictionary containing the word count from list L (keys are words and values are word counts)
     """
-    top_lift_keywords_list = df.top_lift_keyword.unique()
-    final_results_dict = dict()
-    for keyword in top_lift_keywords_list:
-        tweets_containing_keyword_df = df.loc[df['top_lift_keyword'] == keyword].reset_index(drop=True)
+    if method == "each_keyword_separately":
+        top_lift_keywords_list = df.top_lift_keyword.unique()
+        final_results_dict = dict()
+        for keyword in top_lift_keywords_list:
+            tweets_containing_keyword_df = df.loc[df['top_lift_keyword'] == keyword].reset_index(drop=True)
+            all_top_mlm_keywords_list = list()
+            for sample_nb in range(nb_samples):
+                tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(
+                    n=tweets_containing_keyword_df.shape[0],
+                    replace=True)
+                all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
+            final_results_dict[keyword] = all_top_mlm_keywords_list
+        final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
+        return dict(Counter(final_results_list))
+    elif method == "all_keywords_together":
         all_top_mlm_keywords_list = list()
         for sample_nb in range(nb_samples):
-            tweets_containing_keyword_sample_df = tweets_containing_keyword_df.sample(
-                n=tweets_containing_keyword_df.shape[0],
-                replace=True)
-            all_top_mlm_keywords_list += tweets_containing_keyword_sample_df['top_mlm_keywords'].sum()
-        final_results_dict[keyword] = all_top_mlm_keywords_list
-    final_results_list = [item for sublist in list(final_results_dict.values()) for item in sublist]
-    return dict(Counter(final_results_list))
+            tweets_sample_df = df.sample(n=df.shape[0], replace=True)
+            all_top_mlm_keywords_list += tweets_sample_df['top_mlm_keywords'].sum()
+        return dict(Counter(all_top_mlm_keywords_list))
+
 
 def eliminate_keywords_contained_in_positives_from_training(keyword_list, column):
     """
@@ -247,6 +264,7 @@ def eliminate_keywords_contained_in_positives_from_training(keyword_list, column
         if positive_train_df['text'].str.contains(keyword).sum() == 0:
             final_keyword_list.append(keyword)
     return final_keyword_list
+
 
 if __name__ == "__main__":
     # Define args from command line
@@ -284,7 +302,8 @@ if __name__ == "__main__":
                                                                      lowercase=False
                                                                      )
         print("Ran MLM")
-        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples)
+        keyword_count_dict = bootstrapping(df=tweets_all_top_lift_keywords_df, nb_samples=args.nb_bootstrapped_samples,
+                                           method=args.bootstrapping_method)
         print("Performed bootstrapping")
         # keep only words with lift strictly higher than 1 and for which wordcount/total_nb_of_tweets > 1/100K
         full_random_wordcount_df['frequency'] = full_random_wordcount_df['count'] / N_random
@@ -300,14 +319,14 @@ if __name__ == "__main__":
         print(top_keyword_dict)
 
         # diversity constraint (iteration 0): discard keywords contained in positives from training set
-        current_keyword_list = eliminate_keywords_contained_in_positives_from_training(keyword_list=list(keyword_count_dict.keys()),
-                                                                                       column=column)
+        current_keyword_list = eliminate_keywords_contained_in_positives_from_training(
+            keyword_list=list(keyword_count_dict.keys()),
+            column=column)
         keyword_count_dict = {k: keyword_count_dict[k] for k in current_keyword_list}
         # keep top tweets in terms of wordcount in the overall output of MLM
         top_keyword_dict = Counter(keyword_count_dict).most_common(args.nb_final_candidate_kw)
         print("Final results after dropping keywords appearing in positives from training set:")
         print(top_keyword_dict)
-
 
         # TO DO: Save whole results as parquet
         # final_keyword_count_df = pd.DataFrame(keyword_count_dict.items(), columns=['word', 'wordcount'])
@@ -316,4 +335,3 @@ if __name__ == "__main__":
         # final_keyword_count_df.to_parquet()
 
         # TO DO: drop tweets that are already labelled
-
