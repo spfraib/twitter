@@ -24,5 +24,6 @@ python3 -u keyword_exploration.py \
 --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output \
 --nb_top_lift_kw 10 \
 --nb_kw_per_tweet_mlm 10 \
+--bootstrapping_method each_keyword_separately \
 > /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/keyword_exploration.log 2>&1
 
