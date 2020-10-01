@@ -14,9 +14,13 @@ Before starting the active learning methodology, we must:
 
 ### To run after each iteration:
 
-- For each class `${CLASS}`, load all chunks outputted by inference (containing `tweet_id`, `score`), join them all together and merge with the original tweets from the random containing the tweet `text` and the results of operations. Sort the whole dataset by inference score, save the top tweets (in terms of base rate) at `${INFERENCE_OUTPUT_FOLDER}/joined/${CLASS}/top_tweets_${CLASS}` and the joined chunks at `${INFERENCE_OUTPUT_FOLDER}/joined/${CLASS}/joined_chunks`. 
+- For each class `${CLASS}`, load all chunks outputted by inference (containing `tweet_id`, `score`), join them all together and merge with the original tweets from the random containing the tweet `text` and the results of operations. Sort the whole dataset by inference score, save the top tweets (in terms of base rate) at `/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/joined/${CLASS}/top_tweets_${CLASS}` and the joined chunks at `/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/joined/${CLASS}/joined_chunks`. 
 
 `sh preliminary/process_inference_output_spark_bash.sh ${INFERENCE_FOLDER}`
+
+*Example command:*
+
+`sh preliminary/process_inference_output_spark_bash.sh DeepPavlov_bert-base-cased-conversational_jul23_iter0_preprocessed_12207397-12226078`
 
 **Note that this bash file must be run on the Dumbo cluster as it contains PySpark code.**
 
