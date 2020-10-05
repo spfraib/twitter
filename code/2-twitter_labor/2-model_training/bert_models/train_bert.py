@@ -84,6 +84,7 @@ def get_args_from_command_line():
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
     parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
+    parser.add_argument("--intra_epoch_evaluation", type=bool, help="Whether to do several evaluations per epoch", default=False)
     parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
 
@@ -206,8 +207,9 @@ if __name__ == "__main__":
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
                                       "early_stopping_metric_minimize": True}
     ## Allow for several evaluations per epoch
-    nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
-    classification_args['evaluate_during_training_steps'] = int(nb_steps_per_epoch // args.nb_evaluations_per_epoch)
+    if args.intra_epoch_evaluation:
+        nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
+        classification_args['evaluate_during_training_steps'] = int(nb_steps_per_epoch // args.nb_evaluations_per_epoch)
     ## Define the model
     model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
                                 args=classification_args)
@@ -221,30 +223,31 @@ if __name__ == "__main__":
     model.train_model(train_df, eval_df=eval_df, output_dir=path_to_store_model, **eval_metrics)
     logging.info("The training of the model is done")
 
-    # Find best model (in terms of evaluation loss) at or after the first epoch
-    training_progress_scores_df = pd.read_csv(os.path.join(path_to_store_model, 'training_progress_scores.csv'))
-    overall_best_model_step = training_progress_scores_df['global_step'][training_progress_scores_df[['eval_loss']].idxmin()[0]]
-    print('Nb steps per epoch: ', nb_steps_per_epoch)
-    print('Overall best model step: ', overall_best_model_step)
-    if int(overall_best_model_step) >= int(nb_steps_per_epoch):
-        print("The best model is found at {} steps, therefore after the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
-    else:
-        training_progress_scores_after_first_epoch_df = training_progress_scores_df[training_progress_scores_df['global_step'] >= nb_steps_per_epoch]
-        best_model_after_first_epoch_step = training_progress_scores_after_first_epoch_df['global_step'][training_progress_scores_after_first_epoch_df[['eval_loss']].idxmin()[0]]
-        ## Rename past best_model folder to best_model_overall
-        if not os.path.isdir(path_to_store_best_model):
-            print("There is no {} folder".format(path_to_store_best_model))
-        os.rename(path_to_store_best_model, os.path.join(os.path.dirname(path_to_store_best_model), 'overall_best_model'))
-        ## Copy folder of best model at or after first epoch to best_model folder
-        if int(best_model_after_first_epoch_step) % int(nb_steps_per_epoch) == 0:
-            epoch_number = int(best_model_after_first_epoch_step / nb_steps_per_epoch)
-            best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}-epoch-{}'.format(str(best_model_after_first_epoch_step), str(epoch_number)))
+    if args.intra_epoch_evaluation:
+        # Find best model (in terms of evaluation loss) at or after the first epoch
+        training_progress_scores_df = pd.read_csv(os.path.join(path_to_store_model, 'training_progress_scores.csv'))
+        overall_best_model_step = training_progress_scores_df['global_step'][training_progress_scores_df[['eval_loss']].idxmin()[0]]
+        print('Nb steps per epoch: ', nb_steps_per_epoch)
+        print('Overall best model step: ', overall_best_model_step)
+        if int(overall_best_model_step) >= int(nb_steps_per_epoch):
+            print("The best model is found at {} steps, therefore after the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
         else:
-            best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}'.format(str(best_model_after_first_epoch_step)))
-        copy_folder(best_model_after_first_epoch_path, path_to_store_best_model)
-        print("The best model is found at {} steps, therefore before the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
-        print("The best model at or after the first epoch is found at {} steps.".format(best_model_after_first_epoch_step))
-        print("The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
+            training_progress_scores_after_first_epoch_df = training_progress_scores_df[training_progress_scores_df['global_step'] >= nb_steps_per_epoch]
+            best_model_after_first_epoch_step = training_progress_scores_after_first_epoch_df['global_step'][training_progress_scores_after_first_epoch_df[['eval_loss']].idxmin()[0]]
+            ## Rename past best_model folder to best_model_overall
+            if not os.path.isdir(path_to_store_best_model):
+                print("There is no {} folder".format(path_to_store_best_model))
+            os.rename(path_to_store_best_model, os.path.join(os.path.dirname(path_to_store_best_model), 'overall_best_model'))
+            ## Copy folder of best model at or after first epoch to best_model folder
+            if int(best_model_after_first_epoch_step) % int(nb_steps_per_epoch) == 0:
+                epoch_number = int(best_model_after_first_epoch_step / nb_steps_per_epoch)
+                best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}-epoch-{}'.format(str(best_model_after_first_epoch_step), str(epoch_number)))
+            else:
+                best_model_after_first_epoch_path = os.path.join(path_to_store_model, 'checkpoint-{}'.format(str(best_model_after_first_epoch_step)))
+            copy_folder(best_model_after_first_epoch_path, path_to_store_best_model)
+            print("The best model is found at {} steps, therefore before the first epoch ({} steps).".format(overall_best_model_step, nb_steps_per_epoch))
+            print("The best model at or after the first epoch is found at {} steps.".format(best_model_after_first_epoch_step))
+            print("The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
 
     # Load best model (in terms of evaluation loss)
     best_model = ClassificationModel(args.model_name, path_to_store_best_model)
