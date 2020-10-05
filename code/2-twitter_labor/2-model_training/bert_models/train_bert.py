@@ -203,13 +203,16 @@ if __name__ == "__main__":
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
-                                      "early_stopping_patience": 11,
+                                      "early_stopping_patience": 3,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
                                       "early_stopping_metric_minimize": True}
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
         classification_args['evaluate_during_training_steps'] = int(nb_steps_per_epoch // args.nb_evaluations_per_epoch)
+        classification_args['early_stopping_patience'] = args.nb_evaluations_per_epoch + 1
+    else:
+        classification_args['early_stopping_patience'] = 3
     ## Define the model
     model = ClassificationModel(args.model_name, args.model_type, num_labels=args.num_labels, use_cuda=use_cuda,
                                 args=classification_args)
