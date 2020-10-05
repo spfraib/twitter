@@ -36,8 +36,8 @@ HOLDOUT_DATA_FOLDER=/scratch/mt4493/twitter_labor/twitter-labor-data/data/jul23_
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
-source /scratch/mt4493/twitter_labor/code/envs/training_env/bin/activate
-echo "virtualenv activated"
+#source /scratch/mt4493/twitter_labor/code/envs/training_env/bin/activate
+#echo "virtualenv activated"
 
 #create output folder
 mkdir /scratch/mt4493/twitter_labor/trained_models/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"
