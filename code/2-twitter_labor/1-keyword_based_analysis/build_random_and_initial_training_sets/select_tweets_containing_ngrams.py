@@ -17,7 +17,7 @@ except NameError:
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--raw_tweets_path", type=str,
+    parser.add_argument("--random_set_path", type=str,
                         help="Path to the folder containing raw tweets.",
                         default="")
     parser.add_argument("--country_code", type=str,
@@ -34,9 +34,7 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     df = spark.read.parquet(args.raw_tweets_path)
     # Keep language-specific tweets
-    df = df.where(df.tweet_lang == args.language_code).drop('tweet_lang')
     df = df.withColumn('text_lowercase', lower(col('text')))
-    df.drop_duplicates(subset=['text_lowercase'])
     ngram_dict ={'english': [' fired ',
                              (' lost ',' job '),
                              (' i ',' not ',' working '),
