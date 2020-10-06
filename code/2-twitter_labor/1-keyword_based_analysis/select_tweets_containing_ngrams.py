@@ -36,7 +36,27 @@ if __name__ == "__main__":
     # Keep language-specific tweets
     df = df.where(df.tweet_lang == args.language_code).drop('tweet_lang')
     df = df.withColumn('text_lowercase', lower(col('text')))
-    ngram_list = ['fired',('lost','job'),('I','not','working')]
+    df.drop_duplicates(subset=['text_lowercase'])
+    ngram_dict ={'english': [' fired ',
+                             (' lost ',' job '),
+                             (' i ',' not ',' working '),
+                             ' laid off ',
+                             (' found ', ' job '),
+                             ' hired ',
+                             (' got ', ' job '),
+                             (' started ', ' job '),
+                             ' new job ',
+                             (' i ', ' unemployed '),
+                             (' i ', ' jobless '),
+                             ' unemployment ',
+                             (' anyone ', ' hiring '),
+                             ' job search ',
+                             (' wish ', ' hire '),
+                             (' need ', ' job '),
+                             (' searching ', ' job '),
+                             ' job ',
+                             ' hiring ',
+                             ' apply ']}
     for ngram in ngram_list:
         if len(ngram) == 1:
             df_ngram = df.filter(df.text_lowercase.contains(ngram))
