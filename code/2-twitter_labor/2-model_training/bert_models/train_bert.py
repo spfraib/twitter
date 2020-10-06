@@ -84,13 +84,22 @@ def get_args_from_command_line():
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
     parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
-    parser.add_argument("--intra_epoch_evaluation", type=bool, help="Whether to do several evaluations per epoch", default=False)
+    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch")
     parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
 
     args = parser.parse_args()
     return args
 
+def ParseBoolean (b):
+    if len(b) < 1:
+        raise ValueError ('Cannot parse empty string into boolean.')
+    b = b[0].lower()
+    if b == 't' or b == 'y' or b == '1':
+        return True
+    if b == 'f' or b == 'n' or b == '0':
+        return False
+    raise ValueError ('Cannot parse string into boolean.')
 
 def verify_data_format(df: pd.DataFrame) -> None:
     """Verify that the df has the right columns."""

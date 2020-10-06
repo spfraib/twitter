@@ -13,6 +13,7 @@
 DATA_FOLDER=$1
 MODEL_NAME=$2
 MODEL_TYPE=$3
+INTRA_EPOCH_EVAL=$4
 TIMESTAMP=$(date +%s)
 JOB_ID=${SLURM_JOB_ID}
 
@@ -54,6 +55,7 @@ python3 train_bert.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 10 \
+ --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
  --output_dir ${OUTPUT_DIR}/lost_job_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -67,6 +69,7 @@ python3 train_bert.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 10 \
+ --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
  --output_dir ${OUTPUT_DIR}/is_unemployed \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -80,6 +83,7 @@ python3 train_bert.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 10 \
+ --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
  --output_dir ${OUTPUT_DIR}/job_search \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -93,6 +97,7 @@ python3 train_bert.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 10 \
+ --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
  --output_dir ${OUTPUT_DIR}/is_hired_1mo \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
@@ -106,6 +111,7 @@ python3 train_bert.py \
  --model_name ${MODEL_NAME} \
  --model_type ${MODEL_TYPE} \
  --num_train_epochs 10 \
+ --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
  --output_dir ${OUTPUT_DIR}/job_offer \
  --slurm_job_timestamp ${TIMESTAMP} \
  --slurm_job_id ${JOB_ID}
