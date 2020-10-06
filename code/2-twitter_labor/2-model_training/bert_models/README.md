@@ -35,18 +35,19 @@ We are now ready to start training.
 
 To train a binary BERT-based classifier on all 5 classes on the cluster, run:
 
-`$ sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE>`
+`$ sbatch train_bert_model.sbatch <DATA_FOLDER_NAME> <MODEL_NAME> <MODEL_TYPE> <INTRA_EPOCH_EVALUATION>`
 
 with:
 - <DATA_FOLDER_NAME>: the name of the folder in [twitter-labor-data/data](https://github.com/manueltonneau/twitter-labor-data/tree/master/data) where the train/val CSVs are stored (e.g. `jul23_iter0/preprocessed`)
 - <MODEL_NAME>: the BERT-based model architecture used. By default, it is always set to `bert`. 
 - <MODEL_TYPE>: the type of BERT-based model used (e.g. `DeepPavlov/bert-base-cased-conversational` for ConvBERT). This refers to the shortcut name of the model on the HuggingFace hub. The whole list can be found [here](https://huggingface.co/transformers/pretrained_models.html). 
+- <INTRA_EPOCH_EVALUATION>: a string parsed as a boolean to determine whether to perform intra-epoch evaluation (10 per epoch by default). Possible values are `t` (parsed as `True`) or `f` (parsed as `False`)
 
 The batch file can be found at: `/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models`. 
 
 Example command: 
 
-`$ sbatch train_bert_model.sbatch jul23_iter0/preprocessed bert DeepPavlov/bert-base-cased-conversational`
+`$ sbatch train_bert_model.sbatch jul23_iter0/preprocessed bert DeepPavlov/bert-base-cased-conversational t`
 ## Results:
 
 ### Models:
