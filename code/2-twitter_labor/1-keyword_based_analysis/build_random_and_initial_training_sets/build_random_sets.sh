@@ -23,8 +23,7 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --driver-memory 30G --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.maxExecutors=50 \
   --executor-cores 30 --executor-memory 30G \
   ${CODE_FOLDER}/build_random_sets.py \
-  --inference_output_folder /user/mt4493/twitter/inference/${INFERENCE_FOLDER}/output \
-  --random_chunks_with_operations_folder /user/mt4493/twitter/random_chunks_with_operations
+  --country_code ${COUNTRY_CODE}
 
 
 echo "Submitted Spark job"
