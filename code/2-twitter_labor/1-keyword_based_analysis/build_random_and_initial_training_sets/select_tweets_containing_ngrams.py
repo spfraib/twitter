@@ -23,9 +23,6 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Path to the inference data folder.",
                         default="US")
-    parser.add_argument("--language_code", type=str,
-                        help="Path to folder containing random tweets with operations.",
-                        default="en")
     args = parser.parse_args()
     return args
 
@@ -35,32 +32,36 @@ if __name__ == "__main__":
     df = spark.read.parquet(args.raw_tweets_path)
     # Keep language-specific tweets
     df = df.withColumn('text_lowercase', lower(col('text')))
-    ngram_dict ={'english': [' fired ',
-                             (' lost ',' job '),
-                             (' i ',' not ',' working '),
-                             ' laid off ',
-                             (' found ', ' job '),
-                             ' hired ',
-                             (' got ', ' job '),
-                             (' started ', ' job '),
-                             ' new job ',
-                             (' i ', ' unemployed '),
-                             (' i ', ' jobless '),
-                             ' unemployment ',
-                             (' anyone ', ' hiring '),
-                             ' job search ',
-                             (' wish ', ' hire '),
-                             (' need ', ' job '),
-                             (' searching ', ' job '),
-                             ' job ',
-                             ' hiring ',
-                             ' apply ']}
+    ngram_dict ={'US': [[' fired '],
+                             [' lost ',' job '],
+                             [' i ',' not ',' working '],
+                             [' laid off '],
+                             [' found ', ' job '],
+                             [' hired '],
+                             [' got ', ' job '],
+                             [' started ', ' job '],
+                             [' new job '],
+                             [' i ', ' unemployed '],
+                             [' i ', ' jobless '],
+                             [' unemployment '],
+                             [' anyone ', ' hiring '],
+                             [' job search '],
+                             [' wish ', ' hire '],
+                             [' need ', ' job '],
+                             [' searching ', ' job '],
+                             [' job '],
+                             [' hiring '],
+                             [' apply ']]}
+    ngram_list = ngram_dict[args.country_code]
     for ngram in ngram_list:
         if len(ngram) == 1:
-            df_ngram = df.filter(df.text_lowercase.contains(ngram))
+            df_ngram = df.filter(df.text_lowercase.contains(ngram[0]))
         elif len(ngram) == 2:
-            regex = f"^(?=.*\b{ngram[0]}\b)(?=.*\b{ngram[1]}\b).*$"
+            regex = f"{ngram[0]}.*{ngram[1]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
         elif len(ngram) == 3:
-            regex = f"^(?=.*\b{ngram[0]}\b)(?=.*\b{ngram[1]}\b)(?=.*\b{ngram[2]}\b).*$"
+            regex = f"{ngram[0]}.*{ngram[1]}.*{ngram[2]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
+        df_ngram_sample = df_ngram.sample(False, 1000/df_ngram.count(), seed=0)
+        ngram_sample_path = f'/user/mt4493/twitter/random_samples_ngrams/{args.country_code}'
+        df_ngram_sample.coalesce(1).write.mode("overwrite").parquet(ngram_sample_path)
