@@ -17,9 +17,6 @@ except NameError:
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--random_set_path", type=str,
-                        help="Path to the folder containing raw tweets.",
-                        default="")
     parser.add_argument("--country_code", type=str,
                         help="Path to the inference data folder.",
                         default="US")
