@@ -11,6 +11,8 @@ export PYTHONIOENCODING=utf8
 hdfs dfs -mkdir -p /user/spf248/twitter/data/random_samples/${COUNTRY_CODE}/random_1
 hdfs dfs -mkdir -p /user/spf248/twitter/data/random_samples/${COUNTRY_CODE}/random_2
 
+echo "Created output folders"
+
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-keyword_based_analysis/build_random_and_initial_training_sets
 TIMESTAMP=$(date +%s)
 JOB_NAME=build_random_sets_${TIMESTAMP}
@@ -25,3 +27,4 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --random_chunks_with_operations_folder /user/mt4493/twitter/random_chunks_with_operations
 
 
+echo "Submitted Spark job"
