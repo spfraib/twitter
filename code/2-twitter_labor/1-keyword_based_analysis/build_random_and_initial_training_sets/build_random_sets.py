@@ -29,9 +29,8 @@ def get_args_from_command_line():
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
-
-    path_to_tweets = f'/user/mt4493/twitter/all_tweets/{args.country_code}/'
-    df = spark.read.parquet(path_to_tweets)
+    path_to_tweets = f'/user/mt4493/twitter/all_tweets_timeline/{args.country_code}/'
+    df = spark.read.orc(path_to_tweets)
     df = df.select('tweet_id', 'text', 'tweet_lang')
     country_language_dict = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
     df = df.where(df.tweet_lang == country_language_dict[args.country_code]).drop('tweet_lang')
@@ -43,5 +42,7 @@ if __name__ == "__main__":
         share_repr_100M = 100000000/N_all
         df_random_1, df_rest = df.randomSplit(weights=[share_repr_100M, 1 - share_repr_100M])
         df_random_2 = df_rest.sample(False, 100000000/df_rest.count(), seed=0)
+        df_random_1.write.mode("overwrite").parquet(f'/user/mt4493/twitter/random_samples/{args.country_code}/random_1')
+        df_random_2.write.mode("overwrite").parquet(f'/user/mt4493/twitter/random_samples/{args.country_code}/random_2')
 
 
