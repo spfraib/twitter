@@ -48,8 +48,8 @@ if __name__ == "__main__":
         print('Limited first random set to 100M tweets')
         df_random_2 = df_random_2.limit(100000000)
         print('Limited second random set to 100M tweets')
-        df_random_1.write.mode("overwrite").parquet(f'/user/spf248/twitter/data/random_samples/{args.country_code}/random_1')
+        df_random_1.coalesce(1000).write.mode("overwrite").parquet(f'/user/spf248/twitter/data/random_samples/{args.country_code}/random_1')
         print('Outputted first random set')
-        df_random_2.write.mode("overwrite").parquet(f'/user/spf248/twitter/data/random_samples/{args.country_code}/random_2')
+        df_random_2.coalesce(1000).write.mode("overwrite").parquet(f'/user/spf248/twitter/data/random_samples/{args.country_code}/random_2')
         print('Outputted second random set')
 
