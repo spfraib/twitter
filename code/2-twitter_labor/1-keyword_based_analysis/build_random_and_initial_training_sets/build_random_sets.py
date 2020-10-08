@@ -44,9 +44,9 @@ if __name__ == "__main__":
     if N_all > 200000000:
         df_random_1, df_random_2 = df.randomSplit(weights=[0.5, 0.5])
         print('Performed random split')
-        df_random_1 = df_random_1.limit(100000000)
+        df_random_1 = df_random_1.sample(False, 100000000/df_random_1.count(), seed=0)
         print('Limited first random set to 100M tweets')
-        df_random_2 = df_random_2.limit(100000000)
+        df_random_2 = df_random_2.sample(False, 100000000/df_random_2.count(), seed=0)
         print('Limited second random set to 100M tweets')
         df_random_1.coalesce(1000).write.mode("overwrite").parquet(f'/user/spf248/twitter/data/random_samples/{args.country_code}/random_1')
         print('Outputted first random set')
