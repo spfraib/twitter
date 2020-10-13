@@ -60,6 +60,6 @@ if __name__ == "__main__":
     if args.country_code in ['MX', 'BR']:
         for a, b in accent_replacements:
             df_random = df_random.withColumn('text_lowercase', regexp_replace(col('text_lowercase'), a, b))
-    df_random.coalesce(2000).write.mode("overwrite").parquet(
+    df_random.write.mode("overwrite").parquet(
         f'/user/spf248/twitter/data/random_samples/{args.country_code}')
 
