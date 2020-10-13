@@ -7,6 +7,12 @@ from pyspark.sql.functions import lower, col
 import subprocess
 import argparse
 import os
+import unicodedata
+import sys
+
+from pyspark.sql.functions import translate, regexp_replace
+from pyspark.sql.types import StringType
+from pyspark.sql.functions import udf
 
 try:
     spark
@@ -26,12 +32,13 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
     df = spark.read.parquet(args.raw_tweets_path)
+    df = df.sample(False, 100000000/df.count(), seed=0)
     # Keep language-specific tweets
-    df = df.withColumn('text_lowercase', lower(col('text')))
     ngram_dict ={'US': [[' fired '],
                              [' lost ',' job '],
                              [' i ',' not ',' working '],
