@@ -2,7 +2,8 @@
 
 This folder contains code for a Twitter-based labor market analysis. It is organized as follows:
 
-- `1-keyword_based_analysis`: count mentions of specific keywords within each tweet and use this count to predict the labor market situation.
+- `0-keyword_based_analysis`: count mentions of specific keywords within each tweet and use this count to predict the labor market situation.
+- `1-training_data_preparation`: select tweets containing specific n-grams to build training sets and build MTurk survey to label these sets.
 - `2-model_training`: train both GloVe-CNN and BERT-based models for tweet binary classification on labor-market-related labels
 - `3-model_evaluation`: evaluation of the trained models
 - `4-inference_200M`: use trained models to do inference on a 200M sample of tweets
