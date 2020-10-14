@@ -9,7 +9,7 @@ This folder contains code for a Twitter-based labor market analysis. It is organ
 - `5-active_learning`: select next tweets to be labelled following an active learning approach (WIP)
 - `6-bert_pretraining`: further pretrain BERT on a tweet corpus (WIP)
 
-**Note:** the former folder entitled `7-classification` can be found in the `archive` folder. It contains code that does the following:
+**Note:** the former folder entitled `7-classification` can be found in the `2-model_training/archive` folder. It contains code that does the following:
 - Compute similarity of each tweet to a given sentence, allowing to find semantically similar tweets
 
 - Feed a sample of tweets into a Qualtrics survey to create labels on Amazon Mechanical Turk
