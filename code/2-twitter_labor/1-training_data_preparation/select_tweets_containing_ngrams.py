@@ -32,6 +32,16 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+def run_cmd(args_list):
+    """
+    run linux commands
+    """
+    # import subprocess
+    print('Running system command: {0}'.format(' '.join(args_list)))
+    proc = subprocess.Popen(args_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    s_output, s_err = proc.communicate()
+    s_return = proc.returncode
+    return s_return, s_output, s_err
 
 if __name__ == "__main__":
     # Define args from command line
@@ -111,6 +121,10 @@ if __name__ == "__main__":
         elif len(ngram) == 3:
             regex = f"{ngram[0]}[.\w\s\d]*{ngram[1]}[.\w\s\d]*{ngram[2]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
-        df_ngram_sample = df_ngram.sample(False, 1000/df_ngram.count(), seed=0)
-        ngram_sample_path = f'/user/mt4493/twitter/random_samples_ngrams/{args.country_code}'
-        df_ngram_sample.coalesce(1).write.mode("overwrite").parquet(ngram_sample_path)
+        share = min(1000/df_ngram.count(), 1)
+        df_ngram_sample = df_ngram.sample(False, share, seed=0)
+        ngram_str = '_'.join(ngram).replace(' ', '')
+        ngram_str = f'{ngram_str}_{df_ngram_sample.count()}'
+        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/{ngram_str}'
+        run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
+        df_ngram_sample.write.mode("overwrite").parquet(ngram_sample_path)
