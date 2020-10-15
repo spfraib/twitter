@@ -119,7 +119,7 @@ if __name__ == "__main__":
         elif len(ngram) == 3:
             regex = f"{ngram[0]}[.\w\s\d]*{ngram[1]}[.\w\s\d]*{ngram[2]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
-        share = min(1000/df_ngram.count(), 1)
+        share = min(float(1000/df_ngram.count()), 1.0)
         df_ngram_sample = df_ngram.sample(False, share, seed=0)
         ngram_str = '_'.join(ngram).replace(' ', '')
         ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
