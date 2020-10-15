@@ -9,11 +9,6 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
-hdfs dfs -mkdir -p /user/spf248/twitter/data/random_samples/${COUNTRY_CODE}/random_1
-hdfs dfs -mkdir -p /user/spf248/twitter/data/random_samples/${COUNTRY_CODE}/random_2
-
-echo "Created output folders"
-
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
 TIMESTAMP=$(date +%s)
 JOB_NAME=build_random_sets_${TIMESTAMP}
