@@ -64,12 +64,11 @@ if __name__ == "__main__":
                         ['anyone', 'hiring'],
                         ['wish', 'job'],
                         ['need', 'job'],
-                        ['searching', 'job']
+                        ['searching', 'job'],
                         ['job'],
                         ['hiring'],
                         ['opportunity'],
-                        ['apply']
-                        ],
+                        ['apply']],
                  'MX': [['me despidieron'],
                         ['perdi mi trabajo'],
                         ['me corrieron'],
@@ -106,8 +105,7 @@ if __name__ == "__main__":
                         ['enviar', 'curriculo'],
                         ['envie', 'curriculo'],
                         ['oportunidade', 'emprego'],
-                        ['temos', 'vagas']
-                        ]
+                        ['temos', 'vagas']]
                  }
     ngram_list = ngram_dict[args.country_code]
     for ngram in ngram_list:
