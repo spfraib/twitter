@@ -43,7 +43,7 @@ if __name__ == "__main__":
     N_all = df.count()
     print('Total number of tweets:', N_all)
     N_sample = 200000000
-    pct_sample = min(N_sample / N_all, 1)
+    pct_sample = min(N_sample / N_all, 1.0)
     df_random = df.sample(False, pct_sample, seed=0)
     print('Random set to 200M tweets')
     # Add lowercased column
