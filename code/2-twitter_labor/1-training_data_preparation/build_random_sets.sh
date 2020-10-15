@@ -14,7 +14,7 @@ hdfs dfs -mkdir -p /user/spf248/twitter/data/random_samples/${COUNTRY_CODE}/rand
 
 echo "Created output folders"
 
-CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/build_random_and_initial_training_sets
+CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
 TIMESTAMP=$(date +%s)
 JOB_NAME=build_random_sets_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
