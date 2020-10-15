@@ -39,35 +39,77 @@ if __name__ == "__main__":
     df = spark.read.parquet(args.raw_tweets_path)
     df = df.sample(False, 100000000/df.count(), seed=0)
     # Keep language-specific tweets
-    ngram_dict ={'US': [[' fired '],
-                             [' lost ',' job '],
-                             [' i ',' not ',' working '],
-                             [' laid off '],
-                             [' found ', ' job '],
-                             [' hired '],
-                             [' got ', ' job '],
-                             [' started ', ' job '],
-                             [' new job '],
-                             [' i ', ' unemployed '],
-                             [' i ', ' jobless '],
-                             [' unemployment '],
-                             [' anyone ', ' hiring '],
-                             [' job search '],
-                             [' wish ', ' hire '],
-                             [' need ', ' job '],
-                             [' searching ', ' job '],
-                             [' job '],
-                             [' hiring '],
-                             [' apply ']]}
+    ngram_dict ={'US': [[' i ', 'fired '],
+                        ['fired me'],
+                        ['laid off'],
+                        ['lost my job'],
+                        ['found ', 'job'],
+                        ['got ', 'job'],
+                        ['started', 'job'],
+                        ['new job'],
+                        [' i ', 'unemployed'],
+                        [' i ', 'jobless'],
+                        [' i ', 'not ', 'working'],
+                        ['unemployment'],
+                        ['anyone', 'hiring'],
+                        ['wish', 'job'],
+                        ['need', 'job'],
+                        ['searching', 'job']
+                        ['job'],
+                        ['hiring'],
+                        ['opportunity'],
+                        ['apply']
+                        ],
+                 'MX': [['me despidieron'],
+                        ['perdi mi trabajo'],
+                        ['me corrieron'],
+                        ['consegui', 'empleo'],
+                        ['nuevo trabajo'],
+                        ['nueva chamba'],
+                        ['encontre', 'trabajo'],
+                        ['estoy desemplead[o|a]'],
+                        ['sin empleo'],
+                        ['sin chamba'],
+                        [' nini '],
+                        ['necesito', 'trabajo'],
+                        ['busco', 'trabajo'],
+                        ['buscando', 'trabajo'],
+                        ['alguien', 'trabajo'],
+                        ['empleo'],
+                        ['contratando'],
+                        ['empleo nuevo'],
+                        ['vacante']],
+                 'BR': [['perdi', 'emprego'],
+                        ['perdi', 'trampo'],
+                        ['fui demitido'],
+                        ['me demitiram'],
+                        ['consegui', 'emprego'],
+                        ['fui contratad[o|a]'],
+                        ['comeco', 'emprego'],
+                        ['novo emprego|emprego novo'],
+                        ['estou desempregad[o|a]'],
+                        [' eu ', 'sem ', 'emprego'],
+                        ['gostaria', 'emprego'],
+                        ['queria', 'emprego'],
+                        ['preciso', 'emprego'],
+                        ['procurando', 'emprego'],
+                        ['enviar', 'curriculo'],
+                        ['envie', 'curriculo'],
+                        ['oportunidade', 'emprego'],
+                        ['temos', 'vagas']
+                        ]
+                 }
     ngram_list = ngram_dict[args.country_code]
     for ngram in ngram_list:
-        if len(ngram) == 1:
+        if len(ngram) == 1 and '|' not in ngram[0]:
             df_ngram = df.filter(df.text_lowercase.contains(ngram[0]))
+        elif len(ngram) == 1 and '|' in ngram[0]:
+            df_ngram = df.filter(df.text_lowercase.rlike(ngram[0]))
         elif len(ngram) == 2:
-            regex = f"{ngram[0]}.*{ngram[1]}"
+            regex = f"{ngram[0]}[.\w\s\d]*{ngram[1]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
         elif len(ngram) == 3:
-            regex = f"{ngram[0]}.*{ngram[1]}.*{ngram[2]}"
+            regex = f"{ngram[0]}[.\w\s\d]*{ngram[1]}[.\w\s\d]*{ngram[2]}"
             df_ngram = df.filter(df.text_lowercase.rlike(regex))
         df_ngram_sample = df_ngram.sample(False, 1000/df_ngram.count(), seed=0)
         ngram_sample_path = f'/user/mt4493/twitter/random_samples_ngrams/{args.country_code}'
