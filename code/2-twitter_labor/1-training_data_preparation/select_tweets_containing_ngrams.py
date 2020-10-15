@@ -46,7 +46,7 @@ def run_cmd(args_list):
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
-    df = spark.read.parquet(args.raw_tweets_path)
+    df = spark.read.parquet(args.random_set_path)
     df = df.sample(False, 100000000/df.count(), seed=0)
     # Keep language-specific tweets
     ngram_dict ={'US': [[' i ', 'fired '],
