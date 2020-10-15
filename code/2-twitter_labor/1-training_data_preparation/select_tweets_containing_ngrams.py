@@ -124,7 +124,7 @@ if __name__ == "__main__":
         share = min(1000/df_ngram.count(), 1)
         df_ngram_sample = df_ngram.sample(False, share, seed=0)
         ngram_str = '_'.join(ngram).replace(' ', '')
-        ngram_str = f'{ngram_str}_{df_ngram_sample.count()}'
-        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/{ngram_str}'
+        ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
+        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/{ngram_folder_name_str}'
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
         df_ngram_sample.write.mode("overwrite").parquet(ngram_sample_path)
