@@ -124,6 +124,8 @@ if __name__ == "__main__":
         ngram_str = '_'.join(ngram).replace(' ', '')
         ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
         print(ngram_folder_name_str)
-        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}'
+        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/{ngram_folder_name_str}'
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
-        df_ngram_sample.write.mode("overwrite").parquet(ngram_sample_path)
+        df_ngram_sample.write.parquet(ngram_sample_path)
+    #df_ngrams_all_samples = spark.read.parquet(f'/user/spf248/twitter/data/ngram_samples/{args.country_code}')
+    #df_ngram_sample.write.coalesce(1).parquet(ngram_sample_path)
