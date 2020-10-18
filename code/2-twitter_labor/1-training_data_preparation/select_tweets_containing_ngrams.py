@@ -29,6 +29,9 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Path to the inference data folder.",
                         default="US")
+    parser.add_argument("--nb_tweets_per_ngram", type=int,
+                        help="Number of tweets to sample per ngram.",
+                        default=150)
     args = parser.parse_args()
     return args
 
@@ -124,11 +127,15 @@ if __name__ == "__main__":
         ngram_str = '_'.join(ngram).replace(' ', '')
         ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
         print(ngram_folder_name_str)
-        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}'
+        ngram_sample_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/sample_1000'
         df_ngram_sample = df_ngram_sample.withColumn('ngram', lit(ngram_str))
         #run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
         df_ngram_sample.write.mode('append').parquet(ngram_sample_path)
-    #df_ngrams_all_samples = spark.read.parquet(f'/user/spf248/twitter/data/ngram_samples/{args.country_code}')
-    #all_samples_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/all_samples_merged'
-    #run_cmd(['hdfs', 'dfs', '-mkdir', '-p', all_samples_path])
-    #df_ngrams_all_samples.write.parquet(all_samples_path)
+    df_ngrams_all_samples = spark.read.parquet(f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/sample_1000')
+    labelling_path = f'/user/spf248/twitter/data/ngram_samples/{args.country_code}/labeling'
+    run_cmd(['hdfs', 'dfs', '-mkdir', '-p', labelling_path])
+    f = df_ngrams_all_samples.groupby('ngram').count()
+    f = f.withColumn('frac', F.when(col('count') < args.nb_tweets_per_ngram, 1).otherwise(args.nb_tweets_per_ngram / col('count')))
+    frac_dict = dict(f.select('ngram', 'frac').collect())
+    df_sampled = df_ngrams_all_samples.sampleBy('ngram', fractions=frac_dict)
+    df_sampled.write.parquet(labelling_path)
