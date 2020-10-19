@@ -236,7 +236,7 @@ if __name__ == "__main__":
     QuestionDescriptionID = "QID5"
 
     country_code = args.country_code
-    n_workers = 20  # Number of workers
+    n_workers = 1  # Number of workers
     block_size = 50  # Number of tweets per worker
     print(country_code)
     print('# n_workers:', n_workers)
