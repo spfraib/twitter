@@ -8,7 +8,7 @@ import numpy as np
 import pyarrow.parquet as pq
 from glob import glob
 from datetime import datetime
-
+import argparse
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
