@@ -9,6 +9,7 @@ import pyarrow.parquet as pq
 from glob import glob
 from datetime import datetime
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -216,13 +217,14 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
     if json.loads(response.text)["meta"]["httpStatus"] != '200 - OK':
         print(json.loads(response.text)["meta"]["httpStatus"])
 
+
 if __name__ == "__main__":
     args = get_args_from_command_line()
-    path_to_data = '/scratch/spf248/twitter/data'
+    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/ngram_samples/{args.country_code}/labeling'
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
-    with open(os.path.join(path_to_data, 'keys/qualtrics/apiToken'), 'r') as f:
+    with open(os.path.join('/scratch/spf248/twitter/data/keys/qualtrics/apiToken'), 'r') as f:
         apiToken = eval(f.readline())
     dataCenter = "nyu.ca1"
     SurveyName = f"labor-market-tweets_{args.country_code}_{timestamp}"
@@ -240,16 +242,16 @@ if __name__ == "__main__":
     print('# n_workers:', n_workers)
     print('block_size:', block_size)
     checks_dict = {'US': ['I lost my job today.', 'I got hired today.'],
-              'MX': ['Perdí mi trabajo hoy.', 'Me contrataron hoy.'],
-              'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
+                   'MX': ['Perdí mi trabajo hoy.', 'Me contrataron hoy.'],
+                   'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
     checks_list = checks_dict[args.country_code]
 
     n_tweets = n_workers * (block_size - len(checks)) // 2
     print('# Tweets (2 workers per tweets + 2 attention checks):', n_tweets)
 
-    #path to labelling as argument?
+    # path to labelling as argument?
     tweets = pq.ParquetDataset(
-        glob(os.path.join(path_to_data, 'classification', country_code, 'labeling', '*.parquet'))).read().to_pandas()
+        glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
     tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
@@ -274,7 +276,8 @@ if __name__ == "__main__":
 
     print("Done in", round(timer() - start), "sec")
 
-    QuestionTemplateData = get_question(QuestionID=QuestionTemplateID, SurveyID=SurveySourceID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionTemplateData = get_question(QuestionID=QuestionTemplateID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                        dataCenter=dataCenter)
 
     start = timer()
     print("Create Questions")
@@ -284,17 +287,21 @@ if __name__ == "__main__":
         if i % block_size == 0:
             BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
             BlockData['Type'] = 'Standard'
-            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
+                         dataCenter=dataCenter)
 
             print('Block', i // block_size + 1)
-            BlockID, FlowID = create_block("Worker " + str(i // block_size + 1), SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+            BlockID, FlowID = create_block("Worker " + str(i // block_size + 1), SurveyID=SurveyID, apiToken=apiToken,
+                                           dataCenter=dataCenter)
 
             BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
             BlockData['Type'] = 'Default'
-            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
+                         dataCenter=dataCenter)
 
         text = 'Please answer the following questions about the following tweet:\n\n"' + tweet + '""'
-        QuestionID = create_question(QuestionData=QuestionTemplateData, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+        QuestionID = create_question(QuestionData=QuestionTemplateData, SurveyID=SurveyID, apiToken=apiToken,
+                                     dataCenter=dataCenter)
         QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
         QuestionData['QuestionText'] = tweet
         QuestionData['QuestionDescription'] = tweet
@@ -309,7 +316,8 @@ if __name__ == "__main__":
                 "RandomizeQuestions": "false",
                 "BlockVisibility": "Collapsed",
             }
-            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+            update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
+                         dataCenter=dataCenter)
 
     print("Done in", round(timer() - start), "sec")
 
@@ -325,11 +333,14 @@ if __name__ == "__main__":
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID)
 
     print('Create Completion Question')
-    QuestionCompletionData = get_question(QuestionID=QuestionCompletionID, SurveyID=SurveySourceID, apiToken=apiToken, dataCenter=dataCenter)
-    QuestionID = create_question(QuestionData=QuestionCompletionData, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionCompletionData = get_question(QuestionID=QuestionCompletionID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                          dataCenter=dataCenter)
+    QuestionID = create_question(QuestionData=QuestionCompletionData, SurveyID=SurveyID, apiToken=apiToken,
+                                 dataCenter=dataCenter)
     QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     QuestionData['DataExportTag'] = 'QIDCompletion'
-    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                    dataCenter=dataCenter)
 
     print('Close Block')
     BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
@@ -388,25 +399,34 @@ if __name__ == "__main__":
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
 
     print('Add Consent Question')
-    QuestionConsentData = get_question(QuestionID=QuestionConsentID, SurveyID=SurveySourceID, apiToken=apiToken, dataCenter=dataCenter)
-    QuestionID = create_question(QuestionData=QuestionConsentData, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionConsentData = get_question(QuestionID=QuestionConsentID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                       dataCenter=dataCenter)
+    QuestionID = create_question(QuestionData=QuestionConsentData, SurveyID=SurveyID, apiToken=apiToken,
+                                 dataCenter=dataCenter)
     QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     QuestionData['DataExportTag'] = 'QIDConsent'
-    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                    dataCenter=dataCenter)
 
     print('Add Worker ID Question')
-    QuestionWorkerData = get_question(QuestionID=QuestionWorkerID, SurveyID=SurveySourceID, apiToken=apiToken, dataCenter=dataCenter)
-    QuestionID = create_question(QuestionData=QuestionWorkerData, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionWorkerData = get_question(QuestionID=QuestionWorkerID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                      dataCenter=dataCenter)
+    QuestionID = create_question(QuestionData=QuestionWorkerData, SurveyID=SurveyID, apiToken=apiToken,
+                                 dataCenter=dataCenter)
     QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     QuestionData['DataExportTag'] = 'QIDWorker'
-    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                    dataCenter=dataCenter)
 
     print('Add Description Question')
-    QuestionDescriptionData = get_question(QuestionID=QuestionDescriptionID, SurveyID=SurveySourceID, apiToken=apiToken, dataCenter=dataCenter)
-    QuestionID = create_question(QuestionData=QuestionDescriptionData, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionDescriptionData = get_question(QuestionID=QuestionDescriptionID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                           dataCenter=dataCenter)
+    QuestionID = create_question(QuestionData=QuestionDescriptionData, SurveyID=SurveyID, apiToken=apiToken,
+                                 dataCenter=dataCenter)
     QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     QuestionData['DataExportTag'] = 'QIDDescription'
-    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                    dataCenter=dataCenter)
 
     print('Close Intro Block')
     BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
