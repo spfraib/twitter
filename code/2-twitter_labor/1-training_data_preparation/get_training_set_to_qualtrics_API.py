@@ -228,7 +228,7 @@ if __name__ == "__main__":
         apiToken = eval(f.readline())
     dataCenter = "nyu.ca1"
     SurveyName = f"labor-market-tweets_{args.country_code}_{timestamp}"
-    SurveySourceID = "SV_4VMcMBs2MXU1tdz"
+    SurveySourceID = "SV_2sfSLx2c0hEVTLv"
     QuestionTemplateID = "QID1"
     QuestionConsentID = "QID2"
     QuestionWorkerID = "QID3"
@@ -440,3 +440,66 @@ if __name__ == "__main__":
     }
     BlockData['Description'] = 'Intro'
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+
+    SurveyOptions = get_options(SurveyID)
+
+    SurveyOptions.update({
+        'BackButton': 'false',
+        'SaveAndContinue': 'true',
+        'SurveyProtection': 'PublicSurvey',
+        'BallotBoxStuffingPrevention': 'true',
+        'NoIndex': 'Yes',
+        'SecureResponseFiles': 'true',
+        'SurveyExpiration': None,
+        'SurveyTermination': 'DefaultMessage',
+        'Header': '',
+        'Footer': '',
+        'ProgressBarDisplay': 'None',
+        'PartialData': '+3 days',
+        'PreviousButton': ' ← ',
+        'NextButton': ' → ',
+        'SkinLibrary': 'nyu',
+        'SkinType': 'templated',
+        'Skin': {
+            'brandingId': None,
+            'templateId': '*base',
+            'overrides': {
+                'contrast': 0.3,
+                'questionsContainer': {
+                    'on': True}}},
+        'NewScoring': 1,
+        'CustomStyles': [],
+        'QuestionsPerPage': '1',
+        'PageTransition': 'fade',
+        'EOSMessage': '',
+        'ShowExportTags': 'false',
+        'CollectGeoLocation': 'false',
+        'SurveyTitle': 'Online Survey Software | Qualtrics Survey Solutions',
+        'SurveyMetaDescription': 'Qualtrics sophisticated online survey software solutions make creating online surveys easy. Learn more about Research Suite and get a free account today.',
+        'PasswordProtection': 'No',
+        'AnonymizeResponse': 'No',
+        'Password': '',
+        'RefererCheck': 'No',
+        'RefererURL': 'http://',
+        'UseCustomSurveyLinkCompletedMessage': None,
+        'SurveyLinkCompletedMessage': '',
+        'SurveyLinkCompletedMessageLibrary': '',
+        'ResponseSummary': 'No',
+        'EOSMessageLibrary': '',
+        'EmailThankYou': 'false',
+        'ThankYouEmailMessageLibrary': None,
+        'ThankYouEmailMessage': None,
+        'ValidateMessage': 'false',
+        'ValidationMessageLibrary': None,
+        'InactiveSurvey': 'DefaultMessage',
+        'PartialDataCloseAfter': 'LastActivity',
+        'ActiveResponseSet': None,
+        'InactiveMessageLibrary': '',
+        'InactiveMessage': '',
+        'AvailableLanguages': {
+            'EN': []},
+        'SurveyLanguage': 'EN',
+        'SurveyStartDate': None,
+        'SurveyExpirationDate': None})
+
+    update_options(SurveyOptions, SurveyID)
