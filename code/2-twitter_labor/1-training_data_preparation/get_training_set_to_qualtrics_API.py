@@ -441,7 +441,7 @@ if __name__ == "__main__":
     BlockData['Description'] = 'Intro'
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
 
-    SurveyOptions = get_options(SurveyID)
+    SurveyOptions = get_options(SurveyID, apiToken=apiToken, dataCenter=dataCenter)
 
     SurveyOptions.update({
         'BackButton': 'false',
@@ -502,4 +502,4 @@ if __name__ == "__main__":
         'SurveyStartDate': None,
         'SurveyExpirationDate': None})
 
-    update_options(SurveyOptions, SurveyID)
+    update_options(SurveyOptions, SurveyID, apiToken=apiToken, dataCenter=dataCenter)
