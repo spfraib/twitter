@@ -19,7 +19,7 @@ def get_args_from_command_line():
     return args
 
 
-def create_survey(SurveyName, apiToken, dataCenter):
+def create_survey(SurveyName, apiToken, dataCenter, language):
     baseUrl = "https://{0}.qualtrics.com/API/v3/survey-definitions".format(
         dataCenter)
 
@@ -31,7 +31,7 @@ def create_survey(SurveyName, apiToken, dataCenter):
 
     data = {
         "SurveyName": SurveyName,
-        "Language": "EN",
+        "Language": language,
         "ProjectCategory": "CORE"
     }
 
@@ -234,7 +234,8 @@ if __name__ == "__main__":
     QuestionWorkerID = "QID3"
     QuestionCompletionID = "QID4"
     QuestionDescriptionID = "QID5"
-
+    country_language_dict = {'US': 'EN', 'MX': 'ES', 'BR': 'PT-BR'}
+    survey_language = country_language_dict[args.country_code]
     country_code = args.country_code
     n_workers = 1  # Number of workers
     block_size = 50  # Number of tweets per worker
@@ -272,7 +273,7 @@ if __name__ == "__main__":
     print('Create New Survey')
     start = timer()
 
-    SurveyID, BlockID = create_survey(SurveyName=SurveyName, apiToken=apiToken, dataCenter=dataCenter)
+    SurveyID, BlockID = create_survey(SurveyName=SurveyName, apiToken=apiToken, dataCenter=dataCenter, language=survey_language)
 
     print("Done in", round(timer() - start), "sec")
 
@@ -496,9 +497,9 @@ if __name__ == "__main__":
         'ActiveResponseSet': None,
         'InactiveMessageLibrary': '',
         'InactiveMessage': '',
-        'AvailableLanguages': {
-            'EN': []},
-        'SurveyLanguage': 'EN',
+        #'AvailableLanguages': {
+        #    'EN': []},
+        #'SurveyLanguage': 'EN',
         'SurveyStartDate': None,
         'SurveyExpirationDate': None})
 
