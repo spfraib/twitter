@@ -307,7 +307,8 @@ if __name__ == "__main__":
         QuestionData['QuestionDescription'] = tweet
         QuestionData['QuestionText_Unsafe'] = tweet
         QuestionData['DataExportTag'] = 'ID_' + tweet_id
-        update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID)
+        update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                                     dataCenter=dataCenter)
 
         if i % block_size == 0:
             BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
@@ -330,7 +331,8 @@ if __name__ == "__main__":
 
     BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     BlockData['Type'] = 'Default'
-    update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID)
+    update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
+                                     dataCenter=dataCenter)
 
     print('Create Completion Question')
     QuestionCompletionData = get_question(QuestionID=QuestionCompletionID, SurveyID=SurveySourceID, apiToken=apiToken,
