@@ -353,7 +353,8 @@ if __name__ == "__main__":
     }
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
 
-    SurveyFlow = get_flow(SurveyID)
+    SurveyFlow = get_flow(SurveyID, apiToken=apiToken,
+                                           dataCenter=dataCenter)
 
     print('Randomize Survey Flow')
     # Create a Randomizer Drawing One Block At Random Except Intro And Completion Block
