@@ -246,7 +246,7 @@ if __name__ == "__main__":
                    'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
     checks_list = checks_dict[args.country_code]
 
-    n_tweets = n_workers * (block_size - len(checks)) // 2
+    n_tweets = n_workers * (block_size - len(checks_list)) // 2
     print('# Tweets (2 workers per tweets + 2 attention checks):', n_tweets)
 
     # path to labelling as argument?
@@ -265,8 +265,8 @@ if __name__ == "__main__":
 
     # Add Attention Checks
     tweets_to_label = pd.concat([chunk.append(pd.Series({
-        'check-0-worker-' + str(i): checks[0],
-        'check-1-worker-' + str(i): checks[1]})).sample(frac=1, random_state=0)
+        'check-0-worker-' + str(i): checks_list[0],
+        'check-1-worker-' + str(i): checks_list[1]})).sample(frac=1, random_state=0)
                                  for i, chunk in enumerate(chunks)])
 
     print('Create New Survey')
