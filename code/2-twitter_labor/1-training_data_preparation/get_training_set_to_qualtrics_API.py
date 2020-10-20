@@ -241,7 +241,7 @@ if __name__ == "__main__":
     survey_language = country_language_dict[args.country_code]
     country_code = args.country_code
     n_workers = args.n_workers  # Number of workers
-    block_size = 50  # Number of tweets per worker
+    block_size = 5  # Number of tweets per worker
     print(country_code)
     print('# n_workers:', n_workers)
     print('block_size:', block_size)
