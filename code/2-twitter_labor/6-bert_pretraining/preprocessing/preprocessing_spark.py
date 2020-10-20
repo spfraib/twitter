@@ -34,7 +34,7 @@ if __name__ == "__main__":
         'MX': 'es',
         'BR': 'pt'}
     language = country_language_dict[args.country_code]
-    df = spark.read.parquet(f'/user/spf248/twitter/data/timelines/historical/extract/{args.country_code}')
+    df = spark.read.orc(f'/user/spf248/twitter/data/timelines/historical/extract/{args.country_code}')
     print('Loaded data')
     # drop RT
     df = df.filter(~df.text.contains('RT '))
