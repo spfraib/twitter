@@ -23,9 +23,6 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Path to the inference data folder.",
                         default="US")
-    parser.add_argument("--nb_tweets_per_ngram", type=int,
-                        help="Number of tweets to sample per ngram.",
-                        default=150)
     args = parser.parse_args()
     return args
 
@@ -64,4 +61,4 @@ if __name__ == "__main__":
     df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
     df = df.select("text_clean_uncased")
     df.write.mode("overwrite").format('text').option("header", "false").mode('append').save(
-        f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed/clean_tweets.txt')
+        f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed/clean_tweets_{args.country_code}.txt')
