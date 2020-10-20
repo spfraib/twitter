@@ -228,7 +228,8 @@ if __name__ == "__main__":
         apiToken = f.readline()
     dataCenter = "nyu.ca1"
     SurveyName = f"labor-market-tweets_{args.country_code}_{timestamp}"
-    SurveySourceID = "SV_2sfSLx2c0hEVTLv"
+    SurveySourceID_dict = {'US': 'SV_2tRtDQDulmd5RsN', 'MX': 'SV_em0kWqkRe0iqPMV', 'BR': 'SV_0BSijbJaN4f7HMN'}
+    SurveySourceID = SurveySourceID_dict[args.country_code]
     QuestionTemplateID = "QID1"
     QuestionConsentID = "QID2"
     QuestionWorkerID = "QID3"
