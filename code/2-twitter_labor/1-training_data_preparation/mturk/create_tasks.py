@@ -3,8 +3,8 @@ import boto3
 MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
 
 mturk = boto3.client('mturk',
-                     aws_access_key_id="AKIAZEXB7S3HST7FELMT",
-                     aws_secret_access_key="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",
+                     aws_access_key_id=,
+                     aws_secret_access_key=,
                      region_name='us-east-1',
                      endpoint_url=MTURK_SANDBOX
                      )
@@ -27,3 +27,5 @@ print("HITID = " + new_hit['HIT']['HITId'] + " (Use to Get Results)")
 # Remember to modify the URL above when you're publishing
 # HITs to the live marketplace.
 # Use: https://worker.mturk.com/mturk/preview?groupId=
+
+QUALIFICATION
