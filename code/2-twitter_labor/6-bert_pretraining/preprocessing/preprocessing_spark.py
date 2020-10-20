@@ -34,7 +34,6 @@ if __name__ == "__main__":
         'MX': 'es',
         'BR': 'pt'}
     language = country_language_dict[args.country_code]
-    demojize_udf = udf(demojize, StringType())
     df = spark.read.parquet(f'/user/spf248/twitter/data/timelines/historical/extract/{args.country_code}')
     print('Loaded data')
     # drop RT
