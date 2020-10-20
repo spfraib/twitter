@@ -15,6 +15,8 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
+    parser.add_argument("--n_workers", type=int,
+                        default=20)
     args = parser.parse_args()
     return args
 
@@ -238,7 +240,7 @@ if __name__ == "__main__":
     country_language_dict = {'US': 'EN', 'MX': 'ES', 'BR': 'PT-BR'}
     survey_language = country_language_dict[args.country_code]
     country_code = args.country_code
-    n_workers = 1  # Number of workers
+    n_workers = args.n_workers  # Number of workers
     block_size = 50  # Number of tweets per worker
     print(country_code)
     print('# n_workers:', n_workers)
