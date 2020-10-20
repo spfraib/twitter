@@ -9,8 +9,6 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
-cd /scratch/mt4493/twitter_labor/code/repos_annexe/emoji
-pip install -e .\[dev\] --user
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/6-bert_pretraining/preprocessing
 TIMESTAMP=$(date +%s)
