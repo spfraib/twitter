@@ -1,7 +1,7 @@
 #!/bin/bash
 
 COUNTRY_CODE=$1
-
+N_WORKERS=$2
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -19,4 +19,5 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
 
-python3 get_training_set_to_qualtrics_API.py --country_code ${COUNTRY_CODE}
+python3 get_training_set_to_qualtrics_API.py --country_code ${COUNTRY_CODE} --n_workers ${N_WORKERS}
+
