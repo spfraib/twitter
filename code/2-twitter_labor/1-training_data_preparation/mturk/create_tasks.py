@@ -87,13 +87,13 @@ instructions_dict = {
 survey_link_text_dict = {
     'US': 'Survey link',
     'MX': 'Enlace de la encuesta',
-    'BR': ''
+    'BR': 'Link para pesquisa'
 }
 
 worker_input_text_dict = {
     'US': 'Provide the survey code here:',
     'MX': 'Proporcione el código de la encuesta aquí:',
-    'BR': ''
+    'BR': 'Entre com o código da pesquisa aqui:'
 }
 question = question_generator(country_code=args.country_code, survey_link=args.survey_link,
                               instructions_dict=instructions_dict)
