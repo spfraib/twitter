@@ -64,11 +64,17 @@ new_hit = mturk.create_hit(
              {'Country': 'US'},],
          'RequiredToPreview': True
          },
-        {'QualificationTypeId: '
-
-        }
+        #{'QualificationTypeId': '',
+        # 'Comparator': '',
+        # 'XValues': []
+        #}
     ],
-    HITLayoutID='3D31OFTG75V3UNIZ5K2IBUGE1XJIUU'
+    HITLayoutID='3D31OFTG75V3UNIZ5K2IBUGE1XJIUU',
+    HITLayoutParameters= [
+        {
+            
+        }
+    ]
 )
 
 
