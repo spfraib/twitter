@@ -1,6 +1,6 @@
 import boto3
 import argparse
-
+import os
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -30,7 +30,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
     </HTMLQuestion>
     """
 
-    with open("template.html", "r") as f:
+    with open("/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/mturk/template.html", "r") as f:
         content = f.read()
 
     content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
@@ -122,7 +122,7 @@ new_hit = mturk.create_hit(
         # 'XValues': []
         # }
     ],
-    Question=question,
+    Question=question
     # HITLayoutID='3D31OFTG75V3UNIZ5K2IBUGE1XJIUU',
     # HITLayoutParameters= [
     #    {
