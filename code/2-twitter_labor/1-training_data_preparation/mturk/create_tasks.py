@@ -15,7 +15,7 @@ def get_args_from_command_line():
     return args
 
 
-def question_generator(country_code, survey_link, instructions_dict):
+def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict):
     xml_wrapper_begin = """
     <HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
     <HTMLContent><![CDATA[
@@ -35,6 +35,9 @@ def question_generator(country_code, survey_link, instructions_dict):
 
     content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
     content.replace("${SURVEY_LINK}", survey_link)
+    content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
+    content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
+
 
     return xml_wrapper_begin + content + xml_wrapper_end
 
@@ -81,6 +84,17 @@ instructions_dict = {
     'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <chunksize, default = 50> perguntas. Esta pesquisa deve demorar aproximadamente 25 minutos e você receberá <recompensa, padrão = 4USD> pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.'
 }
 
+survey_link_text_dict = {
+    'US': 'Survey link',
+    'MX': 'Enlace de la encuesta',
+    'BR': ''
+}
+
+worker_input_text_dict = {
+    'US': 'Provide the survey code here:',
+    'MX': 'Proporcione el código de la encuesta aquí:',
+    'BR': ''
+}
 question = question_generator(country_code=args.country_code, survey_link=args.survey_link,
                               instructions_dict=instructions_dict)
 print("QUESTION:", question)

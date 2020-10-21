@@ -11,7 +11,7 @@
 <div class="row">
 <div class="col-xs-12 col-md-12">
 <div class="panel panel-primary"><!-- WARNING: the ids "collapseTrigger" and "instructionBody" are being used to enable expand/collapse feature -->
-    <p style="text-align: justify;"><a class="panel-heading" href="javascript:void(0);" id="collapseTrigger"><span style="color: rgb(51, 51, 51);">${TASK}</span></a></p>
+    <p style="text-align: justify;"><a class="panel-heading" href="javascript:void(0);" id="collapseTrigger"><span style="color: rgb(51, 51, 51);">${INSTRUCTIONS}</span></a></p>
 </div>
 </div>
 </div>
@@ -23,9 +23,9 @@
 	<tbody>
 		<tr>
 			<td style="text-align: justify;">
-			<p><span style="font-family:times new roman,times,serif;"><label>Survey link:</label></span></p>
+			<p><span style="font-family:times new roman,times,serif;"><label>${SURVEY_LINK_TEXT}:</label></span></p>
 			</td>
-			<td style="text-align: justify;"><a 0.2s="" background-color:="" border-color="" class="survey-link ng-binding" color:="" cursor:="" ease="" font-size:="" helvetica="" href="https://nyu.qualtrics.com/jfe/form/SV_3fsqdhfXVkxsaSV" ng-="" outline:="" style="font-family: " target="_blank" transition:="">https://nyu.qualtrics.com/jfe/form/SV_3fsqdhfXVkxsaSV</a></td>
+			<td style="text-align: justify;"><a 0.2s="" background-color:="" border-color="" class="survey-link ng-binding" color:="" cursor:="" ease="" font-size:="" helvetica="" href="${SURVEY_LINK}" ng-="" outline:="" style="font-family: " target="_blank" transition:="">${SURVEY_LINK}</a></td>
 		</tr>
 	</tbody>
 </table>
@@ -34,7 +34,7 @@
 <div class="row">
 <div class="col-xs-12 col-md-6 col-md-offset-3">
 <p style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><!-- End Content for Worker --><!-- Input from Worker --></span></p>
-<p class="form-group" style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><label for="surveycode">Provide the survey code here:</label></span></p>
+<p class="form-group" style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><label for="surveycode">${WORKER_INPUT_TEXT}</label></span></p>
 <p class="form-group" style="text-align: justify;"><input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" required="" style="line-height: 1.42857; width: 455px;" type="text" /></p>
 </div>
 </div>
