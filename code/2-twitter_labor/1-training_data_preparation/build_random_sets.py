@@ -18,7 +18,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        help="Path to the inference data folder.",
+                        help="Country code",
                         default="US")
     args = parser.parse_args()
     return args
