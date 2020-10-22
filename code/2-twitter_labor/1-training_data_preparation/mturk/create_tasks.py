@@ -43,7 +43,6 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
-MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
 
 # with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys/access_key_id.txt', 'r') as f:
 with open('access_key_id.txt', 'r') as f:
@@ -56,8 +55,7 @@ with open('secret_access_key.txt', 'r') as f:
 mturk = boto3.client('mturk',
                      aws_access_key_id=access_key_id,
                      aws_secret_access_key=secret_access_key,
-                     region_name='us-east-1',
-                     endpoint_url=MTURK_SANDBOX
+                     region_name='us-east-1'
                      )
 
 title_dict = {
