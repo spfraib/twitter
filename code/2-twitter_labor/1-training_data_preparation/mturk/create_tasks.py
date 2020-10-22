@@ -38,10 +38,10 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
             "r") as f:
         content = f.read()
 
-    content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
-    content.replace("${SURVEY_LINK}", survey_link)
-    content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
-    content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
+    content = content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
+    content = content.replace("${SURVEY_LINK}", survey_link)
+    content = content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
+    content = content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
 
     return xml_wrapper_begin + content + xml_wrapper_end
 
@@ -55,7 +55,7 @@ with open(os.path.join(keys_path,'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
 #MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-create_hits_in_production = True
+create_hits_in_production = False
 environments = {
   "production": {
     "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
@@ -125,22 +125,22 @@ new_hit = mturk.create_hit(
     Title=f'{title_dict[args.country_code]} v{args.version_number}',
     Description=description_dict[args.country_code],
     Keywords=keywords_dict[args.country_code],
-    QualificationRequirements=[
-        {
-            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
-            'Comparator': 'EqualTo',
-            'LocaleValues': [{
-                                 'Country': args.country_code}],
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-            'Comparator': 'DoesNotExist',
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-            }
-    ],
+    #QualificationRequirements=[
+    #    {
+    #        'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+    #        'Comparator': 'EqualTo',
+    #        'LocaleValues': [{
+    #                             'Country': args.country_code}],
+    #        'RequiredToPreview': True,
+    #        'ActionsGuarded': 'PreviewAndAccept'
+    #   },
+   #     {
+   #         'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+   #         'Comparator': 'DoesNotExist',
+   #         'RequiredToPreview': True,
+   #         'ActionsGuarded': 'PreviewAndAccept'
+   #         }
+    #],
     Question=question
 )
 
