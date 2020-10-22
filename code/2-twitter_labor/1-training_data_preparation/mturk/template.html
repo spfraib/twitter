@@ -31,19 +31,30 @@
 </table>
 </div>
 </div>
-
-
-<!-- Input from Worker -->
-<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'><input type='hidden' value='' name='assignmentId' id='assignmentId'/>
-
-    <!--
-    <div class="form-group"><label for="surveycode">Provide the survey code here:</label> <input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" required="" type="text" /></div>
-    -->
-    <!-- End input from Worker -->
-    <input type='text' name='surveycode' id="surveycode"  placeholder='e.g. 123456'>
-    <p><input type='submit' id='submitButton' value='Submit' /></p></form>
+<div class="row">
+<div class="col-xs-12 col-md-6 col-md-offset-3">
+    <!-- Input from Worker -->
+    <form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'><input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+        <!--
+        <div class="form-group"><label for="surveycode">Provide the survey code here:</label> <input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" required="" type="text" /></div>
+        -->
+        <!-- End input from Worker -->
+        <table class="table table-condensed table-bordered">
+        <tr>
+            <td style="text-align: justify;">
+                <p class="form-group" style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><label for="surveycode">${WORKER_INPUT_TEXT}</label></span></p>
+            </td>
+            <td style="text-align: justify;">
+                <input type='text' name='surveycode' id="surveycode"  placeholder='e.g. 123456'>
+            </td>
+        </tr>
+        </table>
+        <p class="text-center">
+            <input type='submit' id='submitButton' value='Submit' class="btn btn-primary"/>
+        </p>
+    </form>
     </div>
-
+</div>
 
 <!-- End Survey Link Layout --></section>
 <script language='Javascript'>turkSetAssignmentID();</script>
