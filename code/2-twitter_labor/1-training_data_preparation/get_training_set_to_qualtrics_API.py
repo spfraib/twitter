@@ -242,13 +242,8 @@ if __name__ == "__main__":
     country_language_dict = {'US': 'EN', 'MX': 'ES', 'BR': 'PT-BR'}
     survey_language = country_language_dict[args.country_code]
     country_code = args.country_code
-<<<<<<< HEAD
     n_workers = args.n_workers
     block_size = args.block_size
-=======
-    n_workers = args.n_workers  # Number of workers
-    block_size = 50  # Number of tweets per worker
->>>>>>> parent of 1652f6f... Lower nb of tweets per worker to 5
     print(country_code)
     print('# n_workers:', n_workers)
     print('block_size:', block_size)
