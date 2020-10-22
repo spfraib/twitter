@@ -54,10 +54,12 @@ with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
 with open(os.path.join(keys_path,'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
+MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
 mturk = boto3.client('mturk',
                      aws_access_key_id=access_key_id,
                      aws_secret_access_key=secret_access_key,
-                     region_name='us-east-1'
+                     region_name='us-east-1',
+                     endpoint_url=MTURK_SANDBOX
                      )
 
 title_dict = {
