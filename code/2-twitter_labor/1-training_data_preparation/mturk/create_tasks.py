@@ -55,11 +55,25 @@ with open(os.path.join(keys_path,'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
 #MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
+create_hits_in_production = False
+environments = {
+  "production": {
+    "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
+    "preview": "https://www.mturk.com/mturk/preview"
+  },
+  "sandbox": {
+    "endpoint":
+          "https://mturk-requester-sandbox.us-east-1.amazonaws.com",
+    "preview": "https://workersandbox.mturk.com/mturk/preview"
+  },
+}
+mturk_environment = environments["production"] if create_hits_in_production else environments["sandbox"]
+
 mturk = boto3.client('mturk',
                      aws_access_key_id=access_key_id,
                      aws_secret_access_key=secret_access_key,
                      region_name='us-east-1',
-                     endpoint_url='https://worker.mturk.com/mturk/preview?groupId='
+                     endpoint_url=mturk_environment['endpoint']
                      )
 
 title_dict = {
@@ -131,7 +145,7 @@ new_hit = mturk.create_hit(
 )
 
 print("A new HIT has been created. You can preview it here:")
-print("https://workersandbox.mturk.com/mturk/preview?groupId=" + new_hit['HIT']['HITGroupId'])
+print(f"{mturk_environment['preview']}?groupId={new_hit['HIT']['HITGroupId']}")
 print("HITID = " + new_hit['HIT']['HITId'] + " (Use to Get Results)")
 # Remember to modify the URL above when you're publishing
 # HITs to the live marketplace.
