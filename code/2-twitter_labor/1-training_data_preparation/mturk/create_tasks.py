@@ -55,7 +55,7 @@ with open(os.path.join(keys_path,'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
 #MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-create_hits_in_production = False
+create_hits_in_production = True
 environments = {
   "production": {
     "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
