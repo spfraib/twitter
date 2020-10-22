@@ -26,7 +26,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
     <!-- YOUR HTML ENDS -->
     ]]>
     </HTMLContent>
-    <FrameHeight>600</FrameHeight>
+    <FrameHeight>0</FrameHeight>
     </HTMLQuestion>
     """
 
@@ -96,7 +96,8 @@ worker_input_text_dict = {
     'BR': 'Entre com o código da pesquisa aqui:'
 }
 question = question_generator(country_code=args.country_code, survey_link=args.survey_link,
-                              instructions_dict=instructions_dict)
+                              instructions_dict=instructions_dict, survey_link_text_dict=survey_link_text_dict,
+                              worker_input_text_dict=worker_input_text_dict)
 print("QUESTION:", question)
 
 new_hit = mturk.create_hit(
@@ -112,22 +113,17 @@ new_hit = mturk.create_hit(
         {
             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
             'Comparator': 'EqualTo',
-            'LocaleValues': [
-                {
-                    'Country': 'US'}, ],
-            'RequiredToPreview': True
+            'LocaleValues': [{'Country': args.country_code} ],
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
         },
-        # {'QualificationTypeId': '',
-        # 'Comparator': '',
-        # 'XValues': []
-        # }
+        {'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+        'Comparator': 'DoesNotExist',
+        'RequiredToPreview': True,
+        'ActionsGuarded': 'PreviewAndAccept'
+        }
     ],
     Question=question
-    # HITLayoutID='3D31OFTG75V3UNIZ5K2IBUGE1XJIUU',
-    # HITLayoutParameters= [
-    #    {
-    #    }
-    # ]
 )
 
 print("A new HIT has been created. You can preview it here:")
