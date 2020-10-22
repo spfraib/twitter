@@ -47,13 +47,11 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
-
-# with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys/access_key_id.txt', 'r') as f:
-with open('access_key_id.txt', 'r') as f:
+keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
+with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
     access_key_id = f.readline().strip()
 
-# with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys/secret_access_key.txt', 'r') as f:
-with open('secret_access_key.txt', 'r') as f:
+with open(os.path.join(keys_path,'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
 mturk = boto3.client('mturk',
