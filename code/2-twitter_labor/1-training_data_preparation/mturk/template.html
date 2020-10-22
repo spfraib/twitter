@@ -31,14 +31,23 @@
 </table>
 </div>
 </div>
-<div class="row">
-<div class="col-xs-12 col-md-6 col-md-offset-3">
-<p style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><!-- End Content for Worker --><!-- Input from Worker --></span></p>
-<p class="form-group" style="text-align: justify;"><span style="font-family:times new roman,times,serif;"><label for="surveycode">${WORKER_INPUT_TEXT}</label></span></p>
-<p class="form-group" style="text-align: justify;"><input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" required="" style="line-height: 1.42857; width: 455px;" type="text" /></p>
-</div>
-</div>
+
+
+<!-- Input from Worker -->
+<form name='mturk_form' method='post' id='mturk_form' action='https://www.mturk.com/mturk/externalSubmit'><input type='hidden' value='' name='assignmentId' id='assignmentId'/>
+
+    <!--
+    <div class="form-group"><label for="surveycode">Provide the survey code here:</label> <input class="form-control" id="surveycode" name="surveycode" placeholder="e.g. 123456" required="" type="text" /></div>
+    -->
+    <!-- End input from Worker -->
+    <input type='text' name='surveycode' id="surveycode"  placeholder='e.g. 123456'>
+    <p><input type='submit' id='submitButton' value='Submit' /></p></form>
+    </div>
+
+
 <!-- End Survey Link Layout --></section>
+<script language='Javascript'>turkSetAssignmentID();</script>
+
 <!-- Please note that Bootstrap CSS/JS and JQuery are 3rd party libraries that may update their url/code at any time. Amazon Mechanical Turk (MTurk) is including these libraries as a default option for you, but is not responsible for any changes to the external libraries --><!-- External CSS references -->
 <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css" integrity="sha384-IS73LIqjtYesmURkDE9MXKbXqYA8rvKEp/ghicjem7Vc3mGRdQRptJSz60tvrB6+" rel="stylesheet" /><!-- Open internal style sheet -->
 <style type="text/css">#collapseTrigger{
@@ -50,7 +59,7 @@
   white-space: normal;
 }
 .image{
-  margin-bottom: 15px; 
+  margin-bottom: 15px;
 }
 /* CSS for breaking long words/urls */
 .dont-break-out {
