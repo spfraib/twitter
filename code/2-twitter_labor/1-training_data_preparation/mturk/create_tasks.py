@@ -104,7 +104,7 @@ print("QUESTION:", question)
 
 new_hit = mturk.create_hit(
     MaxAssignments=args.n_workers,
-    AutoApprovalDelayInSeconds=0,
+    AutoApprovalDelayInSeconds=86400,
     LifetimeInSeconds=259200,
     AssignmentDurationInSeconds=10800,
     Reward='4',
