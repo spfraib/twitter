@@ -2,6 +2,7 @@ import boto3
 import argparse
 import os
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -11,6 +12,8 @@ def get_args_from_command_line():
     parser.add_argument("--n_workers", type=int, help="number of workers",
                         default=20)
     parser.add_argument("--survey_link", type=str)
+    parser.add_argument("--version_number", type=str)
+
     args = parser.parse_args()
     return args
 
@@ -30,14 +33,15 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
     </HTMLQuestion>
     """
 
-    with open("/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/mturk/template.html", "r") as f:
+    with open(
+            "/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/mturk/template.html",
+            "r") as f:
         content = f.read()
 
     content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
     content.replace("${SURVEY_LINK}", survey_link)
     content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
     content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
-
 
     return xml_wrapper_begin + content + xml_wrapper_end
 
@@ -104,22 +108,24 @@ new_hit = mturk.create_hit(
     LifetimeInSeconds=259200,
     AssignmentDurationInSeconds=10800,
     Reward='4',
-    Title=title_dict[args.country_code],
+    Title=f'{title_dict[args.country_code]} {args.version_number}',
     Description=description_dict[args.country_code],
     Keywords=keywords_dict[args.country_code],
     QualificationRequirements=[
         {
             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
             'Comparator': 'EqualTo',
-            'LocaleValues': [{'Country': args.country_code} ],
+            'LocaleValues': [{
+                                 'Country': args.country_code}],
             'RequiredToPreview': True,
             'ActionsGuarded': 'PreviewAndAccept'
         },
-        {'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-        'Comparator': 'DoesNotExist',
-        'RequiredToPreview': True,
-        'ActionsGuarded': 'PreviewAndAccept'
-        }
+        {
+            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'Comparator': 'DoesNotExist',
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+            }
     ],
     Question=question
 )
