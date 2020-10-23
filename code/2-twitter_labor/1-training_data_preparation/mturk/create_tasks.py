@@ -1,4 +1,5 @@
 import boto3
+import math
 import argparse
 import os
 
@@ -12,6 +13,7 @@ def get_args_from_command_line():
     parser.add_argument("--n_workers", type=int, help="number of workers",
                         default=20)
     parser.add_argument("--survey_link", type=str)
+    parser.add_argument("--number_tweets_in_survey", type=int)
     parser.add_argument("--version_number", type=str)
 
     args = parser.parse_args()
@@ -47,6 +49,10 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
+ntweets = args.number_tweets_in_survey
+time_to_complete = int(math.ceil(args.number_tweets_in_survey / 2))
+money_for_hit = 0.08 * ntweets
+
 keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
     access_key_id = f.readline().strip()
@@ -77,9 +83,9 @@ mturk = boto3.client('mturk',
                      )
 
 title_dict = {
-    'US': 'Read 50 English Tweets and answer a few questions',
-    'MX': 'Lea 50 Tweets en español y responda algunas preguntas',
-    'BR': 'Leia 50 tweets em português e responda algumas perguntas'
+    'US': 'Read %d English Tweets and answer a few questions' % (ntweets),
+    'MX': 'Lea %d Tweets en español y responda algunas preguntas' % (ntweets),
+    'BR': 'Leia %d tweets em português e responda algumas perguntas' % (ntweets)
 }
 
 description_dict = {
@@ -95,9 +101,9 @@ keywords_dict = {
 }
 
 instructions_dict = {
-    'US': 'We would like to invite you to participate in a web-based survey. The survey contains a list of <chunksize, default=50> questions. It should take you approximately 25 minutes and you will be paid <reward, default=4USD> for successful completion of the survey. A valid worker ID is needed to receive compensation. At the end of the survey you will receive a completion code, which you need to enter below in order to receive payment. You may start the survey by clicking the survey link below.',
-    'MX': 'Nos gustaría invitarle a participar en una encuesta en la web. La encuesta contiene una lista de preguntas de <chunksize, default = 50> preguntas. Le tomará aproximadamente 25 minutos y se le pagará <reward, default=4USD> por completar la encuesta exitosamente. Se necesita una identificación de trabajador válida para recibir la compensación. Al final de la encuesta recibirá un código de finalización, que deberá introducir a continuación para recibir el pago. Puede comenzar la encuesta haciendo clic en el enlace de la encuesta que aparece a continuación.',
-    'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <chunksize, default = 50> perguntas. Esta pesquisa deve demorar aproximadamente 25 minutos e você receberá <recompensa, padrão = 4USD> pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.'
+    'US': 'We would like to invite you to participate in a web-based survey. The survey contains a list of <b>%d</b> questions. It should take you approximately <b>%d</b> minutes and you will be paid <b>%.2f</b> USD for successful completion of the survey. A valid worker ID is needed to receive compensation. At the end of the survey you will receive a completion code, which you need to enter below in order to receive payment. You may start the survey by clicking the survey link below.' % (ntweets, time_to_complete, money_for_hit),
+    'MX': 'Nos gustaría invitarle a participar en una encuesta en la web. La encuesta contiene una lista de preguntas de <b>%d</b> preguntas. Le tomará aproximadamente <b>%d</b> minutos y se le pagará <b>%.2f</b> USD por completar la encuesta exitosamente. Se necesita una identificación de trabajador válida para recibir la compensación. Al final de la encuesta recibirá un código de finalización, que deberá introducir a continuación para recibir el pago. Puede comenzar la encuesta haciendo clic en el enlace de la encuesta que aparece a continuación.' % (ntweets, time_to_complete, money_for_hit),
+    'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <b>%d</b> perguntas. Esta pesquisa deve demorar aproximadamente <b>%d</b> minutos e você receberá <b>%.2f</b>USD pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.' % (ntweets, time_to_complete, money_for_hit)
 }
 
 survey_link_text_dict = {
@@ -121,7 +127,7 @@ new_hit = mturk.create_hit(
     AutoApprovalDelayInSeconds=86400,
     LifetimeInSeconds=259200,
     AssignmentDurationInSeconds=10800,
-    Reward='4',
+    Reward=str(money_for_hit),
     Title=f'{title_dict[args.country_code]} v{args.version_number}',
     Description=description_dict[args.country_code],
     Keywords=keywords_dict[args.country_code],
