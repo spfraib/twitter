@@ -49,7 +49,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
-ntweets = (args.block_size - 2) * args.n_workers
+ntweets = args.block_size
 time_to_complete = int(math.ceil(ntweets / 2))
 money_for_hit = 0.08 * ntweets
 
