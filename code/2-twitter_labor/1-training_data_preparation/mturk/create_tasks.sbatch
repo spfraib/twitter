@@ -2,8 +2,9 @@
 
 COUNTRY_CODE=$1
 N_WORKERS=$2
-SURVEY_LINK=$3
-VERSION_NB=$4
+BLOCK_SIZE=$3
+SURVEY_LINK=$4
+VERSION_NB=$5
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -24,5 +25,6 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_da
 python3 create_tasks.py \
 --country_code ${COUNTRY_CODE} \
 --n_workers ${N_WORKERS} \
+--block_size ${BLOCK_SIZE} \
 --survey_link ${SURVEY_LINK} \
 --version_number ${VERSION_NB}

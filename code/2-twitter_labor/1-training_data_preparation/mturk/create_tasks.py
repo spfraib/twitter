@@ -13,7 +13,7 @@ def get_args_from_command_line():
     parser.add_argument("--n_workers", type=int, help="number of workers",
                         default=20)
     parser.add_argument("--survey_link", type=str)
-    parser.add_argument("--number_tweets_in_survey", type=int)
+    parser.add_argument("--block_size", help='number of tweets per worker', type=int)
     parser.add_argument("--version_number", type=str)
 
     args = parser.parse_args()
@@ -49,7 +49,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
-ntweets = args.number_tweets_in_survey
+ntweets = (args.block_size - 2) * args.n_workers
 time_to_complete = int(math.ceil(args.number_tweets_in_survey / 2))
 money_for_hit = 0.08 * ntweets
 
