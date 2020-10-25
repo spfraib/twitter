@@ -9,7 +9,7 @@ import argparse
 import os
 import unicodedata
 import sys
-import emoji
+#import emoji
 
 try:
     spark
@@ -52,11 +52,11 @@ if __name__ == "__main__":
 
 
     # replace emojis
-    def demojize(text):
-        return emoji.demojize(text, language=language)
+    #def demojize(text):
+    #    return emoji.demojize(text, language=language)
 
 
-    demojize_udf = udf(demojize, StringType())
+    #demojize_udf = udf(demojize, StringType())
     df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
     df = df.select("text_clean_uncased")
     df.write.mode("overwrite").format('text').option("header", "false").mode('append').save(
