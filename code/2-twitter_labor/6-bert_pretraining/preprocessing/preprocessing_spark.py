@@ -49,7 +49,8 @@ if __name__ == "__main__":
     print('Lowercase text')
     # drop duplicates
     df = df.drop_duplicates(subset=['text_clean_uncased'])
-
+    # drop line breaks
+    df = df.withColumn("text_clean_uncased", regexp_replace(col("text_clean_uncased"), "[\n\r]", " "))
 
     # replace emojis
     #def demojize(text):
@@ -59,5 +60,5 @@ if __name__ == "__main__":
     #demojize_udf = udf(demojize, StringType())
     #df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
     df = df.select("text_clean_uncased")
-    df.write.mode("overwrite").format('text').option("header", "false").mode('append').save(
-        f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed/clean_tweets_{args.country_code}.txt')
+    df.write.mode("overwrite").coalesce(1).format('text').option("header", "false").mode('append').save(
+        f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed')
