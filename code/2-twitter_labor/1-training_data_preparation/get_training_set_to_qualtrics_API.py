@@ -223,6 +223,7 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
         print(json.loads(response.text)["meta"]["httpStatus"])
 
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
+    df_list = list()
     for folder in os.listdir(path_to_labelled):
         for file in glob(os.path.join(path_to_labelled, folder, '*.csv')):
             df = pd.read_csv(file)
