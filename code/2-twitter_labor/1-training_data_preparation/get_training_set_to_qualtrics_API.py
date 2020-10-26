@@ -278,7 +278,7 @@ if __name__ == "__main__":
     # path to labelling as argument?
     tweets = pq.ParquetDataset(
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
-    tweets = discard_already_labelled_tweets(path_to_labelled=f'/scratch/spf248/twitter/data/classification/{args.country_code}/labeling/qualtrics/SV_0dB80s8q5OhAV8x', to_label_df=tweets)
+    tweets = discard_already_labelled_tweets(path_to_labelled=f'/scratch/spf248/twitter/data/classification/{args.country_code}/labeling/qualtrics', to_label_df=tweets)
 
     tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
