@@ -155,6 +155,7 @@ if __name__ == "__main__":
         lambda x: x == True).dropna().index
 
     print('# Workers who failed the check questions (= bots?):', bots.shape[0])
+    print('# Worker ID of workers who failed the check questions (= bots?):', bots)
 
     # Remove checks
     df.drop([col for col in df.columns if 'check' in col], 1, inplace=True)
