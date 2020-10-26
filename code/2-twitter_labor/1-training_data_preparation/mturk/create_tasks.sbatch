@@ -5,6 +5,7 @@ N_WORKERS=$2
 BLOCK_SIZE=$3
 SURVEY_LINK=$4
 VERSION_NB=$5
+MODE=$6
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -27,4 +28,6 @@ python3 create_tasks.py \
 --n_workers ${N_WORKERS} \
 --block_size ${BLOCK_SIZE} \
 --survey_link ${SURVEY_LINK} \
---version_number ${VERSION_NB}
+--version_number ${VERSION_NB} \
+--mode ${MODE}
+
