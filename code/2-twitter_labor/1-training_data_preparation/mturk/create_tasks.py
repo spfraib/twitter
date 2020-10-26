@@ -15,6 +15,7 @@ def get_args_from_command_line():
     parser.add_argument("--survey_link", type=str)
     parser.add_argument("--block_size", help='number of tweets per worker', type=int)
     parser.add_argument("--version_number", type=str)
+    parser.add_argument("--mode", type=str, help='Whether to create HIT in sandbox or in production')
 
     args = parser.parse_args()
     return args
@@ -61,7 +62,12 @@ with open(os.path.join(keys_path, 'secret_access_key.txt'), 'r') as f:
     secret_access_key = f.readline().strip()
 
 # MTURK_SANDBOX = 'https://mturk-requester-sandbox.us-east-1.amazonaws.com'
-create_hits_in_production = True
+
+if args.mode == 'production':
+    create_hits_in_production = True
+elif args.mode == 'sandbox':
+    create_hits_in_production = False
+
 environments = {
     "production": {
         "endpoint": "https://mturk-requester.us-east-1.amazonaws.com",
@@ -102,11 +108,11 @@ keywords_dict = {
 
 instructions_dict = {
     'US': 'We would like to invite you to participate in a web-based survey. The survey contains a list of <b>%d</b> questions. It should take you approximately <b>%d</b> minutes and you will be paid <b>%.2f</b> USD for successful completion of the survey. A valid worker ID is needed to receive compensation. At the end of the survey you will receive a completion code, which you need to enter below in order to receive payment. You may start the survey by clicking the survey link below.' % (
-    ntweets, time_to_complete, money_for_hit),
+        ntweets, time_to_complete, money_for_hit),
     'MX': 'Nos gustaría invitarle a participar en una encuesta en la web. La encuesta contiene una lista de preguntas de <b>%d</b> preguntas. Le tomará aproximadamente <b>%d</b> minutos y se le pagará <b>%.2f</b> USD por completar la encuesta exitosamente. Se necesita una identificación de trabajador válida para recibir la compensación. Al final de la encuesta recibirá un código de finalización, que deberá introducir a continuación para recibir el pago. Puede comenzar la encuesta haciendo clic en el enlace de la encuesta que aparece a continuación.' % (
-    ntweets, time_to_complete, money_for_hit),
+        ntweets, time_to_complete, money_for_hit),
     'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <b>%d</b> perguntas. Esta pesquisa deve demorar aproximadamente <b>%d</b> minutos e você receberá <b>%.2f</b>USD pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.' % (
-    ntweets, time_to_complete, money_for_hit)
+        ntweets, time_to_complete, money_for_hit)
 }
 
 survey_link_text_dict = {
@@ -125,6 +131,22 @@ question = question_generator(country_code=args.country_code, survey_link=args.s
                               worker_input_text_dict=worker_input_text_dict)
 print("QUESTION:", question)
 
+QualificationRequirements_list = [
+    {
+        'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+        'Comparator': 'EqualTo',
+        'LocaleValues': [{
+            'Country': args.country_code}],
+        'RequiredToPreview': True,
+        'ActionsGuarded': 'PreviewAndAccept'
+    },
+    {
+        'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+        'Comparator': 'DoesNotExist',
+        'RequiredToPreview': True,
+        'ActionsGuarded': 'PreviewAndAccept'
+    }
+]
 new_hit = mturk.create_hit(
     MaxAssignments=args.n_workers,
     AutoApprovalDelayInSeconds=86400,
@@ -134,22 +156,7 @@ new_hit = mturk.create_hit(
     Title=f'{title_dict[args.country_code]} v{args.version_number}',
     Description=description_dict[args.country_code],
     Keywords=keywords_dict[args.country_code],
-    QualificationRequirements=[
-        {
-            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
-            'Comparator': 'EqualTo',
-            'LocaleValues': [{
-                'Country': args.country_code}],
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-            'Comparator': 'DoesNotExist',
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        }
-    ],
+    QualificationRequirements=QualificationRequirements_list if create_hits_in_production else list(),
     Question=question
 )
 
