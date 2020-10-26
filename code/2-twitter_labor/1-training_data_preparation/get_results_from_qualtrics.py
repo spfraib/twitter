@@ -18,9 +18,6 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         default="US")
     parser.add_argument("--surveyId", type=str)
-    parser.add_argument("--block_size", type=int, help="number of tweets per worker",
-                        default=50)
-    parser.add_argument("--version_number", type=str)
     args = parser.parse_args()
     return args
 
