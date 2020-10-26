@@ -120,3 +120,74 @@ if __name__ == "__main__":
     df.drop(to_drop, 1, inplace=True, errors='ignore')
     df.drop([x for x in df.columns if 'BR-FL_' in x], 1, inplace=True, errors='ignore')
     print('# Workers:', df.shape[0])
+
+    # Checks
+    checks = df[[col for col in df.columns if 'check' in col]].copy()
+    checks.columns.name = 'QID'
+
+    # Rearrange Results
+    checks = checks.stack().rename('score').to_frame()
+
+    # Extract Check ID
+    checks['check_id'] = checks.index.get_level_values('QID').map(
+        lambda x: re.findall('check-(\d)', x)[0])
+
+    # Extract Class ID
+    checks['class_id'] = checks.index.get_level_values('QID').map(
+        lambda x: re.findall('_(\d)', x)[0])
+
+    # Sort Values
+    checks = checks.reset_index(level='QIDWorker').sort_values(
+        by=['QIDWorker', 'check_id', 'class_id']).set_index(
+        ['QIDWorker', 'check_id', 'class_id'])
+
+
+    # Bot=Fail to give a Yes to the 3 check questions
+    def is_bot(x):
+        l = x.split('_')
+        if len(l) == 10:
+            if l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
+                return False
+        return True
+
+
+    bots = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x == True).dropna().index
+
+    print('# Workers who failed the check questions (= bots?):', bots.shape[0])
+
+    # Remove checks
+    df.drop([col for col in df.columns if 'check' in col], 1, inplace=True)
+    df.columns.name = 'QID'
+
+    # Rearrange Results
+    df = df.stack().rename('score').to_frame()
+
+    # Extract Tweets ID (Removing Extra Indexing)
+    df['tweet_id'] = df.index.get_level_values('QID').map(
+        lambda x: re.sub('-v\d', '', x.replace('ID_', '').replace('.1', '')).split('_')[0])
+
+    # Extract Classes (Removing Extra Indexing)
+    df['class_id'] = df.index.get_level_values('QID').map(
+        lambda x: re.sub('-v\d', '', x.replace('ID_', '').replace('.1', '')).split('_')[1])
+
+    # Sort Values
+    df = df.reset_index(level='QIDWorker').sort_values(
+        by=['tweet_id', 'class_id', 'QIDWorker']).set_index(
+        ['tweet_id', 'class_id', 'QIDWorker'])
+
+    # Drop Bots
+    df.drop(bots, level='QIDWorker', inplace=True, errors='ignore')
+
+    # Convert Scores
+    df.score = df.score.apply(lambda x: {
+        '1': 'yes',
+        '2': 'no',
+        '3': 'unsure'}[x])
+
+    df.to_csv(
+        os.path.join(path_to_data, surveyId, 'labels.csv'))
+
