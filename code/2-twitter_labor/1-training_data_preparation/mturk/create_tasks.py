@@ -21,7 +21,7 @@ def get_args_from_command_line():
     return args
 
 
-def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict):
+def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict, submit_dict):
     xml_wrapper_begin = """
     <HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
     <HTMLContent><![CDATA[
@@ -45,6 +45,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
     content = content.replace("${SURVEY_LINK}", survey_link)
     content = content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
     content = content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
+    content = content.replace("${SUBMIT}", submit_dict[country_code])
 
     return xml_wrapper_begin + content + xml_wrapper_end
 
@@ -126,9 +127,15 @@ worker_input_text_dict = {
     'MX': 'Proporcione el código de la encuesta aquí:',
     'BR': 'Entre com o código da pesquisa aqui:'
 }
+
+submit_dict = {
+    'US': 'Submit',
+    'MX': 'Enviar',
+    'BR':
+}
 question = question_generator(country_code=args.country_code, survey_link=args.survey_link,
                               instructions_dict=instructions_dict, survey_link_text_dict=survey_link_text_dict,
-                              worker_input_text_dict=worker_input_text_dict)
+                              worker_input_text_dict=worker_input_text_dict, submit_dict=submit_dict)
 print("QUESTION:", question)
 
 QualificationRequirements_list = [
