@@ -229,13 +229,15 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
                 df = df[['tweet_id']]
                 df = df.set_index(['tweet_id'])
                 df_list.append(df)
-    final_df = pd.concat(df_list)
-    final_df = final_df.reset_index()
-    final_df = final_df.drop_duplicates().reset_index(drop=True)
-    list_labelled_tweet_ids = final_df['tweet_id'].tolist()
-    to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
-    return to_label_df
-
+    if len(df_list) > 0:
+        final_df = pd.concat(df_list)
+        final_df = final_df.reset_index()
+        final_df = final_df.drop_duplicates().reset_index(drop=True)
+        list_labelled_tweet_ids = final_df['tweet_id'].tolist()
+        to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
+        return to_label_df
+    else:
+        return to_label_df
 
 
 if __name__ == "__main__":
@@ -275,7 +277,7 @@ if __name__ == "__main__":
     tweets = pq.ParquetDataset(
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
     tweets = discard_already_labelled_tweets(path_to_labelled=f'/scratch/spf248/twitter/data/classification/{args.country_code}/labeling/qualtrics/SV_0dB80s8q5OhAV8x', to_label_df=tweets)
-    
+
     tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
