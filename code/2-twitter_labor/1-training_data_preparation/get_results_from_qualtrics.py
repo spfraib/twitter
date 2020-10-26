@@ -187,5 +187,5 @@ if __name__ == "__main__":
         '3': 'unsure'}[x])
 
     df.to_csv(
-        os.path.join(path_to_data, surveyId, 'labels.csv'))
+        os.path.join(path_to_data, args.surveyId, 'labels.csv'))
 
