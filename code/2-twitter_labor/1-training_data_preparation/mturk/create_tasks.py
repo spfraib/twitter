@@ -131,7 +131,7 @@ worker_input_text_dict = {
 submit_dict = {
     'US': 'Submit',
     'MX': 'Enviar',
-    'BR':
+    'BR': 'Enviar'
 }
 question = question_generator(country_code=args.country_code, survey_link=args.survey_link,
                               instructions_dict=instructions_dict, survey_link_text_dict=survey_link_text_dict,
