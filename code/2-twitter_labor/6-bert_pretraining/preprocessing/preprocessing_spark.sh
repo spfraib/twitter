@@ -3,7 +3,8 @@
 COUNTRY_CODE=$1
 NB_CORES=$2
 
-module load python/gnu/3.6.5
+module purge
+module load emoji/mt4493-20201027
 module load spark/2.4.0
 export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
