@@ -112,7 +112,7 @@ instructions_dict = {
         ntweets, time_to_complete, money_for_hit),
     'MX': 'Nos gustaría invitarle a participar en una encuesta en la web. La encuesta contiene una lista de preguntas de <b>%d</b> preguntas. Le tomará aproximadamente <b>%d</b> minutos y se le pagará <b>%.2f</b> USD por completar la encuesta exitosamente. Se necesita una identificación de trabajador válida para recibir la compensación. Al final de la encuesta recibirá un código de finalización, que deberá introducir a continuación para recibir el pago. Puede comenzar la encuesta haciendo clic en el enlace de la encuesta que aparece a continuación.' % (
         ntweets, time_to_complete, money_for_hit),
-    'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <b>%d</b> perguntas. Esta pesquisa deve demorar aproximadamente <b>%d</b> minutos e você receberá <b>%.2f</b>USD pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.' % (
+    'BR': 'Gostaríamos de te convidar a participar de uma pesquisa online. A pesquisa contém uma lista de <b>%d</b> perguntas. Esta pesquisa deve demorar aproximadamente <b>%d</b> minutos e você receberá <b>%.2f</b> USD pela conclusão do seu trabalho. É necessária uma identificação de trabalhador válida para receber a compensação. Ao final da pesquisa, você receberá um código de preenchimento, que deverá ser inserido abaixo para receber o pagamento. Você pode iniciar a pesquisa clicando no link abaixo.' % (
         ntweets, time_to_complete, money_for_hit)
 }
 
