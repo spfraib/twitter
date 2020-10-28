@@ -56,6 +56,14 @@ def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
         os.path.join(path_to_data, "classification", country_code, "labeling", 'qualtrics', surveyId))
     print('Complete')
 
+def select_paths(x):
+    if x == 'labor-market-tweets.csv':
+        return x
+    elif 'US' in x:
+        return x
+    else:
+        return None
+
 country_code = 'US'
 path_to_data = '/scratch/spf248/twitter/data'
 
@@ -66,7 +74,6 @@ dataCenter = "nyu.ca1"
 fileFormat = "csv"
 
 survey_ids_list = glob(os.path.join(path_to_data,'classification',country_code,'labeling','qualtrics','*'))
-survey_ids_list = [os.path.basename(path) for path in survey_ids_list]
 
 print(survey_ids_list)
 
@@ -77,42 +84,45 @@ for surveyId in survey_ids_list:
             print("survey Id must match ^SV_.*")
         else:
             exportSurvey(apiToken, surveyId, dataCenter, fileFormat)
+    folder_path = os.path.join(path_to_data,"classification",country_code,"labeling",'qualtrics',surveyId)
+    file_path_list = os.listdir(folder_path)
+    file_path_list = [select_paths(path) for path in file_path_list if select_paths(path) is not None]
+    if len(file_path_list) > 0:
+        df=pd.read_csv(os.path.join(folder_path, file_path_list[0]),low_memory=False)
+    
+        # First two rows contain metadata
+        df.drop([0,1],inplace=True)
 
-    df=pd.read_csv(os.path.join(path_to_data,"classification",country_code,"labeling",'qualtrics',surveyId,"labor-market-tweets.csv"),low_memory=False)
+        df=df.loc[(df['QIDWorker'].dropna().drop_duplicates().index)].set_index('QIDWorker').copy()
 
-    # First two rows contain metadata
-    df.drop([0,1],inplace=True)
+        #places=rg.search([tuple(x) for x in df[['LocationLatitude','LocationLongitude']].astype(float).dropna().values.tolist()])
 
-    df=df.loc[(df['QIDWorker'].dropna().drop_duplicates().index)].set_index('QIDWorker').copy()
+        print('# of workers who refused the consent form:', (df.QIDConsent.astype(int)==0).sum())
+        print('# of workers who did not complete the survey:', (df.Finished.astype(int)==0).sum())
 
-    #places=rg.search([tuple(x) for x in df[['LocationLatitude','LocationLongitude']].astype(float).dropna().values.tolist()])
+        to_drop=[
+        'ResponseID',
+        'ResponseSet',
+        'IPAddress',
+        'StartDate',
+        'EndDate',
+        'RecipientLastName',
+        'RecipientFirstName',
+        'RecipientEmail',
+        'ExternalDataReference',
+        'Finished',
+        'Status',
+        'Random ID',
+        'QIDConsent',
+        'QIDDescription',
+        'QIDCompletion',
+        'LocationLatitude',
+        'LocationLongitude',
+        'LocationAccuracy']
 
-    print('# of workers who refused the consent form:', (df.QIDConsent.astype(int)==0).sum())
-    print('# of workers who did not complete the survey:', (df.Finished.astype(int)==0).sum())
-
-    to_drop=[
-    'ResponseID',
-    'ResponseSet',
-    'IPAddress',
-    'StartDate',
-    'EndDate',
-    'RecipientLastName',
-    'RecipientFirstName',
-    'RecipientEmail',
-    'ExternalDataReference',
-    'Finished',
-    'Status',
-    'Random ID',
-    'QIDConsent',
-    'QIDDescription',
-    'QIDCompletion',
-    'LocationLatitude',
-    'LocationLongitude',
-    'LocationAccuracy']
-
-    df.drop(to_drop,1,inplace=True,errors='ignore')
-    df.drop([x for x in df.columns if 'BR-FL_' in x],1,inplace=True,errors='ignore')
-    df = df.reset_index()
-    worker_id_list = worker_id_list +  df['QIDWorker'].tolist()
+        df.drop(to_drop,1,inplace=True,errors='ignore')
+        df.drop([x for x in df.columns if 'BR-FL_' in x],1,inplace=True,errors='ignore')
+        df = df.reset_index()
+        worker_id_list = worker_id_list +  df['QIDWorker'].tolist()
 
 print(len(worker_id_list))
