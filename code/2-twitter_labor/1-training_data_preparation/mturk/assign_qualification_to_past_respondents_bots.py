@@ -146,11 +146,13 @@ mturk = boto3.client('mturk',
                      )
 
 for worker_id in worker_id_list:
-    response = mturk.associate_qualification_with_worker(
+    try:
+        mturk.associate_qualification_with_worker(
         QualificationTypeId='3YLTB9JB8TED72KIAHT6K4NASKY63F',
         WorkerId=worker_id,
         IntegerValue=1,
-        SendNotification=False
-    )
+        SendNotification=False)
+    except botocore.exceptions.ClientError:
+        print(worker_id)
 
 print("The Qualification was assigned to all workers who already completed the US survey (including bots). ")
