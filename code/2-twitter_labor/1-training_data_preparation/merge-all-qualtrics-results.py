@@ -16,8 +16,6 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Country code",
                         default="US")
-    parser.add_argument("--path_to_data", type=str, help="Path to your data.",
-                        default=None)
 
     args = parser.parse_args()
     return args
@@ -39,7 +37,7 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     # Country Code
     country_code = args.country_code
-    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling'
+    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{country_code}/labeling'
 
     print('Path to data:', path_to_data)
     print('Country Code:', country_code)
@@ -47,12 +45,12 @@ if __name__ == "__main__":
     # # Collect all existing labels
 
     print("Surveys:", len(sorted([x.split('/')[-2] for x in glob(
-        os.path.join(path_to_data, 'classification', country_code, 'labeling', 'qualtrics', '*', 'labels.csv'))])))
+        os.path.join(path_to_data, '*', 'labels.csv'))])))
 
     # Only keep one label per worker and tweet
     labels = pd.concat(
         [pd.read_csv(file) for file in glob(
-            os.path.join(path_to_data, 'classification', country_code, 'labeling', 'qualtrics', '*',
+            os.path.join(path_to_data, '*',
                          'labels.csv'))]).sort_values(
         by=['tweet_id', 'class_id', 'QIDWorker']).drop_duplicates(
         ['tweet_id', 'class_id', 'QIDWorker']).set_index(
@@ -92,6 +90,6 @@ if __name__ == "__main__":
     labels.reset_index(inplace=True)
     labels.columns.name = ''
 
-    labels.to_pickle(os.path.join(path_to_data, 'classification', country_code, 'labeling', 'labels.pkl'))
+    labels.to_pickle(os.path.join(path_to_data, 'labels.pkl'))
 
     labels.tail()
