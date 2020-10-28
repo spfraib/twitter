@@ -142,7 +142,7 @@ mturk = boto3.client('mturk',
                      aws_access_key_id=access_key_id,
                      aws_secret_access_key=secret_access_key,
                      region_name='us-east-1',
-                     endpoint_url='https://mturk-requester-sandbox.us-east-1.amazonaws.com'
+                     endpoint_url='https://mturk-requester.us-east-1.amazonaws.com'
                      )
 
 for worker_id in worker_id_list:
