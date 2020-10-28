@@ -17,5 +17,5 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/mturk
 
-python3 assign_qualification_to_complaints.py
+python3 assign_qualifications_to_complaints.py
 
