@@ -11,6 +11,7 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 import reverse_geocoder as rg
+import boto3
 
 
 def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
