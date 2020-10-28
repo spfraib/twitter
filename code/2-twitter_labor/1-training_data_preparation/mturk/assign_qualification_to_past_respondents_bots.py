@@ -85,7 +85,7 @@ for surveyId in survey_ids_list:
 
     df=df.loc[(df['QIDWorker'].dropna().drop_duplicates().index)].set_index('QIDWorker').copy()
 
-    places=rg.search([tuple(x) for x in df[['LocationLatitude','LocationLongitude']].astype(float).dropna().values.tolist()])
+    #places=rg.search([tuple(x) for x in df[['LocationLatitude','LocationLongitude']].astype(float).dropna().values.tolist()])
 
     print('# of workers who refused the consent form:', (df.QIDConsent.astype(int)==0).sum())
     print('# of workers who did not complete the survey:', (df.Finished.astype(int)==0).sum())
