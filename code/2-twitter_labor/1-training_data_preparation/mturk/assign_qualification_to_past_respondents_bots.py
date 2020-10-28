@@ -112,6 +112,7 @@ for surveyId in survey_ids_list:
 
     df.drop(to_drop,1,inplace=True,errors='ignore')
     df.drop([x for x in df.columns if 'BR-FL_' in x],1,inplace=True,errors='ignore')
+    df = df.reset_index()
     worker_id_list =+ df['QIDWorker'].tolist()
 
 print(len(worker_id_list))
