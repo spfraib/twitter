@@ -152,7 +152,7 @@ for worker_id in worker_id_list:
         WorkerId=worker_id,
         IntegerValue=1,
         SendNotification=False)
-    except botocore.exceptions.ClientError:
+    except:
         print(worker_id)
 
 print("The Qualification was assigned to all workers who already completed the US survey (including bots). ")
