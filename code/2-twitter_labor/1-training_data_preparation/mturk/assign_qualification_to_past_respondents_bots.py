@@ -8,10 +8,8 @@ import json
 import io
 import sys
 import re
-import socket
 import pandas as pd
 import matplotlib.pyplot as plt
-import geopandas as gpd
 import reverse_geocoder as rg
 
 
