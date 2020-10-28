@@ -89,7 +89,7 @@ for surveyId in survey_ids_list:
     file_path_list = [select_paths(path) for path in file_path_list if select_paths(path) is not None]
     if len(file_path_list) > 0:
         df=pd.read_csv(os.path.join(folder_path, file_path_list[0]),low_memory=False)
-    
+
         # First two rows contain metadata
         df.drop([0,1],inplace=True)
 
@@ -123,6 +123,7 @@ for surveyId in survey_ids_list:
         df.drop(to_drop,1,inplace=True,errors='ignore')
         df.drop([x for x in df.columns if 'BR-FL_' in x],1,inplace=True,errors='ignore')
         df = df.reset_index()
+        df = df[df['QIDWorker'].notna()].reset_index(drop=True)
         worker_id_list = worker_id_list +  df['QIDWorker'].tolist()
 
 print(len(worker_id_list))
