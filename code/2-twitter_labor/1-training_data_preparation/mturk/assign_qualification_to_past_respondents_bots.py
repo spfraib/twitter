@@ -54,7 +54,7 @@ def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
 
     # Step 4: Unzipping the file
     zipfile.ZipFile(io.BytesIO(requestDownload.content)).extractall(
-        os.path.join(path_to_data, "classification", country_code, "labeling", 'qualtrics', surveyId))
+        os.path.join(path_to_data, country_code, "labeling", surveyId))
     print('Complete')
 
 def select_paths(x):
@@ -66,26 +66,26 @@ def select_paths(x):
         return None
 
 country_code = 'US'
-path_to_data = '/scratch/spf248/twitter/data'
+path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics'
 
-with open(os.path.join(path_to_data,'keys/qualtrics/apiToken'),'r') as f:
-    apiToken = eval(f.readline())
+with open(os.path.join(path_to_data,'keys/apiToken.txt'),'r') as f:
+    apiToken = f.readline()
 
 dataCenter = "nyu.ca1"
 fileFormat = "csv"
 
-survey_ids_list = glob(os.path.join(path_to_data,'classification',country_code,'labeling','qualtrics','*'))
+survey_ids_list = glob(os.path.join(path_to_data, country_code,'labeling','*'))
 
 print(survey_ids_list)
 
 worker_id_list = list()
 for surveyId in survey_ids_list:
-    if not os.path.exists(os.path.join(path_to_data,"classification",country_code,"labeling",'qualtrics',surveyId)):
+    if not os.path.exists(os.path.join(path_to_data, country_code,'labeling',surveyId)):
         if not re.compile('^SV_.*').match(surveyId):
             print("survey Id must match ^SV_.*")
         else:
             exportSurvey(apiToken, surveyId, dataCenter, fileFormat)
-    folder_path = os.path.join(path_to_data,"classification",country_code,"labeling",'qualtrics',surveyId)
+    folder_path = os.path.join(path_to_data, country_code,'labeling',surveyId)
     file_path_list = os.listdir(folder_path)
     file_path_list = [select_paths(path) for path in file_path_list if select_paths(path) is not None]
     if len(file_path_list) > 0:
