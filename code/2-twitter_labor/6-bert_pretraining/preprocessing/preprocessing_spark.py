@@ -60,5 +60,5 @@ if __name__ == "__main__":
     demojize_udf = udf(demojize, StringType())
     df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
     df = df.select("text_clean_uncased")
-    df.coalesce(1).write.mode("overwrite").format('text').option("header", "false").mode('append').save(
+    df.write.mode("overwrite").format('text').option("header", "false").mode('append').save(
         f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed')
