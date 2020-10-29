@@ -18,6 +18,9 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         default="US")
     parser.add_argument("--surveyId", type=str)
+    parser.add_argument("--reject_bots", type=int)
+    parser.add_argument("--HITId", type=str, default=None)
+
     args = parser.parse_args()
     return args
 
@@ -66,6 +69,13 @@ def exportSurvey(apiToken, surveyId, dataCenter, fileFormat, path_to_data):
     print('Complete')
 
 
+def fill_assignment_worker_ids_dict(assignments_dict, assignment_worker_ids_dict):
+    for assignment_nb in range(len(assignments_dict['Assignments'])):
+        assignment_info_dict = assignments_dict['Assignments'][assignment_nb]
+        assignment_worker_ids_dict[assignment_info_dict['WorkerId']] = assignment_info_dict['AssignmentId']
+    return assignment_worker_ids_dict
+
+
 if __name__ == "__main__":
     args = get_args_from_command_line()
     path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling'
@@ -80,7 +90,7 @@ if __name__ == "__main__":
             exportSurvey(apiToken=apiToken, surveyId=args.surveyId, dataCenter='nyu.ca1', fileFormat='csv',
                          path_to_data=path_to_data)
     file_path = \
-    [file for file in glob(os.path.join(path_to_data, args.surveyId, '*.csv')) if 'labor-market-tweets' in file][0]
+        [file for file in glob(os.path.join(path_to_data, args.surveyId, '*.csv')) if 'labor-market-tweets' in file][0]
     # Analyse Results
     df = pd.read_csv(file_path, low_memory=False)
     # First two rows contain metadata
@@ -88,7 +98,7 @@ if __name__ == "__main__":
 
     df = df.loc[(df['QIDWorker'].dropna().drop_duplicates().index)].set_index('QIDWorker').copy()
 
-    #places = rg.search(
+    # places = rg.search(
     #    [tuple(x) for x in df[['LocationLatitude', 'LocationLongitude']].astype(float).dropna().values.tolist()])
 
     print('# of workers who refused the consent form:', (df.QIDConsent.astype(int) == 0).sum())
@@ -157,6 +167,52 @@ if __name__ == "__main__":
     print('# Workers who failed the check questions (= bots?):', bots.shape[0])
     print('# Worker ID of workers who failed the check questions (= bots?):', bots)
 
+    if args.reject_bots == 1:
+        keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
+        with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
+            access_key_id = f.readline().strip()
+
+        with open(os.path.join(keys_path, 'secret_access_key.txt'), 'r') as f:
+            secret_access_key = f.readline().strip()
+
+        requester_feedback_dict = {
+            'US': f'We are sorry to tell you that you have not passed the quality checks for HIT {args.HITId} (questions on English tweets). Therefore, we must reject your assignment. Thank you for your understanding',
+            'MX': f'Lamentamos comunicarle que no ha superado los controles de calidad de HIT {args.HITId} (preguntas sobre los tweets en español). Por lo tanto, debemos rechazar su asignación. Gracias por su comprensión.',
+            'BR': f'Lamentamos dizer que você não passou nos controles de qualidade do HIT {args.HITId} (perguntas sobre tweets portugueses). Portanto, devemos rejeitar sua tarefa. Obrigado por sua compreensão.'
+        }
+
+        mturk = boto3.client('mturk',
+                             aws_access_key_id=access_key_id,
+                             aws_secret_access_key=secret_access_key,
+                             region_name='us-east-1',
+                             endpoint_url='https://mturk-requester.us-east-1.amazonaws.com'
+                             )
+
+        assignments_dict = mturk.list_assignments_for_hit(
+            HITId=args.HITId,
+        )
+        assignment_worker_ids_dict = dict()
+        while 'NextToken' in assignments_dict.keys():
+            assignment_worker_ids_dict = fill_assignment_worker_ids_dict(assignments_dict=assignments_dict,
+                                                                         assignment_worker_ids_dict=assignment_worker_ids_dict)
+            assignments_dict = mturk.list_assignments_for_hit(
+                HITId=args.HITId,
+                NextToken=assignments_dict['NextToken']
+            )
+
+            if 'NextToken' not in assignments_dict.keys() and assignments_dict['NumResults'] > 0:
+                assignment_worker_ids_dict = fill_assignment_worker_ids_dict(assignments_dict=assignments_dict,
+                                                                             assignment_worker_ids_dict=assignment_worker_ids_dict)
+
+        for bot_id in bots:
+            if bot_id in assignment_worker_ids_dict.keys():
+                assignment_id = assignment_worker_ids_dict[bot_id]
+                mturk.reject_assignment(
+                    AssignmentId=assignment_id,
+                    RequesterFeedback=requester_feedback_dict[args.country_code]
+                )
+        print('Reject assignments for detected bots')
+
     # Remove checks
     df.drop([col for col in df.columns if 'check' in col], 1, inplace=True)
     df.columns.name = 'QID'
@@ -188,4 +244,3 @@ if __name__ == "__main__":
 
     df.to_csv(
         os.path.join(path_to_data, args.surveyId, 'labels.csv'))
-
