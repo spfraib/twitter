@@ -53,7 +53,7 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 args = get_args_from_command_line()
 ntweets = args.block_size
 time_to_complete = int(math.ceil(ntweets / 2))
-money_for_hit = 0.08 * ntweets
+money_for_hit = 0.1 * ntweets
 
 keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
@@ -156,7 +156,7 @@ QualificationRequirements_list = [
 ]
 new_hit = mturk.create_hit(
     MaxAssignments=args.n_workers,
-    AutoApprovalDelayInSeconds=86400,
+    AutoApprovalDelayInSeconds=172800,
     LifetimeInSeconds=259200,
     AssignmentDurationInSeconds=10800,
     Reward=str(money_for_hit),
