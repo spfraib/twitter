@@ -10,6 +10,7 @@ from glob import glob
 from datetime import datetime
 import argparse
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -222,6 +223,7 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
     if json.loads(response.text)["meta"]["httpStatus"] != '200 - OK':
         print(json.loads(response.text)["meta"]["httpStatus"])
 
+
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     df_list = list()
     for folder in os.listdir(path_to_labelled):
@@ -252,14 +254,20 @@ if __name__ == "__main__":
         apiToken = f.readline()
     dataCenter = "nyu.ca1"
     SurveyName = f"labor-market-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
-    SurveySourceID_dict = {'US': 'SV_2tRtDQDulmd5RsN', 'MX': 'SV_bxr29HthZfMhG3X', 'BR': 'SV_e9Xsw1ZtEvBX4jP'}
+    SurveySourceID_dict = {
+        'US': 'SV_2tRtDQDulmd5RsN',
+        'MX': 'SV_bxr29HthZfMhG3X',
+        'BR': 'SV_e9Xsw1ZtEvBX4jP'}
     SurveySourceID = SurveySourceID_dict[args.country_code]
     QuestionTemplateID = "QID1"
     QuestionConsentID = "QID2"
     QuestionWorkerID = "QID3"
     QuestionCompletionID = "QID4"
     QuestionDescriptionID = "QID5"
-    country_language_dict = {'US': 'EN', 'MX': 'ES', 'BR': 'PT-BR'}
+    country_language_dict = {
+        'US': 'EN',
+        'MX': 'ES',
+        'BR': 'PT-BR'}
     survey_language = country_language_dict[args.country_code]
     country_code = args.country_code
     n_workers = args.n_workers
@@ -267,9 +275,10 @@ if __name__ == "__main__":
     print(country_code)
     print('# n_workers:', n_workers)
     print('block_size:', block_size)
-    checks_dict = {'US': ['I lost my job today.', 'I got hired today.'],
-                   'MX': ['Perdí mi trabajo hoy.', 'Me contrataron hoy.'],
-                   'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
+    checks_dict = {
+        'US': ['I lost my job today.', 'I got hired today.'],
+        'MX': ['Perdí mi trabajo hoy.', 'Me contrataron hoy.'],
+        'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
     checks_list = checks_dict[args.country_code]
 
     n_tweets = n_workers * (block_size - len(checks_list)) // 2
@@ -278,7 +287,9 @@ if __name__ == "__main__":
     # path to labelling as argument?
     tweets = pq.ParquetDataset(
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
-    tweets = discard_already_labelled_tweets(path_to_labelled=f'/scratch/spf248/twitter/data/classification/{args.country_code}/labeling/qualtrics', to_label_df=tweets)
+    tweets = discard_already_labelled_tweets(
+        path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
+        to_label_df=tweets)
 
     tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
@@ -300,7 +311,8 @@ if __name__ == "__main__":
     print('Create New Survey')
     start = timer()
 
-    SurveyID, BlockID = create_survey(SurveyName=SurveyName, apiToken=apiToken, dataCenter=dataCenter, language=survey_language)
+    SurveyID, BlockID = create_survey(SurveyName=SurveyName, apiToken=apiToken, dataCenter=dataCenter,
+                                      language=survey_language)
 
     print("Done in", round(timer() - start), "sec")
 
@@ -336,7 +348,7 @@ if __name__ == "__main__":
         QuestionData['QuestionText_Unsafe'] = tweet
         QuestionData['DataExportTag'] = 'ID_' + tweet_id
         update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
-                                     dataCenter=dataCenter)
+                        dataCenter=dataCenter)
 
         if i % block_size == 0:
             BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
@@ -360,7 +372,7 @@ if __name__ == "__main__":
     BlockData = get_block(BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
     BlockData['Type'] = 'Default'
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
-                                     dataCenter=dataCenter)
+                 dataCenter=dataCenter)
 
     print('Create Completion Question')
     QuestionCompletionData = get_question(QuestionID=QuestionCompletionID, SurveyID=SurveySourceID, apiToken=apiToken,
@@ -382,7 +394,7 @@ if __name__ == "__main__":
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
 
     SurveyFlow = get_flow(SurveyID, apiToken=apiToken,
-                                           dataCenter=dataCenter)
+                          dataCenter=dataCenter)
 
     print('Randomize Survey Flow')
     # Create a Randomizer Drawing One Block At Random Except Intro And Completion Block
@@ -400,18 +412,21 @@ if __name__ == "__main__":
     ]
 
     SurveyFlow['Properties']['Count'] += 1
-    SurveyFlow['Properties'].update({'RemovedFieldsets': []})
+    SurveyFlow['Properties'].update({
+                                        'RemovedFieldsets': []})
 
     print('Embbeded Worker ID')
-    EmbeddedData = {'Type': 'EmbeddedData',
-                    'FlowID': 'FL_' + str(max([int(el['FlowID'].split('_')[1]) for el in SurveyFlow['Flow']]) + 1),
-                    'EmbeddedData': [{'Description': 'Random ID',
-                                      'Type': 'Custom',
-                                      'Field': 'Random ID',
-                                      'VariableType': 'String',
-                                      'DataVisibility': [],
-                                      'AnalyzeText': False,
-                                      'Value': '${rand://int/1000000000:9999999999}'}]}
+    EmbeddedData = {
+        'Type': 'EmbeddedData',
+        'FlowID': 'FL_' + str(max([int(el['FlowID'].split('_')[1]) for el in SurveyFlow['Flow']]) + 1),
+        'EmbeddedData': [{
+                             'Description': 'Random ID',
+                             'Type': 'Custom',
+                             'Field': 'Random ID',
+                             'VariableType': 'String',
+                             'DataVisibility': [],
+                             'AnalyzeText': False,
+                             'Value': '${rand://int/1000000000:9999999999}'}]}
 
     SurveyFlow['Flow'] = [EmbeddedData] + SurveyFlow['Flow']
     SurveyFlow['Properties']['Count'] += 1
@@ -524,9 +539,9 @@ if __name__ == "__main__":
         'ActiveResponseSet': None,
         'InactiveMessageLibrary': '',
         'InactiveMessage': '',
-        #'AvailableLanguages': {
+        # 'AvailableLanguages': {
         #    'EN': []},
-        #'SurveyLanguage': 'EN',
+        # 'SurveyLanguage': 'EN',
         'SurveyStartDate': None,
         'SurveyExpirationDate': None})
 
