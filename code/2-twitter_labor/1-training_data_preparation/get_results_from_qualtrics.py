@@ -18,7 +18,7 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         default="US")
     parser.add_argument("--surveyId", type=str)
-    parser.add_argument("--reject_bots", type=int)
+    parser.add_argument("--reject_bots", type=int, default=0)
     parser.add_argument("--HITId", type=str, default=None)
 
     args = parser.parse_args()
