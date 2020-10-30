@@ -2,6 +2,8 @@
 
 COUNTRY_CODE=$1
 SURVEY_ID=$2
+REJECT_BOTS=$3
+HITID=$4
 
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
@@ -22,4 +24,8 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_da
 
 python3 get_results_from_qualtrics.py \
 --country_code ${COUNTRY_CODE} \
---surveyId ${SURVEY_ID}
+--surveyId ${SURVEY_ID} \
+--reject_bots ${REJECT_BOTS} \
+--HITId ${HITID}
+
+
