@@ -10,6 +10,7 @@ import os
 import unicodedata
 import sys
 import emoji
+from ekphrasis.classes.preprocessor import TextPreProcessor
 
 try:
     spark
@@ -23,17 +24,15 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Path to the inference data folder.",
                         default="US")
+    parser.add_argument("--demojize", type=int, default=0)
+    parser.add_argument("--hashtag_segmentation", type=int, default=0)
+
     args = parser.parse_args()
     return args
 
 
 if __name__ == "__main__":
     args = get_args_from_command_line()
-    country_language_dict = {
-        'US': 'en',
-        'MX': 'es',
-        'BR': 'pt'}
-    language = country_language_dict[args.country_code]
     df = spark.read.orc(f'/user/spf248/twitter/data/timelines/historical/extract/{args.country_code}')
     print('Loaded data')
     # drop RT
@@ -52,13 +51,44 @@ if __name__ == "__main__":
     # drop line breaks
     df = df.withColumn("text_clean_uncased", regexp_replace(col("text_clean_uncased"), "[\n\r]", " "))
 
-    # replace emojis
-    def demojize(text):
-        return emoji.demojize(text, language=language)
+    if args.demojize == 1:
+        country_language_dict = {
+            'US': 'en',
+            'MX': 'es',
+            'BR': 'pt'}
+        language = country_language_dict[args.country_code]
 
 
-    demojize_udf = udf(demojize, StringType())
-    df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
+        def demojize(text):
+            return emoji.demojize(text, language=language)
+
+
+        demojize_udf = udf(demojize, StringType())
+        df = df.withColumn('text_clean_uncased', demojize_udf(col('text_clean_uncased')))
+
+    if args.hashtag_segmentation == 1:
+        ekphrasis_corpus_dict = {
+            'US': 'twitter',
+            'MX': 'twitter_mx',
+            'BR': 'twitter_br'}
+
+        corpus = ekphrasis_corpus_dict[args.country_code]
+
+
+        def hashtag_segmentation(text):
+            text_processor = TextPreProcessor(
+                annotate={"hashtag"},
+                segmenter=corpus,
+                unpack_hashtags=True,
+            )
+            return "".join(text_processor.pre_process_doc(text))
+
+
+        hashtag_segmentation_udf = udf(hashtag_segmentation, StringType())
+        df = df.withColumn('text_clean_uncased', hashtag_segmentation_udf(col('text_clean_uncased')))
+
+    # Save in text format
     df = df.select("text_clean_uncased")
+
     df.write.mode("overwrite").format('text').option("header", "false").mode('append').save(
         f'/user/spf248/twitter/data/pretraining/{args.country_code}/preprocessed')
