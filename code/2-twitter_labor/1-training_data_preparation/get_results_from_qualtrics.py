@@ -10,7 +10,7 @@ import reverse_geocoder as rg
 import numpy as np
 from glob import glob
 import argparse
-
+import boto3
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
