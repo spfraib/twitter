@@ -21,7 +21,8 @@ def get_args_from_command_line():
     return args
 
 
-def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict, submit_dict):
+def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict,
+                       submit_dict):
     xml_wrapper_begin = """
     <HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
     <HTMLContent><![CDATA[
@@ -53,7 +54,14 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 args = get_args_from_command_line()
 ntweets = args.block_size
 time_to_complete = int(math.ceil(ntweets / 2))
-money_for_hit = 0.1 * ntweets
+
+money_per_tweet_dict = {
+    'US': 0.1,
+    'BR': 0.06,
+    'MX': 0.06
+    }
+
+money_for_hit = money_per_tweet_dict[args.country_code] * ntweets
 
 keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
