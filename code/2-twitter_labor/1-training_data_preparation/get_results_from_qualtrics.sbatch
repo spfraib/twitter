@@ -29,3 +29,5 @@ python3 get_results_from_qualtrics.py \
 --HITId ${HITID}
 
 
+python3 merge-all-qualtrics-results.py \
+--country_code ${COUNTRY_CODE}
