@@ -16,6 +16,7 @@ def get_args_from_command_line():
     parser.add_argument("--block_size", help='number of tweets per worker', type=int)
     parser.add_argument("--version_number", type=str)
     parser.add_argument("--mode", type=str, help='Whether to create HIT in sandbox or in production')
+    parser.add_argument("--language_qualification", type=int, help='')
 
     args = parser.parse_args()
     return args
@@ -146,22 +147,46 @@ question = question_generator(country_code=args.country_code, survey_link=args.s
                               worker_input_text_dict=worker_input_text_dict, submit_dict=submit_dict)
 print("QUESTION:", question)
 
-QualificationRequirements_list = [
-    {
-        'QualificationTypeId': '00000000000000000071',  # Worker_Locale
-        'Comparator': 'EqualTo',
-        'LocaleValues': [{
-            'Country': args.country_code}],
-        'RequiredToPreview': True,
-        'ActionsGuarded': 'PreviewAndAccept'
-    },
-    {
-        'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-        'Comparator': 'DoesNotExist',
-        'RequiredToPreview': True,
-        'ActionsGuarded': 'PreviewAndAccept'
-    }
-]
+if args.country_code == 'MX':
+    QualificationRequirements_list = [
+        {
+            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+            'Comparator': 'EqualTo',
+            'LocaleValues': [{
+                'Country': 'US'}],
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        },
+        {
+            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'Comparator': 'DoesNotExist',
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        },
+        {
+            'QualificationTypeId': '3O3C9VE8V1CPLASHO374P1HIP94SH7',
+            'Comparator': 'EqualTo',
+            'IntegerValues': [1],
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'DiscoverPreviewAndAccept'}
+    ]
+else:
+    QualificationRequirements_list = [
+        {
+            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+            'Comparator': 'EqualTo',
+            'LocaleValues': [{
+                'Country': args.country_code}],
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        },
+        {
+            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'Comparator': 'DoesNotExist',
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        }
+    ]
 new_hit = mturk.create_hit(
     MaxAssignments=args.n_workers,
     AutoApprovalDelayInSeconds=172800,
