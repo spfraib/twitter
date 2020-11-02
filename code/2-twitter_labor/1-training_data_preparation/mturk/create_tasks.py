@@ -100,13 +100,13 @@ mturk = boto3.client('mturk',
 
 title_dict = {
     'US': 'Read %d English Tweets and answer a few questions' % (ntweets),
-    'MX': 'Lea %d Tweets en español y responda algunas preguntas' % (ntweets),
+    'MX': 'Lea %d Tweets en español mexicano y responda algunas preguntas' % (ntweets),
     'BR': 'Leia %d tweets em português e responda algumas perguntas' % (ntweets)
 }
 
 description_dict = {
     'US': 'Assess the employment status of Twitter users',
-    'MX': 'Evaluar la situación laboral de los usuarios de Twitter',
+    'MX': 'Evaluar la situación laboral de usuarios de Twitter',
     'BR': 'Avalie a situação de emprego de usuários do Twitter'
 }
 
