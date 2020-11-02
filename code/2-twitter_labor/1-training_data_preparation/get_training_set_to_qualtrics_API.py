@@ -225,23 +225,34 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
 
 
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
-    df_list = list()
-    for folder in os.listdir(path_to_labelled):
-        for file in glob(os.path.join(path_to_labelled, folder, '*.csv')):
-            df = pd.read_csv(file)
-            if 'tweet_id' in df.columns:
-                df = df[['tweet_id']]
-                df = df.set_index(['tweet_id'])
-                df_list.append(df)
-    if len(df_list) > 0:
-        final_df = pd.concat(df_list)
-        final_df = final_df.reset_index()
-        final_df = final_df.drop_duplicates().reset_index(drop=True)
-        list_labelled_tweet_ids = final_df['tweet_id'].tolist()
+    labels_path = os.path.join(path_to_labelled, 'labels.pkl')
+    if os.path.isfile(labels_path):
+        df = pd.read_pickle(labels_path)
+        df = df[['tweet_id']]
+        df = df.drop_duplicates().reset_index(drop=True)
+        list_labelled_tweet_ids = df['tweet_id'].tolist()
         to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
         return to_label_df
     else:
         return to_label_df
+
+    # df_list = list()
+    # for folder in os.listdir(path_to_labelled):
+    #     for file in glob(os.path.join(path_to_labelled, folder, '*.csv')):
+    #         df = pd.read_csv(file)
+    #         if 'tweet_id' in df.columns:
+    #             df = df[['tweet_id']]
+    #             df = df.set_index(['tweet_id'])
+    #             df_list.append(df)
+    # if len(df_list) > 0:
+    #     final_df = pd.concat(df_list)
+    #     final_df = final_df.reset_index()
+    #     final_df = final_df.drop_duplicates().reset_index(drop=True)
+    #     list_labelled_tweet_ids = final_df['tweet_id'].tolist()
+    #     to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
+    #     return to_label_df
+    # else:
+    #     return to_label_df
 
 
 if __name__ == "__main__":
@@ -413,20 +424,20 @@ if __name__ == "__main__":
 
     SurveyFlow['Properties']['Count'] += 1
     SurveyFlow['Properties'].update({
-                                        'RemovedFieldsets': []})
+        'RemovedFieldsets': []})
 
     print('Embbeded Worker ID')
     EmbeddedData = {
         'Type': 'EmbeddedData',
         'FlowID': 'FL_' + str(max([int(el['FlowID'].split('_')[1]) for el in SurveyFlow['Flow']]) + 1),
         'EmbeddedData': [{
-                             'Description': 'Random ID',
-                             'Type': 'Custom',
-                             'Field': 'Random ID',
-                             'VariableType': 'String',
-                             'DataVisibility': [],
-                             'AnalyzeText': False,
-                             'Value': '${rand://int/1000000000:9999999999}'}]}
+            'Description': 'Random ID',
+            'Type': 'Custom',
+            'Field': 'Random ID',
+            'VariableType': 'String',
+            'DataVisibility': [],
+            'AnalyzeText': False,
+            'Value': '${rand://int/1000000000:9999999999}'}]}
 
     SurveyFlow['Flow'] = [EmbeddedData] + SurveyFlow['Flow']
     SurveyFlow['Properties']['Count'] += 1
