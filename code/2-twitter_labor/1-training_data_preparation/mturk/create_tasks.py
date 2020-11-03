@@ -57,7 +57,7 @@ ntweets = args.block_size
 time_to_complete = int(math.ceil((3/5)*ntweets))
 
 money_per_tweet_dict = {
-    'US': 0.1,
+    'US': 0.08,
     'BR': 0.06,
     'MX': 0.1
     }
@@ -170,6 +170,31 @@ if args.country_code == 'MX':
             'RequiredToPreview': True,
             'ActionsGuarded': 'DiscoverPreviewAndAccept'}
     ]
+
+elif args.country_code == 'US':
+    QualificationRequirements_list = [
+        {
+            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+            'Comparator': 'EqualTo',
+            'LocaleValues': [{
+                'Country': args.country_code}],
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        },
+        {
+            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'Comparator': 'DoesNotExist',
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        },
+        {
+            'QualificationTypeId': '2F1QJWKUDD8XADTFD2Q0G6UTO95ALH',
+            'Comparator': 'Exists',
+            'RequiredToPreview': True,
+            'ActionsGuarded': 'PreviewAndAccept'
+        }
+    ]
+
 else:
     QualificationRequirements_list = [
         {
