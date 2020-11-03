@@ -89,7 +89,7 @@ if __name__ == '__main__':
     fileFormat = "csv"
 
     survey_ids_list = glob(os.path.join(path_to_data, country_code, 'labeling', '*'))
-
+    survey_ids_list = [survey_id for survey_id in survey_ids_list if survey_id != 'labels.pkl']
     print(survey_ids_list)
 
     worker_id_list = list()
