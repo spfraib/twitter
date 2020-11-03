@@ -52,7 +52,7 @@ if __name__ == '__main__':
         file_path_list = os.listdir(survey_folder_path)
         file_path_list = [select_paths(path) for path in file_path_list if select_paths(path) is not None]
         if len(file_path_list) > 0:
-            df = pd.read_csv(os.path.join(folder_path, file_path_list[0]), low_memory=False)
+            df = pd.read_csv(os.path.join(survey_folder_path, file_path_list[0]), low_memory=False)
 
             # First two rows contain metadata
             df.drop([0, 1], inplace=True)
