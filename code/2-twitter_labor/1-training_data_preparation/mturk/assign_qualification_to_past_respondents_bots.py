@@ -23,51 +23,6 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
-
-def exportSurvey(apiToken, surveyId, dataCenter, fileFormat):
-    surveyId = surveyId
-    fileFormat = fileFormat
-    dataCenter = dataCenter
-
-    # Setting static parameters
-    requestCheckProgress = 0.0
-    progressStatus = "inProgress"
-    baseUrl = "https://{0}.qualtrics.com/API/v3/responseexports/".format(dataCenter)
-    headers = {
-        "content-type": "application/json",
-        "x-api-token": apiToken,
-    }
-
-    # Step 1: Creating Data Export
-    downloadRequestUrl = baseUrl
-    downloadRequestPayload = '{"format":"' + fileFormat + '","surveyId":"' + surveyId + '"}'
-    downloadRequestResponse = requests.request("POST", downloadRequestUrl, data=downloadRequestPayload, headers=headers)
-    progressId = downloadRequestResponse.json()["result"]['id']
-    print(downloadRequestResponse.text)
-
-    # Step 2: Checking on Data Export Progress and waiting until export is ready
-    while progressStatus != "complete" and progressStatus != "failed":
-        print("progressStatus=", progressStatus)
-        requestCheckUrl = baseUrl + progressId
-        requestCheckResponse = requests.request("GET", requestCheckUrl, headers=headers)
-        requestCheckProgress = requestCheckResponse.json()["result"]["percentComplete"]
-        print("Download is " + str(requestCheckProgress) + " complete")
-        progressStatus = requestCheckResponse.json()["result"]["status"]
-
-    # step 2.1: Check for error
-    if progressStatus is "failed":
-        raise Exception("export failed")
-
-    # # Step 3: Downloading file
-    requestDownloadUrl = baseUrl + progressId + '/file'
-    requestDownload = requests.request("GET", requestDownloadUrl, headers=headers, stream=True)
-
-    # Step 4: Unzipping the file
-    zipfile.ZipFile(io.BytesIO(requestDownload.content)).extractall(
-        os.path.join(path_to_data, country_code, "labeling", surveyId))
-    print('Complete')
-
-
 def select_paths(x):
     if x == 'labor-market-tweets.csv':
         return x
@@ -88,19 +43,13 @@ if __name__ == '__main__':
     dataCenter = "nyu.ca1"
     fileFormat = "csv"
 
-    survey_ids_list = glob(os.path.join(path_to_data, country_code, 'labeling', '*'))
-    survey_ids_list = [survey_id for survey_id in survey_ids_list if survey_id != 'labels.pkl']
-    print(survey_ids_list)
+    survey_folder_path_list = glob(os.path.join(path_to_data, country_code, 'labeling', '*'))
+    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if 'labels.pkl' not in survey_folder_path]
+    print(survey_folder_path_list)
 
     worker_id_list = list()
-    for surveyId in survey_ids_list:
-        if not os.path.exists(os.path.join(path_to_data, country_code, 'labeling', surveyId)):
-            if not re.compile('^SV_.*').match(surveyId):
-                print("survey Id must match ^SV_.*")
-            else:
-                exportSurvey(apiToken, surveyId, dataCenter, fileFormat)
-        folder_path = os.path.join(path_to_data, country_code, 'labeling', surveyId)
-        file_path_list = os.listdir(folder_path)
+    for survey_folder_path in survey_folder_path_list:
+        file_path_list = os.listdir(survey_folder_path)
         file_path_list = [select_paths(path) for path in file_path_list if select_paths(path) is not None]
         if len(file_path_list) > 0:
             df = pd.read_csv(os.path.join(folder_path, file_path_list[0]), low_memory=False)
@@ -145,8 +94,8 @@ if __name__ == '__main__':
 
     # Remove duplicates
     worker_id_list = list(dict.fromkeys(worker_id_list))
-    # Assign qualification
 
+    # Assign qualification
     keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
     with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
         access_key_id = f.readline().strip()
