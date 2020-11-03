@@ -23,6 +23,7 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 def select_paths(x):
     if x == 'labor-market-tweets.csv':
         return x
@@ -44,7 +45,8 @@ if __name__ == '__main__':
     fileFormat = "csv"
 
     survey_folder_path_list = glob(os.path.join(path_to_data, country_code, 'labeling', '*'))
-    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if 'labels.pkl' not in survey_folder_path]
+    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if
+                               'labels.pkl' not in survey_folder_path]
     print(survey_folder_path_list)
 
     worker_id_list = list()
@@ -120,4 +122,5 @@ if __name__ == '__main__':
         except:
             print(f'Invalid bot worker id: {worker_id}')
 
-    print(f"The Qualification was assigned to all workers who already completed the {args.country_code} survey (including bots). ")
+    print(
+        f"The Qualification was assigned to all workers who already completed a {args.country_code} survey (including bots). ")
