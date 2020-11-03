@@ -11,6 +11,7 @@ import numpy as np
 from glob import glob
 import argparse
 import boto3
+import shutil
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -82,13 +83,16 @@ if __name__ == "__main__":
     with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
         apiToken = f.readline()
     # Export Survey
-    if not os.path.exists(
+    if os.path.exists(
             os.path.join(path_to_data, args.surveyId)):
-        if not re.compile('^SV_.*').match(args.surveyId):
-            print("survey Id must match ^SV_.*")
-        else:
-            exportSurvey(apiToken=apiToken, surveyId=args.surveyId, dataCenter='nyu.ca1', fileFormat='csv',
-                         path_to_data=path_to_data)
+        print("Overwriting existing folder")
+        shutil.rmtree(os.path.join(path_to_data, args.surveyId), ignore_errors=True)
+        
+    if not re.compile('^SV_.*').match(args.surveyId):
+        print("survey Id must match ^SV_.*")
+    else:
+        exportSurvey(apiToken=apiToken, surveyId=args.surveyId, dataCenter='nyu.ca1', fileFormat='csv',
+                    path_to_data=path_to_data)
     file_path = \
         [file for file in glob(os.path.join(path_to_data, args.surveyId, '*.csv')) if 'labor-market-tweets' in file][0]
     # Analyse Results
