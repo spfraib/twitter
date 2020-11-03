@@ -118,6 +118,6 @@ if __name__ == '__main__':
                 IntegerValue=1,
                 SendNotification=False)
         except:
-            print(worker_id)
+            print(f'Invalid bot worker id: {worker_id}')
 
-    print("The Qualification was assigned to all workers who already completed the US survey (including bots). ")
+    print(f"The Qualification was assigned to all workers who already completed the {args.country_code} survey (including bots). ")
