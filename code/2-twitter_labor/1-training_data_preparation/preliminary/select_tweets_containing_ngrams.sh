@@ -9,7 +9,7 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
-CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
+CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/preliminary
 TIMESTAMP=$(date +%s)
 JOB_NAME=select_tweets_containing_ngrams_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \

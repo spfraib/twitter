@@ -23,7 +23,7 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
 
 echo '******** Getting results for survey ${SURVEY_ID} ********'
-python3 get_results_from_qualtrics.py \
+python3 qualtrics/get_results_from_qualtrics.py \
 --country_code ${COUNTRY_CODE} \
 --surveyId ${SURVEY_ID} \
 --reject_bots ${REJECT_BOTS} \
@@ -31,9 +31,9 @@ python3 get_results_from_qualtrics.py \
 
 
 echo '******** Merging results from Qualtrics ********'
-python3 merge-all-qualtrics-results.py \
+python3 qualtrics/merge-all-qualtrics-results.py \
 --country_code ${COUNTRY_CODE}
 
 echo '******** Assigning qualification to past respondents ********'
-python3 assign_qualification_to_past_respondents_bots.py \
+python3 mturk/assign_qualification_to_past_respondents_bots.py \
 --country_code ${COUNTRY_CODE}
