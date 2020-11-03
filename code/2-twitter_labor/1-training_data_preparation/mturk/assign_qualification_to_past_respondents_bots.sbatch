@@ -1,5 +1,7 @@
 #!/bin/bash
 
+COUNTRY_CODE=$1
+
 #SBATCH --job-name=qualification_assignment
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -17,4 +19,6 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/mturk
 
-python3 assign_qualification_to_past_respondents_bots.py
+python3 assign_qualification_to_past_respondents_bots.py \
+--country_code ${COUNTRY_CODE}
+
