@@ -22,7 +22,7 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation
 
-echo '******** Getting results for survey ${SURVEY_ID} ********'
+echo "******** Getting results for survey ${SURVEY_ID} ********"
 python3 qualtrics/get_results_from_qualtrics.py \
 --country_code ${COUNTRY_CODE} \
 --surveyId ${SURVEY_ID} \
