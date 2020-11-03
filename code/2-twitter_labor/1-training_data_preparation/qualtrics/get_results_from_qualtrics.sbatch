@@ -33,3 +33,7 @@ python3 get_results_from_qualtrics.py \
 echo '******** Merging results from Qualtrics ********'
 python3 merge-all-qualtrics-results.py \
 --country_code ${COUNTRY_CODE}
+
+echo '******** Assigning qualification to past respondents ********'
+python3 assign_qualification_to_past_respondents_bots.py \
+--country_code ${COUNTRY_CODE}
