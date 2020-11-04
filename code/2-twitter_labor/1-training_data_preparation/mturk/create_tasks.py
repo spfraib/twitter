@@ -147,31 +147,31 @@ question = question_generator(country_code=args.country_code, survey_link=args.s
                               worker_input_text_dict=worker_input_text_dict, submit_dict=submit_dict)
 print("QUESTION:", question)
 
-if args.country_code == 'MX':
-    QualificationRequirements_list = [
-        {
-            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
-            'Comparator': 'EqualTo',
-            'LocaleValues': [{
-                'Country': 'US'}],
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-            'Comparator': 'DoesNotExist',
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '3O3C9VE8V1CPLASHO374P1HIP94SH7',
-            'Comparator': 'EqualTo',
-            'IntegerValues': [1],
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'DiscoverPreviewAndAccept'}
-    ]
+# if args.country_code == 'MX':
+#     QualificationRequirements_list = [
+#         {
+#             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+#             'Comparator': 'EqualTo',
+#             'LocaleValues': [{
+#                 'Country': 'US'}],
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'PreviewAndAccept'
+#         },
+#         {
+#             'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+#             'Comparator': 'DoesNotExist',
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'PreviewAndAccept'
+#         },
+#         {
+#             'QualificationTypeId': '3O3C9VE8V1CPLASHO374P1HIP94SH7',
+#             'Comparator': 'EqualTo',
+#             'IntegerValues': [1],
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'DiscoverPreviewAndAccept'}
+#    ]
 
-elif args.country_code == 'US':
+if args.country_code == 'US':
     QualificationRequirements_list = [
         {
             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
