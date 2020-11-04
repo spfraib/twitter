@@ -13,6 +13,8 @@ VERSION_NB=$4
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
+#SBATCH --output=slurm_get_training_set-%x.%j.out
+
 
 module purge
 module load anaconda3/2019.10
