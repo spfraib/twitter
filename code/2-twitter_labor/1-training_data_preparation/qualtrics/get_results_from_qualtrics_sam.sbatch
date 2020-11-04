@@ -26,10 +26,9 @@ IFS=,
 for SURVEY_ID in ${SURVEY_ID_LIST};
 do
 echo "******** Getting results for ${SURVEY_ID} ********"
-python3 qualtrics/get_results_from_qualtrics.py \
+python3 qualtrics/get_results_from_qualtrics_sam.py \
 --country_code ${COUNTRY_CODE} \
 --surveyId ${SURVEY_ID} \
---sam_API 1
 
 done
 
