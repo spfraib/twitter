@@ -6,7 +6,8 @@ BLOCK_SIZE=$3
 SURVEY_LINK=$4
 VERSION_NB=$5
 MODE=$6
-#SBATCH --job-name=operations
+
+#SBATCH --job-name=create_tasks
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
