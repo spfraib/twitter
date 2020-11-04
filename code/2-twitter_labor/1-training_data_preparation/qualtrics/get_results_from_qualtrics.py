@@ -158,23 +158,25 @@ if __name__ == "__main__":
         ['QIDWorker', 'check_id', 'class_id'])
 
 
-    # Bot=Fail to give a Yes to the 3 check questions
+    # Bot=Fail to give a Yes to the 2 check questions
     def is_bot(x):
         l = x.split('_')
         if len(l) == 10:
             if l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
-                return False
-        return True
+                return 2
+            elif (l[1] == '1' and l[4] == '2') or (l[8] == '1' and l[9] == '2'):
+                return 1
+        return 0
 
 
     bots = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x == True).dropna().index
+        lambda x: x == 0).dropna().index
 
-    print('# Workers who failed the check questions (= bots?):', bots.shape[0])
-    print('# Worker ID of workers who failed the check questions (= bots?):', bots)
+    print('# Workers who failed both check questions (= bots?):', bots.shape[0])
+    print('# Worker ID of workers who failed both check questions (= bots?):', bots)
 
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
@@ -242,8 +244,13 @@ if __name__ == "__main__":
         by=['tweet_id', 'class_id', 'QIDWorker']).set_index(
         ['tweet_id', 'class_id', 'QIDWorker'])
 
-    # Drop Bots
-    df.drop(bots, level='QIDWorker', inplace=True, errors='ignore')
+    # Drop users who have failed at least one check
+    bots_to_be_discarded = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x < 1).dropna().index
+    df.drop(bots_to_be_discarded, level='QIDWorker', inplace=True, errors='ignore')
 
     # Convert Scores
     df.score = df.score.apply(lambda x: {
