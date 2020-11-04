@@ -25,18 +25,14 @@ IFS=,
 
 for SURVEY_ID in ${SURVEY_ID_LIST};
 do
-echo ${SURVEY_ID}
+echo "******** Getting results for ${SURVEY_ID} ********"
+python3 qualtrics/get_results_from_qualtrics.py \
+--country_code ${COUNTRY_CODE} \
+--surveyId ${SURVEY_ID} \
+--sam_API 1
+
 done
 
-#python3 qualtrics/get_results_from_qualtrics.py \
-#--country_code ${COUNTRY_CODE} \
-#--surveyId ${SURVEY_ID}
-#
-#
-#echo '******** Merging results from Qualtrics ********'
-#python3 qualtrics/merge-all-qualtrics-results.py \
-#--country_code ${COUNTRY_CODE}
-#
-#echo '******** Assigning qualification to past respondents ********'
-#python3 mturk/assign_qualification_to_past_respondents_bots.py \
-#--country_code ${COUNTRY_CODE}
+echo '******** Merging results from Qualtrics ********'
+python3 qualtrics/merge-all-qualtrics-results.py \
+--country_code ${COUNTRY_CODE}
