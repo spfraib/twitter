@@ -53,6 +53,8 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
 
 
 args = get_args_from_command_line()
+print('Args:', args)
+
 ntweets = args.block_size
 time_to_complete = int(math.ceil((3/5)*ntweets))
 
