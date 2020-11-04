@@ -147,7 +147,7 @@ if __name__ == "__main__":
             ['tweet_id', 'class_id', 'QIDWorker']).set_index(
             ['tweet_id', 'class_id', 'QIDWorker'])
 
-        print('# labels:', new_labels.shape[0])
+        print('# labels (new sample):', new_labels.shape[0])
 
         # Counts labels for each observation
         counts = new_labels.groupby(['tweet_id', 'class_id'])['score'].value_counts().rename('count')
@@ -161,9 +161,9 @@ if __name__ == "__main__":
 
         # +
         # Keep most popular label sequence
-        labels = counts.reindex(ids_labeled, level='tweet_id').reset_index(
+        new_labels = counts.reindex(ids_labeled, level='tweet_id').reset_index(
             level='score').groupby(['tweet_id', 'class_id'])['score'].first().unstack()
-        labels.index = labels.index.astype(str)
+        new_labels.index = new_labels.index.astype(str)
 
         class2name = dict(zip(range(1, 6), [
             'is_unemployed',
@@ -179,11 +179,11 @@ if __name__ == "__main__":
         # 'Does this tweet indicate that the user was hired within the last month?',
         # 'Does this tweet contain a job offer?', ]
 
-        labels.rename(columns=lambda x: class2name[x], inplace=True)
-        labels.reset_index(inplace=True)
-        labels.columns.name = ''
+        new_labels.rename(columns=lambda x: class2name[x], inplace=True)
+        new_labels.reset_index(inplace=True)
+        new_labels.columns.name = ''
 
-        labels.to_pickle(os.path.join(path_to_data, 'new_labels.pkl'))
+        new_labels.to_pickle(os.path.join(path_to_data, 'new_labels.pkl'))
 
-        labels.tail()
+        new_labels.tail()
 
