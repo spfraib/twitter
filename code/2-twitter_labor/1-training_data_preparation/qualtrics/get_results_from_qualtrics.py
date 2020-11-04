@@ -21,7 +21,7 @@ def get_args_from_command_line():
     parser.add_argument("--surveyId", type=str)
     parser.add_argument("--reject_bots", type=int, default=0)
     parser.add_argument("--HITId", type=str, default=None)
-
+    parser.add_argument("--sam_API", type=str, default=0)
     args = parser.parse_args()
     return args
 
@@ -80,8 +80,12 @@ def fill_assignment_worker_ids_dict(assignments_dict, assignment_worker_ids_dict
 if __name__ == "__main__":
     args = get_args_from_command_line()
     path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling'
-    with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
-        apiToken = f.readline()
+    if args.sam_API == 1:
+        with open('/scratch/spf248/twitter/data/keys/qualtrics/apiToken', 'r') as f:
+            apiToken = eval(f.readline())
+    else:
+        with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
+            apiToken = f.readline()
     # Export Survey
     if os.path.exists(
             os.path.join(path_to_data, args.surveyId)):
