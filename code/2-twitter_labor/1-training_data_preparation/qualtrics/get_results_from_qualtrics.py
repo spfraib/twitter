@@ -86,6 +86,7 @@ if __name__ == "__main__":
     else:
         with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
             apiToken = f.readline()
+    print(apiToken)
     # Export Survey
     if os.path.exists(
             os.path.join(path_to_data, args.surveyId)):
