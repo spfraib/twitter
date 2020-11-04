@@ -35,7 +35,7 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     path_to_data = f'/scratch/spf248/twitter/data/classification/{args.country_code}/labeling/qualtrics/{args.surveyId}'
     file_path = \
-        [file for file in glob(os.path.join(path_to_data, args.surveyId, '*.csv')) if 'labor-market-tweets' in file][0]
+        [file for file in glob(os.path.join(path_to_data, '*.csv')) if 'labor-market-tweets' in file][0]
     # Analyse Results
     df = pd.read_csv(file_path, low_memory=False)
     # First two rows contain metadata
