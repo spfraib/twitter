@@ -14,6 +14,8 @@ HITID=$4
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
+#SBATCH --output=slurm_get_results-%x.%j.out
+
 
 module purge
 module load anaconda3/2019.10
