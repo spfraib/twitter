@@ -145,7 +145,7 @@ if __name__ == "__main__":
     if os.path.exists(
             os.path.join(path_to_data_manu, args.surveyId)):
         print("Removing existing folder")
-        shutil.rmtree(os.path.join(path_to_data, args.surveyId), ignore_errors=True)
+        shutil.rmtree(os.path.join(path_to_data_manu, args.surveyId), ignore_errors=True)
     os.makedirs(os.path.join(path_to_data_manu, args.surveyId))
     df.to_csv(
-        os.path.join(path_to_data, args.surveyId, 'labels.csv'))
+        os.path.join(path_to_data_manu, args.surveyId, 'labels.csv'))
