@@ -178,6 +178,14 @@ if __name__ == "__main__":
     print('# Workers who failed both check questions (= bots?):', bots.shape[0])
     print('# Worker ID of workers who failed both check questions (= bots?):', bots)
 
+    bots_to_be_discarded = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x < 1).dropna().index
+
+    print('# Workers who failed one of the two check questions (= bots?):', bots_to_be_discarded.shape[0])
+
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
         with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
@@ -245,11 +253,6 @@ if __name__ == "__main__":
         ['tweet_id', 'class_id', 'QIDWorker'])
 
     # Drop users who have failed at least one check
-    bots_to_be_discarded = checks.unstack(
-        level='check_id').unstack(
-        level='class_id').fillna('').apply(
-        lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x < 1).dropna().index
     df.drop(bots_to_be_discarded, level='QIDWorker', inplace=True, errors='ignore')
 
     # Convert Scores
