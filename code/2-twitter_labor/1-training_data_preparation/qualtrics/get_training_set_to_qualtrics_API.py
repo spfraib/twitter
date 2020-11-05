@@ -288,7 +288,7 @@ if __name__ == "__main__":
     print('block_size:', block_size)
     checks_dict = {
         'US': ['I lost my job today.', 'I got hired today.'],
-        'MX': ['Perdí mi trabajo hoy.', 'Me contrataron hoy.'],
+        'MX': ['Perdí mi chamba hoy.', 'Me contrataron hoy.'],
         'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
     checks_list = checks_dict[args.country_code]
 
