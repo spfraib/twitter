@@ -59,7 +59,7 @@ ntweets = args.block_size
 time_to_complete = int(math.ceil((3/5)*ntweets))
 
 money_per_tweet_dict = {
-    'US': 0.08,
+    'US': 0.1,
     'BR': 0.06,
     'MX': 0.08
     }
