@@ -165,29 +165,29 @@ if args.country_code == 'MX':
             'ActionsGuarded': 'DiscoverPreviewAndAccept'}
    ]
 
-elif args.country_code == 'US':
-    QualificationRequirements_list = [
-        {
-            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
-            'Comparator': 'EqualTo',
-            'LocaleValues': [{
-                'Country': args.country_code}],
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
-            'Comparator': 'DoesNotExist',
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        },
-        {
-            'QualificationTypeId': '2F1QJWKUDD8XADTFD2Q0G6UTO95ALH',
-            'Comparator': 'Exists',
-            'RequiredToPreview': True,
-            'ActionsGuarded': 'PreviewAndAccept'
-        }
-    ]
+# elif args.country_code == 'US':
+#     QualificationRequirements_list = [
+#         {
+#             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+#             'Comparator': 'EqualTo',
+#             'LocaleValues': [{
+#                 'Country': args.country_code}],
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'PreviewAndAccept'
+#         },
+#         {
+#             'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+#             'Comparator': 'DoesNotExist',
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'PreviewAndAccept'
+#         },
+#         {
+#             'QualificationTypeId': '2F1QJWKUDD8XADTFD2Q0G6UTO95ALH',
+#             'Comparator': 'Exists',
+#             'RequiredToPreview': True,
+#             'ActionsGuarded': 'PreviewAndAccept'
+#         }
+#     ]
 
 else:
     QualificationRequirements_list = [
