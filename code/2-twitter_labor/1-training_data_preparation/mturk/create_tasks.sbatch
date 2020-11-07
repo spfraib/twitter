@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_create_tasks-%x.%j.out
+#SBATCH --output=slurm_create_tasks-%j.out
 
 COUNTRY_CODE=$1
 N_WORKERS=$2
