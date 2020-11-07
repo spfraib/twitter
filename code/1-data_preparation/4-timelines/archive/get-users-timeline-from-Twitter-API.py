@@ -50,9 +50,7 @@ SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE',mp.cpu_count())
 #]
 
 #TODO: country_codes to argument
-country_codes=[
-'FR',
-]
+country_code= 'FR'
 
 #TODO: modify path_to_data (copy sam's files to my scratch)
 path_to_data='/scratch/spf248/twitter/data'
@@ -168,7 +166,7 @@ print('Select Users...')
 users=pd.merge(
 users_by_account_location.reindex(
 account_locations.loc[
-account_locations['country_short'].isin(country_codes),'user_location']).dropna().reset_index(),
+account_locations['country_short'] == country_code,'user_location']).dropna().reset_index(),
 account_locations[['user_location','country_short']]).drop('user_location',1).rename(
 columns={'country_short':'country_code'}).explode('user_id').set_index('user_id')['country_code'].sort_index()
 
@@ -217,16 +215,17 @@ def get_success(country_code):
         return set(success)
 
 success=set()
-for country_code in country_codes:
-    tmp=get_success(country_code)
-    print(country_code, ':', len(tmp))
-    success=success.union(tmp)
+
+tmp=get_success(country_code)
+print(country_code, ':', len(tmp))
+success=success.union(tmp)
 print('# downloaded timelines:', len(success))
 
 users.drop(success,errors='ignore',inplace=True)
 print('# remaining users for this node:', len(users))
 
 # Group users by country
+#TODO: Fix from country_codes to country_code
 users_by_country=users.reset_index().groupby('country_code')['user_id'].apply(list).reindex(country_codes)
 
 end = timer()
