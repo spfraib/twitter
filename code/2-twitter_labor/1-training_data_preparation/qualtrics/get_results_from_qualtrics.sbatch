@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=operations
+#SBATCH --job-name=get_results_from_qualtrics
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
