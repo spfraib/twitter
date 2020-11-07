@@ -1,12 +1,5 @@
 #!/bin/bash
 
-COUNTRY_CODE=$1
-N_WORKERS=$2
-BLOCK_SIZE=$3
-SURVEY_LINK=$4
-VERSION_NB=$5
-MODE=$6
-
 #SBATCH --job-name=create_tasks
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -17,6 +10,13 @@ MODE=$6
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_create_tasks-%x.%j.out
+
+COUNTRY_CODE=$1
+N_WORKERS=$2
+BLOCK_SIZE=$3
+SURVEY_LINK=$4
+VERSION_NB=$5
+MODE=$6
 
 module purge
 module load anaconda3/2019.10
