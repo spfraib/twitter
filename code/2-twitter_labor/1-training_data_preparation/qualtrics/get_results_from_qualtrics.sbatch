@@ -1,10 +1,5 @@
 #!/bin/bash
 
-COUNTRY_CODE=$1
-SURVEY_ID=$2
-REJECT_BOTS=$3
-HITID=$4
-
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -16,6 +11,10 @@ HITID=$4
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_get_results-%x.%j.out
 
+COUNTRY_CODE=$1
+SURVEY_ID=$2
+REJECT_BOTS=$3
+HITID=$4
 
 module purge
 module load anaconda3/2019.10

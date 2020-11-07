@@ -1,9 +1,5 @@
 #!/bin/bash
 
-COUNTRY_CODE=$1
-N_WORKERS=$2
-BLOCK_SIZE=$3
-VERSION_NB=$4
 #SBATCH --job-name=operations
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
@@ -15,6 +11,10 @@ VERSION_NB=$4
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_get_training_set-%x.%j.out
 
+COUNTRY_CODE=$1
+N_WORKERS=$2
+BLOCK_SIZE=$3
+VERSION_NB=$4
 
 module purge
 module load anaconda3/2019.10
