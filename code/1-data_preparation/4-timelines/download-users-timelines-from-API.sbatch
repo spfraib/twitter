@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=download_timelines
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=5
 #SBATCH --mem=5GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:0
