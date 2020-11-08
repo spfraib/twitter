@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_download_timelines-%x.%j.out
+#SBATCH --output=slurm_download_timelines-%j.out
 
 COUNTRY_CODE=$1
 MODE=$2
