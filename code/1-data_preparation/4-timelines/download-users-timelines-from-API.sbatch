@@ -29,16 +29,16 @@ then
   python3 download-users-timelines-from-API.py \
   --country_code ${COUNTRY_CODE} \
   --cutoff 500 \
-  --get True \
-  --update False
+  --get 1 \
+  --update 0
 
 elif [[ ${MODE} -eq update ]]
 then
   python3 download-users-timelines-from-API.py \
   --country_code ${COUNTRY_CODE} \
   --cutoff 1000 \
-  --get False \
-  --update True \
+  --get 0 \
+  --update 1 \
   --last_batch ${LAST_BATCH} \
   --this_batch ${THIS_BATCH}
 else
