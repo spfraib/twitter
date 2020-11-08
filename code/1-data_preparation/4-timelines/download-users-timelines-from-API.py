@@ -23,8 +23,8 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str)
     parser.add_argument("--last_batch", type=str)
     parser.add_argument("--this_batch", type=str, default=None)
-    parser.add_argument("--get", type=bool, default=False)
-    parser.add_argument("--update", type=bool, default=False)
+    parser.add_argument("--get", type=int, default=0)
+    parser.add_argument("--update", type=int, default=0)
 
     args = parser.parse_args()
     return args
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     cutoff = args.cutoff
     country_code = args.country_code
     last_batch = args.last_batch
-    this_batch = args.this_batch if args.update else "historical"
+    this_batch = args.this_batch if args.update == 1 else "historical"
 
     # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
@@ -202,12 +202,12 @@ if __name__ == "__main__":
     path_to_data = '/scratch/spf248/twitter/data'
     path_to_keys = os.path.join(path_to_data, 'keys', 'twitter')
     path_to_timelines = os.path.join(path_to_data, 'timelines', this_batch, 'API')
-    if args.get:
+    if args.get == 1:
         path_to_users = os.path.join(path_to_data, 'users')
         path_to_locations = os.path.join(path_to_data, 'locations', 'profiles')
         os.makedirs(path_to_timelines, exist_ok=True)
         print(f'Path to locations: {path_to_locations}')
-    elif args.update:
+    elif args.update == 1:
         path_to_users = os.path.join(path_to_data, 'timelines', last_batch, 'most_recent_id')
         os.makedirs(os.path.join(path_to_timelines, country_code), exist_ok=True)
     print(f'Path to users: {path_to_users}')
@@ -218,7 +218,7 @@ if __name__ == "__main__":
     key_files = get_key_files(SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT, SLURM_JOB_CPUS_PER_NODE)
     print('Key files: ', '\n'.join(key_files))
 
-    if args.get:
+    if args.get == 1:
         print('Import Users By Account Locations')
         start = timer()
 
@@ -260,7 +260,7 @@ if __name__ == "__main__":
         del users_by_account_location
         del account_locations
 
-    elif args.update:
+    elif args.update == 1:
         start = timer()
         print('Select Users...')
 
@@ -288,7 +288,7 @@ if __name__ == "__main__":
     start = timer()
     print('Remove users whose timeline were successfully downloaded...')
 
-    if args.get:
+    if args.get == 1:
         success = set()
 
         tmp = get_success(country_code)
@@ -301,7 +301,7 @@ if __name__ == "__main__":
 
         #users_by_country = users.reset_index().groupby('country_code')['user_id'].apply(list).reindex(country_codes)
 
-    elif args.update:
+    elif args.update == 1:
         success = get_success(country_code)
         print('# Downloaded timelines:', len(success))
 
