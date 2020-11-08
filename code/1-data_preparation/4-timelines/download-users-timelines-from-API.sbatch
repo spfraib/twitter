@@ -25,18 +25,18 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/1-data_preparation/4-timeline
 
 echo ${MODE}
 
-#if [[ ${MODE} -eq get ]]
-#then
-#  echo 'get it'
+if [ ${MODE} = "get" ]
+then
+  echo 'get it'
 ##  python3 download-users-timelines-from-API.py \
 ##  --country_code ${COUNTRY_CODE} \
 ##  --cutoff 500 \
 ##  --get 1 \
 ##  --update 0
 #
-#elif [[ ${MODE} -eq update ]]
-#then
-#  echo 'update it'
+elif [ ${MODE} = "update" ]
+then
+  echo 'update it'
 ##  python3 download-users-timelines-from-API.py \
 ##  --country_code ${COUNTRY_CODE} \
 ##  --cutoff 1000 \
@@ -44,7 +44,7 @@ echo ${MODE}
 ##  --update 1 \
 ##  --last_batch ${LAST_BATCH} \
 ##  --this_batch ${THIS_BATCH}
-#else
-#  echo 'Mode not recognized'
-#fi
+else
+  echo 'Mode not recognized'
+fi
 
