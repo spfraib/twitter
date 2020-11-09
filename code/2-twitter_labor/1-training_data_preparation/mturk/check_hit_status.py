@@ -31,8 +31,6 @@ def main():
     # Get hit status and print
     response = mturk.get_hit(HITId=args.HITId)
     print(response)
-
+    
 if __name__ == '__main__':
     main()
-
-    
