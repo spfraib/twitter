@@ -15,12 +15,12 @@ sagemaker = boto3.client('sagemaker',
                      )
 
 response = sagemaker.create_labeling_job(
-    LabelingJobName='string',
-    LabelAttributeName='string',
+    LabelingJobName='example-ner-labeling-job',
+    LabelAttributeName='label',
     InputConfig={
         'DataSource': {
             'S3DataSource': {
-                'ManifestS3Uri': 'string'
+                'ManifestS3Uri': 's3://bucket/path/manifest-with-input-data.json'
             },
             'SnsDataSource': {
                 'SnsTopicArn': 'string'
@@ -33,41 +33,34 @@ response = sagemaker.create_labeling_job(
         }
     },
     OutputConfig={
-        'S3OutputPath': 'string',
+        'S3OutputPath': 's3://bucket/path/file-to-store-output-data',
         'KmsKeyId': 'string',
         'SnsTopicArn': 'string'
     },
-    RoleArn='string',
-    LabelCategoryConfigS3Uri='string',
+    RoleArn='arn:aws:iam::*:role/*',
+    LabelCategoryConfigS3Uri='s3://bucket/path/label-categories.json',
     StoppingConditions={
         'MaxHumanLabeledObjectCount': 123,
         'MaxPercentageOfInputDatasetLabeled': 123
     },
-    LabelingJobAlgorithmsConfig={
-        'LabelingJobAlgorithmSpecificationArn': 'string',
-        'InitialActiveLearningModelArn': 'string',
-        'LabelingJobResourceConfig': {
-            'VolumeKmsKeyId': 'string'
-        }
-    },
     HumanTaskConfig={
-        'WorkteamArn': 'string',
+        'WorkteamArn': 'arn:aws:sagemaker:region:*:workteam/private-crowd/*',
         'UiConfig': {
-            'UiTemplateS3Uri': 'string',
+            'UiTemplateS3Uri': 's3://bucket/path/worker-task-template.html',
             'HumanTaskUiArn': 'string'
         },
-        'PreHumanTaskLambdaArn': 'string',
+        'PreHumanTaskLambdaArn': 'arn:aws:lambda:us-east-1:432418664414:function:PRE-NamedEntityRecognition',
         'TaskKeywords': [
-            'string',
+            'Named Entity Recognition',
         ],
-        'TaskTitle': 'string',
-        'TaskDescription': 'string',
+        'TaskTitle': 'Named entity Recognition task',
+        'TaskDescription': 'Apply the labels provided to specific words or phrases within the larger text block.',
         'NumberOfHumanWorkersPerDataObject': 123,
         'TaskTimeLimitInSeconds': 123,
         'TaskAvailabilityLifetimeInSeconds': 123,
         'MaxConcurrentTaskCount': 123,
         'AnnotationConsolidationConfig': {
-            'AnnotationConsolidationLambdaArn': 'string'
+            'AnnotationConsolidationLambdaArn': 'arn:aws:lambda:us-east-1:432418664414:function:ACS-NamedEntityRecognition'
         },
         'PublicWorkforceTaskPrice': {
             'AmountInUsd': {
