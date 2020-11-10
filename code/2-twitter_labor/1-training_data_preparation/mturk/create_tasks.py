@@ -161,8 +161,28 @@ if args.country_code == 'MX':
             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
             'Comparator': 'In',
             'LocaleValues': [{
-                                 'Country': ['US', 'MX', 'CO', 'ES', 'AR', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO',
-                                             'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ', 'GI']}],
+                                 'Country': 'US'}, {
+                                 'Country': 'MX'}, {
+                                 'Country': 'CO'}, {
+                                 'Country': 'ES'}, {
+                                 'Country': 'AR'}, {
+                                 'Country': 'PE'}, {
+                                 'Country': 'VE'}, {
+                                 'Country': 'CL'}, {
+                                 'Country': 'EC'}, {
+                                 'Country': 'GT'}, {
+                                 'Country': 'CU'}, {
+                                 'Country': 'BO'}, {
+                                 'Country': 'DO'}, {
+                                 'Country': 'HN'}, {
+                                 'Country': 'PY'}, {
+                                 'Country': 'SV'}, {
+                                 'Country': 'NI'}, {
+                                 'Country': 'CR'}, {
+                                 'Country': 'PA'}, {
+                                 'Country': 'UY'}, {
+                                 'Country': 'GQ'}, {
+                                 'Country': 'GI'}],
             'RequiredToPreview': True,
             'ActionsGuarded': 'PreviewAndAccept'
         }
