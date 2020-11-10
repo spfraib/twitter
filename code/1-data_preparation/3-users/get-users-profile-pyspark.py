@@ -32,7 +32,7 @@ df = spark.read.option(
 df.printSchema()
 
 df = df.select('id_str', 'created_at', 'location', 'statuses_count', 'followers_count', 'friends_count',
-               'profile_image_url_https', 'name', 'screen_name', 'description').drop_duplicates(subset=['id_str'])
+               'profile_image_url_https', 'name', 'screen_name', 'description', 'lang').drop_duplicates(subset=['id_str'])
 
 # +
 print('Save')
