@@ -207,6 +207,12 @@ if __name__ == "__main__":
                              endpoint_url='https://mturk-requester.us-east-1.amazonaws.com'
                              )
 
+        # terminate HIT
+        mturk.update_expiration_for_hit(
+            HITId=args.HITId,
+            ExpireAt=0
+        )
+        
         assignments_dict = mturk.list_assignments_for_hit(
             HITId=args.HITId,
         )
