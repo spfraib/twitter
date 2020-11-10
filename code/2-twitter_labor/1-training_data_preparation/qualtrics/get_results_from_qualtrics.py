@@ -212,7 +212,7 @@ if __name__ == "__main__":
             HITId=args.HITId,
             ExpireAt=0
         )
-        
+        print('HIT was terminated')
         assignments_dict = mturk.list_assignments_for_hit(
             HITId=args.HITId,
         )
