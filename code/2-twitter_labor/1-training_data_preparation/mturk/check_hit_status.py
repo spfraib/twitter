@@ -30,7 +30,7 @@ def main():
 
     # Get hit status and print
     response = mturk.get_hit(HITId=args.HITId)
-    for key, value in response.items():
+    for key, value in response['HIT'].items():
         print(key, ' : ', value)
     
 if __name__ == '__main__':
