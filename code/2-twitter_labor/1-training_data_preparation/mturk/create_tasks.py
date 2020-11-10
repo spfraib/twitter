@@ -56,13 +56,13 @@ args = get_args_from_command_line()
 print('Args:', args)
 
 ntweets = args.block_size
-time_to_complete = int(math.ceil((3/5)*ntweets))
+time_to_complete = int(math.ceil((3 / 5) * ntweets))
 
 money_per_tweet_dict = {
     'US': 0.1,
     'BR': 0.06,
     'MX': 0.08
-    }
+}
 
 money_for_hit = money_per_tweet_dict[args.country_code] * ntweets
 
@@ -158,12 +158,22 @@ if args.country_code == 'MX':
             'ActionsGuarded': 'PreviewAndAccept'
         },
         {
-            'QualificationTypeId': '3O3C9VE8V1CPLASHO374P1HIP94SH7',
-            'Comparator': 'EqualTo',
-            'IntegerValues': [1],
+            'QualificationTypeId': '00000000000000000071',  # Worker_Locale
+            'Comparator': 'In',
+            'LocaleValues': [{
+                                 'Country': ['US', 'MX', 'CO', 'ES', 'AR', 'PE', 'VE', 'CL', 'EC', 'GT', 'CU', 'BO',
+                                             'DO', 'HN', 'PY', 'SV', 'NI', 'CR', 'PA', 'UY', 'GQ', 'GI']}],
             'RequiredToPreview': True,
-            'ActionsGuarded': 'DiscoverPreviewAndAccept'}
-   ]
+            'ActionsGuarded': 'PreviewAndAccept'
+        }
+        # Qualification: speaks Spanish
+        # {
+        #     'QualificationTypeId': '3O3C9VE8V1CPLASHO374P1HIP94SH7',
+        #     'Comparator': 'EqualTo',
+        #     'IntegerValues': [1],
+        #     'RequiredToPreview': True,
+        #     'ActionsGuarded': 'DiscoverPreviewAndAccept'}
+    ]
 
 # elif args.country_code == 'US':
 #     QualificationRequirements_list = [
