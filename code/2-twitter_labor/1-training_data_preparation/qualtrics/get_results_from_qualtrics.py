@@ -226,10 +226,13 @@ if __name__ == "__main__":
         for bot_id in bots:
             if bot_id in assignment_worker_ids_dict.keys():
                 assignment_id = assignment_worker_ids_dict[bot_id]
-                mturk.reject_assignment(
-                    AssignmentId=assignment_id,
-                    RequesterFeedback=requester_feedback_dict[args.country_code]
-                )
+                try:
+                    mturk.reject_assignment(
+                        AssignmentId=assignment_id,
+                        RequesterFeedback=requester_feedback_dict[args.country_code]
+                    )
+                except:
+                    print(f'Not able to reject assignment for bot {bot_id} ')
         print('Reject assignments for detected bots')
 
     # Remove checks
