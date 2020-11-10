@@ -161,7 +161,7 @@ if args.country_code == 'MX':
             'QualificationTypeId': '00000000000000000071',  # Worker_Locale
             'Comparator': 'In',
             'LocaleValues': [{
-                                 'Country': 'US'}, {
+                                # 'Country': 'US'}, {
                                  'Country': 'MX'}, {
                                  'Country': 'CO'}, {
                                  'Country': 'ES'}, {
