@@ -14,6 +14,8 @@ export PYTHONIOENCODING=utf8
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/1-data_preparation/4-timelines
 TIMESTAMP=$(date +%s)
 JOB_NAME=update_users_timelines_${TIMESTAMP}
+NB_CORES=20
+
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.yarn.submit.waitAppCompletion=false --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.speculation=false --conf spark.yarn.appMasterEnv.LANG=en_US.UTF-8 \
