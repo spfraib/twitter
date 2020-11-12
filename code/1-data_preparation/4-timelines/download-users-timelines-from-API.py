@@ -1,5 +1,4 @@
 from timeit import default_timer as timer
-import itertools
 import os
 import sys
 import uuid
@@ -9,9 +8,6 @@ import tweepy
 import numpy as np
 import pandas as pd
 import multiprocessing as mp
-import psutil
-import socket
-from functools import partial
 import pyarrow.parquet as pq
 import argparse
 
