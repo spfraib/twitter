@@ -95,7 +95,7 @@ def get_success(country_code):
         return set(success)
 
 
-def get_timeline(user_id, api):
+def get_timeline(user_id, tweet_id, api):
     timeline = []
     error = None
 
@@ -104,6 +104,7 @@ def get_timeline(user_id, api):
         cursor = tweepy.Cursor(
             api.user_timeline,
             user_id=user_id,
+            since_id=tweet_id,
             count=3200,
             tweet_mode="extended",
             include_rts=True).items()
@@ -117,7 +118,72 @@ def get_timeline(user_id, api):
     return pd.DataFrame(timeline), error
 
 
-def download_timelines(index_key):
+def get_timelines(index_key, country_code):
+    # Create Access For Block of Users
+    api = get_auth(key_files[index_key])
+
+    # Select Block of Users
+    users_block = np.array_split(users, len(key_files))[index_key]
+
+    # Initialize Output File ID
+    output_id = str(uuid.uuid4())
+
+    # Initialize DataFrame
+    timelines = pd.DataFrame()
+
+    # Initialize Downloaded User List
+    downloaded_ids = []
+
+    for user_index, user_id in enumerate(users_block):
+
+        # Try Downloading Timeline
+        timeline, error = get_timeline(user_id, api)
+
+        if error != None:
+            #             print(user_id,index_key,error)
+            continue
+
+        # Append
+        timelines = pd.concat([timelines, timeline], sort=False)
+        downloaded_ids.append(user_id)
+
+        # Save after <cutoff> timelines or when reaching last user
+        if len(downloaded_ids) == cutoff or user_id == users_block[-1]:
+
+            filename = \
+                'timelines-' + \
+                str(SLURM_JOB_ID) + '-' + \
+                str(SLURM_ARRAY_TASK_ID) + '-' + \
+                str(index_key) + '-' + \
+                str(len(downloaded_ids)) + '-' + \
+                output_id + '.json.bz2'
+
+            print('Process', index_key, 'processed', user_index, 'timelines with latest output file:',
+                  os.path.join(path_to_timelines, country_code, filename))
+
+            # Save as list of dict discarding index
+            timelines.to_json(
+                os.path.join(path_to_timelines, country_code, filename),
+                orient='records',
+                force_ascii=False,
+                date_format=None,
+                double_precision=15)
+
+            # Save User Id and File In Which Its Timeline Was Saved
+            with open(os.path.join(path_to_timelines, country_code, 'success'), 'a', encoding='utf-8') as file:
+                for downloaded_id in downloaded_ids:
+                    file.write(downloaded_id + '\t' + filename + '\n')
+
+            # Reset Output File ID, Data, and Downloaded Users
+            del timelines, downloaded_ids
+            output_id = str(uuid.uuid4())
+            timelines = pd.DataFrame()
+            downloaded_ids = []
+
+    return 0
+
+
+def update_timelines(index_key):
     # Create Access For Block of Users
     api = get_auth(key_files[index_key])
 
@@ -312,5 +378,9 @@ if __name__ == "__main__":
     print('Computing Time:', round(end - start), 'sec')
 
     print('Extract Timelines...\n')
-    with mp.Pool() as pool:
-        pool.map(download_timelines, range(len(key_files)))
+    if args.get == 1:
+        with mp.Pool() as pool:
+            pool.map(get_timelines, range(len(key_files)))
+    elif args.update == 1:
+        with mp.Pool() as pool:
+            pool.map(update_timelines, range(len(key_files)))
