@@ -1,6 +1,6 @@
 import boto3
 
-keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
+keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
     access_key_id = f.readline().strip()
 

@@ -261,7 +261,7 @@ if __name__ == "__main__":
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
-    with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
+    with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
         apiToken = f.readline()
     dataCenter = "nyu.ca1"
     SurveyName = f"labor-market-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"

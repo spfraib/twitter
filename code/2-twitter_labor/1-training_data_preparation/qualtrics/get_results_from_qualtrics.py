@@ -84,7 +84,7 @@ if __name__ == "__main__":
         with open('/scratch/spf248/twitter/data/keys/qualtrics/apiToken', 'r') as f:
             apiToken = eval(f.readline())
     else:
-        with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/keys/apiToken.txt', 'r') as f:
+        with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
             apiToken = f.readline()
     print(apiToken)
     # Export Survey
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     print('# Workers who failed one of the two check questions (= bots?):', bots_to_be_discarded.shape[0])
 
     if args.reject_bots == 1:
-        keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
+        keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
         with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
             access_key_id = f.readline().strip()
 
