@@ -35,12 +35,9 @@ then
 
 elif [ ${MODE} = "update" ]
 then
-  python3 download-users-timelines-from-API.py \
+  python3 4.6-update-users-timeline-from-Twitter-API_new.py \
   --country_code ${COUNTRY_CODE} \
   --cutoff 1000 \
-  --get 0 \
-  --update 1 \
-  --last_batch ${LAST_BATCH} \
   --this_batch ${THIS_BATCH}
 else
   echo 'Mode not recognized'
