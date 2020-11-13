@@ -66,7 +66,7 @@ money_per_tweet_dict = {
 
 money_for_hit = money_per_tweet_dict[args.country_code] * ntweets
 
-keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/mturk/keys'
+keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
     access_key_id = f.readline().strip()
 
