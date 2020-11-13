@@ -149,75 +149,74 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    print("Import of functions succeeded")
-    # # Local
-    # if 'samuel' in socket.gethostname().lower():
-    #     path_to_data = '../data'
-    #     path_to_keys = '../keys'
-    # # Cluster
-    # else:
-    #     path_to_data = '/scratch/spf248/radicom/data'
-    #     path_to_keys = '/scratch/spf248/radicom/keys'
-    #
-    # print(path_to_data)
-    # print(path_to_keys)
-    #
-    # level = 1
-    # print('Level', level)
-    #
-    # # # Credentials
-    #
-    # key_files = get_key_files(SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT, SLURM_JOB_CPUS_PER_NODE, path_to_keys)
-    # print('\n'.join(key_files))
-    #
-    # for key_file in np.random.permutation(glob(os.path.join(path_to_keys, '*.json'))):
-    #     get_auth(key_file)
-    # print('Credentials Checked!')
-    #
-    # # # Users List
-    #
-    # print('Import Friends and Followers List')
-    # start = timer()
-    #
-    # users_all = []
-    # # Take previous level as input
-    # for filename in sorted(glob(os.path.join(path_to_data, 'friends/level-' + str(level - 1) + '/*.txt')) + glob(
-    #         os.path.join(path_to_data, 'followers/level-' + str(level - 1) + '/*.txt'))):
-    #
-    #     with open(filename, 'r') as f:
-    #         for line in f:
-    #             users_all.append(line.strip('\n'))
-    # users_all = list(set(users_all))
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    # start = timer()
-    # print('Select Users...')
-    #
-    # users_selected = select_users(users_all, SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT)
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    # print('Remove Existing Users:')
-    # if os.path.exists(os.path.join(path_to_data, 'existing.txt')):
-    #     users_existing = set(
-    #         pd.read_csv(os.path.join(path_to_data, 'existing.txt'), header=None, squeeze=True, dtype='str'))
-    #     users_selected = users_selected.difference(users_existing)
-    #
-    # np.random.seed(0)
-    # users_selected = np.random.permutation(list(users_selected))
-    # print('# Remaining Users:', len(users_selected))
-    #
-    # # # Download
-    #
-    # start = timer()
-    # print('Extract Data By Block...\n')
-    #
-    # with mp.Pool() as pool:
-    #
-    #     pool.map(get_data_by_block, range(len(key_files)))
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
+    # Local
+    if 'samuel' in socket.gethostname().lower():
+        path_to_data = '../data'
+        path_to_keys = '../keys'
+    # Cluster
+    else:
+        path_to_data = '/scratch/spf248/radicom/data'
+        path_to_keys = '/scratch/spf248/radicom/keys'
+
+    print(path_to_data)
+    print(path_to_keys)
+
+    level = 1
+    print('Level', level)
+
+    # # Credentials
+
+    key_files = get_key_files(SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT, SLURM_JOB_CPUS_PER_NODE, path_to_keys)
+    print('\n'.join(key_files))
+
+    for key_file in np.random.permutation(glob(os.path.join(path_to_keys, '*.json'))):
+        get_auth(key_file)
+    print('Credentials Checked!')
+
+    # # Users List
+
+    print('Import Friends and Followers List')
+    start = timer()
+
+    users_all = []
+    # Take previous level as input
+    for filename in sorted(glob(os.path.join(path_to_data, 'friends/level-' + str(level - 1) + '/*.txt')) + glob(
+            os.path.join(path_to_data, 'followers/level-' + str(level - 1) + '/*.txt'))):
+
+        with open(filename, 'r') as f:
+            for line in f:
+                users_all.append(line.strip('\n'))
+    users_all = list(set(users_all))
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+    start = timer()
+    print('Select Users...')
+
+    users_selected = select_users(users_all, SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT)
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+    print('Remove Existing Users:')
+    if os.path.exists(os.path.join(path_to_data, 'existing.txt')):
+        users_existing = set(
+            pd.read_csv(os.path.join(path_to_data, 'existing.txt'), header=None, squeeze=True, dtype='str'))
+        users_selected = users_selected.difference(users_existing)
+
+    np.random.seed(0)
+    users_selected = np.random.permutation(list(users_selected))
+    print('# Remaining Users:', len(users_selected))
+
+    # # Download
+
+    start = timer()
+    print('Extract Data By Block...\n')
+
+    with mp.Pool() as pool:
+
+        pool.map(get_data_by_block, range(len(key_files)))
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
