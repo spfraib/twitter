@@ -1,11 +1,9 @@
 #!/bin/bash
 
 #SBATCH --job-name=download_timelines
-#SBATCH --nodes=1
 #SBATCH --cpus-per-task=5
-#SBATCH --mem=20GB
-#SBATCH --time=24:00:00
-#SBATCH --gres=gpu:0
+#SBATCH --mem=60GB
+#SBATCH --time=168:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
