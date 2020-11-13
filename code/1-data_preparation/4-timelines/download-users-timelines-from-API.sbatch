@@ -13,8 +13,7 @@
 
 COUNTRY_CODE=$1
 MODE=$2
-LAST_BATCH=$3
-THIS_BATCH=$4
+THIS_BATCH=$3
 
 module purge
 module load anaconda3/2019.10
