@@ -37,10 +37,8 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str)
     parser.add_argument("--this_batch", type=str, default=None)
 
-
     args = parser.parse_args()
     return args
-
 
 
 def select_users(users_all, SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT):
@@ -138,7 +136,6 @@ def get_data_by_block(index_key):
                 f.write("\n".join([str(follower) for follower in followers]))
             with open(os.path.join(path_to_data, 'existing.txt'), 'a', encoding='utf-8') as file:
                 file.write(user_id + '\n')
-
 
 
 if __name__ == '__main__':
