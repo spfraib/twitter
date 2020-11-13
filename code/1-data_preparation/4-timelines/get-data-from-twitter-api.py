@@ -18,7 +18,6 @@
 
 from timeit import default_timer as timer
 import os
-import sys
 import socket
 from glob import glob
 import json
@@ -150,7 +149,7 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    print('Import functions succeeded')
+    print("Import of functions succeeded")
     # # Local
     # if 'samuel' in socket.gethostname().lower():
     #     path_to_data = '../data'
