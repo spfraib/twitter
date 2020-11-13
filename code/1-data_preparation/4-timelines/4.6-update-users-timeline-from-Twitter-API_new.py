@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     # # Credentials
 
-    key_files = get_key_files(SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT, SLURM_JOB_CPUS_PER_NODE, path_to_data)
+    key_files = get_key_files(SLURM_ARRAY_TASK_ID, SLURM_ARRAY_TASK_COUNT, SLURM_JOB_CPUS_PER_NODE, path_to_keys)
     print('\n'.join(key_files))
 
     for key_file in key_files:
