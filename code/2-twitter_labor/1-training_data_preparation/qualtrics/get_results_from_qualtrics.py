@@ -163,11 +163,12 @@ if __name__ == "__main__":
     def is_bot(x):
         l = x.split('_')
         if len(l) == 10:
-            if l[0] == '1' and l[1] == '1' and l[2] == '2' and l[3] == '2' and l[4] == '2' and l[5] == '2' and l[
-                6] == '2' and l[7] == '2' and l[8] == '1' and l[9] == '2':
-                return 3
-            elif l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
-                return 2
+            if l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
+                if l[0] == '1' and l[1] == '1' and l[2] == '2' and l[3] == '2' and l[4] == '2' and l[5] == '2' and l[
+                    6] == '2' and l[7] == '2' and l[8] == '1' and l[9] == '2':
+                    return 3
+                else:
+                    return 2
             elif (l[1] == '1' and l[4] == '2') or (l[8] == '1' and l[9] == '2'):
                 return 1
         return 0
@@ -200,7 +201,7 @@ if __name__ == "__main__":
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
         lambda x: x == 3).dropna().index
-    print('# Workers who answered all questions right for the two check blocks (= bots?):', good_turkers.shape[0])
+    print('# Workers who answered all questions right for the two check blocks:', good_turkers.shape[0])
 
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
