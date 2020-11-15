@@ -164,8 +164,8 @@ if __name__ == "__main__":
         l = x.split('_')
         if len(l) == 10:
             if l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
-                if l[0] == '1' and l[1] == '1' and l[2] == '2' and l[3] == '2' and l[4] == '2' and l[5] == '2' and l[
-                    6] == '2' and l[7] == '2' and l[8] == '1' and l[9] == '2':
+                if l[0] == '1' and l[2] == '2' and l[3] == '2' and l[5] == '2' and l[
+                    6] == '2' and l[7] == '2':
                     return 3
                 else:
                     return 2
