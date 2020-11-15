@@ -189,13 +189,13 @@ if __name__ == "__main__":
         lambda x: '_'.join(x), 1).apply(is_bot).where(
         lambda x: x < 2).dropna().index
 
-    print('# Workers who failed one of the two check questions (= bots?):', bots_to_be_discarded.shape[0])
+    print('# Workers who failed one of the two check questions:', bots_to_be_discarded.shape[0])
     non_bots = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
         lambda x: x == 2).dropna().index
-    print('# Workers who passed the two check questions (= bots?):', non_bots.shape[0])
+    print('# Workers who passed the two check questions:', non_bots.shape[0])
     good_turkers = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
