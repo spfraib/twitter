@@ -194,7 +194,7 @@ if __name__ == "__main__":
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x == 2).dropna().index
+        lambda x: x > 1).dropna().index
     print('# Workers who passed the two check questions:', non_bots.shape[0])
     good_turkers = checks.unstack(
         level='check_id').unstack(
