@@ -13,6 +13,7 @@ import argparse
 import boto3
 import shutil
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -92,12 +93,12 @@ if __name__ == "__main__":
             os.path.join(path_to_data, args.surveyId)):
         print("Overwriting existing folder")
         shutil.rmtree(os.path.join(path_to_data, args.surveyId), ignore_errors=True)
-        
+
     if not re.compile('^SV_.*').match(args.surveyId):
         print("survey Id must match ^SV_.*")
     else:
         exportSurvey(apiToken=apiToken, surveyId=args.surveyId, dataCenter='nyu.ca1', fileFormat='csv',
-                    path_to_data=path_to_data)
+                     path_to_data=path_to_data)
     file_path = \
         [file for file in glob(os.path.join(path_to_data, args.surveyId, '*.csv')) if 'labor-market-tweets' in file][0]
     # Analyse Results
@@ -162,7 +163,10 @@ if __name__ == "__main__":
     def is_bot(x):
         l = x.split('_')
         if len(l) == 10:
-            if l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
+            if l[0] == '1' and l[1] == '1' and l[2] == '2' and l[3] == '2' and l[4] == '2' and l[5] == '2' and l[
+                6] == '2' and l[7] == '2' and l[8] == '1' and l[9] == '2':
+                return 3
+            elif l[1] == '1' and l[4] == '2' and l[8] == '1' and l[9] == '2':
                 return 2
             elif (l[1] == '1' and l[4] == '2') or (l[8] == '1' and l[9] == '2'):
                 return 1
@@ -182,9 +186,21 @@ if __name__ == "__main__":
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x < 1).dropna().index
+        lambda x: x < 2).dropna().index
 
     print('# Workers who failed one of the two check questions (= bots?):', bots_to_be_discarded.shape[0])
+    non_bots = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x == 2).dropna().index
+    print('# Workers who passed the two check questions (= bots?):', non_bots.shape[0])
+    good_turkers = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x == 3).dropna().index
+    print('# Workers who answered all questions right for the two check blocks (= bots?):', good_turkers.shape[0])
 
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
