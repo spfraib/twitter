@@ -38,7 +38,7 @@ if __name__ == '__main__':
     country_code = args.country_code
     path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics'
 
-    path_to_key = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys'
+    path_to_api_key = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics'
     with open(os.path.join(path_to_key, 'apiToken.txt'), 'r') as f:
         apiToken = f.readline()
 
