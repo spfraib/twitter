@@ -39,7 +39,7 @@ if __name__ == '__main__':
     path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics'
 
     path_to_api_key = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics'
-    with open(os.path.join(path_to_key, 'apiToken.txt'), 'r') as f:
+    with open(os.path.join(path_to_api_key, 'apiToken.txt'), 'r') as f:
         apiToken = f.readline()
 
     dataCenter = "nyu.ca1"
