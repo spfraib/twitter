@@ -23,6 +23,7 @@ def get_args_from_command_line():
     parser.add_argument("--reject_bots", type=int, default=0)
     parser.add_argument("--HITId", type=str, default=None)
     parser.add_argument("--sam_API", type=str, default=0)
+
     args = parser.parse_args()
     return args
 
@@ -210,7 +211,7 @@ if __name__ == "__main__":
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
         lambda x: x < 3).dropna().index
-    
+
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
         with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
