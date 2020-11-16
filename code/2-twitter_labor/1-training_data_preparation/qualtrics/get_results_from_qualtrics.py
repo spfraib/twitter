@@ -169,7 +169,7 @@ if __name__ == "__main__":
                     return 3
                 else:
                     return 2
-            elif (l[1] == '1' and l[4] == '2') or (l[8] == '1' and l[9] == '2'):
+            elif (l[1] == '1' and l[4] == '2') is not (l[8] == '1' and l[9] == '2'):
                 return 1
         return 0
 
@@ -183,19 +183,21 @@ if __name__ == "__main__":
     print('# Workers who failed both check questions (= bots?):', bots.shape[0])
     print('# Worker ID of workers who failed both check questions (= bots?):', bots)
 
-    bots_to_be_discarded = checks.unstack(
+    workers_1_question_right = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x < 3).dropna().index
+        lambda x: x == 1).dropna().index
 
-    print('# Workers who failed one of the two check questions:', bots_to_be_discarded.shape[0])
-    non_bots = checks.unstack(
+    print('# Workers who just passed one check:', workers_1_question_right.shape[0])
+
+    workers_2_question_right = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x > 1).dropna().index
-    print('# Workers who passed the two check questions:', non_bots.shape[0])
+        lambda x: x == 2 ).dropna().index
+    print('# Workers who passed the two check questions:', workers_2_question_right.shape[0])
+
     good_turkers = checks.unstack(
         level='check_id').unstack(
         level='class_id').fillna('').apply(
@@ -203,6 +205,12 @@ if __name__ == "__main__":
         lambda x: x == 3).dropna().index
     print('# Workers who answered all questions right for the two check blocks:', good_turkers.shape[0])
 
+    bots_to_be_discarded = checks.unstack(
+        level='check_id').unstack(
+        level='class_id').fillna('').apply(
+        lambda x: '_'.join(x), 1).apply(is_bot).where(
+        lambda x: x < 3).dropna().index
+    
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
         with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
