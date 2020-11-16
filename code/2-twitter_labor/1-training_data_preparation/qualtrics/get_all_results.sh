@@ -39,6 +39,9 @@ for val in ${StringArray[@]}; do
   fi
 done
 
+CODE_PATH=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/qualtrics
+
+cd ${CODE_PATH}
 for val in ${StringArray[@]}; do
     sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
     echo "Launched sbatch for ${val}"
