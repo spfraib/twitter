@@ -210,7 +210,7 @@ if __name__ == "__main__":
         level='check_id').unstack(
         level='class_id').fillna('').apply(
         lambda x: '_'.join(x), 1).apply(is_bot).where(
-        lambda x: x < 3).dropna().index
+        lambda x: x < 2).dropna().index
 
     if args.reject_bots == 1:
         keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
