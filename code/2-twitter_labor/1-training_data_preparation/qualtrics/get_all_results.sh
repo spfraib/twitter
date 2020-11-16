@@ -21,8 +21,22 @@ declare -a StringArray=('SV_8bS2BjePnBf6XaZ'
  'SV_8czHeb2J0p55UiN' 
  'SV_eD2m4MWNYdIwH2J')
 
-for val in ${StringArray[@]}; do
-    sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
-    sleep(60)
-done
+DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/US/labeling
+
+cd DATA_PATH
+if [ -f new_labels.pkl ]; then
+  rm new_labels.pkl
+fi
+
+
+#for val in ${StringArray[@]}; do
+#  if [ -d ${val} ]; then
+#    rm -rf ${val}
+#  fi
+#done
+#
+#for val in ${StringArray[@]}; do
+#    sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
+#    sleep(60)
+#done
 
