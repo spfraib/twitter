@@ -55,10 +55,11 @@ else
   rm -rf ${DATA_PATH}
   mkdir ${DATA_PATH}
   echo "Removed the folder ${DATA_PATH} and recreated it"
-  
+
   cd ${CODE_PATH}
   for val in ${StringArray[@]}; do
       sbatch get_results_from_qualtrics.sbatch ${COUNTRY_CODE} ${val} 0 0 ${DISCARD_X}
       echo "Launched sbatch for ${val}"
       sleep 60
   done
+fi
