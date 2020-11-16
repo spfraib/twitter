@@ -23,6 +23,8 @@ declare -a StringArray=('SV_8bS2BjePnBf6XaZ'
 
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/US/labeling
 
+echo ${DATA_PATH}
+
 cd DATA_PATH
 if [ -f new_labels.pkl ]; then
   rm new_labels.pkl
