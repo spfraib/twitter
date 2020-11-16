@@ -39,9 +39,9 @@ for val in ${StringArray[@]}; do
   fi
 done
 
-#for val in ${StringArray[@]}; do
-#    sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
-#    echo "Launched sbatch for ${val}"
-#    sleep 60
-#done
+for val in ${StringArray[@]}; do
+    sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
+    echo "Launched sbatch for ${val}"
+    sleep 60
+done
 
