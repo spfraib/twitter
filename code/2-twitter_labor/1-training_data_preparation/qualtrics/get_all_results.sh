@@ -56,6 +56,17 @@ else
   mkdir ${DATA_PATH}
   echo "Removed the folder ${DATA_PATH} and recreated it"
 
+  if [ ${COUNTRY_CODE} == "BR" ]; then
+    declare -a StringArray=('SV_0ApchlyHQgsdkjP' 'SV_26xfsWKUoLzzMoJ' 'SV_3kD4BzmFl7iXNJz' 'SV_4Yjyub95bfMUPY1'
+    'SV_5vtXIY1dRuOPJ2Z' 'SV_7VxaoBOsRCaZo9L' 'SV_8dgQSVhOq7lNSnz' 'SV_9uGO8SBIlfkjtHf' 'SV_agZdw3fjp1Z57mZ'
+    'SV_cwEz2PXA0MsiudD' 'SV_egR4REW5E7DN45D')
+
+  elif [ ${COUNTRY_CODE} == "MX"]; then
+    declare -a StringArray=('SV_00wHtonmOcGzrx3' 'SV_06CBdJBEJiaxEMt' 'SV_0GRfRbFbqV4kpJH' 'SV_4UEiYZ5y5ZTwcjr'
+     'SV_6yScI3UEy8dGlj7' 'SV_8k59hFW37wsEPid' 'SV_9AzVa650Xypj8m9' 'SV_9RoaDghzhwCM21f' 'SV_9ucVxOvOk5Evs6F'
+     'SV_9zwLWQ9nh1dzFkx' 'SV_bD6A4wCjqYumU9T' 'SV_br77pKyGnNbdjUN' 'SV_ctDmiVzThhbCZAF' 'SV_ei0ruhPkgtbNVTT'
+     'SV_ebMrpYdD3tLLNl3')
+  fi
   cd ${CODE_PATH}
   for val in ${StringArray[@]}; do
       sbatch get_results_from_qualtrics.sbatch ${COUNTRY_CODE} ${val} 0 0 ${DISCARD_X}
