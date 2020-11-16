@@ -15,6 +15,7 @@ COUNTRY_CODE=$1
 SURVEY_ID=$2
 REJECT_BOTS=$3
 HITID=$4
+DISCARD_X=$5
 
 module purge
 module load anaconda3/2019.10
@@ -28,7 +29,8 @@ python3 qualtrics/get_results_from_qualtrics.py \
 --country_code ${COUNTRY_CODE} \
 --surveyId ${SURVEY_ID} \
 --reject_bots ${REJECT_BOTS} \
---HITId ${HITID}
+--HITId ${HITID} \
+--discard_x ${DISCARD_X}
 
 
 echo '******** Merging results from Qualtrics ********'
