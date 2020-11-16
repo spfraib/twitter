@@ -27,17 +27,21 @@ cd ${DATA_PATH}
 
 if [ -f new_labels.pkl ]; then
   rm new_labels.pkl
+  echo 'Removed new_labels.pkl'
 fi
 
 
-#for val in ${StringArray[@]}; do
-#  if [ -d ${val} ]; then
-#    rm -rf ${val}
-#  fi
-#done
-#
+
+for val in ${StringArray[@]}; do
+  if [ -d ${val} ]; then
+    rm -rf ${val}
+    echo "Removed ${val}"
+  fi
+done
+
 #for val in ${StringArray[@]}; do
 #    sbatch get_results_from_qualtrics.sbatch US ${val} 0 0
-#    sleep(60)
+#    echo "Launched sbatch for ${val}"
+#    sleep 60
 #done
 
