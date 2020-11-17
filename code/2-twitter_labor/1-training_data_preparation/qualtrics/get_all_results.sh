@@ -61,7 +61,7 @@ else
     'SV_5vtXIY1dRuOPJ2Z' 'SV_7VxaoBOsRCaZo9L' 'SV_8dgQSVhOq7lNSnz' 'SV_9uGO8SBIlfkjtHf' 'SV_agZdw3fjp1Z57mZ'
     'SV_cwEz2PXA0MsiudD' 'SV_egR4REW5E7DN45D')
 
-  elif [ ${COUNTRY_CODE} == "MX"]; then
+  elif [ ${COUNTRY_CODE} == "MX" ]; then
     declare -a StringArray=('SV_00wHtonmOcGzrx3' 'SV_06CBdJBEJiaxEMt' 'SV_0GRfRbFbqV4kpJH' 'SV_4UEiYZ5y5ZTwcjr'
      'SV_6yScI3UEy8dGlj7' 'SV_8k59hFW37wsEPid' 'SV_9AzVa650Xypj8m9' 'SV_9RoaDghzhwCM21f' 'SV_9ucVxOvOk5Evs6F'
      'SV_9zwLWQ9nh1dzFkx' 'SV_bD6A4wCjqYumU9T' 'SV_br77pKyGnNbdjUN' 'SV_ctDmiVzThhbCZAF' 'SV_ei0ruhPkgtbNVTT'
