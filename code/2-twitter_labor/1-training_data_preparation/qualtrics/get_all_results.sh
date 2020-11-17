@@ -48,7 +48,7 @@ if [ $COUNTRY_CODE == "US" ]; then
   for val in ${StringArray[@]}; do
       sbatch get_results_from_qualtrics.sbatch US ${val} 0 0 ${DISCARD_X}
       echo "Launched sbatch for ${val}"
-      sleep 60
+      sleep 90
   done
 
 else
@@ -71,6 +71,6 @@ else
   for val in ${StringArray[@]}; do
       sbatch get_results_from_qualtrics.sbatch ${COUNTRY_CODE} ${val} 0 0 ${DISCARD_X}
       echo "Launched sbatch for ${val}"
-      sleep 60
+      sleep 90
   done
 fi
