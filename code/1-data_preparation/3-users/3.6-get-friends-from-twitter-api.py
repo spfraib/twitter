@@ -151,119 +151,117 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE',mp.cpu_count())
 
-    print(SLURM_JOB_ID)
+    # +
+    if 'samuel' in socket.gethostname().lower():
+        path_to_data='../../data'
+    else:
+        path_to_data='/scratch/spf248/twitter/data'
 
-    # # +
-    # if 'samuel' in socket.gethostname().lower():
-    #     path_to_data='../../data'
-    # else:
-    #     path_to_data='/scratch/spf248/twitter/data'
-    #
-    # path_to_keys = os.path.join(path_to_data,'keys','twitter')
-    # path_to_users = os.path.join(path_to_data,'users')
-    # path_to_locations = os.path.join(path_to_data,'locations','profiles')
-    # path_to_friends = os.path.join(path_to_data,'friends','API',country_code)
-    # os.makedirs(path_to_friends, exist_ok=True)
-    # print(path_to_keys)
-    # print(path_to_users)
-    # print(path_to_locations)
-    # print(path_to_friends)
-    #
-    # # # Credentials
-    # key_files = get_key_files(SLURM_ARRAY_TASK_ID,SLURM_ARRAY_TASK_COUNT,SLURM_JOB_CPUS_PER_NODE, path_to_keys)
-    # print('\n'.join(key_files))
-    #
-    #
-    #
-    # for key_file in np.random.permutation(glob(os.path.join(path_to_keys,'*.json'))):
-    #     get_auth(key_file)
-    # print('Credentials Checked!')
-    #
-    # # # Users List
-    #
-    # print('Import Users By Account Locations')
-    # start = timer()
-    #
-    # l = []
-    # for filename in sorted(glob(os.path.join(path_to_users,'user-ids-by-account-location-verified/*.json'))):
-    #     try:
-    #         df = pd.read_json(filename,lines=True)
-    #         l.append(df)
-    #     except:
-    #         print('error importing', filename)
-    #
-    # users_by_account_location=pd.concat(l, axis=0, ignore_index=True)
-    # users_by_account_location=users_by_account_location.set_index('user_location')['user_id']
-    # users_by_account_location=users_by_account_location.apply(eval).apply(lambda x:[str(y) for y in x])
-    # print('# Locations:', len(users_by_account_location))
-    # print('# Users:', users_by_account_location.apply(len).sum())
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    # users_by_account_location.head()
-    #
-    # print('Import Locations')
-    # user_locations=pd.read_csv(os.path.join(path_to_locations,'user_locations_geocoded.csv'),index_col=0)
-    # print('# Locations:', len(user_locations))
-    #
-    # user_locations.head()
-    #
-    # # +
-    # print('Select Users...')
-    # start = timer()
-    #
-    # # Sorted list of users in selected countries
-    # users=users_by_account_location.reindex(user_locations.loc[user_locations['country_short']==country_code,'user_location']).dropna().explode().reset_index(drop=True)
-    #
-    # # Randomize users
-    # users=users.sample(frac=1,random_state=0)
-    #
-    # del users_by_account_location
-    # del user_locations
-    #
-    # print('# Users :', len(users))
-    # print('First user:', users.index[0])
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    # # +
-    # print('Split Users Across Nodes...')
-    # start = timer()
-    #
-    # users=np.array_split(users,SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
-    # print('# Users for this node:', len(users))
-    # print('First user for this node:', users.index[0])
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    # # +
-    # print('Remove Existing Users:')
-    # start = timer()
-    #
-    # if os.path.exists(os.path.join(path_to_friends,'success')):
-    #     existing_users=set(pd.read_csv(os.path.join(path_to_friends,'success'),names=['user_id','filename'],dtype='str',sep='\t')['user_id'])
-    #     users=set(users).difference(existing_users)
-    #
-    # np.random.seed(0)
-    # users=np.random.permutation(list(users))
-    # print('# Remaining Users:', len(users))
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
-    #
-    #
-    # # # Download
-    # #friends = friends_ids(get_auth(key_file),user_id=12, path_to_friends=path_to_friends)
-    #
-    # print('Extract Data By Block...\n')
-    # start = timer()
-    #
-    # with mp.Pool() as pool:
-    #
-    #     pool.map(get_data_by_block, range(len(key_files)))
-    #
-    # end = timer()
-    # print('Computing Time:', round(end - start), 'sec')
+    path_to_keys = os.path.join(path_to_data,'keys','twitter')
+    path_to_users = os.path.join(path_to_data,'users')
+    path_to_locations = os.path.join(path_to_data,'locations','profiles')
+    path_to_friends = os.path.join(path_to_data,'friends','API',country_code)
+    os.makedirs(path_to_friends, exist_ok=True)
+    print(path_to_keys)
+    print(path_to_users)
+    print(path_to_locations)
+    print(path_to_friends)
+
+    # # Credentials
+    key_files = get_key_files(SLURM_ARRAY_TASK_ID,SLURM_ARRAY_TASK_COUNT,SLURM_JOB_CPUS_PER_NODE, path_to_keys)
+    print('\n'.join(key_files))
+
+
+
+    for key_file in np.random.permutation(glob(os.path.join(path_to_keys,'*.json'))):
+        get_auth(key_file)
+    print('Credentials Checked!')
+
+    # # Users List
+
+    print('Import Users By Account Locations')
+    start = timer()
+
+    l = []
+    for filename in sorted(glob(os.path.join(path_to_users,'user-ids-by-account-location-verified/*.json'))):
+        try:
+            df = pd.read_json(filename,lines=True)
+            l.append(df)
+        except:
+            print('error importing', filename)
+
+    users_by_account_location=pd.concat(l, axis=0, ignore_index=True)
+    users_by_account_location=users_by_account_location.set_index('user_location')['user_id']
+    users_by_account_location=users_by_account_location.apply(eval).apply(lambda x:[str(y) for y in x])
+    print('# Locations:', len(users_by_account_location))
+    print('# Users:', users_by_account_location.apply(len).sum())
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+    users_by_account_location.head()
+
+    print('Import Locations')
+    user_locations=pd.read_csv(os.path.join(path_to_locations,'user_locations_geocoded.csv'),index_col=0)
+    print('# Locations:', len(user_locations))
+
+    user_locations.head()
+
+    # +
+    print('Select Users...')
+    start = timer()
+
+    # Sorted list of users in selected countries
+    users=users_by_account_location.reindex(user_locations.loc[user_locations['country_short']==country_code,'user_location']).dropna().explode().reset_index(drop=True)
+
+    # Randomize users
+    users=users.sample(frac=1,random_state=0)
+
+    del users_by_account_location
+    del user_locations
+
+    print('# Users :', len(users))
+    print('First user:', users.index[0])
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+    # +
+    print('Split Users Across Nodes...')
+    start = timer()
+
+    users=np.array_split(users,SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
+    print('# Users for this node:', len(users))
+    print('First user for this node:', users.index[0])
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+    # +
+    print('Remove Existing Users:')
+    start = timer()
+
+    if os.path.exists(os.path.join(path_to_friends,'success')):
+        existing_users=set(pd.read_csv(os.path.join(path_to_friends,'success'),names=['user_id','filename'],dtype='str',sep='\t')['user_id'])
+        users=set(users).difference(existing_users)
+
+    np.random.seed(0)
+    users=np.random.permutation(list(users))
+    print('# Remaining Users:', len(users))
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
+
+
+    # # Download
+    #friends = friends_ids(get_auth(key_file),user_id=12, path_to_friends=path_to_friends)
+
+    print('Extract Data By Block...\n')
+    start = timer()
+
+    with mp.Pool() as pool:
+
+        pool.map(get_data_by_block, range(len(key_files)))
+
+    end = timer()
+    print('Computing Time:', round(end - start), 'sec')
