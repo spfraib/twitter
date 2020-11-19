@@ -23,7 +23,7 @@ def get_args_from_command_line():
     parser.add_argument("--reject_bots", type=int, default=0)
     parser.add_argument("--HITId", type=str, default=None)
     parser.add_argument("--sam_API", type=str, default=0)
-    parser.add_argument("--discard_x", type=int)
+    parser.add_argument("--discard_x", type=int, default=3)
     args = parser.parse_args()
     return args
 
