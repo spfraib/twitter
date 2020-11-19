@@ -2,16 +2,15 @@
 
 #SBATCH --job-name=get_friends_from_twitter_api
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=1
-#SBATCH --mem=2GB
-#SBATCH --time=1:00:00
+#SBATCH --cpus-per-task=5
+#SBATCH --mem=60GB
+#SBATCH --time=168:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_get_friends_from_twitter_api-%j.out
 
-#normal parameters are 5 cpus, 60GB, 168h
 COUNTRY_CODE=$1
 
 module purge
