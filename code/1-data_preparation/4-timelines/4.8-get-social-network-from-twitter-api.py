@@ -146,15 +146,16 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    # Local
-    if 'samuel' in socket.gethostname().lower():
-        path_to_data = '../data'
-        path_to_keys = '../keys'
-    # Cluster
-    else:
-        path_to_data = '/scratch/spf248/radicom/data'
-        path_to_keys = '/scratch/spf248/radicom/keys'
-
+    # # Local
+    # if 'samuel' in socket.gethostname().lower():
+    #     path_to_data = '../data'
+    #     path_to_keys = '../keys'
+    # # Cluster
+    # else:
+    #     path_to_data = '/scratch/spf248/radicom/data'
+    #     path_to_keys = '/scratch/spf248/radicom/keys'
+    path_to_data = '/scratch/spf248/twitter/data'
+    path_to_keys = os.path.join(path_to_data, 'keys', 'twitter')
     print(path_to_data)
     print(path_to_keys)
 
