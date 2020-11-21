@@ -32,7 +32,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--cutoff", type=int,
-                        help="The number of timelines to download before saving", default=1000)
+                        help="The number of timelines to download before saving", default=250)
     parser.add_argument("--country_code", type=str)
 
     args = parser.parse_args()
