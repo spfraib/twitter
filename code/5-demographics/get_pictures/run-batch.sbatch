@@ -11,7 +11,7 @@ COUNTRY_CODE=$1
 module purge
 module load python3/intel/3.6.3
 source /home/vp1274/venv/py3.6.3/bin/activate
-cd /scratch/spf248/twitter/data/classification/US/scripts
+cd /scratch/spf248/twitter/code/twitter/code/5-demographics/get_pictures
 
 python get_user_images.py \
 --country_code ${COUNTRY_CODE}
