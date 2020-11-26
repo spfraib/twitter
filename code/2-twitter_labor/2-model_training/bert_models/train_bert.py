@@ -288,7 +288,7 @@ if __name__ == "__main__":
                                   }
     # Save evaluation results on eval set
     if "/" in args.model_type:
-        args.model_type = args.model_type.replace('/', '_')
+        args.model_type = args.model_type.replace('/', '-')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                               '{}_'.format(args.model_type) + str(slurm_job_id),
