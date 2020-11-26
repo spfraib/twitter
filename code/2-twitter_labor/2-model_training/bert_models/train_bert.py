@@ -84,7 +84,7 @@ def get_args_from_command_line():
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
     parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
-    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch")
+    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch", default=False)
     parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
 
