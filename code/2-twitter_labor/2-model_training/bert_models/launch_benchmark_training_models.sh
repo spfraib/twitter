@@ -7,22 +7,22 @@ MODEL_TYPE_2=$4
 
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/${COUNTRY_CODE}
 
-if [[ ${MODEL_TYPE_1} == *"/"* ]]; then
-  MODEL_TYPE_1_WITHOUT_SLASH=${MODEL_TYPE_1//[${SLASH}]/_}
-else
-  MODEL_TYPE_1_WITHOUT_SLASH=${MODEL_TYPE_1}
-fi
-
-if [[ ${MODEL_TYPE_2} == *"/"* ]]; then
-  MODEL_TYPE_2_WITHOUT_SLASH=${MODEL_TYPE_2//[${SLASH}]/_}
-else
-  MODEL_TYPE_2_WITHOUT_SLASH=${MODEL_TYPE_2}
-fi
-
-DATA_FOLDER_FINAL=${DATA_FOLDER}/benchmark_models_${MODEL_TYPE_1_WITHOUT_SLASH}_VS_${MODEL_TYPE_2_WITHOUT_SLASH}
-OUTPUT_PATH=${DATA_PATH}/
-rm -r ${OUTPUT_PATH}; mkdir ${OUTPUT_PATH}
-cp ${DATA_PATH}/train-test ${OUTPUT_PATH}
+#if [[ ${MODEL_TYPE_1} == *"/"* ]]; then
+#  MODEL_TYPE_1_WITHOUT_SLASH=${MODEL_TYPE_1//[${SLASH}]/_}
+#else
+#  MODEL_TYPE_1_WITHOUT_SLASH=${MODEL_TYPE_1}
+#fi
+#
+#if [[ ${MODEL_TYPE_2} == *"/"* ]]; then
+#  MODEL_TYPE_2_WITHOUT_SLASH=${MODEL_TYPE_2//[${SLASH}]/_}
+#else
+#  MODEL_TYPE_2_WITHOUT_SLASH=${MODEL_TYPE_2}
+#fi
+#
+#DATA_FOLDER_FINAL=${DATA_FOLDER}/benchmark_models_${MODEL_TYPE_1_WITHOUT_SLASH}_VS_${MODEL_TYPE_2_WITHOUT_SLASH}
+#OUTPUT_PATH=${DATA_PATH}/
+#rm -r ${OUTPUT_PATH}; mkdir ${OUTPUT_PATH}
+#cp ${DATA_PATH}/train-test ${OUTPUT_PATH}
 
 select_model_name () {
   MODEL_TYPE=$1
@@ -48,7 +48,6 @@ CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-mo
 for i in {1..5}; do
   sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1}
   sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_2} ${MODEL_TYPE_2}
-
 done
 
 
