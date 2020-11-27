@@ -51,7 +51,7 @@ if __name__ == '__main__':
     job_ids_list = [x.split('_')[1] for x in results_folders_list]
     print(job_ids_list)
     # keep 10 latest jobs
-    indexes_to_keep_list = sorted(range(len(job_ids_list)), key=lambda x: job_ids_list[x])[-2:]
+    indexes_to_keep_list = sorted(range(len(job_ids_list)), key=lambda x: job_ids_list[x])[-10:]
     print(indexes_to_keep_list)
     results_dict = dict()
     model_types_list = list()
