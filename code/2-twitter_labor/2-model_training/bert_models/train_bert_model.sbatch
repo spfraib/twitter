@@ -47,6 +47,8 @@ echo "Output folder created: ${OUTPUT_DIR}"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
+shopt -s extglob
+
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
@@ -59,7 +61,7 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID}
 #--intra_epoch_evaluation ${INTRA_EPOCH_EVAL}
-
+rm -rf ${OUTPUT_DIR}/lost_job_1mo/models/!(best_model)
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
@@ -74,6 +76,7 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID}
 #--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+rm -rf ${OUTPUT_DIR}/is_unemployed/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
@@ -89,6 +92,7 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID}
 #--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+rm -rf ${OUTPUT_DIR}/job_search/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
@@ -104,6 +108,7 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID}
 #--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+rm -rf ${OUTPUT_DIR}/is_hired_1mo/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
@@ -119,6 +124,8 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID}
 # --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
+
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
 
 #srun time python -u 8.2-random-samples-UNDERsampled-separate-labels.py job_search > /scratch/da2734/twitter/running_on_200Msamples/array_logs/job_search/8.2-random-samples-UNDERsampled-separate-labels_${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
