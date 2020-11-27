@@ -4,8 +4,10 @@ import os
 from collections import defaultdict
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
-
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -35,13 +37,13 @@ def compare_model_results(results_dict_1: dict, results_dict_2: dict, model_type
     for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
         label_key = f'auc_{label}'
         diff = abs((results_dict_1[label_key] - results_dict_2[label_key]) / results_dict_1[label_key])*100
-        logging.info('\n')
+        logger.info('\n')
         if results_dict_1[label_key] > results_dict_2[label_key]:
-            logging.info(f'Model {model_types_list[0]} better for label {label} by {diff}%')
-            logging.info(f'Best AUC for label {label}: {results_dict_1[label_key]}')
+            logger.info(f'Model {model_types_list[0]} better for label {label} by {diff}%')
+            logger.info(f'Best AUC for label {label}: {results_dict_1[label_key]}')
         else:
-            logging.info(f'Model {model_types_list[1]} better for label {label} by {diff}%')
-            logging.info(f'Best AUC for label {label}: {results_dict_2[label_key]}')
+            logger.info(f'Model {model_types_list[1]} better for label {label} by {diff}%')
+            logger.info(f'Best AUC for label {label}: {results_dict_2[label_key]}')
 
 
 if __name__ == '__main__':
@@ -69,7 +71,7 @@ if __name__ == '__main__':
             results_dict[model_type_str][result_folder_name_str][f'auc_{label}'] = float(df['value']['auc'])
     # get average AUC for each label and model type
     if len(model_types_list) != 2:
-        logging.error("More than two models are being compared.")
+        logger.error("More than two models are being compared.")
     average_auc_model_1_dict = build_average_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
     average_auc_model_2_dict = build_average_auc_dict(results_dict=results_dict, model_type=model_types_list[1])
     compare_model_results(results_dict_1=average_auc_model_1_dict, results_dict_2=average_auc_model_2_dict,
