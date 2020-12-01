@@ -8,7 +8,6 @@ This folder contains code for a Twitter-based labor market analysis. It is organ
 - `3-model_evaluation`: evaluation of the trained models
 - `4-inference_200M`: use trained models to do inference on a 200M sample of tweets
 - `5-active_learning`: select next tweets to be labelled following an active learning approach (WIP)
-- `6-bert_pretraining`: further pretrain BERT on a tweet corpus (WIP)
 
 **Note:** the former folder entitled `7-classification` can be found in the `2-model_training/archive` folder. It contains code that does the following:
 - Compute similarity of each tweet to a given sentence, allowing to find semantically similar tweets
