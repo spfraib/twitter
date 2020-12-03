@@ -86,8 +86,8 @@ if __name__ == '__main__':
                              index_col=0)
             results_dict[model_type_str][result_folder_name_str][f'auc_{label}'] = float(df['value']['auc'])
     # get average AUC for each label and model type
-    if len(model_types_list) != 2:
-        logger.error("More than two models are being compared.")
+    # if len(model_types_list) != 2:
+    #     logger.error("More than two models are being compared.")
     logger.info(model_types_list)
     average_auc_model_1_dict = build_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
     output_results(results_dict=average_auc_model_1_dict)
