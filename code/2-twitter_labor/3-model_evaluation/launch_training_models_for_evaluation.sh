@@ -3,8 +3,7 @@
 DATA_FOLDER=$1
 COUNTRY_CODE=$2
 MODEL_TYPE_1=$3
-MODEL_TYPE_2=$4
-MODE=$5
+MODE=$4
 
 DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/${COUNTRY_CODE}
 
@@ -42,20 +41,17 @@ select_model_name () {
   }
 
 MODEL_NAME_1=$(select_model_name "${MODEL_TYPE_1}")
-MODEL_NAME_2=$(select_model_name "${MODEL_TYPE_2}")
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
 if [ ${MODE} -eq 0 ]; then
-   echo "Model comparison on same data";
-   for i in {1..5}; do
+   echo "Training without segment";
+   for i in {1..10}; do
     sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} 0
-    sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_2} ${MODEL_TYPE_2} 0
    done
 elif [ ${MODE} -eq 1 ]; then
-   echo "Segment vs non segment"
-   for i in {1..5}; do
-    sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} 0
+   echo "Training with segment"
+   for i in {1..10}; do
     sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} 1
    done
 fi
