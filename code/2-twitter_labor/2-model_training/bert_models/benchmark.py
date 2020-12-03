@@ -40,10 +40,10 @@ def compare_model_results(results_dict_1: dict, results_dict_2: dict, model_type
         logger.info('\n')
         if results_dict_1[label_key] > results_dict_2[label_key]:
             logger.info(f'Model {model_types_list[0]} better for label {label} by {diff}%')
-            logger.info(f'Best AUC for label {label}: {results_dict_1[label_key]}')
         else:
             logger.info(f'Model {model_types_list[1]} better for label {label} by {diff}%')
-            logger.info(f'Best AUC for label {label}: {results_dict_2[label_key]}')
+        logger.info(f'AUC for label {label} from model {model_types_list[0]}: {results_dict_1[label_key]}')
+        logger.info(f'AUC for label {label} from model {model_types_list[1]}: {results_dict_2[label_key]}')
 
 
 if __name__ == '__main__':
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     model_types_list = list()
     for index in indexes_to_keep_list:
         result_folder_name_str = results_folders_list[index]
-        model_type_str = result_folder_name_str.split('_')[0]
+        model_type_str = f"{result_folder_name_str.split('_')[0]}_{result_folder_name_str.split('_')[2]}"
         if model_type_str not in model_types_list:
             model_types_list.append(model_type_str)
         if model_type_str not in results_dict.keys():
