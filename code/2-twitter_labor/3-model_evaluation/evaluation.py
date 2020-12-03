@@ -3,6 +3,7 @@ import argparse
 import os
 from collections import defaultdict
 import logging
+import statistics
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -20,41 +21,56 @@ def get_args_from_command_line():
     return args
 
 
-def build_average_auc_dict(results_dict: dict, model_type: str) -> dict:
+def build_auc_dict(results_dict: dict, model_type: str) -> dict:
     """
-    Compute the average AUC value for each label and across models.
+    Compute AUC statistics for each label and across models.
     Adapted from https://stackoverflow.com/questions/36053321/python-average-all-key-values-with-same-key-to-dictionary
     """
     by_label = defaultdict(list)
     for model, mrs in results_dict[model_type].items():
         for label_key, auc_value in mrs.items():
             by_label[label_key].append(auc_value)
-    return {label_key: sum(auc_value_list) / len(auc_value_list) for label_key, auc_value_list in by_label.items()}
 
+    return {label_key: {'mean': sum(auc_value_list) / len(auc_value_list),
+                        'std': statistics.stdev(auc_value_list),
+                        'min': min(auc_value_list),
+                        'max': max(auc_value_list)
+                        } for label_key, auc_value_list in by_label.items()}
 
-def compare_model_results(results_dict_1: dict, results_dict_2: dict, model_types_list: list):
-    """ Compare average AUC results and print best results for each label."""
+def output_results(results_dict: dict):
+    """Log AUC statistics for each label"""
     for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
         label_key = f'auc_{label}'
-        diff = abs((results_dict_1[label_key] - results_dict_2[label_key]) / results_dict_1[label_key])*100
+        logger.info(f"******** Label: {label} ********")
+        logger.info(f"Mean AUC: {results_dict[label_key]['mean']}")
+        logger.info(f"Standard deviation: {results_dict[label_key]['std']}")
+        logger.info(f"Minimum: {results_dict[label_key]['min']}")
+        logger.info(f"Maximum: {results_dict[label_key]['max']}")
         logger.info('\n')
-        if results_dict_1[label_key] > results_dict_2[label_key]:
-            logger.info(f'Model {model_types_list[0]} better for label {label} by {diff}%')
-        else:
-            logger.info(f'Model {model_types_list[1]} better for label {label} by {diff}%')
-        logger.info(f'AUC for label {label} from model {model_types_list[0]}: {results_dict_1[label_key]}')
-        logger.info(f'AUC for label {label} from model {model_types_list[1]}: {results_dict_2[label_key]}')
+
+# def compare_model_results(results_dict_1: dict, results_dict_2: dict, model_types_list: list):
+#     """ Compare average AUC results and print best results for each label."""
+#     for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
+#         label_key = f'auc_{label}'
+#         diff = abs((results_dict_1[label_key] - results_dict_2[label_key]) / results_dict_1[label_key])*100
+#         logger.info('\n')
+#         if results_dict_1[label_key] > results_dict_2[label_key]:
+#             logger.info(f'Model {model_types_list[0]} better for label {label} by {diff}%')
+#         else:
+#             logger.info(f'Model {model_types_list[1]} better for label {label} by {diff}%')
+#         logger.info(f'AUC for label {label} from model {model_types_list[0]}: {results_dict_1[label_key]}')
+#         logger.info(f'AUC for label {label} from model {model_types_list[1]}: {results_dict_2[label_key]}')
 
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
     results_folders_list = os.listdir(args.results_folder)
-    print(results_folders_list)
+    logger.info(results_folders_list)
     job_ids_list = [x.split('_')[1] for x in results_folders_list]
-    print(job_ids_list)
+    logger.info(job_ids_list)
     # keep 10 latest jobs
-    indexes_to_keep_list = sorted(range(len(job_ids_list)), key=lambda x: job_ids_list[x])[-10:]
-    print(indexes_to_keep_list)
+    indexes_to_keep_list = sorted(range(len(job_ids_list)), key=lambda x: job_ids_list[x])[-5:]
+    logger.info(indexes_to_keep_list)
     results_dict = dict()
     model_types_list = list()
     for index in indexes_to_keep_list:
@@ -72,7 +88,6 @@ if __name__ == '__main__':
     # get average AUC for each label and model type
     if len(model_types_list) != 2:
         logger.error("More than two models are being compared.")
-    average_auc_model_1_dict = build_average_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
-    average_auc_model_2_dict = build_average_auc_dict(results_dict=results_dict, model_type=model_types_list[1])
-    compare_model_results(results_dict_1=average_auc_model_1_dict, results_dict_2=average_auc_model_2_dict,
-                          model_types_list=model_types_list)
+    logger.info(model_types_list)
+    average_auc_model_1_dict = build_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
+    output_results(results_dict=average_auc_model_1_dict)
