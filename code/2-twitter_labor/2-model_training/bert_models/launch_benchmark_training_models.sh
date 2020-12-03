@@ -52,7 +52,7 @@ if [ ${MODE} -eq 0 ]; then
     sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} 0
     sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_2} ${MODEL_TYPE_2} 0
    done
-elif [ ${MODE} -eq 1]; then
+elif [ ${MODE} -eq 1 ]; then
    echo "Segment vs non segment"
    for i in {1..5}; do
     sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} 0
