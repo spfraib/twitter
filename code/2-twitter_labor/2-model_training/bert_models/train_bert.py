@@ -87,6 +87,7 @@ def get_args_from_command_line():
     parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch", default=False)
     parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
+    parser.add_argument("--segment", type=int, help="Whether to use cuda", default=0)
 
     args = parser.parse_args()
     return args
@@ -173,18 +174,19 @@ if __name__ == "__main__":
     # Import data
     train_df = pd.read_csv(args.train_data_path, lineterminator='\n')
     eval_df = pd.read_csv(args.eval_data_path, lineterminator='\n')
+    text_column = 'text_segment' if args.segment == 1 else 'text'
     if args.holdout_data_path:
         holdout_df = pd.read_csv(args.holdout_data_path, lineterminator='\n')
-        holdout_df = holdout_df[['text', 'class']]
-        holdout_df.columns = ['text', 'labels']
+        holdout_df = holdout_df[[text_column, 'class']]
+        holdout_df.columns = [text_column, 'labels']
         verify_data_format(holdout_df)
         verify_data_format(holdout_df)
 
     # Reformat the data
-    train_df = train_df[["text", "class"]]
-    eval_df = eval_df[["text", "class"]]
-    train_df.columns = ['text', 'labels']
-    eval_df.columns = ['text', 'labels']
+    train_df = train_df[[text_column, "class"]]
+    eval_df = eval_df[[text_column, "class"]]
+    train_df.columns = [text_column, 'labels']
+    eval_df.columns = [text_column, 'labels']
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
@@ -287,12 +289,13 @@ if __name__ == "__main__":
                                   'auc': auc_eval
                                   }
     # Save evaluation results on eval set
+    segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '-')
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              '{}_'.format(args.model_type) + str(slurm_job_id),
-                                              name_val_file + '_evaluation.csv')
+                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{name_val_file}_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
         os.makedirs(os.path.dirname(path_to_store_eval_results))
     pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['value']).to_csv(
@@ -302,8 +305,8 @@ if __name__ == "__main__":
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                             '{}_'.format(args.model_type) + str(slurm_job_id),
-                                             name_val_file + "_scores.csv")
+                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{name_val_file}_scores.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
         os.makedirs(os.path.dirname(path_to_store_eval_scores))
     eval_df.to_csv(path_to_store_eval_scores, index=False)
@@ -334,8 +337,8 @@ if __name__ == "__main__":
         # Save evaluation results on holdout set
         name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
         path_to_store_holdout_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                                     '{}_'.format(args.model_type) + str(slurm_job_id),
-                                                     name_holdout_file + '_evaluation.csv')
+                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{name_holdout_file}_scores.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
             os.makedirs(os.path.dirname(path_to_store_holdout_results))
         pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(
@@ -346,8 +349,8 @@ if __name__ == "__main__":
         # Save scores
         holdout_df['{}_scores'.format(args.model_type)] = scores
         path_to_store_holdout_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                                    '{}_'.format(args.model_type) + str(slurm_job_id),
-                                                    name_holdout_file + "_scores.csv")
+                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{name_holdout_file}_scores.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_scores)):
             os.makedirs(os.path.dirname(path_to_store_holdout_scores))
         holdout_df.to_csv(path_to_store_holdout_scores, index=False)
