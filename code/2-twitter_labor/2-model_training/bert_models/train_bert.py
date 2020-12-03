@@ -178,15 +178,14 @@ if __name__ == "__main__":
     if args.holdout_data_path:
         holdout_df = pd.read_csv(args.holdout_data_path, lineterminator='\n')
         holdout_df = holdout_df[[text_column, 'class']]
-        holdout_df.columns = [text_column, 'labels']
-        verify_data_format(holdout_df)
+        holdout_df.columns = ['text', 'labels']
         verify_data_format(holdout_df)
 
     # Reformat the data
     train_df = train_df[[text_column, "class"]]
     eval_df = eval_df[[text_column, "class"]]
-    train_df.columns = [text_column, 'labels']
-    eval_df.columns = [text_column, 'labels']
+    train_df.columns = ['text', 'labels']
+    eval_df.columns = ['text', 'labels']
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
