@@ -4,6 +4,7 @@ import os
 from collections import defaultdict
 import logging
 import statistics
+import socket
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -15,8 +16,10 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--results_folder", type=str,
-                        default="US")
+    parser.add_argument("--results_folder", type=str)
+    parser.add_argument("--run_name", type=str, help="Name of the output CSV containing results")
+
+
     args = parser.parse_args()
     return args
 
@@ -37,16 +40,16 @@ def build_auc_dict(results_dict: dict, model_type: str) -> dict:
                         'max': max(auc_value_list)
                         } for label_key, auc_value_list in by_label.items()}
 
-def output_results(results_dict: dict):
-    """Log AUC statistics for each label"""
-    for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
-        label_key = f'auc_{label}'
-        logger.info(f"******** Label: {label} ********")
-        logger.info(f"Mean AUC: {results_dict[label_key]['mean']}")
-        logger.info(f"Standard deviation: {results_dict[label_key]['std']}")
-        logger.info(f"Minimum: {results_dict[label_key]['min']}")
-        logger.info(f"Maximum: {results_dict[label_key]['max']}")
-        logger.info('\n')
+# def output_results(results_dict: dict):
+#     """Log AUC statistics for each label"""
+#     for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
+#         label_key = f'auc_{label}'
+#         logger.info(f"******** Label: {label} ********")
+#         logger.info(f"Mean AUC: {results_dict[label_key]['mean']}")
+#         logger.info(f"Standard deviation: {results_dict[label_key]['std']}")
+#         logger.info(f"Minimum: {results_dict[label_key]['min']}")
+#         logger.info(f"Maximum: {results_dict[label_key]['max']}")
+#         logger.info('\n')
 
 # def compare_model_results(results_dict_1: dict, results_dict_2: dict, model_types_list: list):
 #     """ Compare average AUC results and print best results for each label."""
@@ -90,4 +93,13 @@ if __name__ == '__main__':
     #     logger.error("More than two models are being compared.")
     logger.info(model_types_list)
     average_auc_model_1_dict = build_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
-    output_results(results_dict=average_auc_model_1_dict)
+    results_df = pd.DataFrame.from_dict(average_auc_model_1_dict, orient='index')
+    results_df = results_df.round(3)
+    if 'manuto' in socket.gethostname().lower():
+        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
+    else:
+        output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    results_df.to_csv(os.path.join(output_path, f'{args.run_name}.csv'))
+
