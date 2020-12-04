@@ -32,7 +32,7 @@ select_model_name () {
     MODEL_NAME="bertweet"
   elif [ ${MODEL_TYPE} = "dlb/electra-base-portuguese-uncased-brwac" ]; then
     MODEL_NAME="electra"
-  elif [ ${MODEL_TYPE} = "roberta-base" ]; then
+  elif [ ${MODEL_TYPE} = "roberta-base" ] || [ ${MODEL_TYPE} = "mrm8488/RuPERTa-base" ]; then
     MODEL_NAME="roberta"
   elif [ ${MODEL_TYPE} = "xlm-roberta-base" ]; then
     MODEL_NAME="xlmroberta"
