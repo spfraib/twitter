@@ -16,7 +16,6 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--results_folder", type=str)
     parser.add_argument("--run_name", type=str, help="Name of the output CSV containing results")
 
 
@@ -67,6 +66,13 @@ def build_auc_dict(results_dict: dict, model_type: str) -> dict:
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
+    if 'manuto' in socket.gethostname().lower():
+        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
+        args.results_folder = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/train_test/results'
+    else:
+        output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
+        args.results_folder = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/train_test/results'
+
     results_folders_list = os.listdir(args.results_folder)
     logger.info(results_folders_list)
     job_ids_list = [x.split('_')[1] for x in results_folders_list]
@@ -95,10 +101,7 @@ if __name__ == '__main__':
     average_auc_model_1_dict = build_auc_dict(results_dict=results_dict, model_type=model_types_list[0])
     results_df = pd.DataFrame.from_dict(average_auc_model_1_dict, orient='index')
     results_df = results_df.round(3)
-    if 'manuto' in socket.gethostname().lower():
-        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
-    else:
-        output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/nov13_iter0/{args.country_code}/evaluation'
+
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     results_df.to_csv(os.path.join(output_path, f'{args.run_name}.csv'))
