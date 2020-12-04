@@ -215,7 +215,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_patience": 3,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True}
+                                      "early_stopping_metric_minimize": True, "tensorboard_dir": f"runs/{args.slurm_job_id}/" }
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
