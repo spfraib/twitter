@@ -208,6 +208,7 @@ if __name__ == "__main__":
         use_cuda = False
     # Create a ClassificationModel
     ## Define arguments
+    name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
     classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
@@ -215,7 +216,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_patience": 3,
                                       "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True, "tensorboard_dir": f"runs/{args.slurm_job_id}/" }
+                                      "early_stopping_metric_minimize": True, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" }
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
@@ -291,7 +292,6 @@ if __name__ == "__main__":
     segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '-')
-    name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                               f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
                                               f'{name_val_file}_evaluation.csv')
