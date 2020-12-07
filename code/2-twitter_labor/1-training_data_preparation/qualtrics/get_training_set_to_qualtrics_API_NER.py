@@ -254,6 +254,22 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     # else:
     #     return to_label_df
 
+def make_choices_dict_from_tweet(tweet):
+    tweet = tweet.replace('<hashtag>', '#')
+    tweet = tweet.replace('</hashtag>', '')
+    tweet = tweet.replace('  ', ' ')
+    word_list = tweet.split(' ')
+    index = 0
+    choices_dict = dict()
+    for word in word_list:
+        choices_dict[str(index)] = {
+            'WordIndex': str(index),
+            'WordLength': len(word),
+            'Word': word,
+            'Display': f'{str(index+1)}: {word}'
+        }
+        index = index + 1
+    return choices_dict
 
 if __name__ == "__main__":
     args = get_args_from_command_line()
@@ -321,7 +337,7 @@ if __name__ == "__main__":
         d1 = ctx.create_decimal(repr(f))
         return format(d1, 'f')
     tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
-    
+
     # tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
@@ -374,10 +390,12 @@ if __name__ == "__main__":
         QuestionID = create_question(QuestionData=QuestionTemplateData, SurveyID=SurveyID, apiToken=apiToken,
                                      dataCenter=dataCenter)
         QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
-        QuestionData['QuestionText'] = tweet
-        QuestionData['QuestionDescription'] = tweet
-        QuestionData['QuestionText_Unsafe'] = tweet
+        QuestionData['QuestionText'] = text
+        QuestionData['QuestionDescription'] = text
+        QuestionData['QuestionText_Unsafe'] = text
         QuestionData['DataExportTag'] = 'ID_' + tweet_id
+        QuestionData['Choices'] = make_choices_dict_from_tweet(tweet)
+        QuestionData['ChoiceOrder'] = [i for i in range(len(QuestionData['Choices']))]
         update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
                         dataCenter=dataCenter)
 
