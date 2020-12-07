@@ -303,6 +303,25 @@ if __name__ == "__main__":
     #     path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
     #     to_label_df=tweets)
 
+    # TEMPORARY
+    import decimal
+
+    # create a new context for this task
+    ctx = decimal.Context()
+
+    # 20 digits should be enough for everyone :D
+    ctx.prec = 20
+
+
+    def float_to_str(f):
+        """
+        Convert the given float to a string,
+        without resorting to scientific notation
+        """
+        d1 = ctx.create_decimal(repr(f))
+        return format(d1, 'f')
+    tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
+    
     # tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
