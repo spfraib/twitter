@@ -9,6 +9,8 @@ import pyarrow.parquet as pq
 from glob import glob
 from datetime import datetime
 import argparse
+from ekphrasis.classes.preprocessor import TextPreProcessor
+import re
 
 
 def get_args_from_command_line():
@@ -174,55 +176,6 @@ def update_block(BlockData, BlockID, SurveyID, apiToken, dataCenter):
         print(json.loads(response.text)["meta"]["httpStatus"])
 
 
-QuestionData_test = {
-    'QuestionText': 'Please answer the following questions about the following tweet:\n\n"jobs4u jobs Project Manager - Facilities Management  WDC DC WAS""',
-    'DefaultChoices': False,
-    'DataExportTag': 'ID_533605638312435713-v0',
-    'QuestionID': 'QID10',
-    'QuestionType': 'HL',
-    'Selector': 'Text',
-    'DataVisibility': {
-        'Private': False,
-        'Hidden': False},
-    'Configuration': {
-        'QuestionDescriptionOption': 'UseText',
-        'TextPosition': 'inline',
-        'CustomTextSize': False,
-        'AutoStopWords': False},
-    'QuestionDescription': 'Please answer the following questions about the following tweet:\n\n"jobs4u jobs Project Manager - Facilities Management  WDC DC WAS""',
-    'Choices': {
-        '0': {
-            'Display': '1: jobs4u'},
-        '1': {
-            'Display': '2: jobs'},
-        '2': {
-            'Display': '3: Project'},
-        '3': {
-            'Display': '4: Manager'},
-        '4': {
-            'Display': '5: -'},
-        '5': {
-            'Display': '6: Facilities'},
-        '6': {
-            'Display': '7: Management'},
-        '7': {
-            'Display': '8: WDC'},
-        '8': {
-            'Display': '9: DC'},
-        '9': {
-            'Display': '10: WAS'}},
-    'ChoiceOrder': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
-    'Validation': {
-        'Settings': {
-            'ForceResponse': 'OFF',
-            'ForceResponseType': 'ON',
-            'Type': 'None'}},
-    'GradingData': [],
-    'NextChoiceId': 90,
-    'NextAnswerId': 4,
-    }
-
-
 def create_question(QuestionData, SurveyID, apiToken, dataCenter):
     baseUrl = "https://{0}.qualtrics.com/API/v3/survey-definitions/{1}/questions".format(
         dataCenter, SurveyID)
@@ -304,10 +257,16 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     #     return to_label_df
 
 
-def make_choices_dict_from_tweet(tweet, max_past_index):
+def tweet_preprocessing(tweet):
     tweet = tweet.replace('<hashtag>', '#')
     tweet = tweet.replace('</hashtag>', '')
     tweet = tweet.replace('  ', ' ')
+    tweet = re.sub('http\S+', 'HTTPURL', tweet)
+    tweet = re.sub('(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)', '@USER', tweet)
+    return tweet
+
+
+def make_choices_dict_from_tweet(tweet, max_past_index):
     word_list = tweet.split(' ')
     index = max_past_index + 1
     choices_dict = dict()
@@ -335,10 +294,10 @@ if __name__ == "__main__":
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
-    # with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
-    #     apiToken = f.readline()
+    with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
+        apiToken = f.readline()
     dataCenter = "nyu.ca1"
-    SurveyName = f"job-offer-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
+    SurveyName = f"ner-job-offer-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
     SurveySourceID_dict = {
         'US': 'SV_1KMR8bkQiVFQ0zH', }
     # 'MX': 'SV_bxr29HthZfMhG3X',
@@ -371,35 +330,46 @@ if __name__ == "__main__":
     print('# Tweets (2 workers per tweets + 2 attention checks):', n_tweets)
 
     # path to labelling as argument?
-    # tweets = pq.ParquetDataset(
-    #     glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
-    tweets = pd.read_csv(os.path.join(path_to_data, 'test.csv'))
-    # tweets = discard_already_labelled_tweets(
-    #     path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
-    #     to_label_df=tweets)
+    tweets = pq.ParquetDataset(
+        glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    # tweets = pd.read_csv(os.path.join(path_to_data, 'test_bis.csv'))
 
-    # TEMPORARY
-    import decimal
+    tweets = discard_already_labelled_tweets(
+        path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
+        to_label_df=tweets)
 
-    # create a new context for this task
-    ctx = decimal.Context()
-
-    # 20 digits should be enough for everyone :D
-    ctx.prec = 20
+    # preprocess tweets
+    text_processor = TextPreProcessor(annotate={"hashtag"}, segmenter='twitter', unpack_hashtags=True)
 
 
-    def float_to_str(f):
-        """
-        Convert the given float to a string,
-        without resorting to scientific notation
-        """
-        d1 = ctx.create_decimal(repr(f))
-        return format(d1, 'f')
+    def hashtag_segmentation(text):
+        return "".join(text_processor.pre_process_doc(text))
 
 
-    tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
+    tweets['text'] = tweets['text'].apply(hashtag_segmentation)
+    tweets['text'] = tweets['text'].apply(tweet_preprocessing)
+    # # TEMPORARY
+    # import decimal
+    #
+    # # create a new context for this task
+    # ctx = decimal.Context()
+    #
+    # # 20 digits should be enough for everyone :D
+    # ctx.prec = 20
+    #
+    #
+    # def float_to_str(f):
+    #     """
+    #     Convert the given float to a string,
+    #     without resorting to scientific notation
+    #     """
+    #     d1 = ctx.create_decimal(repr(f))
+    #     return format(d1, 'f')
+    #
+    #
+    # tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
 
-    # tweets = tweets.sample(n=n_tweets, random_state=0)
+    tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
     tweets_0 = tweets.sample(frac=1, random_state=0).set_index('tweet_id')['text']
