@@ -10,6 +10,8 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 
 MODEL_FOLDER=$1
+MODEL_TYPE=$2
+MODEL_NAME=$3
 
 module purge
 module load anaconda3/2019.10
@@ -20,6 +22,9 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
-python3 onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}/{}/models/best_model
+python3 onnx_model_conversion.py \
+--model_path /scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}/{}/models/best_model \
+--model_type ${MODEL_TYPE} \
+--model_name ${MODEL_NAME}
 
 exit
