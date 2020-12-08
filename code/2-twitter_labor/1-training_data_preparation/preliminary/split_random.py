@@ -37,5 +37,7 @@ if __name__ == "__main__":
     path_to_df_new_samples = f'/user/spf248/twitter/data/random_samples/random_samples_splitted/{args.country_code}/new_samples'
     path_to_df_evaluation = f'/user/spf248/twitter/data/random_samples/random_samples_splitted/{args.country_code}/evaluation'
     df_new_samples.coalesce(3000).write.mode("overwrite").parquet(path_to_df_new_samples)
+    print(f'New sample set has {df_new_samples.count()} tweets')
     df_evaluation.coalesce(3000).write.mode("overwrite").parquet(path_to_df_evaluation)
+    print(f'Evaluation set has {df_evaluation.count()} tweets')
 
