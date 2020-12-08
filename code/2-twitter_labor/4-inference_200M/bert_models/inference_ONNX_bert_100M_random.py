@@ -64,7 +64,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
 
     # pytorch pretrained model and tokenizer
     tokenizer = BertTokenizerFast.from_pretrained(model_dir)
-    tokenizer_str = "BertTokenizerFast"
+    tokenizer_str = "TokenizerFast"
 
     print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
         quantized_str, tokenizer_str))
@@ -191,7 +191,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     ####################################################################################################################################
     print('Predictions of random Tweets:')
     start_time = time.time()
-    onnx_labels = inference(onnx_path + 'bert_optimized_ONNXquantized.onnx',
+    onnx_labels = inference(onnx_path + 'ONNX_model_optimized_quantized.onnx',
                             model_path,
                             examples,
                             fast_tokenizer=True,
