@@ -11,7 +11,7 @@ export PYTHONIOENCODING=utf8
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/preliminary
 TIMESTAMP=$(date +%s)
-JOB_NAME=select_tweets_containing_ngrams_${TIMESTAMP}
+JOB_NAME=split_random_sets_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.yarn.submit.waitAppCompletion=false --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.speculation=false --conf spark.yarn.appMasterEnv.LANG=en_US.UTF-8 \
