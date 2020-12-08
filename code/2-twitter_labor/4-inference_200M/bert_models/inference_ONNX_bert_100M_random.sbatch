@@ -11,10 +11,11 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 
 MODEL_FOLDER=$1
+COUNTRY_CODE=$2
 
 MODEL_PATH=/scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}
 JOB_ID=${SLURM_ARRAY_JOB_ID}
-OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${MODEL_FOLDER}-${JOB_ID}
+OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/${MODEL_FOLDER}-${JOB_ID}
 OUTPUT_MODELS=${OUTPUT_PATH}/output
 OUTPUT_LOGS=${OUTPUT_PATH}/logs
 
