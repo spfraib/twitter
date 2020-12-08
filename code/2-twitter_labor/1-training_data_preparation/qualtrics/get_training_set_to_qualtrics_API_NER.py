@@ -269,20 +269,25 @@ def tweet_preprocessing(tweet):
 def make_choices_dict_from_tweet(tweet, max_past_index):
     word_list = tweet.split(' ')
     index = max_past_index + 1
+    position_token = 1
     choices_dict = dict()
+    hashtag_indices_dict = dict()
     for word in word_list:
         choices_dict[str(index)] = {
             'WordLength': len(word),
             'Word': word,
-            'Display': f'{str(index + 1)}: {word}'
+            'Display': f'{str(position_token)}: {word}'
         }
         if index == max_past_index + 1:
             choices_dict[str(index)]['WordIndex'] = 0
         else:
             choices_dict[str(index)]['WordIndex'] = 1 + choices_dict[str(index - 1)]['WordIndex'] + \
                                                     choices_dict[str(index - 1)]['WordLength']
+        if word == "#":
+            hashtag_indices_dict[str(position_token - 1)] = True
         index = index + 1
-    return choices_dict
+        position_token = position_token + 1
+    return choices_dict, hashtag_indices_dict
 
 
 if __name__ == "__main__":
@@ -294,8 +299,8 @@ if __name__ == "__main__":
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
-    with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
-        apiToken = f.readline()
+    # with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
+    #     apiToken = f.readline()
     dataCenter = "nyu.ca1"
     SurveyName = f"ner-job-offer-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
     SurveySourceID_dict = {
@@ -330,13 +335,13 @@ if __name__ == "__main__":
     print('# Tweets (2 workers per tweets + 2 attention checks):', n_tweets)
 
     # path to labelling as argument?
-    tweets = pq.ParquetDataset(
-        glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
-    # tweets = pd.read_csv(os.path.join(path_to_data, 'test_bis.csv'))
+    # tweets = pq.ParquetDataset(
+    #     glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    tweets = pd.read_csv(os.path.join(path_to_data, 'test_bis.csv'))
 
-    tweets = discard_already_labelled_tweets(
-        path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
-        to_label_df=tweets)
+    # tweets = discard_already_labelled_tweets(
+    #     path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
+    #     to_label_df=tweets)
 
     # preprocess tweets
     text_processor = TextPreProcessor(annotate={"hashtag"}, segmenter='twitter', unpack_hashtags=True)
@@ -349,27 +354,27 @@ if __name__ == "__main__":
     tweets['text'] = tweets['text'].apply(hashtag_segmentation)
     tweets['text'] = tweets['text'].apply(tweet_preprocessing)
     # # TEMPORARY
-    # import decimal
-    #
-    # # create a new context for this task
-    # ctx = decimal.Context()
-    #
-    # # 20 digits should be enough for everyone :D
-    # ctx.prec = 20
-    #
-    #
-    # def float_to_str(f):
-    #     """
-    #     Convert the given float to a string,
-    #     without resorting to scientific notation
-    #     """
-    #     d1 = ctx.create_decimal(repr(f))
-    #     return format(d1, 'f')
-    #
-    #
-    # tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
+    import decimal
 
-    tweets = tweets.sample(n=n_tweets, random_state=0)
+    # create a new context for this task
+    ctx = decimal.Context()
+
+    # 20 digits should be enough for everyone :D
+    ctx.prec = 20
+
+
+    def float_to_str(f):
+        """
+        Convert the given float to a string,
+        without resorting to scientific notation
+        """
+        d1 = ctx.create_decimal(repr(f))
+        return format(d1, 'f')
+
+
+    tweets['tweet_id'] = tweets['tweet_id'].apply(float_to_str)
+
+    #tweets = tweets.sample(n=n_tweets, random_state=0)
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
     tweets_0 = tweets.sample(frac=1, random_state=0).set_index('tweet_id')['text']
@@ -426,12 +431,13 @@ if __name__ == "__main__":
         QuestionData['QuestionText_Unsafe'] = text
         QuestionData['DataExportTag'] = 'ID_' + tweet_id
         max_choice_order = max(QuestionData['ChoiceOrder'])
-        QuestionData['Choices'] = make_choices_dict_from_tweet(tweet=tweet, max_past_index=max_choice_order)
+        choices_dict, hashtag_indices_dict = make_choices_dict_from_tweet(tweet=tweet, max_past_index=max_choice_order)
+        QuestionData['Choices'] = choices_dict
         QuestionData['ChoiceOrder'] = [i for i in
                                        range(max_choice_order + 1, max_choice_order + 1 + len(QuestionData['Choices']))]
         QuestionData['WordChoiceIds'] = QuestionData['ChoiceOrder']
         QuestionData['HighlightText'] = f'{tweet}<br>'
-
+        QuestionData['ExcludedWords'] = hashtag_indices_dict
         update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
                         dataCenter=dataCenter)
 
