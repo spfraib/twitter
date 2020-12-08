@@ -32,7 +32,7 @@ if __name__ == "__main__":
     df = df.select('tweet_id', 'text')
     pct_sample = min(100000000 / df.count(), 1.0)
     df_new_samples = df.sample(False, pct_sample, seed=0)
-    df_new_samples_join = df_new_samples.select(col("tweet_id") as "tweet_id_samples", col("text") as "text_samples")
+    df_new_samples_join = df_new_samples.withColumnRenamed('tweet_id', 'tweet_id_samples').withColumnRenamed('text', 'text_samples')
     df_evaluation = df.join(df_new_samples_join, df.tweet_id == df_new_samples_join.tweet_id_samples, "left_outer").where(df_new_samples_join.tweet_id_samples.isNull()).select('tweet_id', 'text')
     path_to_df_new_samples = f'/user/spf248/twitter/data/random_samples/random_samples_splitted/{args.country_code}/new_samples'
     path_to_df_evaluation = f'/user/spf248/twitter/data/random_samples/random_samples_splitted/{args.country_code}/evaluation'
