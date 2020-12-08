@@ -27,7 +27,7 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     print('Start running code')
     path_to_tweets = f'/user/spf248/twitter/data/random_samples/{args.country_code}/'
-    df = spark.read.orc(path_to_tweets)
+    df = spark.read.parquet(path_to_tweets)
     print('Data was loaded')
     df = df.select('tweet_id', 'text')
     pct_sample = min(100000000 / df.count(), 1.0)
