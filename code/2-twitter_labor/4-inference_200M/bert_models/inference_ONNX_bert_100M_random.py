@@ -143,7 +143,7 @@ print('Load random Tweets:')
 start_time = time.time()
 
 paths_to_random = list(np.array_split(
-    glob(os.path.join(path_to_data, 'random', '*.parquet')),
+    glob(os.path.join(path_to_data, '*.parquet')),
     #                         glob(os.path.join(path_to_data,'random_first_half','*.parquet')),
     #                         glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
     #                         glob(os.path.join(path_to_data,'random_1perct_sample','*.parquet')),
