@@ -57,7 +57,7 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_2
 pwd
 
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u inference_ONNX_bert_100M_random.py --model_path ${MODEL_PATH}/{}/models/best_model --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
 
 exit
