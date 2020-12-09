@@ -137,7 +137,7 @@ from glob import glob
 import os
 import numpy as np
 
-path_to_data = args.input_data
+path_to_data = args.input_path
 
 print('Load random Tweets:')
 
