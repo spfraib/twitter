@@ -27,6 +27,7 @@ import argparse
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--model_path", help="path to pytorch models (with onnx model in model_path/onnx/")
+parser.add_argument("--input_path", help="path to input data")
 parser.add_argument("--output_path", help="path where inference csv is saved")
 parser.add_argument("--country_code", help="path where inference csv is saved")
 
@@ -136,7 +137,7 @@ from glob import glob
 import os
 import numpy as np
 
-path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/{args.country_code}'
+path_to_data = args.input_data
 
 print('Load random Tweets:')
 
