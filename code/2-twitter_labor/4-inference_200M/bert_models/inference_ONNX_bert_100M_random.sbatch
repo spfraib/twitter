@@ -12,10 +12,22 @@
 
 MODEL_FOLDER=$1
 COUNTRY_CODE=$2
+MODE=$3
 
 MODEL_PATH=/scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}
 JOB_ID=${SLURM_ARRAY_JOB_ID}
-OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/${MODEL_FOLDER}-${JOB_ID}
+
+
+if [ ${MODE} -eq 0 ]
+then
+  INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/evaluation
+  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/${MODEL_FOLDER}-${JOB_ID}-evaluation
+elif [ ${MODE} -eq 1 ]
+then
+  INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/new_samples
+  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/${MODEL_FOLDER}-${JOB_ID}-new_samples
+fi
+
 OUTPUT_MODELS=${OUTPUT_PATH}/output
 OUTPUT_LOGS=${OUTPUT_PATH}/logs
 
