@@ -261,6 +261,9 @@ def tweet_preprocessing(tweet):
     tweet = tweet.replace('<hashtag>', '#')
     tweet = tweet.replace('</hashtag>', '')
     tweet = tweet.replace('  ', ' ')
+    tweet = tweet.replace('-', ' - ')
+    tweet = tweet.replace('(', ' ( ')
+    tweet = tweet.replace(')', ' ) ')
     tweet = re.sub('http\S+', 'HTTPURL', tweet)
     tweet = re.sub('(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)', '@USER', tweet)
     return tweet
@@ -313,6 +316,7 @@ if __name__ == "__main__":
     QuestionWorkerID = "QID3"
     QuestionCompletionID = "QID4"
     QuestionDescriptionID = "QID5"
+    QuestionFeedbackID = "QID7"
     country_language_dict = {
         'US': 'EN',
         'MX': 'ES',
@@ -464,6 +468,17 @@ if __name__ == "__main__":
     BlockData['Type'] = 'Default'
     update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
                  dataCenter=dataCenter)
+
+    print('Create Feedback Question')
+    QuestionFeedbackData = get_question(QuestionID=QuestionFeedbackID, SurveyID=SurveySourceID, apiToken=apiToken,
+                                          dataCenter=dataCenter)
+    QuestionID = create_question(QuestionData=QuestionFeedbackData, SurveyID=SurveyID, apiToken=apiToken,
+                                 dataCenter=dataCenter)
+    QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
+    QuestionData['DataExportTag'] = 'QIDFeedback'
+    update_question(QuestionData=QuestionData, QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken,
+                    dataCenter=dataCenter)
+
 
     print('Create Completion Question')
     QuestionCompletionData = get_question(QuestionID=QuestionCompletionID, SurveyID=SurveySourceID, apiToken=apiToken,
