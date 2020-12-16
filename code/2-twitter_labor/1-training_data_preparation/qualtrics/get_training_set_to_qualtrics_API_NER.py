@@ -262,10 +262,9 @@ def tweet_preprocessing(tweet):
     tweet = tweet.replace('</hashtag>', '')
     tweet = tweet.replace('  ', ' ')
     tweet = tweet.replace('-', ' - ')
-    tweet = tweet.replace('(', ' ( ')
-    tweet = tweet.replace(')', ' ) ')
     tweet = re.sub('http\S+', 'HTTPURL', tweet)
     tweet = re.sub('(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)', '@USER', tweet)
+    tweet = re.sub(r"([\w/'+$\s-]+|[^\w/'+$\s-]+)\s*", r"\1 ", tweet)
     return tweet
 
 
@@ -304,6 +303,8 @@ if __name__ == "__main__":
     # Setting user Parameters
     # with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
     #     apiToken = f.readline()
+    apiToken = 'lHNO91YF14BUFvPrdosG5IxzzCUt6Y65SxZGvmH7'
+
     dataCenter = "nyu.ca1"
     SurveyName = f"ner-job-offer-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
     SurveySourceID_dict = {
@@ -357,6 +358,7 @@ if __name__ == "__main__":
 
     tweets['text'] = tweets['text'].apply(hashtag_segmentation)
     tweets['text'] = tweets['text'].apply(tweet_preprocessing)
+    print(tweets['text'].head())
     # # TEMPORARY
     import decimal
 
