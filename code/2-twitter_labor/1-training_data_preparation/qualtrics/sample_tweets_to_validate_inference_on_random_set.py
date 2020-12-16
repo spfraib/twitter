@@ -6,22 +6,24 @@
 
 import os
 import numpy as np
-
-
-# In[ ]:
-
-
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql import Window
+import argparse
+
+
 spark = SparkSession.builder.appName("").getOrCreate()
 
+def get_args_from_command_line():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--label", type=str)
+    args = parser.parse_args()
+    return args
 
-# In[17]:
-
-
+args = get_args_from_command_line()
 country_code='US'
-label='is_unemployed'
+label=args.label
 path_to_tweets='/user/mt4493/twitter/random_samples/random_samples_splitted/US/evaluation' # Random set of tweets
 path_to_scores= os.path.join('/user/mt4493/twitter/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation/output', label) # Prediction scores from classification
 path_to_evals='/user/mt4493/twitter/evaluation/US'  # Where to store the sampled tweets to be labeled
