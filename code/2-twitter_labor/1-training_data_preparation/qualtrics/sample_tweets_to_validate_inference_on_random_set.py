@@ -70,5 +70,5 @@ df=df.join(sampled_indices,on='rank')
 # In[ ]:
 
 
-df.coalesce(1).write.option("header", "true").csv(os.path.join(path_to_evals))
+df.coalesce(1).write.mode("append").option("header", "true").csv(os.path.join(path_to_evals))
 
