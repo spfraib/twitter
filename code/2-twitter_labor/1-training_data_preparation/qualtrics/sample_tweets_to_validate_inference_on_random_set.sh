@@ -1,5 +1,7 @@
 #!/bin/bash
 
+LABEL=$1
+
 NB_CORES=20
 
 module load python/gnu/3.6.5
@@ -17,4 +19,5 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.executorEnv.LANG=en_US.UTF-8 --driver-cores ${NB_CORES} \
   --driver-memory ${NB_CORES}G --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.maxExecutors=50 \
   --executor-cores ${NB_CORES} --executor-memory ${NB_CORES}G \
-  ${CODE_FOLDER}/sample_tweets_to_validate_inference_on_random_set.py
+  ${CODE_FOLDER}/sample_tweets_to_validate_inference_on_random_set.py \
+  --label ${LABEL}
