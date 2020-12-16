@@ -21,7 +21,7 @@ spark = SparkSession.builder.appName("").getOrCreate()
 
 
 country_code='US'
-path_to_tweets='/user/mt4493/twitter/random_samples/random_samples_splitted/US' # Random set of tweets
+path_to_tweets='/user/mt4493/twitter/random_samples/random_samples_splitted/US/evaluation' # Random set of tweets
 path_to_scores='/user/mt4493/twitter/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation' # Prediction scores from classification
 path_to_evals='/user/mt4493/twitter/evaluation/US'  # Where to store the sampled tweets to be labeled
 
