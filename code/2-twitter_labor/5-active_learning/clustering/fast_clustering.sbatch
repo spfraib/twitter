@@ -2,7 +2,7 @@
 #SBATCH --job-name=clustering_inference_output
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
+#SBATCH --mem=40GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --output=slurm_clustering_%j.out
