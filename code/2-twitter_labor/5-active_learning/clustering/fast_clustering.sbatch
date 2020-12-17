@@ -13,7 +13,7 @@
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2019.10
-source /scratch/mt4493/twitter_labor/code/envs/experimental_env/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/active_learning_env/bin/activate
 echo "virtualenv activated"
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning
