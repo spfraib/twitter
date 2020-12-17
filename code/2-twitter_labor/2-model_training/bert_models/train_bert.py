@@ -346,7 +346,7 @@ if __name__ == "__main__":
         name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
         path_to_store_holdout_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                               f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
-                                              f'{name_holdout_file}_scores.csv')
+                                              f'{name_holdout_file}_evaluation.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
             os.makedirs(os.path.dirname(path_to_store_holdout_results))
         pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(
