@@ -97,10 +97,14 @@ if __name__ == '__main__':
         for parquet_file in scores_dir.glob('*.parquet')
     )
     scores_df = scores_df.reset_index()
+    logger.info('Loaded scores')
+
     text_df = pd.concat(
         pd.read_parquet(parquet_file)
         for parquet_file in random_set_dir.glob('*.parquet')
     )
+
+    logger.info('Loaded text')
     df = scores_df.merge(text_df, on="tweet_id", how = 'inner')
     df['rank'] = df['score'].rank(method='dense', ascending=False)
     df = df.sort_values(by=['rank']).reset_index(drop=True)
@@ -112,7 +116,6 @@ if __name__ == '__main__':
     corpus_sentences = df['text'].tolist()
     corpus_embeddings = model.encode(corpus_sentences, show_progress_bar=True, convert_to_numpy=True)
 
-    logger.info("Store file on disc")
     # with open(embedding_cache_path, "wb") as fOut:
     #     pickle.dump({'sentences': corpus_sentences, 'embeddings': corpus_embeddings}, fOut)
 
