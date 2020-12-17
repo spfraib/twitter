@@ -14,7 +14,9 @@ DATA_FOLDER=$1
 COUNTRY_CODE=$2
 MODEL_NAME=$3
 MODEL_TYPE=$4
-SEGMENT=$5
+SEED=$5
+INTRA_EPOCH_EVAL=$6
+#SEGMENT=$5
 #INTRA_EPOCH_EVAL=$5
 TIMESTAMP=$(date +%s)
 JOB_ID=${SLURM_JOB_ID}
@@ -61,8 +63,8 @@ python3 train_bert.py \
   --output_dir ${OUTPUT_DIR}/lost_job_1mo \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
-  --segment ${SEGMENT}
-#--intra_epoch_evaluation ${INTRA_EPOCH_EVAL}
+  --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --seed ${SEED}
 rm -rf ${OUTPUT_DIR}/lost_job_1mo/models/!(best_model)
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
@@ -77,8 +79,8 @@ python3 train_bert.py \
   --output_dir ${OUTPUT_DIR}/is_unemployed \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
-  --segment ${SEGMENT}
-#--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --seed ${SEED}
 rm -rf ${OUTPUT_DIR}/is_unemployed/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
@@ -94,8 +96,8 @@ python3 train_bert.py \
   --output_dir ${OUTPUT_DIR}/job_search \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
-  --segment ${SEGMENT}
-#--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --seed ${SEED}
 rm -rf ${OUTPUT_DIR}/job_search/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
@@ -111,8 +113,8 @@ python3 train_bert.py \
   --output_dir ${OUTPUT_DIR}/is_hired_1mo \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
-  --segment ${SEGMENT}
-#--intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --seed ${SEED}
 rm -rf ${OUTPUT_DIR}/is_hired_1mo/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
@@ -128,8 +130,8 @@ python3 train_bert.py \
   --output_dir ${OUTPUT_DIR}/job_offer \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
-  --segment ${SEGMENT}
-# --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
+  --seed ${SEED}
 rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
