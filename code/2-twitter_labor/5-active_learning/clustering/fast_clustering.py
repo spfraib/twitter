@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
     # Load data
     logger.info("Load and concat data")
-    scores_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation/output')
+    scores_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation/output/lost_job_1mo')
     random_set_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/evaluation')
     scores_df = pd.concat(
         pd.read_parquet(parquet_file)
