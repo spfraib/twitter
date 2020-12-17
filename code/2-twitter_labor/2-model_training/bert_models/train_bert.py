@@ -58,6 +58,7 @@ import numpy as np
 from datetime import datetime
 import time
 import pytz
+import json
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -166,6 +167,10 @@ def copy_folder(src, dst):
             shutil.copy(src, dst)
         else: raise
 
+def read_json(filename: str):
+    with open(filename) as f_in:
+        return json.load(f_in)
+
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
@@ -266,7 +271,8 @@ if __name__ == "__main__":
             print("The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
 
     # Load best model (in terms of evaluation loss)
-    best_model = ClassificationModel(args.model_name, path_to_store_best_model)
+    train_args = read_json(filename=os.path.join(path_to_store_best_model, 'model_args.json'))
+    best_model = ClassificationModel(args.model_name, path_to_store_best_model, args=train_args)
 
     # EVALUATION ON EVALUATION SET
     result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
@@ -292,10 +298,11 @@ if __name__ == "__main__":
                                   }
     # Save evaluation results on eval set
     segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
+    seed_str = f'seed-{args.seed}'
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '-')
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
                                               f'{name_val_file}_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
         os.makedirs(os.path.dirname(path_to_store_eval_results))
@@ -306,7 +313,7 @@ if __name__ == "__main__":
     # Save scores
     eval_df['{}_scores'.format(args.model_type)] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
                                               f'{name_val_file}_scores.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
         os.makedirs(os.path.dirname(path_to_store_eval_scores))
@@ -338,7 +345,7 @@ if __name__ == "__main__":
         # Save evaluation results on holdout set
         name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
         path_to_store_holdout_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
                                               f'{name_holdout_file}_scores.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
             os.makedirs(os.path.dirname(path_to_store_holdout_results))
@@ -350,7 +357,7 @@ if __name__ == "__main__":
         # Save scores
         holdout_df['{}_scores'.format(args.model_type)] = scores
         path_to_store_holdout_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{segmented_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
                                               f'{name_holdout_file}_scores.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_scores)):
             os.makedirs(os.path.dirname(path_to_store_holdout_scores))
