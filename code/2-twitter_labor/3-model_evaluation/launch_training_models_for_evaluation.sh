@@ -45,7 +45,7 @@ CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-mo
 
 echo "Launch series of training with different seeds";
 for i in {1..15}; do
-  sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} i True
+  sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} ${i} True
 done
 
 
