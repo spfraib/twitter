@@ -16,7 +16,7 @@ module load anaconda3/2019.10
 source /scratch/mt4493/twitter_labor/code/envs/active_learning_env/bin/activate
 echo "virtualenv activated"
 
-CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning
+CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/clustering
 
 python3 ${CODE_FOLDER}/fast_clustering.py
 
