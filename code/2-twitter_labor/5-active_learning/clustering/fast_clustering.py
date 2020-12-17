@@ -17,6 +17,7 @@ import pickle
 import time
 import pandas as pd
 import logging
+from pathlib import Path
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -89,8 +90,8 @@ if __name__ == '__main__':
 
     # Load data
     logger.info("Load and concat data")
-    scores_dir = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation/output'
-    random_set_dir = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/evaluation'
+    scores_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/US/DeepPavlov_bert-base-cased-conversational_nov13_iter0_14045091-14114233-evaluation/output')
+    random_set_dir = Path('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/evaluation')
     scores_df = pd.concat(
         pd.read_parquet(parquet_file)
         for parquet_file in scores_dir.glob('*.parquet')
