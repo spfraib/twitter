@@ -98,14 +98,13 @@ if __name__ == '__main__':
     )
     scores_df = scores_df.reset_index()
     logger.info('Loaded scores')
-
     text_df = pd.concat(
         pd.read_parquet(parquet_file)
         for parquet_file in random_set_dir.glob('*.parquet')
     )
-
     logger.info('Loaded text')
     df = scores_df.merge(text_df, on="tweet_id", how = 'inner')
+    logger.info('Merged both')
     df['rank'] = df['score'].rank(method='dense', ascending=False)
     df = df.sort_values(by=['rank']).reset_index(drop=True)
     max_corpus_size = 50000 # We limit our corpus to only the first 50k lines
