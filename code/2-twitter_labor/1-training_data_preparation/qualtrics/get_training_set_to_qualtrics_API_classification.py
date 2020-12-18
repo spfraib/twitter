@@ -301,8 +301,10 @@ if __name__ == "__main__":
     tweets = discard_already_labelled_tweets(
         path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
         to_label_df=tweets)
+    print('Total # of tweets to labels: ', tweets.shape[0] )
 
     tweets = tweets.sample(n=n_tweets, random_state=0)
+
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
 
     tweets_0 = tweets.sample(frac=1, random_state=0).set_index('tweet_id')['text']
