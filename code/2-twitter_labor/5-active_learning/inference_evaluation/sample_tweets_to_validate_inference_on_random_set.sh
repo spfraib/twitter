@@ -10,7 +10,7 @@ export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
 export PYTHONIOENCODING=utf8
 
-CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/qualtrics
+CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/inference_evaluation
 TIMESTAMP=$(date +%s)
 JOB_NAME=sample_tweets_to_validate_inference_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
