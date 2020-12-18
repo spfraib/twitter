@@ -1,6 +1,7 @@
 #!/bin/bash
 
-LABEL=$1
+COUNTRY_CODE=$1
+MODEL_FOLDER=$2
 
 NB_CORES=20
 
@@ -20,4 +21,5 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --driver-memory ${NB_CORES}G --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.maxExecutors=50 \
   --executor-cores ${NB_CORES} --executor-memory ${NB_CORES}G \
   ${CODE_FOLDER}/sample_tweets_to_validate_inference_on_random_set.py \
-  --label ${LABEL}
+  --country_code ${COUNTRY_CODE} \
+  --model_folder ${MODEL_FOLDER}
