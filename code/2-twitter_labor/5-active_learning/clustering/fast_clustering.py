@@ -130,9 +130,9 @@ if __name__ == '__main__':
 
     #logger.info all cluster / communities
     for i, cluster in enumerate(clusters):
-        logger.info("\nCluster {}, #{} Elements ".format(i+1, len(cluster)))
+        print("\nCluster {}, #{} Elements ".format(i+1, len(cluster)))
         for sentence_id in cluster:
-            logger.info("\t", corpus_sentences[sentence_id])
+            print("\t", corpus_sentences[sentence_id])
 
 
 
