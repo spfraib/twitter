@@ -236,6 +236,11 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     else:
         return to_label_df
 
+def discard_dropped_ngrams(to_label_df):
+    dropped_ngrams_list = ['i_fired', 'firedme', 'i_unemployed', 'i_jobless','i_not_working']
+    to_label_df = to_label_df[~to_label_df['ngram'].isin(dropped_ngrams_list)].reset_index(drop=True)
+    return to_label_df
+
     # df_list = list()
     # for folder in os.listdir(path_to_labelled):
     #     for file in glob(os.path.join(path_to_labelled, folder, '*.csv')):
@@ -298,10 +303,14 @@ if __name__ == "__main__":
     # path to labelling as argument?
     tweets = pq.ParquetDataset(
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    if args.country_code == 'US':
+        tweets = discard_dropped_ngrams(to_label_df=tweets)
+    print('Total # of tweets to label: ', tweets.shape[0] )
+
     tweets = discard_already_labelled_tweets(
         path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
         to_label_df=tweets)
-    print('Total # of tweets to labels: ', tweets.shape[0] )
+    print('# of labels remaining: ', tweets.shape[0] )
 
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
