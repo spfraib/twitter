@@ -308,7 +308,9 @@ if __name__ == "__main__":
 
     if args.country_code == 'US':
         tweets = discard_dropped_ngrams(to_label_df=tweets)
+
     print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
+    print('# tweets per ngram', tweets['ngram'].value_counts(dropna=False))
 
     tweets = discard_already_labelled_tweets(
         path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
