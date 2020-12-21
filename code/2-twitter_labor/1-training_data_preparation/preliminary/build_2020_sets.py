@@ -21,8 +21,8 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
 
     country_code=args.country_code
-    path_to_tweets = os.path.join('/user/mt4493/twitter/all_tweets', country_code)
-    output_path= os.path.join('/user/mt4493/twitter/tweets_2020', country_code)
+    path_to_tweets = os.path.join('/user/spf248/twitter/data/timelines/decahose/update/112020/API', country_code)
+    output_path= os.path.join('/user/spf248/twitter/tweets_2020', country_code)
 
     df = spark.read.parquet(os.path.join(path_to_tweets))
 
