@@ -24,7 +24,7 @@ if __name__ == "__main__":
     path_to_tweets = os.path.join('/user/spf248/twitter/data/timelines/decahose/update/112020/API', country_code)
     output_path= os.path.join('/user/spf248/twitter/tweets_2020', country_code)
 
-    df = spark.read.parquet(os.path.join(path_to_tweets))
+    df = spark.read.json(os.path.join(path_to_tweets))
 
     df = df.select('text', 'created_at', to_timestamp(df.created_at, 'yyyy-MM-dd HH:mm:ss').alias('date'))
     df = df.withColumn('year', year('date'))
