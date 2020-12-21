@@ -303,9 +303,12 @@ if __name__ == "__main__":
     # path to labelling as argument?
     tweets = pq.ParquetDataset(
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    print('Total # of tweets to label (with old ngrams): ', tweets.shape[0] )
+
+
     if args.country_code == 'US':
         tweets = discard_dropped_ngrams(to_label_df=tweets)
-    print('Total # of tweets to label: ', tweets.shape[0] )
+    print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
 
     tweets = discard_already_labelled_tweets(
         path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
