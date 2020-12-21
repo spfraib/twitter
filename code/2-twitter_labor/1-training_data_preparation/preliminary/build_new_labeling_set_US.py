@@ -55,20 +55,21 @@ new_ngrams_list = {'regex': ["(^|\W)i[ve|'ve| ][\w\s\d]* fired",
                    ]}
 
 
-for ngram_type, ngram in new_ngrams_list.items():
-    if ngram_type == 'regex':
-        df_ngram = random_df.filter(random_df.text_lowercase.rlike(ngram))
-    elif ngram_type == 'contains':
-        df_ngram = random_df.filter(random_df.text_lowercase.contains(ngram))
-    share = min(float(1000 / df_ngram.count()), 1.0)
-    df_ngram_sample = df_ngram.sample(False, share, seed=0)
-    #ngram_str = '_'.join(ngram).replace(' ', '')
-    #ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
-    #print(ngram_folder_name_str)
-    ngram_sample_path = f'/user/mt4493/twitter/ngram_samples/US/sample_new_1000'
-    df_ngram_sample = df_ngram_sample.withColumn('ngram', lit(ngram))
-    # run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
-    df_ngram_sample.write.mode('append').parquet(ngram_sample_path)
+for ngram_type, ngram_list in new_ngrams_list.items():
+    for ngram in ngram_list:
+        if ngram_type == 'regex':
+            df_ngram = random_df.filter(random_df.text_lowercase.rlike(ngram))
+        elif ngram_type == 'contains':
+            df_ngram = random_df.filter(random_df.text_lowercase.contains(ngram))
+        share = min(float(1000 / df_ngram.count()), 1.0)
+        df_ngram_sample = df_ngram.sample(False, share, seed=0)
+        #ngram_str = '_'.join(ngram).replace(' ', '')
+        #ngram_folder_name_str = f'{ngram_str}_{df_ngram_sample.count()}'
+        #print(ngram_folder_name_str)
+        ngram_sample_path = f'/user/mt4493/twitter/ngram_samples/US/sample_new_1000'
+        df_ngram_sample = df_ngram_sample.withColumn('ngram', lit(ngram))
+        # run_cmd(['hdfs', 'dfs', '-mkdir', '-p', ngram_sample_path])
+        df_ngram_sample.write.mode('append').parquet(ngram_sample_path)
 
 df_ngrams_all_samples = spark.read.parquet(f'/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
 labelling_path = f'/user/mt4493/twitter/ngram_samples/US/labeling'
