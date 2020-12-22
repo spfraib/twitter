@@ -66,7 +66,7 @@ if __name__ == "__main__":
         lambda x: x == 5).dropna().index
 
     nb_tweets_to_label_dict = {
-        'US': 2964,
+        'US': 4081,
         'MX': 2783,
         'BR': 2485
     }
