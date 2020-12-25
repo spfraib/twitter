@@ -22,7 +22,7 @@ if __name__ == "__main__":
 
     country_code=args.country_code
     path_to_tweets = os.path.join('/user/mt4493/twitter/tweets_2020/orc', country_code)
-    output_path= os.path.join('/user/spf248/twitter/tweets_2020/parquet', country_code)
+    output_path= os.path.join('/user/mt4493/twitter/tweets_2020/parquet', country_code)
 
     df = spark.read.orc(os.path.join(path_to_tweets))
 
