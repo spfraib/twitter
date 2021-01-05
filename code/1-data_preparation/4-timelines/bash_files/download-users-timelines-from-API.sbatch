@@ -14,7 +14,7 @@ MODE=$2
 THIS_BATCH=$3
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 
 source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 

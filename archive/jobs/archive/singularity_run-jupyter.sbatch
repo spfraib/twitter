@@ -9,7 +9,7 @@
 
 singularity exec --nv /beegfs/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif /bin/bash
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 
 port=$(shuf -i 10000-65500 -n 1)

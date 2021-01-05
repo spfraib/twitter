@@ -18,7 +18,7 @@
 #SBATCH --output=slurm_%j.out
 
 #module purge
-#module load anaconda3/2019.10
+#module load anaconda3/2020.02
 singularity exec --nv /beegfs/work/public/singularity/cuda10.1-cudnn7-devel-ubuntu18.04.sif /bin/bash
 echo singularity
 source /scratch/spf248/pyenv_dval_wb_twitter_as_sam/py3.7/bin/activate

@@ -10,7 +10,7 @@
 #SBATCH --output=slurm_%j.out
  
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 source /scratch/spf248/pyenv/py3.7/bin/activate
 
 cd /scratch/spf248/twitter

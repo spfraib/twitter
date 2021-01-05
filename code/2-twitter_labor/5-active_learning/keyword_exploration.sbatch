@@ -13,7 +13,7 @@ INFERENCE_FOLDER=$1
 #DATA_FOLDER=$2
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 
 source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 echo "pyenv activated"

@@ -39,7 +39,7 @@ DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/$
 
 # Load packages and activate virtual environment
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 source /scratch/mt4493/twitter_labor/code/envs/experimental_env/bin/activate
 echo "virtualenv activated"
 

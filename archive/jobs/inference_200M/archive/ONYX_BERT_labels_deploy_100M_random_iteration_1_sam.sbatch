@@ -18,7 +18,7 @@
 #SBATCH --output=slurm_%j.out
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 
 source /scratch/spf248/pyenv_dval_wb_twitter_as_sam/py3.7/bin/activate
 
