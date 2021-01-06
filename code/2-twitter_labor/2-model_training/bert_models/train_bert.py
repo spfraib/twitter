@@ -221,8 +221,8 @@ if __name__ == "__main__":
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
-                                      "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" ,
+                                      "early_stopping_delta": 0, "early_stopping_metric": "auroc",
+                                      "early_stopping_metric_minimize": False, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" ,
                                       "manual_seed": args.seed}
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
