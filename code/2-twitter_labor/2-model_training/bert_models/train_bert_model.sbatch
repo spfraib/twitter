@@ -56,7 +56,6 @@ echo '***********************STARTING TRAINING ON LABEL lost_job_1mo************
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
   --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
-  --holdout_data_path ${DATA_PATH}/holdout_lost_job_1mo.csv \
   --model_name ${MODEL_NAME} \
   --model_type ${MODEL_TYPE} \
   --num_train_epochs 10 \
@@ -64,7 +63,9 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}
+  --seed ${SEED} \
+  #--holdout_data_path ${DATA_PATH}/holdout_lost_job_1mo.csv \
+
 rm -rf ${OUTPUT_DIR}/lost_job_1mo/models/!(best_model)
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
@@ -72,7 +73,6 @@ echo '***********************STARTING TRAINING ON LABEL is_unemployed***********
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
   --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
-  --holdout_data_path ${DATA_PATH}/holdout_is_unemployed.csv \
   --model_name ${MODEL_NAME} \
   --model_type ${MODEL_TYPE} \
   --num_train_epochs 10 \
@@ -80,7 +80,9 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}
+  --seed ${SEED} \
+  #--holdout_data_path ${DATA_PATH}/holdout_is_unemployed.csv \
+
 rm -rf ${OUTPUT_DIR}/is_unemployed/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
@@ -89,7 +91,6 @@ echo '***********************STARTING TRAINING ON LABEL job_search**************
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_search.csv \
   --eval_data_path ${DATA_PATH}/val_job_search.csv \
-  --holdout_data_path ${DATA_PATH}/holdout_job_search.csv \
   --model_name ${MODEL_NAME} \
   --model_type ${MODEL_TYPE} \
   --num_train_epochs 10 \
@@ -97,7 +98,9 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}
+  --seed ${SEED} \
+  #--holdout_data_path ${DATA_PATH}/holdout_job_search.csv \
+
 rm -rf ${OUTPUT_DIR}/job_search/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
@@ -106,7 +109,6 @@ echo '***********************STARTING TRAINING ON LABEL is_hired_1mo************
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
   --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
-  --holdout_data_path ${DATA_PATH}/holdout_is_hired_1mo.csv \
   --model_name ${MODEL_NAME} \
   --model_type ${MODEL_TYPE} \
   --num_train_epochs 10 \
@@ -114,7 +116,9 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}
+  --seed ${SEED} \
+  #--holdout_data_path ${DATA_PATH}/holdout_is_hired_1mo.csv \
+
 rm -rf ${OUTPUT_DIR}/is_hired_1mo/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
@@ -123,7 +127,6 @@ echo '***********************STARTING TRAINING ON LABEL job_offer***************
 python3 train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_offer.csv \
   --eval_data_path ${DATA_PATH}/val_job_offer.csv \
-  --holdout_data_path ${DATA_PATH}/holdout_job_offer.csv \
   --model_name ${MODEL_NAME} \
   --model_type ${MODEL_TYPE} \
   --num_train_epochs 10 \
@@ -131,7 +134,9 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}
+  --seed ${SEED} \
+  #--holdout_data_path ${DATA_PATH}/holdout_job_offer.csv \
+
 rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
