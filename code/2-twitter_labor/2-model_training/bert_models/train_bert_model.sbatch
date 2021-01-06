@@ -44,8 +44,8 @@ source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
-mkdir /scratch/mt4493/twitter_labor/trained_models/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"
-OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}
+mkdir /scratch/mt4493/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_SEED_"${SEED}"
+OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_SEED_${SEED}
 echo "Output folder created: ${OUTPUT_DIR}"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
