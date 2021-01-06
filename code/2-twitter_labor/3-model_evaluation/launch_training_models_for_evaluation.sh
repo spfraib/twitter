@@ -44,7 +44,7 @@ MODEL_NAME_1=$(select_model_name "${MODEL_TYPE_1}")
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
 echo "Launch series of training with different seeds";
-for i in {1..15}; do
+for i in {1..12}; do
   sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} ${i} True
 done
 
