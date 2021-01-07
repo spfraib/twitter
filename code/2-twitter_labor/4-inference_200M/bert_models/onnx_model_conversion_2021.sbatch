@@ -10,8 +10,7 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 
 COUNTRY_CODE=$1
-MODEL_FOLDER=$2
-MODEL_NAME=$3
+ITER=$2
 
 module purge
 module load anaconda3/2020.02
@@ -23,7 +22,7 @@ echo "pyenv activated"
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
 python3 onnx_model_conversion_2021.py \
---model_path /scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_FOLDER}/{}/models/best_model \
---model_name ${MODEL_NAME}
+--iter ${ITER} \
+--country_code ${COUNTRY_CODE}
 
 exit
