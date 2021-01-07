@@ -10,7 +10,7 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 
 COUNTRY_CODE=$1
-ITER=$2
+MODEL_FOLDER=$2
 
 module purge
 module load anaconda3/2020.02
