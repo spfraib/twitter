@@ -11,8 +11,8 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_inference_berts_%j.out
 
-ITER=$1
-COUNTRY_CODE=$2
+COUNTRY_CODE=$1
+ITER=$2
 MODE=$3
 
 JOB_ID=${SLURM_ARRAY_JOB_ID}
