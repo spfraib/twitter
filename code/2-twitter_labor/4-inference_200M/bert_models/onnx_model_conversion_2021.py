@@ -44,7 +44,7 @@ for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "jo
     logger.info('>> Quantization')
     quantized_output = quantize(optimized_output)
 
-    logger.info('Verification')
+    logger.info('>> Verification')
     verify(Path(os.path.join(onnx_path, 'converted.onnx')))
     verify(optimized_output)
     verify(quantized_output)
