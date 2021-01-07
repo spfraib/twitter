@@ -35,7 +35,7 @@ best_model_paths_dict = {
             'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
             'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
             'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-            'job_offer': 'roberta-base_jan5_iter0_928467_SEED_2',
+            'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
             'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
         }}}
 
