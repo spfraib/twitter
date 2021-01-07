@@ -39,9 +39,11 @@ if __name__ == '__main__':
                          args.country_code,
                          'evaluation'))  # Random set of tweets
         path_to_scores = Path(
-            os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference', args.country_code, args.model_folder, 'output',
+            os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference', args.country_code,
+                         args.model_folder, 'output',
                          label))  # Prediction scores from classification
-        path_to_evals = os.path.join('/user/mt4493/twitter/evaluation', args.country_code, args.model_folder,
+        path_to_evals = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_inference',
+                                     args.country_code, args.model_folder,
                                      label)  # Where to store the sampled tweets to be labeled
         if not os.path.exists(path_to_evals):
             os.makedirs(path_to_evals)
@@ -51,8 +53,8 @@ if __name__ == '__main__':
         tweets_df = pd.concat(pd.read_parquet(parquet_file) for parquet_file in path_to_tweets.glob('*.parquet'))
         scores_df = pd.concat(pd.read_parquet(parquet_file) for parquet_file in path_to_scores.glob('*.parquet'))
         sampled_indices = pd.DataFrame({
-                                           'point': sampled_points,
-                                           'rank': sampled_ranks})
+            'point': sampled_points,
+            'rank': sampled_ranks})
         df = tweets_df.join(scores_df, on='tweet_id')
         df['rank'] = df['score'].rank(method='dense', ascending=False)
         df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
