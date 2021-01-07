@@ -21,7 +21,7 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
-python3 onnx_model_conversion_2021.py \
+python3 onnx_model_conversion.py \
 --iteration_number ${ITER} \
 --country_code ${COUNTRY_CODE}
 
