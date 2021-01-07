@@ -14,6 +14,7 @@
 COUNTRY_CODE=$1
 ITER=$2
 MODE=$3
+RUN_NAME=$4
 
 JOB_ID=${SLURM_ARRAY_JOB_ID}
 
@@ -21,11 +22,11 @@ JOB_ID=${SLURM_ARRAY_JOB_ID}
 if [ ${MODE} -eq 0 ]
 then
   INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/evaluation
-  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${JOB_ID}-evaluation
+  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-evaluation
 elif [ ${MODE} -eq 1 ]
 then
   INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/new_samples
-  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${JOB_ID}-new_samples
+  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-new_samples
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
