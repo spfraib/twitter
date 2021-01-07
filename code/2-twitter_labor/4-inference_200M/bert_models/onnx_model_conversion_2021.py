@@ -5,6 +5,7 @@ import shutil
 from transformers.convert_graph_to_onnx import convert, optimize, quantize, verify
 import argparse
 import logging
+from pathlib import Path
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -34,7 +35,7 @@ for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "jo
     convert(framework="pt",
             model=model_path,
             tokenizer=args.model_name,
-            output=os.path.join(onnx_path, 'converted.onnx'),
+            output=Path(os.path.join(onnx_path, 'converted.onnx')),
             opset=11,
             pipeline_name='sentiment-analysis')
 
