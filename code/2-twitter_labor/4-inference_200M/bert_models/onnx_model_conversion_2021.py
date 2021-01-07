@@ -12,6 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def convert_model_path_to_model_name(model_path):
     if 'bertweet' in model_path:
         return 'vinai/bertweet-base'
@@ -20,9 +21,10 @@ def convert_model_path_to_model_name(model_path):
     elif 'DeepPavlov' in model_path:
         return 'DeepPavlov/bert-base-cased-conversational'
 
+
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--iter", type=int, help="path to pytorch models (with onnx model in model_path/onnx/")
+parser.add_argument("--iteration_number", type=int, help="path to pytorch models (with onnx model in model_path/onnx/")
 parser.add_argument("--country_code", type=str)
 
 args = parser.parse_args()
@@ -40,7 +42,9 @@ best_model_paths_dict = {
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
     logger.info(f'*****************************{label}*****************************')
-    model_path = f'/scratch/mt4493/twitter_labor/trained_models/{args.country_code}/{best_model_paths_dict[args.iter][args.country_code][label]}/{label}/models/best_model'
+    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
+                              best_model_paths_dict[f'iter{str(args.iteration_number)}'][args.country_code][label],
+                              label, 'models', 'best_model')
     onnx_path = os.path.join(model_path, 'onnx')
 
     try:
