@@ -40,7 +40,7 @@ for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "jo
             pipeline_name='sentiment-analysis')
 
     logger.info('>> ONNX optimization')
-    optimized_output = optimize(os.path.join(onnx_path, 'converted.onnx'))
+    optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
     logger.info('>> Quantization')
     quantized_output = quantize(optimized_output)
 
