@@ -36,7 +36,7 @@ for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "jo
             tokenizer=args.model_name,
             output=os.path.join(onnx_path, 'converted.onnx'),
             opset=11,
-            pipeline='sentiment-analysis')
+            pipeline_name='sentiment-analysis')
 
     logger.info('>> ONNX optimization')
     optimized_output = optimize(os.path.join(onnx_path, 'converted.onnx'))
