@@ -1,6 +1,13 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+print('running inference_ONNX_bert_100M_random.py')
+
+import sys
 import os
 import torch
 import onnxruntime as ort
+import argparse
 import pandas as pd
 import numpy as np
 import os
@@ -8,29 +15,21 @@ import time
 import torch.nn.functional as F
 import onnx
 import getpass
-from transformers import AutoTokenizer
-import time
-import pyarrow.parquet as pq
-from glob import glob
-import os
-import numpy as np
-import argparse
-import logging
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
+sys.path.append('/scratch/da2734/twitter/jobs/inference_200M/utils_for_inference')
+from onnxruntime_tools import optimizer
+from transformers import BertConfig, BertTokenizer, BertTokenizerFast, BertForSequenceClassification
+
 print('libs loaded')
 
+import argparse
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--input_path", type=str, help="path to input data")
-parser.add_argument("--output_path", type=str, help="path where inference csv is saved")
-parser.add_argument("--country_code", type=str, help="path where inference csv is saved")
-parser.add_argument("--iteration_number", type=int)
-
+parser.add_argument("--model_path", help="path to pytorch models (with onnx model in model_path/onnx/")
+parser.add_argument("--input_path", help="path to input data")
+parser.add_argument("--output_path", help="path where inference csv is saved")
+parser.add_argument("--country_code", help="path where inference csv is saved")
 
 args = parser.parse_args()
 
@@ -65,11 +64,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
     ort_session = ort.InferenceSession(onnx_model, options)
 
     # pytorch pretrained model and tokenizer
-    if 'bertweet' in onnx_model:
-        tokenizer = AutoTokenizer.from_pretrained(model_dir, normalization=True)
-    else:
-        tokenizer = AutoTokenizer.from_pretrained(model_dir)
-
+    tokenizer = BertTokenizerFast.from_pretrained(model_dir)
     tokenizer_str = "TokenizerFast"
 
     print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
@@ -86,7 +81,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
         """
 
         if i % 100 == 0:
-            print(f'[inference: {i} out of {str(len(examples))}')
+            print('[inference... ]', i, 'out of ', len(examples))
 
         tokens = get_tokens(tokens_dict, i)
         # inference
@@ -136,6 +131,12 @@ print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 # # loading data
 # ####################################################################################################################################
 
+import time
+import pyarrow.parquet as pq
+from glob import glob
+import os
+import numpy as np
+
 path_to_data = args.input_path
 
 print('Load random Tweets:')
@@ -144,6 +145,9 @@ start_time = time.time()
 
 paths_to_random = list(np.array_split(
     glob(os.path.join(path_to_data, '*.parquet')),
+    #                         glob(os.path.join(path_to_data,'random_first_half','*.parquet')),
+    #                         glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
+    #                         glob(os.path.join(path_to_data,'random_1perct_sample','*.parquet')),
     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 print('#files:', len(paths_to_random))
 
@@ -169,31 +173,26 @@ examples = tweets_random.text.values.tolist()
 
 print('convert to list:', str(time.time() - start_time), 'seconds')
 
-best_model_folders_dict = {'iter0': { 'US': {
-    'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
-    'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
-    'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-    'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-    'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
-}}}
+#model_folder_name = os.path.basename(os.path.abspath(os.path.join(args.model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
     print('\n\n!!!!!', column)
     loop_start = time.time()
-    best_model_folder = best_model_folders_dict[f'iter{str(args.iteration_number)}'][args.country_code][column]
-    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder, column, 'models', 'best_model')
+
+    model_path = args.model_path.format(column)
+    #model_folder_name = os.path.basename(os.path.abspath(os.path.join(model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
 
     print(model_path)
-    onnx_path = os.path.join(model_path, 'onnx')
+    onnx_path = model_path + '/onnx/'
     print(onnx_path)
 
     ####################################################################################################################################
-    # TOKENIZATION and INFERENCE
+    # TOKENIZATION and INFERENCE 
     ####################################################################################################################################
     print('Predictions of random Tweets:')
     start_time = time.time()
-    onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+    onnx_labels = inference(onnx_path + 'ONNX_model_optimized_quantized.onnx',
                             model_path,
                             examples,
                             fast_tokenizer=True,
@@ -204,7 +203,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
 
     ####################################################################################################################################
     # SAVING
-    ####################################################################################################################################
+    ####################################################################################################################################        
     print('Save Predictions of random Tweets:')
     start_time = time.time()
     final_output_path = args.output_path
@@ -231,3 +230,4 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
 
     print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
 
+#     break
