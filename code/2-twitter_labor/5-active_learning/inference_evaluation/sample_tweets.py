@@ -55,9 +55,9 @@ if __name__ == '__main__':
         sampled_indices = pd.DataFrame({
             'point': sampled_points,
             'rank': sampled_ranks})
-        df = tweets_df.join(scores_df, on='tweet_id')
+        df = tweets_df.merge(scores_df, on=['tweet_id'])
         df['rank'] = df['score'].rank(method='dense', ascending=False)
         df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
-        df = df.join(sampled_indices, on='rank')
+        df = df.merge(sampled_indices, on=['rank'])
         df = df[['rank', 'tweet_id', 'text', 'score', 'point']]
         df.to_csv(path_to_evals, index=False)
