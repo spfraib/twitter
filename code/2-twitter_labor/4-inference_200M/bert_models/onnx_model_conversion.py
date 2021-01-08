@@ -32,11 +32,16 @@ args = parser.parse_args()
 best_model_paths_dict = {
     'iter0': {
         'US': {
-            'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
-            'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
-            'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-            'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-            'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
+            'lost_job_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928497_SEED_14',
+            'is_hired_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928488_SEED_5',
+            'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
+            'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
+            'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
+            # 'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
+            # 'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
+            # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+            # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+            # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
         }}}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
