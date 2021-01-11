@@ -30,4 +30,4 @@ if __name__ == "__main__":
     f = f.withColumn('frac', F.when(col('count') < 20, 1).otherwise(20 / col('count')))
     frac_dict = dict(f.select('ngram', 'frac').collect())
     df_sampled = df.sampleBy('ngram', fractions=frac_dict)
-    df_sampled.coalesce(1).write.mode("overwrite").option("header", "true").csv('/user/mt4493/twitter/ngram_samples/US/specificity_check')
+    df_sampled.select('tweet_id', 'text', 'ngram').coalesce(1).write.mode("overwrite").option("header", "true").csv('/user/mt4493/twitter/ngram_samples/US/specificity_check')
