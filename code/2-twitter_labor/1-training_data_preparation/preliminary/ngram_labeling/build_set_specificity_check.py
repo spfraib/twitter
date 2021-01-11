@@ -24,6 +24,7 @@ if __name__ == "__main__":
     df_sample_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_1000')
     df_sample_new_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
     df = df_sample_1000.union(df_sample_new_1000)
+    df = df.withColumn('text', regexp_replace('text', '\\', ' '))
     dropped_ngrams_list = ['i_fired', 'firedme', 'i_unemployed', 'i_jobless', 'i_not_working']
     df = df.filter(~df.ngram.isin(dropped_ngrams_list))
     f = df.groupby('ngram').count()
