@@ -13,7 +13,7 @@ export PYTHONIOENCODING=utf8
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/inference_evaluation
 TIMESTAMP=$(date +%s)
-JOB_NAME=sample_tweets_to_validate_inference_${TIMESTAMP}
+JOB_NAME=compute_share_ngram_${TIMESTAMP}
 spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.yarn.submit.waitAppCompletion=false --conf spark.serializer=org.apache.spark.serializer.KryoSerializer \
   --conf spark.speculation=false --conf spark.yarn.appMasterEnv.LANG=en_US.UTF-8 \
