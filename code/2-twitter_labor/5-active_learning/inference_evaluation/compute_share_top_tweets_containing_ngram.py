@@ -81,7 +81,7 @@ if __name__ == '__main__':
         'MX': 99998628,
         'BR': 99984967}
     labels = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
-    base_ranks=[int(x*N_random) for x in base_rates]
+    base_ranks=[int(x*N_random[args.country_code]) for x in base_rates]
     label2rank=dict(zip(labels,base_ranks))
 
     for label in labels:
