@@ -45,18 +45,16 @@ if __name__ == '__main__':
         logger.info('Loaded text')
         df = scores_df.merge(text_df, on="tweet_id", how='inner')
         df['rank'] = df['score'].rank(method='dense', ascending=False)
-        df = df.sort_values(by=['rank']).reset_index(drop=True)
-        corpus_tweets = df['text'].tolist()
-        rank_list = df['rank'].tolist()
+        
         logger.info('Start encoding')
-        corpus_embeddings = embedder.encode(corpus_tweets, show_progress_bar=True, convert_to_numpy=True)
+        corpus_embeddings = embedder.encode(df['text'].tolist(), show_progress_bar=True, convert_to_numpy=True)
         logger.info('Done encoding')
         if not os.path.exists(os.path.join(args.output_folder, args.model_type)):
             os.makedirs(os.path.join(args.output_folder, args.model_type))
         output_path = f'{args.output_folder}/{args.model_type}/embeddings-{label}.pkl'
         with open(output_path, "wb") as fOut:
             pickle.dump({
-                'sentences': corpus_tweets,
-                'rank': rank_list,
+                'sentences': df['text'].tolist(),
+                'rank': df['rank'].tolist(),
                 'embeddings': corpus_embeddings}, fOut)
         logger.info(f'Embeddings for {label} saved at {output_path}')
