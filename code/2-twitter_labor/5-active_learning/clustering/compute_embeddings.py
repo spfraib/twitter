@@ -37,15 +37,16 @@ if __name__ == '__main__':
             pd.read_parquet(parquet_file)
             for parquet_file in scores_dir.glob('*.parquet')
         )
-        logger.info('Loaded scores')
+        logger.info(f'Loaded {scores_df.shape[0]} scores')
         text_df = pd.concat(
             pd.read_parquet(parquet_file)
             for parquet_file in random_set_dir.glob('*.parquet')
         )
-        logger.info('Loaded text')
+        logger.info(f'Loaded {text_df.shape[0]} tweets')
         df = scores_df.merge(text_df, on="tweet_id", how='inner')
+        logger.info(f'Merged scores and text. Merge size: {df.shape[0]}')
         df['rank'] = df['score'].rank(method='dense', ascending=False)
-        
+
         logger.info('Start encoding')
         corpus_embeddings = embedder.encode(df['text'].tolist(), show_progress_bar=True, convert_to_numpy=True)
         logger.info('Done encoding')
