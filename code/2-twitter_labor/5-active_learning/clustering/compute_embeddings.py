@@ -12,6 +12,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -22,13 +23,16 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     embedder = SentenceTransformer(args.model_type)
     for label in ['lost_job_1mo', 'is_unemployed', 'is_hired_1mo', 'job_search', 'job_offer']:
         logger.info(f"Load and concat data for label {label}")
-        scores_dir = Path(f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/{args.country_code}/{args.model_folder}/output/{label}')
-        random_set_dir = Path(f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation')
+        scores_dir = Path(
+            f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/{args.country_code}/{args.model_folder}/output/{label}')
+        random_set_dir = Path(
+            f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation')
         scores_df = pd.concat(
             pd.read_parquet(parquet_file)
             for parquet_file in scores_dir.glob('*.parquet')
@@ -52,7 +56,7 @@ if __name__ == '__main__':
         output_path = f'{args.output_folder}/{args.model_type}/embeddings-{label}.pkl'
         with open(output_path, "wb") as fOut:
             pickle.dump({
-                            'sentences': corpus_tweets,
-                            'rank': rank_list,
-                            'embeddings': corpus_embeddings}, fOut)
+                'sentences': corpus_tweets,
+                'rank': rank_list,
+                'embeddings': corpus_embeddings}, fOut)
         logger.info(f'Embeddings for {label} saved at {output_path}')
