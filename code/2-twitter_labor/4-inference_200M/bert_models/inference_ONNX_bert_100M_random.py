@@ -16,6 +16,7 @@ import os
 import numpy as np
 import argparse
 import logging
+import socket
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -129,7 +130,7 @@ def get_env_var(varname, default):
 SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
 SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
 SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
-
+print('Hostname:', socket.gethostname())
 print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
 print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 # ####################################################################################################################################
