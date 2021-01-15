@@ -25,14 +25,11 @@ if __name__ == "__main__":
     df_sample_new_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
     df = df_sample_1000.union(df_sample_new_1000)
     df = df.withColumn('text', regexp_replace('text', '\\', ' '))
-    # dropped_ngrams_list = ['i_fired', 'firedme', 'i_unemployed', 'i_jobless', 'i_not_working']
-    ngrams_list = ['started_job', 'opportunity', 'just got fired', 'lostmyjob', '(^|W)just[wsd]* hired ',
-                   'job', 'unemployment', 'i got hired',  'unemployed', 'jobless', 'newjob', 'hiring', 'found_job',
-                   'searching_job']
-    df = df.filter(df.ngram.isin(ngrams_list))
-    # f = df.groupby('ngram').count()
-    # f = f.withColumn('frac', F.when(col('count') < 20, 1).otherwise(20 / col('count')))
-    # frac_dict = dict(f.select('ngram', 'frac').collect())
-    # df_sampled = df.sampleBy('ngram', fractions=frac_dict)
-    df_sampled = df.select('tweet_id', 'text', 'ngram')
+    dropped_ngrams_list = ['i_fired', 'firedme', 'i_unemployed', 'i_jobless', 'i_not_working']
+    df = df.filter(~df.ngram.isin(dropped_ngrams_list))
+    f = df.groupby('ngram').count()
+    f = f.withColumn('frac', F.when(col('count') < 20, 1).otherwise(20 / col('count')))
+    frac_dict = dict(f.select('ngram', 'frac').collect())
+    df_sampled = df.sampleBy('ngram', fractions=frac_dict)
+    df_sampled = df_sampled.select('tweet_id', 'text', 'ngram')
     df_sampled.coalesce(1).write.mode("overwrite").option("header", "true").csv('/user/mt4493/twitter/ngram_samples/US/specificity_check')
