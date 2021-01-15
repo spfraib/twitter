@@ -40,21 +40,21 @@ if __name__ == "__main__":
         # "(^|W)i[m|'m|ve|'ve| am| have]['wsd]*jobless": 30,
         "anyone_hiring": 27,
         "wish_job": 26,
-        "(^|W)i[m|'m|ve|'ve| am| have]['wsd]*unemployed": 25,
+        "(^|\W)i[m|'m|ve|'ve| am| have]['\w\s\d]*unemployed": 25,
         "i got fired": 23,
         "laidoff": 22,
-        "(^|W)looking[wsd]* gig[W]": 22,
-        "(^|W)applying[wsd]* position[W]": 21,
+        "(^|\W)looking[\w\s\d]* gig[\W]": 22,
+        "(^|\W)applying[\w\s\d]* position[\W]": 21,
         "need_job": 21,
-        "(^|W)find[wsd]* job[W]": 21,
-        "(^|W)i[ve|'ve| ][wsd]* fired": 21,
+        "(^|\W)find[\w\s\d]* job[\W]": 21,
+        "(^|\W)i[ve|'ve| ][\w\s\d]* fired": 21,
         "got_job": 21,
         "apply": 20,
         "started_job": 19,
         "opportunity": 19,
         "just got fired": 19,
         "lostmyjob": 18,
-        "(^|W)just[wsd]* hired": 18,
+        "(^|\W)just[\w\s\d]* hired": 18,
         "job": 17,
         "unemployment": 17,
         "i got hired": 17,
@@ -65,12 +65,13 @@ if __name__ == "__main__":
         "found_job": 10,
         "searching_job": 9
     }
+
     for ngram, count in already_labelled_count_dict.items():
-        df_ngram = df.filter(df.ngram == ngram)
-        if df_ngram.count() >= 31:
+        df_ngram = df.filter(df.ngram == lit(ngram))
+        if df_ngram.count() >= count:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')
-        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram.replace(' ', '_'))
+        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', lit(ngram).replace(' ', '_'))
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
         df_ngram.coalesce(1).write.mode("overwrite").option("header", "true").csv(output_path)
 
