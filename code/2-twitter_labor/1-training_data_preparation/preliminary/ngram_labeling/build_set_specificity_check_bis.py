@@ -35,7 +35,7 @@ if __name__ == "__main__":
     df_sample_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_1000')
     df_sample_new_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
     df = df_sample_1000.union(df_sample_new_1000)
-    df = df.withColumn('text', regexp_replace('text', '\\', ' '))
+    # df = df.withColumn('text', regexp_replace('text', '\\', ' '))
     already_labelled_count_dict = {
         # "(^|W)i[m|'m|ve|'ve| am| have]['wsd]*jobless": 30,
         "anyone_hiring": 27,
