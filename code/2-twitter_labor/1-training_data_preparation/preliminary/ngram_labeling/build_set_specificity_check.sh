@@ -17,4 +17,4 @@ spark-submit --master yarn --deploy-mode cluster --name ${JOB_NAME} \
   --conf spark.executorEnv.LANG=en_US.UTF-8 --driver-cores ${NB_CORES} \
   --driver-memory ${NB_CORES}G --conf spark.dynamicAllocation.enabled=true --conf spark.dynamicAllocation.maxExecutors=50 \
   --executor-cores ${NB_CORES} --executor-memory ${NB_CORES}G \
-  ${CODE_FOLDER}/build_set_specificity_check.py
+  ${CODE_FOLDER}/build_set_specificity_check_bis.py
