@@ -67,11 +67,11 @@ if __name__ == "__main__":
     }
 
     for ngram, count in already_labelled_count_dict.items():
-        df_ngram = df.filter(df.ngram == lit(ngram))
+        df_ngram = df.filter(df.ngram == ngram)
         if df_ngram.count() >= count:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')
-        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', lit(ngram).replace(' ', '_'))
+        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram.replace(' ', '_'))
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
         df_ngram.coalesce(1).write.mode("overwrite").option("header", "true").csv(output_path)
 
