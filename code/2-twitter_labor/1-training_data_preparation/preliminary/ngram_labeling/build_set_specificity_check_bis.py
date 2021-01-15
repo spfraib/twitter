@@ -31,6 +31,12 @@ def run_cmd(args_list):
     s_return = proc.returncode
     return s_return, s_output, s_err
 
+def clean_ngram(ngram):
+    for char in ["(^|\W)", "[m|'m|ve|'ve| am| have]", "['\w\s\d]*", "[\W]", "[ve|'ve| ]", "[\w\s\d]*"]:
+        ngram = ngram.replace(char, '')
+    ngram = ngram.replace(' ', '_')
+    return ngram
+
 if __name__ == "__main__":
     df_sample_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_1000')
     df_sample_new_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
@@ -71,7 +77,7 @@ if __name__ == "__main__":
         if df_ngram.count() >= count:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')
-        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram.replace(' ', '_'))
+        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', clean_ngram(ngram))
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
         df_ngram.coalesce(1).write.mode("overwrite").option("header", "true").csv(output_path)
 
