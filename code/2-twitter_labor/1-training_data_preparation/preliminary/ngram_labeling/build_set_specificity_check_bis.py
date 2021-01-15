@@ -70,7 +70,7 @@ if __name__ == "__main__":
         if df_ngram.count() >= 31:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')
-        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram)
+        output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram.replace(' ', '_'))
         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
         df_ngram.coalesce(1).write.mode("overwrite").option("header", "true").csv(output_path)
 
