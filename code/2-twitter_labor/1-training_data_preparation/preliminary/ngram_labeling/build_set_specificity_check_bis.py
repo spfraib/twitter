@@ -67,7 +67,7 @@ if __name__ == "__main__":
     }
     for ngram, count in already_labelled_count_dict.items():
         df_ngram = df.filter(df.ngram == ngram)
-        if df_ngram.count() >= count:
+        if df_ngram.count() >= 31:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')
         output_path = os.path.join('/user/mt4493/twitter/ngram_samples/US/specificity_check', ngram)
