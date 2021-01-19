@@ -42,38 +42,11 @@ if __name__ == "__main__":
     df_sample_new_1000 = spark.read.parquet('/user/mt4493/twitter/ngram_samples/US/sample_new_1000')
     df = df_sample_1000.union(df_sample_new_1000)
     # df = df.withColumn('text', regexp_replace('text', '\\', ' '))
-    already_labelled_count_dict = {
-        # "(^|W)i[m|'m|ve|'ve| am| have]['wsd]*jobless": 30,
-        "anyone_hiring": 27,
-        "wish_job": 26,
-        "(^|\W)i[m|'m|ve|'ve| am| have]['\w\s\d]*unemployed": 25,
-        "i got fired": 23,
-        "laidoff": 22,
-        "(^|\W)looking[\w\s\d]* gig[\W]": 22,
-        "(^|\W)applying[\w\s\d]* position[\W]": 21,
-        "need_job": 21,
-        "(^|\W)find[\w\s\d]* job[\W]": 21,
-        "(^|\W)i[ve|'ve| ][\w\s\d]* fired": 21,
-        "got_job": 21,
-        "apply": 20,
-        "started_job": 19,
-        "opportunity": 19,
-        "just got fired": 19,
-        "lostmyjob": 18,
-        "(^|\W)just[\w\s\d]* hired": 18,
-        "job": 17,
-        "unemployment": 17,
-        "i got hired": 17,
-        "unemployed": 14,
-        "jobless": 13,
-        "newjob": 13,
-        "hiring": 12,
-        "found_job": 10,
-        "searching_job": 9
-    }
+    already_labelled
 
     for ngram, count in already_labelled_count_dict.items():
         df_ngram = df.filter(df.ngram == ngram)
+        df_ngram = df_ngram.sample(False, 1, seed=0)
         if df_ngram.count() >= count:
             df_ngram = df_ngram.limit(30-count)
         df_ngram = df_ngram.select('tweet_id', 'text', 'ngram')

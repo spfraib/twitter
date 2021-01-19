@@ -23,7 +23,7 @@ JOB_ID=${SLURM_JOB_ID}
 
 SLASH=/
 if [[ ${MODEL_TYPE} == *"/"* ]]; then
-  MODEL_TYPE_WITHOUT_SLASH=${MODEL_TYPE//[${SLASH}]/_}
+  MODEL_TYPE_WITHOUT_SLASH=${MODEL_TYPE//[${SLASH}]/-}
 else
   MODEL_TYPE_WITHOUT_SLASH=${MODEL_TYPE}
 fi
@@ -44,8 +44,8 @@ source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
-mkdir /scratch/mt4493/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_SEED_"${SEED}"
-OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_SEED_${SEED}
+mkdir /scratch/mt4493/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_seed-"${SEED}"
+OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_seed-${SEED}
 echo "Output folder created: ${OUTPUT_DIR}"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models

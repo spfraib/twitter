@@ -189,10 +189,10 @@ if __name__ == "__main__":
         verify_data_format(holdout_df)
 
     # Reformat the data
-    train_df = train_df[[text_column, "class"]]
-    eval_df = eval_df[[text_column, "class"]]
-    train_df.columns = ['text', 'labels']
-    eval_df.columns = ['text', 'labels']
+    train_df = train_df[['tweet_id', text_column, "class"]]
+    eval_df = eval_df[['tweet_id', text_column, "class"]]
+    train_df.columns = ['tweet_id', 'text', 'labels']
+    eval_df.columns = ['tweet_id', 'text', 'labels']
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
@@ -311,7 +311,7 @@ if __name__ == "__main__":
     logging.info(
         "The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
-    eval_df['{}_scores'.format(args.model_type)] = scores
+    eval_df['score'] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
                                               f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
                                               f'{name_val_file}_scores.csv')
