@@ -15,27 +15,9 @@ logger = logging.getLogger(__name__)
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-
-    # necessary
-    parser.add_argument("--train_data_path", type=str, help="Path to the training data. Must be in csv format.",
-                        default="")
-    parser.add_argument("--eval_data_path", type=str, help="Path to the evaluation data. Must be in csv format.",
-                        default="")
-    parser.add_argument("--holdout_data_path", type=str, help="Path to the holdout data. Must be in csv format.",
-                        default=None)
-    parser.add_argument("--num_labels", type=int, default=2)
-    parser.add_argument("--num_train_epochs", type=int)
     parser.add_argument("--model_name", type=str,
                         help="Select the model to use.", default='bert')
-    parser.add_argument("--model_type", type=str, default='bert-base-cased')
-    parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
-    parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
-    parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
-    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch", default=False)
-    parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default=10)
-    parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
-    parser.add_argument("--segment", type=int, default=0)
-    parser.add_argument("--seed", type=int, default=0)
+    parser.add_argument("--model_type", type=str, default='DeepPavlov/bert-base-cased-conversational')
     args = parser.parse_args()
     return args
 
@@ -55,10 +37,11 @@ if __name__ == '__main__':
                 'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
                 'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
             }}}
-
+    data_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/jan5_iter0/US/train_test'
     for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
         # Load eval data
-        eval_df = pd.read_csv(args.eval_data_path, lineterminator='\n')
+        eval_data_path = os.path.join(data_path, f'val_{label}.csv')
+        eval_df = pd.read_csv(eval_data_path, lineterminator='\n')
         eval_df = eval_df[['tweet_id', 'text', "class"]]
         eval_df.columns = ['tweet_id', 'text', 'labels']
         # Load best model
@@ -73,6 +56,7 @@ if __name__ == '__main__':
         scores = np.array([softmax(element)[1] for element in model_outputs])
         # Save scores
         eval_df['score'] = scores
+
         split = best_model_folder.split('_')
         name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
         slurm_job_id = split[4]
