@@ -52,7 +52,7 @@ if __name__ == '__main__':
         best_model = ClassificationModel(args.model_name, model_path, args=train_args)
 
         # EVALUATION ON EVALUATION SET
-        result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
+        result, model_outputs, wrong_predictions = best_model.eval_model(eval_df[['text', 'labels']])
         scores = np.array([softmax(element)[1] for element in model_outputs])
         # Save scores
         eval_df['score'] = scores
