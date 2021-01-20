@@ -65,7 +65,7 @@ if __name__ == '__main__':
         path_to_store_eval_scores = os.path.join(os.path.dirname(eval_data_path), 'results',
                                                  f'{model_type}_{str(slurm_job_id)}_seed-{str(seed)}',
                                                  f'{name_val_file}_scores.csv')
-        if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
-            os.makedirs(os.path.dirname(path_to_store_eval_scores))
+        # if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
+        #     os.makedirs(os.path.dirname(path_to_store_eval_scores))
         eval_df.to_csv(path_to_store_eval_scores, index=False)
         logging.info("The scores for the evaluation set were saved at {}".format(path_to_store_eval_scores))
