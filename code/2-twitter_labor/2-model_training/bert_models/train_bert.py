@@ -275,7 +275,7 @@ if __name__ == "__main__":
     best_model = ClassificationModel(args.model_name, path_to_store_best_model, args=train_args)
 
     # EVALUATION ON EVALUATION SET
-    result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
+    result, model_outputs, wrong_predictions = best_model.eval_model(eval_df[['text', 'labels']])
     scores = np.array([softmax(element)[1] for element in model_outputs])
     y_pred = np.vectorize(convert_score_to_predictions)(scores)
     # Compute AUC
@@ -322,7 +322,7 @@ if __name__ == "__main__":
 
     # EVALUATION ON HOLDOUT SET
     if args.holdout_data_path:
-        result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df)
+        result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df[['tweet_id', 'labels']])
         scores = np.array([softmax(element)[1] for element in model_outputs])
         y_pred = np.vectorize(convert_score_to_predictions)(scores)
         # Compute AUC
