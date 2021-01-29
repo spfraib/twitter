@@ -70,7 +70,7 @@ if __name__ == "__main__":
     for column in labels:
         # read inference data, perform join and isolate top tweets
         inference_path = os.path.join(inference_folder, args.inference_output_folder)
-        inference_df = spark.read.parquet(os.path.join(args.inference_path, 'output', column))
+        inference_df = spark.read.parquet(os.path.join(inference_path, 'output', column))
         inference_with_text_df = inference_df.join(random_tweets_df, on='tweet_id')
         top_tweets_df = inference_with_text_df.sort(F.col("score").desc()).limit(label2rank[column])
         # prepare paths and save
