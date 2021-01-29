@@ -23,6 +23,8 @@ def get_args_from_command_line():
                         default="new_samples")
     parser.add_argument("--country_code", type=str,
                         default="US")
+    parser.add_argument("--data_folder", type=str,
+                        default="jan5_iter0")
     args = parser.parse_args()
     return args
 
