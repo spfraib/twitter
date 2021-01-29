@@ -64,7 +64,7 @@ if __name__ == "__main__":
     random_set_path = f'{data_path}/{args.country_code}/{args.random_sample}'
     random_tweets_df = spark.read.parquet(random_set_path)
     if args.random_sample == 'new_samples':
-        labels_path = f'{data_path}/{args.data_folder}/{args.country_code}/raw/parquet'
+        labels_path = f'/user/mt4493/twitter/{args.data_folder}/{args.country_code}/labels'
         labels_df = spark.read.parquet(labels_path)
         random_tweets_df = random_tweets_df.join(labels_df, ['tweet_id'], "leftanti")
     for column in labels:
