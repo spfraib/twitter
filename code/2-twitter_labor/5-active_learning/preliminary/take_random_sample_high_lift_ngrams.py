@@ -1,13 +1,13 @@
 from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.ml.feature import Bucketizer, QuantileDiscretizer
-from pyspark.sql import Window
+from pyspark.sql import *
 from pyspark.sql.types import *
 import subprocess
 import argparse
 import os
 from pathlib import Path
-from pyspark.sql.functions import lower, col
+from pyspark.sql.functions import *
 
 try:
     spark
