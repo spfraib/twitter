@@ -178,6 +178,7 @@ if __name__ == '__main__':
                         df_ngram = df_ngram.limit(10)
                     output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/random_set/{label}/{str(n)}-gram/{ngram_str}'
                     run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+                    df_ngram = df_ngram.withColumn('ngram', ngram_str)
                     df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
 
     elif args.set == 'top_tweets':
@@ -195,4 +196,5 @@ if __name__ == '__main__':
                         df_ngram = df_ngram.limit(10)
                     output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}/{str(n)}-gram/{ngram_str}'
                     run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+                    df_ngram = df_ngram.withColumn('ngram', ngram_str)
                     df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
