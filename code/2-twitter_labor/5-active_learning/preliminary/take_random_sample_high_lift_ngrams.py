@@ -173,7 +173,7 @@ if __name__ == '__main__':
                 for ngram in ngram_list:
                     ngram_str = gen_ngram_str(ngram)
                     df_ngram = random_tweets_df.filter(random_tweets_df.text_lowercase.rlike(ngram))
-                    df_ngram = df_ngram.sample(frac=1, random_state=0)
+                    df_ngram = df_ngram.sample(False, 1)
                     if df_ngram.count() > 10:
                         df_ngram = df_ngram.limit(10)
                     output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/random_set/{label}/{str(n)}-gram/{ngram_str}'
@@ -186,11 +186,13 @@ if __name__ == '__main__':
             top_tweets_df = spark.read.parquet(os.path.join(top_tweets_path, label))
             top_tweets_df = top_tweets_df.withColumn('text_lowercase', lower(col('text')))
             for n in [2, 3]:
-                ngram = top_ngram_dict[n][label]
-                df_ngram = top_tweets_df.filter(top_tweets_df.text_lowercase.rlike(ngram))
-                df_ngram = df_ngram.sample(frac=1, random_state=0)
-                if df_ngram.count() > 10:
-                    df_ngram = df_ngram.limit(10)
-                output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}_{str(n)}gram'
-                run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
-                df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
+                ngram_list = top_ngram_dict[n][label]
+                for ngram in ngram_list:
+                    ngram_str = gen_ngram_str(ngram)
+                    df_ngram = top_tweets_df.filter(top_tweets_df.text_lowercase.rlike(ngram))
+                    df_ngram = df_ngram.sample(False, 1)
+                    if df_ngram.count() > 10:
+                        df_ngram = df_ngram.limit(10)
+                    output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}/{str(n)}-gram/{ngram_str}'
+                    run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+                    df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
