@@ -38,29 +38,29 @@ def run_cmd(args_list):
     s_return = proc.returncode
     return s_return, s_output, s_err
 
-def sample_random_tweets_and_save(df, top_ngram_dict):
-    df = df.withColumn('text_lowercase', lower(col('text')))
-    for n in [2, 3]:
-        for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
-            ngram = top_ngram_dict[n][label]
-            df_ngram = df.filter(df.text_lowercase.rlike(ngram))
-            df_ngram = df_ngram.sample(frac=1, random_state=0)
-            if df_ngram.count() > 10:
-                df_ngram = df_ngram.limit(10)
-            output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/random_set/{label}_{str(n)}gram'
-            run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
-            df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
-
-def sample_top_tweets_and_save(df, top_ngram_dict, label):
-    for n in [2, 3]:
-        ngram = top_ngram_dict[n][label]
-        df_ngram = df.filter(df.text_lowercase.rlike(ngram))
-        df_ngram = df_ngram.sample(frac=1, random_state=0)
-        if df_ngram.count() > 10:
-            df_ngram = df_ngram.limit(10)
-        output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}_{str(n)}gram'
-        run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
-        df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
+# def sample_random_tweets_and_save(df, top_ngram_dict):
+#     df = df.withColumn('text_lowercase', lower(col('text')))
+#     for n in [2, 3]:
+#         for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
+#             ngram = top_ngram_dict[n][label]
+#             df_ngram = df.filter(df.text_lowercase.rlike(ngram))
+#             df_ngram = df_ngram.sample(frac=1, random_state=0)
+#             if df_ngram.count() > 10:
+#                 df_ngram = df_ngram.limit(10)
+#             output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/random_set/{label}_{str(n)}gram'
+#             run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+#             df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
+#
+# def sample_top_tweets_and_save(df, top_ngram_dict, label):
+#     for n in [2, 3]:
+#         ngram = top_ngram_dict[n][label]
+#         df_ngram = df.filter(df.text_lowercase.rlike(ngram))
+#         df_ngram = df_ngram.sample(frac=1, random_state=0)
+#         if df_ngram.count() > 10:
+#             df_ngram = df_ngram.limit(10)
+#         output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}_{str(n)}gram'
+#         run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+#         df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
 
 if __name__ == '__main__':
     # Define args from command line
@@ -158,9 +158,29 @@ if __name__ == '__main__':
         # Lowercase text
         random_tweets_df.cache()
         random_tweets_df.count()
-        sample_random_tweets_and_save(df=random_tweets_df, top_ngram_dict=top_ngram_dict)
+        random_tweets_df = random_tweets_df.withColumn('text_lowercase', lower(col('text')))
+        for n in [2, 3]:
+            for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
+                ngram = top_ngram_dict[n][label]
+                df_ngram = random_tweets_df.filter(random_tweets_df.text_lowercase.rlike(ngram))
+                df_ngram = df_ngram.sample(frac=1, random_state=0)
+                if df_ngram.count() > 10:
+                    df_ngram = df_ngram.limit(10)
+                output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/random_set/{label}_{str(n)}gram'
+                run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+                df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
+
     elif args.set == 'top_tweets':
         top_tweets_path = f'/user/mt4493/twitter/inference_evaluation/top_tweets/{args.country_code}/{args.inference_folder}'
         for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
             top_tweets_df = spark.read.parquet(os.path.join(top_tweets_path, label))
-            sample_top_tweets_and_save(df=top_tweets_df, top_ngram_dict=top_ngram_dict, label=label)
+            top_tweets_df = top_tweets_df.withColumn('text_lowercase', lower(col('text')))
+            for n in [2, 3]:
+                ngram = top_ngram_dict[n][label]
+                df_ngram = top_tweets_df.filter(top_tweets_df.text_lowercase.rlike(ngram))
+                df_ngram = df_ngram.sample(frac=1, random_state=0)
+                if df_ngram.count() > 10:
+                    df_ngram = df_ngram.limit(10)
+                output_path = f'/user/mt4493/twitter/sample_high_lift_ngrams/{args.inference_folder}/top_tweets/{label}_{str(n)}gram'
+                run_cmd(['hdfs', 'dfs', '-mkdir', '-p', output_path])
+                df_ngram.coalesce(1).write.mode("overwrite").parquet(output_path)
