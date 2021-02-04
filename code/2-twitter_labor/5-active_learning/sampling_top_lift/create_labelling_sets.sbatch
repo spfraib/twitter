@@ -22,7 +22,7 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/sampling_top_lift
 
-python3 create_wordcount_random.py \
+python3 create_labelling_sets.py \
 --country_code ${COUNTRY_CODE} \
 --iter_number ${ITER_NUMBER} \
 --inference_folder ${INFERENCE_FOLDER}
