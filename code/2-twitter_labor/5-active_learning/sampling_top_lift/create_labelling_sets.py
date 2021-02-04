@@ -28,7 +28,7 @@ def turn_token_array_to_string(x):
 if __name__ == '__main__':
     args = get_args_from_command_line()
     output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/sampling_top_lift/{args.country_code}/{args.inference_folder}/labeling_sample'
-    if not os.exists(output_path):
+    if not os.path.exists(output_path):
         os.makedirs(output_path)
     for label in ['is_hired_1mo', 'is_unemployed', 'job_search', 'lost_job_1mo']:
         for ngram in ['two_grams', 'three_grams']:
