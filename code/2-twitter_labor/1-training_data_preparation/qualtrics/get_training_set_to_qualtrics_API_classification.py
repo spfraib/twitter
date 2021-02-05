@@ -21,6 +21,8 @@ def get_args_from_command_line():
     parser.add_argument("--block_size", type=int, help="number of tweets per worker",
                         default=50)
     parser.add_argument("--version_number", type=str)
+    parser.add_argument("--iteration_number", type=str)
+
     args = parser.parse_args()
     return args
 
@@ -262,7 +264,7 @@ def discard_dropped_ngrams(to_label_df):
 
 if __name__ == "__main__":
     args = get_args_from_command_line()
-    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/ngram_samples/{args.country_code}/labeling'
+    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/ngram_samples/{args.country_code}/iter{args.iteration_number}/labeling'
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
@@ -312,11 +314,15 @@ if __name__ == "__main__":
     print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
     print('# tweets per ngram', tweets['ngram'].value_counts(dropna=False))
 
-    tweets = discard_already_labelled_tweets(
-        path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
-        to_label_df=tweets)
-    print('# of labels remaining: ', tweets.shape[0] )
+    for iteration_number in range(int(args.iteration_number) + 1):
+        tweets_count = tweets.shape[0]
+        tweets = discard_already_labelled_tweets(
+            path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
+            to_label_df=tweets)
+        print(f'Dropped {str(tweets.shape[0] - tweets_count)} tweets already labelled at iteration {str(iteration_number)}')
 
+    print(f'Remaining tweet count: {tweets.shape[0]}')
+    
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
