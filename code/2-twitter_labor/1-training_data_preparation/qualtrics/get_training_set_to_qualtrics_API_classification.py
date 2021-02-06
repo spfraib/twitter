@@ -228,7 +228,7 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
 
 
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
-    pkl_file_list = Path(path_to_labelled).glob('*.pkl')
+    pkl_file_list = list(Path(path_to_labelled).glob('*.pkl'))
     if len(pkl_file_list) > 0:
         df = pd.concat(map(pd.read_parquet, pkl_file_list)).reset_index(drop=True)
         df = df[['tweet_id']]
