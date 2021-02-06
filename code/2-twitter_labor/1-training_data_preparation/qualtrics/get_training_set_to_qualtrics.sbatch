@@ -16,7 +16,7 @@ N_WORKERS=$2
 BLOCK_SIZE=$3
 VERSION_NB=$4
 ITERATION_NB=$5
-MODE=$5
+#MODE=$5
 
 module purge
 module load anaconda3/2020.02
