@@ -272,7 +272,7 @@ if __name__ == "__main__":
     with open('/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/qualtrics/apiToken.txt', 'r') as f:
         apiToken = f.readline()
     dataCenter = "nyu.ca1"
-    SurveyName = f"labor-market-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
+    SurveyName = f"labor-market-tweets_{args.country_code}_it{args.iteration_number}_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
     SurveySourceID_dict = {
         'US': 'SV_2tRtDQDulmd5RsN',
         'MX': 'SV_bxr29HthZfMhG3X',
