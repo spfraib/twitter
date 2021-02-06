@@ -308,8 +308,9 @@ if __name__ == "__main__":
         glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
     print('Total # of tweets to label (with old ngrams): ', tweets.shape[0] )
 
-
-    if args.country_code == 'US':
+    tweets['tweet_id'] = tweets['tweet_id'].astype(str)
+    
+    if args.country_code == 'US' and args.iteration_number == 0:
         tweets = discard_dropped_ngrams(to_label_df=tweets)
 
     print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
