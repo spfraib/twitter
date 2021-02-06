@@ -309,7 +309,7 @@ if __name__ == "__main__":
     print('Total # of tweets to label (with old ngrams): ', tweets.shape[0] )
 
     tweets['tweet_id'] = tweets['tweet_id'].astype(str)
-    
+
     if args.country_code == 'US' and args.iteration_number == 0:
         tweets = discard_dropped_ngrams(to_label_df=tweets)
 
@@ -321,7 +321,7 @@ if __name__ == "__main__":
         tweets = discard_already_labelled_tweets(
             path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
             to_label_df=tweets)
-        print(f'Dropped {str(tweets.shape[0] - tweets_count)} tweets already labelled at iteration {str(iteration_number)}')
+        print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at iteration {str(iteration_number)}')
 
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
