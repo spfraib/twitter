@@ -15,6 +15,7 @@ COUNTRY_CODE=$1
 N_WORKERS=$2
 BLOCK_SIZE=$3
 VERSION_NB=$4
+ITERATION_NB=$5
 MODE=$5
 
 module purge
@@ -30,7 +31,8 @@ then
   --country_code ${COUNTRY_CODE} \
   --n_workers ${N_WORKERS} \
   --block_size ${BLOCK_SIZE} \
-  --version_number ${VERSION_NB}
+  --version_number ${VERSION_NB} \
+  --iteration_number ${ITERATION_NB}
 elif [ ${MODE} -eq 1 ]
 then
   python3 get_training_set_to_qualtrics_API_NER.py \
