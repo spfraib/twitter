@@ -9,6 +9,7 @@ import pyarrow.parquet as pq
 from glob import glob
 from datetime import datetime
 import argparse
+from pathlib import Path
 
 
 def get_args_from_command_line():
@@ -227,9 +228,9 @@ def update_question(QuestionData, QuestionID, SurveyID, apiToken, dataCenter):
 
 
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
-    labels_path = os.path.join(path_to_labelled, 'labels.pkl')
-    if os.path.isfile(labels_path):
-        df = pd.read_pickle(labels_path)
+    pkl_file_list = Path(path_to_labelled).glob('*.pkl')
+    if len(pkl_file_list) > 0:
+        df = pd.concat(map(pd.read_parquet, pkl_file_list)).reset_index(drop=True)
         df = df[['tweet_id']]
         df = df.drop_duplicates().reset_index(drop=True)
         list_labelled_tweet_ids = df['tweet_id'].tolist()
