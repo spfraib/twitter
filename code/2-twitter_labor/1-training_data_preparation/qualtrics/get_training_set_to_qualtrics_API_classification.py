@@ -313,7 +313,7 @@ if __name__ == "__main__":
 
     print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
     print('# tweets per ngram', tweets['ngram'].value_counts(dropna=False))
-
+    
     for iteration_number in range(int(args.iteration_number) + 1):
         tweets_count = tweets.shape[0]
         tweets = discard_already_labelled_tweets(
@@ -321,8 +321,6 @@ if __name__ == "__main__":
             to_label_df=tweets)
         print(f'Dropped {str(tweets.shape[0] - tweets_count)} tweets already labelled at iteration {str(iteration_number)}')
 
-    print(f'Remaining tweet count: {tweets.shape[0]}')
-    
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
