@@ -17,6 +17,7 @@ import numpy as np
 import argparse
 import logging
 import socket
+import multiprocessing
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -61,7 +62,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
     options = ort.SessionOptions()
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
-    options.intra_op_num_threads = 1
+    options.intra_op_num_threads = multiprocessing.cpu_count()
     print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
 
