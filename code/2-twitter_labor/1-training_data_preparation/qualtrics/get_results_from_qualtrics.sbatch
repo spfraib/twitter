@@ -35,8 +35,10 @@ python3 qualtrics/get_results_from_qualtrics.py \
 
 echo '******** Merging results from Qualtrics ********'
 python3 qualtrics/merge-all-qualtrics-results.py \
---country_code ${COUNTRY_CODE}
+--country_code ${COUNTRY_CODE} \
+--iteration_number ${ITERATION_NB}
 
 echo '******** Assigning qualification to past respondents ********'
 python3 mturk/assign_qualification_to_past_respondents_bots.py \
---country_code ${COUNTRY_CODE}
+--country_code ${COUNTRY_CODE} \
+--iteration_number ${ITERATION_NB}
