@@ -15,6 +15,7 @@ COUNTRY_CODE=$1
 SURVEY_ID=$2
 REJECT_BOTS=$3
 HITID=$4
+ITERATION_NB=$5
 
 module purge
 module load anaconda3/2020.02
@@ -29,6 +30,7 @@ python3 qualtrics/get_results_from_qualtrics.py \
 --surveyId ${SURVEY_ID} \
 --reject_bots ${REJECT_BOTS} \
 --HITId ${HITID} \
+--iteration_number ${ITERATION_NB}
 
 
 echo '******** Merging results from Qualtrics ********'
