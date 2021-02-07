@@ -52,6 +52,10 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_2
 
 pwd
 
+if [ -z "${SLURM_ARRAY_TASK_ID}" ]
+then
+      echo SLURM_ARRAY_TASK_ID=test
+fi
 echo 'running inference..'
 srun time python -u inference_ONNX_bert_100M_random.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
