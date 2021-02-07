@@ -62,8 +62,8 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
     options = ort.SessionOptions()
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
-    options.intra_op_num_threads = multiprocessing.cpu_count()
-    options.inter_op_num_threads = 0
+    options.intra_op_num_threads = 1
+    options.inter_op_num_threads = multiprocessing.cpu_count()
 
     print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
