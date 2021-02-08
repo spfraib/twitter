@@ -323,6 +323,8 @@ if __name__ == "__main__":
             to_label_df=tweets)
         print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at iteration {str(iteration_number)}')
 
+    print(f'# tweets left to label: {tweets.shape[0]}')
+    
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
     print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
