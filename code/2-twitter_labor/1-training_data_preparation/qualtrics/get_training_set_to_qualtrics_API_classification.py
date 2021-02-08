@@ -324,10 +324,12 @@ if __name__ == "__main__":
         print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at iteration {str(iteration_number)}')
 
     print(f'# tweets left to label: {tweets.shape[0]}')
-    
+
     tweets = tweets.sample(n=n_tweets, random_state=0)
 
-    print('# Unique Tweets:', tweets.drop_duplicates('tweet_id').shape[0])
+    print('# Unique Tweets:', tweets.shape[0])
+
+    print('# Unique Tweets (without duplicates):', tweets.drop_duplicates('tweet_id').shape[0])
 
     tweets_0 = tweets.sample(frac=1, random_state=0).set_index('tweet_id')['text']
     tweets_0.index = tweets_0.index.map(lambda x: x + '-v0')
