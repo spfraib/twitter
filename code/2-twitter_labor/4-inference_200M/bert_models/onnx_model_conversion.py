@@ -30,8 +30,8 @@ parser.add_argument("--country_code", type=str)
 args = parser.parse_args()
 
 best_model_paths_dict = {
-    'iter0': {
-        'US': {
+    'US': {
+        'iter0': {
             'lost_job_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928497_SEED_14',
             'is_hired_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928488_SEED_5',
             'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
@@ -42,13 +42,20 @@ best_model_paths_dict = {
             # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
             # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
             # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
-        }}}
+        },
+        'iter1': {
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435288_seed-15',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435284_seed-11',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435275_seed-2',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435285_seed-12',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435282_seed-9'}
+    }}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
     logger.info(f'*****************************{label}*****************************')
     model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
-                              best_model_paths_dict[f'iter{str(args.iteration_number)}'][args.country_code][label],
+                              best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label],
                               label, 'models', 'best_model')
     onnx_path = os.path.join(model_path, 'onnx')
 
