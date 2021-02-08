@@ -72,8 +72,8 @@ def build_auc_dict(results_dict: dict, model_type: str) -> dict:
 if __name__ == '__main__':
     args = get_args_from_command_line()
     if 'manuto' in socket.gethostname().lower():
-        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/evaluation'
-        results_folder = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/train_test/results'
+        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/evaluation'
+        results_folder = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/train_test/results'
     else:
         output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/evaluation'
         results_folder = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/train_test/results'
@@ -83,24 +83,29 @@ if __name__ == '__main__':
     for model in ['roberta-base', 'DeepPavlov-bert-base-cased-conversational', 'vinai-bertweet-base']:
         for seed in range(1,16):
             r = re.compile(f'{model}_[0-9]+_seed-{str(seed)}$')
-            folder_name_str = list(filter(r.match, results_folders_list))[0]
-            for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
-                if label not in results_dict.keys():
-                    results_dict[label] = dict()
-                path_data = os.path.join(results_folder, folder_name_str, f'val_{label}_evaluation.csv')
-                if Path(path_data).exists():
-                    df = pd.read_csv(
-                        os.path.join(results_folder, folder_name_str, f'val_{label}_evaluation.csv'),
-                        index_col=0)
-                    results_dict[label][f'auc_{model}_{str(seed)}'] = float(df['value']['auc'])
+            folder_name_str = list(filter(r.match, results_folders_list))
+            if len(folder_name_str) > 0:
+                folder_name_str = list(filter(r.match, results_folders_list))[0]
+                for label in ['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']:
+                    if label not in results_dict.keys():
+                        results_dict[label] = dict()
+                    path_data = os.path.join(results_folder, folder_name_str, f'val_{label}_evaluation.csv')
+                    if Path(path_data).exists():
+                        df = pd.read_csv(
+                            os.path.join(results_folder, folder_name_str, f'val_{label}_evaluation.csv'),
+                            index_col=0)
+                        results_dict[label][f'auc_{model}_{str(seed)}'] = float(df['value']['auc'])
     results_df = pd.DataFrame.from_dict(results_dict)
     results_df = results_df.round(3)
     results_df = results_df.reset_index()
     results_df['model'] = results_df['index'].apply(lambda x: x.split('_')[1])
     results_df['seed'] = results_df['index'].apply(lambda x: x.split('_')[2])
     results_df = results_df[['model','seed', 'lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']]
-    results_df.to_csv(os.path.join(results_folder, 'auc_results.csv'))
-    print(results_df.head())
+    results_df.to_csv(os.path.join(output_path, 'auc_results.csv'))
+    results_df = results_df.set_index(['seed'])
+    results_df = results_df[['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']]
+    print(results_df.idxmax())
+
     #logger.info(results_dict)
 
 
