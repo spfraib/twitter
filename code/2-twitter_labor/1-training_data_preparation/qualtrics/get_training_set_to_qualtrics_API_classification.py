@@ -314,7 +314,7 @@ if __name__ == "__main__":
         tweets = discard_dropped_ngrams(to_label_df=tweets)
 
     print('Total # of tweets to label (without old ngrams): ', tweets.shape[0] )
-    print('# tweets per ngram', tweets['ngram'].value_counts(dropna=False))
+    #print('# tweets per ngram', tweets['ngram'].value_counts(dropna=False))
     
     for iteration_number in range(int(args.iteration_number) + 1):
         tweets_count = tweets.shape[0]
