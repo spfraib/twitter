@@ -18,6 +18,7 @@ import argparse
 import logging
 import socket
 import multiprocessing as mp
+from functools import partial
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -62,7 +63,7 @@ def chunkIt(seq, num):
 
     return out
 
-def run_inference(tokens):
+def run_inference(ort_session, tokens):
     ort_outs = ort_session.run(None, tokens)
     torch_onnx_output = torch.tensor(ort_outs[0], dtype=torch.float32)
     onnx_logits = F.softmax(torch_onnx_output, dim=1)
@@ -95,7 +96,8 @@ def inference(onnx_model, model_dir, examples):
     tokens_dict = tokenizer.batch_encode_plus(examples, max_length=128)
     tokens_dict_list = [dict(zip(tokens_dict, t)) for t in zip(*tokens_dict.values())]
     with mp.Pool(mp.cpu_count()) as pool:
-        onnx_inference = pool.map(run_inference, tokens_dict_list)
+        run_inference_on_tokens = partial(run_inference, ort_session=ort_session)
+        onnx_inference = pool.map(run_inference_on_tokens, tokens_dict_list)
     return onnx_inference
 
 
@@ -116,6 +118,7 @@ SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
 print('Hostname:', socket.gethostname())
 print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
 print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
+print('Number of CPUs per task:', mp.cpu_count())
 # ####################################################################################################################################
 # # loading data
 # ####################################################################################################################################
