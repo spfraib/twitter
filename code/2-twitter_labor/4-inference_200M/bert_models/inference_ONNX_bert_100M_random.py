@@ -1,5 +1,8 @@
 import os
 import torch
+import multiprocessing
+
+os.environ['OMP_NUM_THREADS'] = f'{str(mp.cpu_count())}'
 import onnxruntime as ort
 import pandas as pd
 import numpy as np
@@ -25,14 +28,12 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
 logger = logging.getLogger(__name__)
 print('libs loaded')
 
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--input_path", type=str, help="path to input data")
 parser.add_argument("--output_path", type=str, help="path where inference csv is saved")
 parser.add_argument("--country_code", type=str, help="path where inference csv is saved")
 parser.add_argument("--iteration_number", type=int)
-
 
 args = parser.parse_args()
 
@@ -63,7 +64,7 @@ def inference(onnx_model, model_dir, examples):
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.intra_op_num_threads = 1
-    #options.inter_op_num_threads = multiprocessing.cpu_count()
+    # options.inter_op_num_threads = multiprocessing.cpu_count()
 
     print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
@@ -173,25 +174,34 @@ examples = tweets_random.text.values.tolist()
 
 print('convert to list:', str(time.time() - start_time), 'seconds')
 
-best_model_folders_dict = {'iter0': { 'US': {
-    'lost_job_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928497_SEED_14',
-    'is_hired_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928488_SEED_5',
-    'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
-    'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
-    'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
-    # 'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
-    # 'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
-    # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-    # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-    # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
-}}}
+best_model_folders_dict = {
+    'US': {
+        'iter0': {
+            'lost_job_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928497_SEED_14',
+            'is_hired_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928488_SEED_5',
+            'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
+            'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
+            'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
+            # 'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
+            # 'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
+            # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+            # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+            # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
+        },
+        'iter1': {
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435288_seed-15',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435284_seed-11',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435275_seed-2',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435285_seed-12',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435282_seed-9'}}}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
     print('\n\n!!!!!', column)
     loop_start = time.time()
-    best_model_folder = best_model_folders_dict[f'iter{str(args.iteration_number)}'][args.country_code][column]
-    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder, column, 'models', 'best_model')
+    best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
+    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+                              column, 'models', 'best_model')
 
     print(model_path)
     onnx_path = os.path.join(model_path, 'onnx')
@@ -237,4 +247,3 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     print('save time taken:', str(time.time() - start_time), 'seconds')
 
     print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
-
