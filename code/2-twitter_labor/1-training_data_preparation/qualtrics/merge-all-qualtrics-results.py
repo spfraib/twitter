@@ -97,9 +97,9 @@ if __name__ == "__main__":
     labels.reset_index(inplace=True)
     labels.columns.name = ''
 
-    labels.to_pickle(os.path.join(path_to_data, 'labels.pkl'))
+    labels.to_parquet(os.path.join(path_to_data, 'labels.parquet'))
 
-    labels.tail()
+    print(labels.tail())
 
     if args.country_code == 'US' and args.iteration_number == "0":
         list_old_survey_ids = ['SV_7aeWaaTnG7NiYOV',
