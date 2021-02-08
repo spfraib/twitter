@@ -1,8 +1,5 @@
 import os
 import torch
-import multiprocessing
-
-os.environ['OMP_NUM_THREADS'] = f'{str(mp.cpu_count())}'
 import onnxruntime as ort
 import pandas as pd
 import numpy as np
