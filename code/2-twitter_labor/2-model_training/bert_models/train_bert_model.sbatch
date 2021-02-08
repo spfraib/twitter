@@ -34,7 +34,7 @@ else
   DATA_FOLDER_WITHOUT_SLASH=${DATA_FOLDER}
 fi
 
-DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/${COUNTRY_CODE}/train_test
+DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test/${COUNTRY_CODE}/${DATA_FOLDER}/train_test
 #HOLDOUT_DATA_FOLDER=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}
 
 # Load packages and activate virtual environment
