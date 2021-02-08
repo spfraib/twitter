@@ -52,7 +52,7 @@ def get_tokens(tokens_dict, i):
     return tokens
 
 
-def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
+def inference(onnx_model, model_dir, examples):
     quantized_str = ''
     if 'quantized' in onnx_model:
         quantized_str = 'quantized'
@@ -63,7 +63,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.intra_op_num_threads = 1
-    options.inter_op_num_threads = multiprocessing.cpu_count()
+    #options.inter_op_num_threads = multiprocessing.cpu_count()
 
     print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
@@ -204,9 +204,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     start_time = time.time()
     onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
                             model_path,
-                            examples,
-                            fast_tokenizer=True,
-                            num_threads=5)
+                            examples)
 
     print('time taken:', str(time.time() - start_time), 'seconds')
     print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
