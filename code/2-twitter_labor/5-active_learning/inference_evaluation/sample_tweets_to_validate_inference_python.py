@@ -40,19 +40,21 @@ if __name__ == '__main__':
     tweets = pd.concat([pd.read_parquet(path) for path in Path(path_to_tweets).glob('*.parquet')])
     tweets = tweets[['tweet_id', 'text']]
     tweets = tweets.set_index('tweet_id')
+    path_to_evals = os.path.join(
+        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
+        args.country_code, args.model_folder)  # Where to store the sampled tweets to be labeled
+    if not os.path.exists(path_to_evals):
+        os.makedirs(path_to_evals)
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
         path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                       args.country_code, args.model_folder, 'output',
                                       label)  # Prediction scores from classification
-        path_to_evals = os.path.join(
-            '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
-            args.country_code, args.model_folder)  # Where to store the sampled tweets to be labeled
         sampled_points, sampled_ranks = get_sampled_indices()
         print('# Sampled points:', len(set(sampled_points)))
         print('# Sampled tweets:', len(sampled_ranks))
         scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
         sampled_indices = pd.DataFrame(product(sampled_points, sampled_ranks), columns=['point', 'rank'])
-        df = tweets.join(scores)
+        df = tweets.join(scores).reset_index()
         df['rank'] = df['score'].rank(method='first')
         df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
         df = df.merge(sampled_indices, on=['rank'])
