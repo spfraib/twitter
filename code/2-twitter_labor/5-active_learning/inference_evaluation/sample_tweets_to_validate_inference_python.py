@@ -51,7 +51,9 @@ if __name__ == '__main__':
         print('# Sampled tweets:', len(sampled_ranks))
         scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
         sampled_indices = pd.DataFrame(product(sampled_points, sampled_ranks), columns=['point', 'rank'])
-        df = tweets[['tweet_id', 'text']].merge(scores[['tweet_id', 'score']], on='tweet_id')
+        tweets=tweets[['tweet_id', 'text']]
+        scores=scores[['tweet_id', 'score']]
+        df = tweets.merge(scores, on='tweet_id')
         df['rank'] = df['score'].rank(method='first')
         df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
         df = df.merge(sampled_indices, on=['rank'])
