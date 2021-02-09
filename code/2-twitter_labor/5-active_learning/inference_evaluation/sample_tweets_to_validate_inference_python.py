@@ -38,7 +38,8 @@ if __name__ == '__main__':
         args.country_code,
         'evaluation')  # Random set of tweets
     tweets = pd.concat([pd.read_parquet(path) for path in Path(path_to_tweets).glob('*.parquet')])
-
+    tweets = tweets[['tweet_id', 'text']]
+    tweets = tweets.set_index('tweet_id')
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
         path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                       args.country_code, args.model_folder, 'output',
@@ -51,9 +52,7 @@ if __name__ == '__main__':
         print('# Sampled tweets:', len(sampled_ranks))
         scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
         sampled_indices = pd.DataFrame(product(sampled_points, sampled_ranks), columns=['point', 'rank'])
-        tweets=tweets[['tweet_id', 'text']]
-        scores=scores[['tweet_id', 'score']]
-        df = tweets.merge(scores, on='tweet_id')
+        df = tweets.join(scores)
         df['rank'] = df['score'].rank(method='first')
         df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
         df = df.merge(sampled_indices, on=['rank'])
