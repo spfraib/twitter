@@ -44,7 +44,7 @@ if __name__ == '__main__':
     path_to_evals = os.path.join(
         '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
         args.country_code, args.model_folder)  # Where to store the sampled tweets to be labeled
-    # Load sample indices 
+    # Load sample indices
     sampled_points, sampled_ranks = get_sampled_indices()
     sampled_indices = pd.DataFrame(data=[sampled_points, sampled_ranks]).T
     sampled_indices.columns = ['point', 'rank']
@@ -60,7 +60,7 @@ if __name__ == '__main__':
         scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
         df = tweets.join(scores).reset_index()
         df['rank'] = df['score'].rank(method='first', ascending=False)
-        df = df.sort_values(by=['rank'], ascending=False).reset_index(drop=True)
+        df = df.sort_values(by=['rank'], ascending=True).reset_index(drop=True)
         df = df.merge(sampled_indices, on=['rank'])
         output_path = os.path.join(path_to_evals, f'evaluation_{label}.csv')
         df.to_csv(output_path, index=False)
