@@ -48,7 +48,7 @@ if __name__ == '__main__':
 
     survey_folder_path_list = glob(os.path.join(path_to_data, country_code, f'iter{args.iteration_number}' 'labeling', '*'))
     survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if
-                               'labels.pkl' not in survey_folder_path]
+                               'labels.parquet' not in survey_folder_path]
     print(survey_folder_path_list)
 
     worker_id_list = list()
