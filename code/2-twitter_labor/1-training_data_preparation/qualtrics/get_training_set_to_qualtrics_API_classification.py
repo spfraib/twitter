@@ -304,8 +304,12 @@ if __name__ == "__main__":
     print('# Tweets (2 workers per tweets + 2 attention checks):', n_tweets)
 
     # path to labelling as argument?
-    tweets = pq.ParquetDataset(
-        glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    # tweets = pq.ParquetDataset(
+    #     glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
+    tweets =  pd.concat(
+        pd.read_parquet(parquet_file)
+        for parquet_file in Path(path_to_data).glob('*.parquet')
+    ).reset_index(drop=False)
     print('Total # of tweets to label (with old ngrams): ', tweets.shape[0] )
 
     tweets['tweet_id'] = tweets['tweet_id'].astype(str)
