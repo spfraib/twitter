@@ -47,7 +47,7 @@ if __name__ == '__main__':
     fileFormat = "csv"
 
     survey_folder_path_list = glob(os.path.join(path_to_data, country_code, f'iter{args.iteration_number}', 'labeling', '*'))
-    survey_folder_path_list = [survey_folder_path if survey_folder_path not in ['labels.pkl', 'labels.parquet'] for survey_folder_path in survey_folder_path_list]
+    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if not any(l in survey_folder_path for l in ['labels.pkl', 'labels.parquet']) ]
     print(survey_folder_path_list)
 
     worker_id_list = list()
