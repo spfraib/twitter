@@ -2,11 +2,11 @@
 
 NB_CORES=20
 
-module load python/gcc/3.7.9
-module load spark/3.0.1
-#export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
-#export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
-#export PYTHONIOENCODING=utf8
+module load python/gnu/3.6.5
+module load spark/2.4.0
+export PYSPARK_PYTHON=/share/apps/python/3.6.5/bin/python
+export PYSPARK_DRIVER_PYTHON=/share/apps/python/3.6.5/bin/python
+export PYTHONIOENCODING=utf8
 
 CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/1-training_data_preparation/preliminary/ngram_labeling
 TIMESTAMP=$(date +%s)

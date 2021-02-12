@@ -30,7 +30,7 @@ def run_cmd(args_list):
     s_return = proc.returncode
     return s_return, s_output, s_err
 
-random_df = spark.read.parquet('/user/mt4493/twitter/twitter-labor-data/random_samples/random_samples_splitted/MX/new_samples')
+random_df = spark.read.parquet('/user/mt4493/twitter/random_samples/random_samples_splitted/MX/new_samples')
 random_df = random_df.withColumn('text_lowercase', lower(col('text')))
 
 new_ngrams_list = ['me qued[e|é] sin (trabajo|chamba|empleo)',
@@ -41,9 +41,9 @@ new_ngrams_list = ['me qued[e|é] sin (trabajo|chamba|empleo)',
                    'necesito[\w\s\d]*empleo',
                    'estamos contratando']
 
-labelling_path = f'/user/mt4493/twitter/twitter-labor-data/ngram_samples/MX/labeling'
+labelling_path = f'/user/mt4493/twitter/ngram_samples/MX/labeling'
 run_cmd(['hdfs', 'dfs', '-mkdir', '-p', labelling_path])
-ngram_sample_path = f'/user/mt4493/twitter/twitter-labor-data/ngram_samples/MX/sample_new_1000'
+ngram_sample_path = f'/user/mt4493/twitter/ngram_samples/MX/sample_new_1000'
 run_cmd(['hdfs', 'dfs', '-mkdir', '-p', labelling_path])
 for ngram in new_ngrams_list:
     df_ngram = random_df.filter(random_df.text_lowercase.rlike(ngram))
