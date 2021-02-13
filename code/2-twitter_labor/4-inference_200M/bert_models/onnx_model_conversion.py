@@ -48,7 +48,14 @@ best_model_paths_dict = {
             'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435284_seed-11',
             'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435275_seed-2',
             'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435285_seed-12',
-            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435282_seed-9'}
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435282_seed-9'},
+        'iter2': {
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716731_seed-11',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716721_seed-1',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716722_seed-2',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8'
+        }
     }}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
