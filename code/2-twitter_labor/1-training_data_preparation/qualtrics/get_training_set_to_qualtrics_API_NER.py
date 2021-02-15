@@ -430,7 +430,10 @@ if __name__ == "__main__":
             update_block(BlockData=BlockData, BlockID=BlockID, SurveyID=SurveyID, apiToken=apiToken,
                          dataCenter=dataCenter)
 
-        text = 'Please label the following tweet'
+        text_dict = {'US': 'Please label the following tweet:',
+                     'MX': 'Por favor, etiquete el siguiente tweet:',
+                     'BR': 'Favor rotular o seguinte tweet:'}
+        text = text_dict[args.country_code]
         QuestionID = create_question(QuestionData=QuestionTemplateData, SurveyID=SurveyID, apiToken=apiToken,
                                      dataCenter=dataCenter)
         QuestionData = get_question(QuestionID=QuestionID, SurveyID=SurveyID, apiToken=apiToken, dataCenter=dataCenter)
