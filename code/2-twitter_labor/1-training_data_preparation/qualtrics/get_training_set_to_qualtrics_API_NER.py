@@ -297,7 +297,7 @@ if __name__ == "__main__":
     if 'manuto' in socket.gethostname().lower():
         path_to_data = '/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/job_offer_NER/test'
     else:
-        path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/job_offer_NER/test'
+        path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/job_offer_NER/{args.country_code}/test'
     now = datetime.now()
     timestamp = datetime.timestamp(now)
     # Setting user Parameters
@@ -308,8 +308,8 @@ if __name__ == "__main__":
     dataCenter = "nyu.ca1"
     SurveyName = f"ner-job-offer-tweets_{args.country_code}_it0_{args.n_workers}_workers_{args.block_size}_block_size_v{args.version_number}"
     SurveySourceID_dict = {
-        'US': 'SV_1KMR8bkQiVFQ0zH', }
-    # 'MX': 'SV_bxr29HthZfMhG3X',
+        'US': 'SV_1KMR8bkQiVFQ0zH',
+    'MX': 'SV_1AYw7rmB7faPJR3',}
     # 'BR': 'SV_e9Xsw1ZtEvBX4jP'}
     SurveySourceID = SurveySourceID_dict[args.country_code]
     QuestionTemplateID = "QID1"
@@ -332,7 +332,7 @@ if __name__ == "__main__":
     checks_dict = {
         'US': ['Software Engineer job at Amazon in New York, NY',
                'Looking for a job? Check out this opportunity at Microsoft in Seattle, WA'],
-        'MX': ['Perdí mi chamba hoy.', 'Me contrataron hoy.'],
+        'MX': ['***********VACANTE DE EMPLEO*********** PARA: AQUADIVERSIONES CORRAL GRANDE SA DE CV; PUESTO: VENTAS DE MOSTRADOR; UBICACION: CDMX', '# EMPLEO Se busca Diseñador Gráfico Sr. #Monterrey +3 años como senior. Esencial que haya trabajado en agencias digitales y conozca de medios digitales. '],
         'BR': ['Perdi o meu emprego hoje.', 'Fui contratado hoje.']}
     checks_list = checks_dict[args.country_code]
 
@@ -342,14 +342,16 @@ if __name__ == "__main__":
     # path to labelling as argument?
     # tweets = pq.ParquetDataset(
     #     glob(os.path.join(path_to_data, '*.parquet'))).read().to_pandas()
-    tweets = pd.read_csv(os.path.join(path_to_data, 'test_bis.csv'))
+    tweets = pd.read_csv(os.path.join(path_to_data, 'test.csv'))
 
     # tweets = discard_already_labelled_tweets(
     #     path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling',
     #     to_label_df=tweets)
 
     # preprocess tweets
-    text_processor = TextPreProcessor(annotate={"hashtag"}, segmenter='twitter', unpack_hashtags=True)
+    segmenter_path_dict = {'US': 'twitter', 'MX': '/scratch/mt4493/twitter_labor/code/repos_annexe/ekphrasis/ekphrasis/stats/twitter_MX',
+                      'BR': '/scratch/mt4493/twitter_labor/code/repos_annexe/ekphrasis/ekphrasis/stats/twitter_BR'}
+    text_processor = TextPreProcessor(annotate={"hashtag"}, segmenter=segmenter_path_dict[args.country_code], unpack_hashtags=True)
 
 
     def hashtag_segmentation(text):
