@@ -77,7 +77,8 @@ if __name__ == '__main__':
     else:
         output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/evaluation'
         results_folder = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/train_test/results'
-
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     results_folders_list = os.listdir(results_folder)
     results_dict = dict()
     for model in ['roberta-base', 'DeepPavlov-bert-base-cased-conversational', 'vinai-bertweet-base']:
