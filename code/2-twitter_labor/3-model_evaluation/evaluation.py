@@ -106,7 +106,7 @@ if __name__ == '__main__':
     results_df = results_df.set_index(['seed'])
     results_df = results_df[['lost_job_1mo', 'is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search']]
     print(results_df.idxmax())
-
+    print(results_df.max())
     #logger.info(results_dict)
 
 
