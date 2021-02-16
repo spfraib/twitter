@@ -55,6 +55,13 @@ best_model_paths_dict = {
             'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716722_seed-2',
             'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8',
             'job_search': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8'
+        },
+        'iter3': {
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825612_seed-10',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825613_seed-11',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825604_seed-2',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825614_seed-12',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825613_seed-11'
         }
     }}
 
