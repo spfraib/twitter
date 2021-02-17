@@ -81,7 +81,8 @@ if __name__ == '__main__':
         os.makedirs(output_path)
     results_folders_list = os.listdir(results_folder)
     results_dict = dict()
-    for model in ['roberta-base', 'DeepPavlov-bert-base-cased-conversational', 'vinai-bertweet-base']:
+
+    for model in ['neuralmind-bert-base-portuguese-cased', 'DeepPavlov-bert-base-cased-conversational', 'dccuchile/bert-base-spanish-wwm-cased']:
         for seed in range(1,16):
             r = re.compile(f'{model}_[0-9]+_seed-{str(seed)}$')
             folder_name_str = list(filter(r.match, results_folders_list))

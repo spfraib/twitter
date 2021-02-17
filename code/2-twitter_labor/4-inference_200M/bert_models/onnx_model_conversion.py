@@ -63,7 +63,14 @@ best_model_paths_dict = {
             'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825614_seed-12',
             'job_search': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825613_seed-11'
         }
-    }}
+    },
+    'BR': {'iter0': {
+        'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
+        'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+        'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+        'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
+        'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
+    }}}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
