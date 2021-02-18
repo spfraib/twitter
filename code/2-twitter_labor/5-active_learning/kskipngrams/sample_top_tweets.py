@@ -48,4 +48,6 @@ if __name__ == '__main__':
         sample_df_list.append(sample_df)
     appended_sample_df = pd.concat(sample_df_list)
     output_path = f'{data_path}/active_learning/sampling_top_lift/{args.country_code}/{args.inference_folder}'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     appended_sample_df.to_parquet(os.path.join(output_path, 'top_tweets.parquet'), index=False)
