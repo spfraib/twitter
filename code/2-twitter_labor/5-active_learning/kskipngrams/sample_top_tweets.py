@@ -37,6 +37,7 @@ if __name__ == '__main__':
         pd.read_parquet(parquet_file)
         for parquet_file in random_path_new_samples.glob('*.parquet')
     )
+    print('Loaded random data')
     for iteration_number in range(int(args.iteration_number)):
         random_count = random_df.shape[0]
         random_df = discard_already_labelled_tweets(
@@ -60,7 +61,6 @@ if __name__ == '__main__':
             for parquet_file in scores_path.glob('*.parquet')
         )
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
-        #all_df['rank'] = all_df['score'].rank(method='first', ascending=False)
         all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
         all_df = all_df[:base_ranks_dict[args.country_code][label]]
         sample_df = all_df.sample(n=100).reset_index(drop=True)
