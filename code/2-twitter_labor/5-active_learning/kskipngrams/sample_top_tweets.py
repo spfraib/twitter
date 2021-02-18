@@ -11,9 +11,22 @@ def get_args_from_command_line():
                         help="Country code",
                         default="US")
     parser.add_argument("--inference_folder", type=str)
+    parser.add_argument("--iteration_number", type=str)
+
     args = parser.parse_args()
     return args
 
+def discard_already_labelled_tweets(path_to_labelled, to_label_df):
+    parquet_file_list = list(Path(path_to_labelled).glob('*.parquet'))
+    if len(parquet_file_list) > 0:
+        df = pd.concat(map(pd.read_parquet, parquet_file_list)).reset_index(drop=True)
+        df = df[['tweet_id']]
+        df = df.drop_duplicates().reset_index(drop=True)
+        list_labelled_tweet_ids = df['tweet_id'].tolist()
+        to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
+        return to_label_df
+    else:
+        return to_label_df
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
@@ -24,6 +37,13 @@ if __name__ == '__main__':
         pd.read_parquet(parquet_file)
         for parquet_file in random_path_new_samples.glob('*.parquet')
     )
+    for iteration_number in range(int(args.iteration_number)):
+        random_count = random_df.shape[0]
+        random_df = discard_already_labelled_tweets(
+            path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
+            to_label_df=random_df)
+        print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
+
     base_ranks_dict = {
         'US': {
             'is_hired_1mo': 30338,
@@ -40,11 +60,12 @@ if __name__ == '__main__':
             for parquet_file in scores_path.glob('*.parquet')
         )
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
-        all_df['rank'] = all_df['score'].rank(method='first', ascending=False)
-        all_df = all_df.sort_values(by=['rank']).reset_index(drop=True)
+        #all_df['rank'] = all_df['score'].rank(method='first', ascending=False)
+        all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
         all_df = all_df[:base_ranks_dict[args.country_code][label]]
         sample_df = all_df.sample(n=100).reset_index(drop=True)
         sample_df['label'] = label
+        sample_df = sample_df[['tweet_id', 'text', 'label']]
         sample_df_list.append(sample_df)
     appended_sample_df = pd.concat(sample_df_list)
     output_path = f'{data_path}/active_learning/sampling_top_lift/{args.country_code}/{args.inference_folder}'
