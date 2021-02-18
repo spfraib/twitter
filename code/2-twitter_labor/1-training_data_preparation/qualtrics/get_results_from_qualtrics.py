@@ -258,6 +258,15 @@ if __name__ == "__main__":
                                                                              assignment_worker_ids_dict=assignment_worker_ids_dict)
 
         for bot_id in bots:
+            try:
+                mturk.associate_qualification_with_worker(
+                    QualificationTypeId='3RDXJZR9A1H33MQ79TZZWYBXX8WCYD',
+                    WorkerId=bot_id,
+                    IntegerValue=1,
+                    SendNotification=False)
+                print(f'Assigned bot qualification to bot {bot_id}')
+            except:
+                print(f'Failed to assign bot qualification to bot {bot_id}')
             if bot_id in assignment_worker_ids_dict.keys():
                 assignment_id = assignment_worker_ids_dict[bot_id]
                 try:
