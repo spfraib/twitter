@@ -45,13 +45,6 @@ if __name__ == '__main__':
             to_label_df=random_df)
         print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
 
-    base_ranks_dict = {
-        'US': {
-            'is_hired_1mo': 30338,
-            'is_unemployed': 21613,
-            'job_offer': 538490,
-            'job_search': 47970,
-            'lost_job_1mo': 2040}}
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
         inference_path = os.path.join(data_path,'inference')
@@ -62,8 +55,8 @@ if __name__ == '__main__':
         )
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
         all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
-        all_df = all_df[:base_ranks_dict[args.country_code][label]]
-        sample_df = all_df.sample(n=100).reset_index(drop=True)
+        all_df = all_df[:10000]
+        sample_df = all_df.sample(n=50).reset_index(drop=True)
         sample_df['label'] = label
         sample_df = sample_df[['tweet_id', 'text', 'label']]
         sample_df_list.append(sample_df)
