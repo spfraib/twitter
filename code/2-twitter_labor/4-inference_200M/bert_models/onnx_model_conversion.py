@@ -44,11 +44,11 @@ best_model_paths_dict = {
             # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
         },
         'iter1': {
-            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435288_seed-15',
-            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435284_seed-11',
-            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435275_seed-2',
-            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435285_seed-12',
-            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb9_iter1_2435282_seed-9'},
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-2',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-7',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-2',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-14',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-15'},
         'iter2': {
             'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716731_seed-11',
             'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716721_seed-1',
