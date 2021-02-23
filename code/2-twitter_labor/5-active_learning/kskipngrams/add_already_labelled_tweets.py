@@ -23,10 +23,10 @@ if __name__ == '__main__':
     already_labelled_ids_path = os.path.join(data_path, 'active_learning', 'sampling_top_lift', args.country_code,
                                              args.inference_folder, 'already_labelled_ids.parquet')
     already_labelled_ids_df = pd.read_parquet(already_labelled_ids_path)
-
+    already_labelled_ids_df['tweet_id'] = already_labelled_ids_df['tweet_id'].astype(str)
     already_labelled_labels_path = os.path.join(data_path, 'qualtrics', args.country_code, 'old_iters', 'labeling')
     already_labelled_labels_df = pd.concat([pd.read_parquet(path) for path in Path(already_labelled_labels_path).glob('*.parquet')])
-
+    already_labelled_labels_df['tweet_id'] = already_labelled_labels_df['tweet_id'].astype(str)
     labels_df = already_labelled_ids_df.merge(already_labelled_labels_df, on=['tweet_id']).reset_index(drop=True)
 
     output_path = os.path.join(data_path, 'train_test', args.country_code, args.new_iteration_folder, 'raw', 'old_labels.parquet')
