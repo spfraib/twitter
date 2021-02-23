@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=exploitation
+#SBATCH --job-name=add_already_labelled
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_exploitation-%j.out
+#SBATCH --output=slurm_add_already_labelled-%j.out
 
 COUNTRY_CODE=$1
 INFERENCE_FOLDER=$2
