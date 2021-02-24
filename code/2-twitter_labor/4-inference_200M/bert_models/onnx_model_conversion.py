@@ -50,11 +50,11 @@ best_model_paths_dict = {
             'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045500_seed-14',
             'job_search': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045501_seed-15'},
         'iter2': {
-            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716731_seed-11',
-            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716721_seed-1',
-            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716722_seed-2',
-            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8',
-            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb13_iter2_2716728_seed-8'
+            'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132744_seed-9',
+            'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132736_seed-1',
+            'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132748_seed-13',
+            'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132740_seed-5',
+            'job_search': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132741_seed-6'
         },
         'iter3': {
             'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb16_iter3_2825612_seed-10',
