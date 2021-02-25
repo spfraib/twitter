@@ -70,7 +70,14 @@ best_model_paths_dict = {
         'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
         'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
         'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
-    }}}
+    },
+        'iter1': {
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156328_seed-14',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156315_seed-1',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156324_seed-10',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156317_seed-3',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156326_seed-12'},
+    }}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
 
