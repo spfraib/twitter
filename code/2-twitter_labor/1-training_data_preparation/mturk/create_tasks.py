@@ -152,7 +152,7 @@ print("QUESTION:", question)
 if args.country_code == 'MX':
     QualificationRequirements_list = [
         {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'QualificationTypeId': '3RDXJZR9A1H33MQ79TZZWYBXX8WCYD',
             'Comparator': 'DoesNotExist',
             'RequiredToPreview': True,
             'ActionsGuarded': 'PreviewAndAccept'
