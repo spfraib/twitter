@@ -62,5 +62,5 @@ if __name__ == '__main__':
         df['rank'] = df['score'].rank(method='first', ascending=False)
         df = df.sort_values(by=['rank'], ascending=True).reset_index(drop=True)
         df = df.merge(sampled_indices, on=['rank'])
-        output_path = os.path.join(path_to_evals, f'evaluation_{label}.csv')
+        output_path = os.path.join(path_to_evals, f'{label}.csv')
         df.to_csv(output_path, index=False)
