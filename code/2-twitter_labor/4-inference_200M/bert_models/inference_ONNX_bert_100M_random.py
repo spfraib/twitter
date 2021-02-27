@@ -220,7 +220,14 @@ best_model_folders_dict = {
             'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156324_seed-10',
             'job_offer': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156317_seed-3',
             'job_search': 'neuralmind-bert-base-portuguese-cased_feb25_iter1_3156326_seed-12'},
-    }}
+    },
+    'MX': {'iter0': {
+        'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
+        'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
+        'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
+        'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
+        'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
+    }}}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
 
