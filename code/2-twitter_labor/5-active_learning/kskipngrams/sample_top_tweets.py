@@ -38,10 +38,17 @@ if __name__ == '__main__':
         for parquet_file in random_path_new_samples.glob('*.parquet')
     )
     print('Loaded random data')
+
+    raw_labels_path_dict = {'US': {0: 'jan5_iter0',
+                              1: 'feb22_iter1',
+                              2: 'feb23_iter2',
+                              3: 'feb25_iter3'}}
     for iteration_number in range(int(args.iteration_number)):
         random_count = random_df.shape[0]
+        data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
+        path_to_labelled = f'/scratch/mt4493/twitter-labor-data/data/train_test/{data_folder_name}/raw'
         random_df = discard_already_labelled_tweets(
-            path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
+            path_to_labelled=path_to_labelled,
             to_label_df=random_df)
         print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
 
