@@ -55,7 +55,7 @@ if __name__ == '__main__':
         print(f'Iteration {iteration_number}')
         random_count = random_df.shape[0]
         data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
-        path_to_labelled = f'/scratch/mt4493/twitter-labor-data/data/train_test/{data_folder_name}/raw'
+        path_to_labelled = f'/scratch/mt4493/twitter-labor-data/data/train_test/{args.country_code}/{data_folder_name}/raw'
         random_df = discard_already_labelled_tweets(
             path_to_labelled=path_to_labelled,
             to_label_df=random_df)
