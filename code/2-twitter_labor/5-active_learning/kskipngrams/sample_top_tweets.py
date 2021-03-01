@@ -61,23 +61,23 @@ if __name__ == '__main__':
             to_label_df=random_df)
         print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
 
-    # sample_df_list = list()
-    # for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
-    #     inference_path = os.path.join(data_path,'inference')
-    #     scores_path = Path(os.path.join(inference_path, args.country_code, args.inference_folder, 'output', label))
-    #     scores_df = pd.concat(
-    #         pd.read_parquet(parquet_file)
-    #         for parquet_file in scores_path.glob('*.parquet')
-    #     )
-    #     all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
-    #     all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
-    #     all_df = all_df[:10000]
-    #     sample_df = all_df.sample(n=50).reset_index(drop=True)
-    #     sample_df['label'] = label
-    #     sample_df = sample_df[['tweet_id', 'text', 'label']]
-    #     sample_df_list.append(sample_df)
-    # appended_sample_df = pd.concat(sample_df_list)
-    # output_path = f'{data_path}/active_learning/sampling_top_lift/{args.country_code}/{args.inference_folder}'
-    # if not os.path.exists(output_path):
-    #     os.makedirs(output_path)
-    # appended_sample_df.to_parquet(os.path.join(output_path, 'top_tweets.parquet'), index=False)
+    sample_df_list = list()
+    for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
+        inference_path = os.path.join(data_path,'inference')
+        scores_path = Path(os.path.join(inference_path, args.country_code, args.inference_folder, 'output', label))
+        scores_df = pd.concat(
+            pd.read_parquet(parquet_file)
+            for parquet_file in scores_path.glob('*.parquet')
+        )
+        all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
+        all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
+        all_df = all_df[:10000]
+        sample_df = all_df.sample(n=50).reset_index(drop=True)
+        sample_df['label'] = label
+        sample_df = sample_df[['tweet_id', 'text', 'label']]
+        sample_df_list.append(sample_df)
+    appended_sample_df = pd.concat(sample_df_list)
+    output_path = f'{data_path}/active_learning/sampling_top_lift/{args.country_code}/{args.inference_folder}'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    appended_sample_df.to_parquet(os.path.join(output_path, 'top_tweets.parquet'), index=False)
