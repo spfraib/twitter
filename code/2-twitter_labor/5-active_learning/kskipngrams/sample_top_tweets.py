@@ -45,7 +45,9 @@ if __name__ == '__main__':
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
                               1: 'feb22_iter1',
                               2: 'feb23_iter2',
-                              3: 'feb25_iter3'}}
+                              3: 'feb25_iter3'},
+                            'MX': {0: 'feb27_iter0'},
+                            'BR': {0: 'feb16_iter0'}}
     for iteration_number in range(int(args.iteration_number)):
         random_count = random_df.shape[0]
         data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
