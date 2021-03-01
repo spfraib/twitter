@@ -19,7 +19,10 @@ def get_args_from_command_line():
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     parquet_file_list = list(Path(path_to_labelled).glob('*.parquet'))
     if len(parquet_file_list) > 0:
-        df = pd.concat(map(pd.read_parquet, parquet_file_list)).reset_index(drop=True)
+        if 'jan5_iter0' in path_to_labelled:
+            df = pd.read_parquet(os.path.join(path_to_labelled, 'labels.parquet'))
+        else:
+            df = pd.concat(map(pd.read_parquet, parquet_file_list)).reset_index(drop=True)
         df = df[['tweet_id']]
         df = df.drop_duplicates().reset_index(drop=True)
         list_labelled_tweet_ids = df['tweet_id'].tolist()
