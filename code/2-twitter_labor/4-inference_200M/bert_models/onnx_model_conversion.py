@@ -98,31 +98,31 @@ best_model_paths_dict = {
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
     logger.info(f'*****************************{label}*****************************')
-model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
-best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label],
-label, 'models', 'best_model')
-onnx_path = os.path.join(model_path, 'onnx')
+    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
+    best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label],
+    label, 'models', 'best_model')
+    onnx_path = os.path.join(model_path, 'onnx')
 
-try:
-    shutil.rmtree(onnx_path)  # deleting onxx folder and contents, if exists, conversion excepts
-except:
-    logger.info('no existing folder, creating one')
-    os.makedirs(onnx_path)
+    try:
+        shutil.rmtree(onnx_path)  # deleting onxx folder and contents, if exists, conversion excepts
+    except:
+        logger.info('no existing folder, creating one')
+        os.makedirs(onnx_path)
 
-logger.info('>> converting..')
-convert(framework="pt",
-        model=model_path,
-        tokenizer=convert_model_path_to_model_name(model_path),
-        output=Path(os.path.join(onnx_path, 'converted.onnx')),
-        opset=11,
-        pipeline_name='sentiment-analysis')
+    logger.info('>> converting..')
+    convert(framework="pt",
+            model=model_path,
+            tokenizer=convert_model_path_to_model_name(model_path),
+            output=Path(os.path.join(onnx_path, 'converted.onnx')),
+            opset=11,
+            pipeline_name='sentiment-analysis')
 
-logger.info('>> ONNX optimization')
-optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
-logger.info('>> Quantization')
-quantized_output = quantize(optimized_output)
+    logger.info('>> ONNX optimization')
+    optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
+    logger.info('>> Quantization')
+    quantized_output = quantize(optimized_output)
 
-logger.info('>> Verification')
-verify(Path(os.path.join(onnx_path, 'converted.onnx')))
-verify(optimized_output)
-verify(quantized_output)
+    logger.info('>> Verification')
+    verify(Path(os.path.join(onnx_path, 'converted.onnx')))
+    verify(optimized_output)
+    verify(quantized_output)
