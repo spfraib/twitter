@@ -221,63 +221,71 @@ best_model_folders_dict = {
             'job_offer': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242460_seed-5',
             'job_search': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242461_seed-6'},
     },
-    'MX': {'iter0': {
-        'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
-        'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
-        'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
-        'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
-        'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
-    }}}
+    'MX': {
+        'iter0': {
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
+        },
+        'iter1': {
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266173_seed-6',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266168_seed-1',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266179_seed-12',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8'},
+    }
+}}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-
     print('\n\n!!!!!', column)
-    loop_start = time.time()
-    best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
-                              column, 'models', 'best_model')
+loop_start = time.time()
+best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
+model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+column, 'models', 'best_model')
 
-    print(model_path)
-    onnx_path = os.path.join(model_path, 'onnx')
-    print(onnx_path)
+print(model_path)
+onnx_path = os.path.join(model_path, 'onnx')
+print(onnx_path)
 
-    ####################################################################################################################################
-    # TOKENIZATION and INFERENCE
-    ####################################################################################################################################
-    print('Predictions of random Tweets:')
-    start_time = time.time()
-    onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-                            model_path,
-                            examples)
+####################################################################################################################################
+# TOKENIZATION and INFERENCE
+####################################################################################################################################
+print('Predictions of random Tweets:')
+start_time = time.time()
+onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+model_path,
+examples)
 
-    print('time taken:', str(time.time() - start_time), 'seconds')
-    print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+print('time taken:', str(time.time() - start_time), 'seconds')
+print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
 
-    ####################################################################################################################################
-    # SAVING
-    ####################################################################################################################################
-    print('Save Predictions of random Tweets:')
-    start_time = time.time()
-    final_output_path = args.output_path
-    if not os.path.exists(os.path.join(final_output_path, column)):
-        print('>>>> directory doesnt exists, creating it')
-        os.makedirs(os.path.join(final_output_path, column))
-    # create dataframe containing tweet id and probabilities
-    predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-    predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-    # reformat dataframe
-    predictions_random_df = predictions_random_df[['second']]
-    predictions_random_df.columns = ['score']
+####################################################################################################################################
+# SAVING
+####################################################################################################################################
+print('Save Predictions of random Tweets:')
+start_time = time.time()
+final_output_path = args.output_path
+if not os.path.exists(os.path.join(final_output_path, column)):
+    print('>>>> directory doesnt exists, creating it')
+os.makedirs(os.path.join(final_output_path, column))
+# create dataframe containing tweet id and probabilities
+predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+# reformat dataframe
+predictions_random_df = predictions_random_df[['second']]
+predictions_random_df.columns = ['score']
 
-    print(predictions_random_df.head())
-    predictions_random_df.to_parquet(
-        os.path.join(final_output_path, column,
-                     str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+print(predictions_random_df.head())
+predictions_random_df.to_parquet(
+os.path.join(final_output_path, column,
+             str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
-    print('saved to:\n', os.path.join(final_output_path, column,
-                                      str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-          'saved')
+print('saved to:\n', os.path.join(final_output_path, column,
+                                  str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+'saved')
 
-    print('save time taken:', str(time.time() - start_time), 'seconds')
+print('save time taken:', str(time.time() - start_time), 'seconds')
 
-    print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
