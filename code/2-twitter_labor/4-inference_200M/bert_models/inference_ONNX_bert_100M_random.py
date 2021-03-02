@@ -236,7 +236,7 @@ best_model_folders_dict = {
             'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8',
             'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8'},
     }
-}}
+}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
     print('\n\n!!!!!', column)
