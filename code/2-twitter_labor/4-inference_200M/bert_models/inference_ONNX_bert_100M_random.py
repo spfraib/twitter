@@ -269,7 +269,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     final_output_path = args.output_path
     if not os.path.exists(os.path.join(final_output_path, column)):
         print('>>>> directory doesnt exists, creating it')
-    os.makedirs(os.path.join(final_output_path, column))
+        os.makedirs(os.path.join(final_output_path, column))
     # create dataframe containing tweet id and probabilities
     predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
     predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
