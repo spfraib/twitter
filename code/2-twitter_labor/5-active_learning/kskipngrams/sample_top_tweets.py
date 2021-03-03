@@ -49,8 +49,8 @@ if __name__ == '__main__':
                               1: 'feb22_iter1',
                               2: 'feb23_iter2',
                               3: 'feb25_iter3'},
-                            'MX': {0: 'feb27_iter0'},
-                            'BR': {0: 'feb16_iter0'}}
+                            'MX': {0: 'feb27_iter0', 1: 'mar2_iter1'},
+                            'BR': {0: 'feb16_iter0', 1: 'mar1_iter1'}}
     for iteration_number in range(int(args.iteration_number)):
         print(f'Iteration {iteration_number}')
         random_count = random_df.shape[0]
