@@ -248,6 +248,12 @@ best_model_folders_dict = {
             'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266179_seed-12',
             'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8',
             'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8'},
+        'iter2': {
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454774_seed-13',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454763_seed-2',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454773_seed-12',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454767_seed-6',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454770_seed-9'},
     }
 }
 
