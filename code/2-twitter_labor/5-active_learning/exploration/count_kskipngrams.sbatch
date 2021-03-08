@@ -11,10 +11,12 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=samuel.fraiberger@nyu.edu
 
+COUNTRY_CODE=$1
+MODEL_FOLDER=$2
 
 module purge
 module load anaconda3/2020.02
 source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
-cd /scratch/mt4493/twitter_labor/
-srun time python -u ./py/count_kskipngrams.py > ./log/count_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
+srun time python -u count_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > log/count_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
 exit
