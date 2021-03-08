@@ -14,7 +14,7 @@
 
 module purge
 module load anaconda3/2020.02
-source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
 cd /scratch/spf248/twitter
 srun time python -u ./py/count_kskipngrams.py > ./log/count_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
 exit

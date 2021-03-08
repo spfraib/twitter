@@ -1,9 +1,5 @@
-#!/usr/bin/env python
-# coding: utf-8
 
-# In[1]:
-
-
+# sbatch --array=0-4 count_kskipngrams.sh
 import os
 import sys
 from time import time
@@ -15,7 +11,7 @@ from itertools import combinations
 from ekphrasis.classes.preprocessor import TextPreProcessor
 from ekphrasis.classes.tokenizer import SocialTokenizer
 from ekphrasis.dicts.emoticons import emoticons
-
+import argparse
 
 # In[2]:
 
@@ -31,6 +27,14 @@ def get_env_var(varname,default):
         print(varname,':', var,'(Default)')
     return var
 
+def get_args_from_command_line():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--country_code", type=str)
+    parser.add_argument("--model_folder", type=str)
+    args = parser.parse_args()
+    return args
+
 SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID',0)
 SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID',0)
 SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
@@ -39,21 +43,18 @@ SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE',mp.cpu_count())
 
 # In[3]:
 
-
+args = get_args_from_command_line()
 path_to_input = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
-path_to_output = '/scratch/spf248/twitter/data'
-country_code = 'US'
-model_name = 'iter_0-convbert-1122153'
+path_to_output = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/kskipngrams'
+country_code = args.country_code
+print('Country:', country_code)
+model_name = args.model_folder
+print('Model:', model_name)
 class_ = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo'][SLURM_ARRAY_TASK_ID]
 print('Class:',class_)
 motifs = ['1grams', '2grams', '3grams']
-class2cutoff = {
-'is_hired_1mo': 30338,
-'is_unemployed': 21613,
-'job_offer': 538490,
-'job_search': 47970,
-'lost_job_1mo': 2040}
-print('Cutoff:', class2cutoff[class_])
+cutoff = 10000
+print('Cutoff:', cutoff)
 n_sample = 10**6
 print('# random tweets:', n_sample)
 rm = frozenset(['.','“','?','!',',',':','-','”','"',')','(','…','&','@','#','/','|',';','\`','\'','*','  ','’','t','\u200d','s','️','🏽','🏼','🏾','🏻','★','>','<','<percent>','<date>','<time>','</allcaps>', '<allcaps>', '<number>', '<repeated>', '<elongated>', '<hashtag>', '</hashtag>', '<url>', '<user>', '<email>'])
@@ -138,7 +139,7 @@ print('Time taken:', round(time() - start_time,1), 'seconds') # 4 (48 cores)
 print('Load scores...')
 start_time = time()
 with mp.Pool() as pool:
-    scores = pd.concat(pool.map(pd.read_parquet, glob(os.path.join(path_to_input,'inference',country_code,model_name+'-new_samples','output',class_,'*.parquet'))))
+    scores = pd.concat(pool.map(pd.read_parquet, glob(os.path.join(path_to_input,'inference',country_code,model_name,'output',class_,'*.parquet'))))
 print('# Scores:', scores.shape[0])
 print('Time taken:', round(time() - start_time,1), 'seconds') # 49 (48 cores)
 
@@ -148,7 +149,7 @@ print('Time taken:', round(time() - start_time,1), 'seconds') # 49 (48 cores)
 
 print('Select top tweets...')
 start_time = time()
-top_tweets = scores.sort_values(by='score', ascending=False).reset_index().head(class2cutoff[class_]).merge(tweets, on='tweet_id')
+top_tweets = scores.sort_values(by='score', ascending=False).reset_index().head(cutoff).merge(tweets, on='tweet_id')
 print('# top tweets:',top_tweets.shape[0])
 print('Time taken:', round(time() - start_time,1), 'seconds') # 162 (48 cores)
 
@@ -191,7 +192,7 @@ for motif in motifs:
     key = motif+'_top_'+class_
     ngrams[key] = count_ngrams(top_tweets,motif).rename('n_top_'+class_)
     ngrams[key] = ngrams[key].reset_index().merge(ngrams[motif+'_random_'+str(n_sample)].reset_index(),on=motif,how='left')
-    ngrams[key]['lift_top_'+class_] = (ngrams[key]['n_top_'+class_]/class2cutoff[class_])/(ngrams[key]['n_random_'+str(n_sample)]/n_sample)
+    ngrams[key]['lift_top_'+class_] = (ngrams[key]['n_top_'+class_]/cutoff)/(ngrams[key]['n_random_'+str(n_sample)]/n_sample)
     ngrams[key].sort_values(by='lift_top_'+class_,ascending=False,inplace=True)
     ngrams[key].set_index(motif,inplace=True)
     os.makedirs(os.path.join(path_to_output,'k_skip_n_grams',country_code,model_name,class_),exist_ok=True)
