@@ -61,7 +61,9 @@ rm = frozenset(['.','“','?','!',',',':','-','”','"',')','(','…','&','@','#
 
 
 # In[4]:
-
+corpus_dict = {'US': 'twitter',
+               'MX': '/scratch/mt4493/twitter_labor/code/repos_annexe/ekphrasis/ekphrasis/stats/twitter_MX',
+               'BR': '/scratch/mt4493/twitter_labor/code/repos_annexe/ekphrasis/ekphrasis/stats/twitter_BR'}
 
 text_processor = TextPreProcessor(
     # terms that will be normalized
@@ -74,11 +76,11 @@ text_processor = TextPreProcessor(
     
     # corpus from which the word statistics are going to be used 
     # for word segmentation 
-    segmenter="twitter", 
+    segmenter=corpus_dict[country_code],
     
     # corpus from which the word statistics are going to be used 
     # for spell correction
-    corrector="twitter", 
+    corrector=corpus_dict[country_code],
     
     unpack_hashtags=True,  # perform word segmentation on hashtags
     unpack_contractions=True,  # Unpack contractions (can't -> can not)
