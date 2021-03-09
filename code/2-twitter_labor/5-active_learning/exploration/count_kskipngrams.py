@@ -45,7 +45,7 @@ SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE',mp.cpu_count())
 
 args = get_args_from_command_line()
 path_to_input = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
-path_to_output = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/kskipngrams'
+path_to_output = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning'
 country_code = args.country_code
 print('Country:', country_code)
 model_name = args.model_folder

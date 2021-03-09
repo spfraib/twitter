@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
 # is_hired -> externship
 # lost_job_1mo -> (kicked, out) 
 # Change country_code + model_name
@@ -17,16 +11,22 @@ import matplotlib.pyplot as plt
 from decimal import Decimal
 from transformers import AutoTokenizer
 import re
+import argparse
 
+def get_args_from_command_line():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--country_code", type=str)
+    parser.add_argument("--model_folder", type=str)
+    args = parser.parse_args()
+    return args
 
-# In[2]:
-
-
-path_to_data = '/scratch/spf248/twitter/data'
-path_to_fig = '/scratch/spf248/twitter/fig'
-country_code = 'BR'
+args = get_args_from_command_line()
+path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning'
+path_to_fig = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/k_skip_n_grams/fig'
+country_code = args.country_code
 print('Country:', country_code)
-model_name = 'iter_1-bertimbau-3250624'
+model_name = args.model_folder
 print('Model:', model_name)
 motifs = ['1grams', '2grams', '3grams']
 classes = ['is_hired_1mo', 'is_unemployed', 'job_offer', 'job_search', 'lost_job_1mo']
@@ -47,10 +47,9 @@ existing_ngrams = {
 '2grams':[('me', 'despidieron'), ('me', 'corrieron'), ('consegui', 'empleo'), ('nuevo', 'trabajo'), ('nueva', 'chamba'), ('encontre', 'trabajo'), ('empiezo', 'trabajar'), ('estoy', 'desempleado'), ('sin', 'empleo'), ('sin', 'chamba'), ('necesito', 'trabajo'), ('busco', 'trabajo'), ('buscando', 'trabajo'), ('alguien', 'trabajo'), ('necesito', 'empleo'), ('empleo', 'nuevo'), ('estamos', 'contratando')],
 '3grams':[('perdi', 'mi', 'trabajo'), ('perdí', 'mi', 'trabajo'), ('no', 'tengo', 'trabajo'), ('no', 'tengo', 'empleo'), ('no', 'tengo', 'chamba')],},
 }[country_code]
-tokenizer = AutoTokenizer.from_pretrained('DeepPavlov/bert-base-cased-conversational')
 
-
-# In[3]:
+model_dict = {'US': 'DeepPavlov/bert-base-cased-conversational', 'MX': 'dccuchile/bert-base-spanish-wwm-cased', 'BR': 'neuralmind/bert-base-portuguese-cased' }
+tokenizer = AutoTokenizer.from_pretrained(model_dict[country_code])
 
 
 for motif in motifs:
@@ -58,7 +57,7 @@ for motif in motifs:
 model_iter = int(re.findall('_(\d)-',model_name)[0])
 print('Iteration', model_iter)
 if model_iter:
-    for filename in sorted(glob(os.path.join(path_to_data,'active_learning',country_code,'*','kskipngrams_*.json'))):
+    for filename in sorted(glob(os.path.join(path_to_data,'k_skip_n_grams',country_code,'*','kskipngrams_*.json'))):
         filename_iter = int(re.findall('_(\d)-',filename)[0])
         if filename_iter<model_iter:
             print('Remove ngrams sampled up to iteration', filename_iter)
@@ -127,9 +126,9 @@ print('Time taken:', round(time() - start_time,1), 'seconds') # 82
 
 
 selected_motifs = pd.DataFrame({key:select_motifs(df[key]) for key in df})
-os.makedirs(os.path.join(path_to_data,'active_learning',country_code,model_name), exist_ok=True)
-selected_motifs.to_json(os.path.join(path_to_data,'active_learning',country_code,model_name,'kskipngrams_'+model_name+'.json'))
-selected_motifs.T
+os.makedirs(os.path.join(path_to_data,'k_skip_n_grams',country_code,model_name), exist_ok=True)
+selected_motifs.to_json(os.path.join(path_to_data,'k_skip_n_grams',country_code,model_name,'kskipngrams_'+model_name+'.json'))
+#selected_motifs.T
 
 
 # # Figures
@@ -137,9 +136,9 @@ selected_motifs.T
 # In[7]:
 
 
-model_names = sorted([x.split('/')[-1] for x in glob(os.path.join(path_to_data,'active_learning',country_code,'iter_*'))])
-pd.concat([pd.read_json(os.path.join(path_to_data,'active_learning',country_code,model_name,'kskipngrams_'+model_name+'.json')) for model_name in model_names],keys=model_names).to_csv(os.path.join(path_to_data,'active_learning',country_code,'kskipngrams.csv'))
-pd.concat([pd.read_json(os.path.join(path_to_data,'active_learning',country_code,model_name,'kskipngrams_'+model_name+'.json')) for model_name in model_names],1,keys=[x.split('-')[0] for x in model_names]).T
+model_names = sorted([x.split('/')[-1] for x in glob(os.path.join(path_to_data,'k_skip_n_grams',country_code,'iter_*'))])
+#pd.concat([pd.read_json(os.path.join(path_to_data,'active_learning',country_code,model_name,'kskipngrams_'+model_name+'.json')) for model_name in model_names],keys=model_names).to_csv(os.path.join(path_to_data,'active_learning',country_code,'kskipngrams.csv'))
+#pd.concat([pd.read_json(os.path.join(path_to_data,'active_learning',country_code,model_name,'kskipngrams_'+model_name+'.json')) for model_name in model_names],1,keys=[x.split('-')[0] for x in model_names]).T
 
 
 # In[8]:
@@ -159,8 +158,8 @@ def plot_k_skip_n_grams(class_,motif,n_head=20,is_selected=True):
     ax.set_xticklabels(ax.get_xticklabels(),rotation=45,ha='right')
     ax.locator_params(axis='y',nbins=5)
     ax.set_title(class_,fontweight='bold')  
-    os.makedirs(os.path.join(path_to_fig, 'k_skip_n_grams', model_name),exist_ok=True)
-    plt.savefig(os.path.join(path_to_fig, 'k_skip_n_grams', model_name, motif+'_'+class_+{True:'_selected',False:''}[is_selected]+'.jpeg'),dpi=300,bbox_inches='tight')
+    os.makedirs(os.path.join(path_to_fig, model_name),exist_ok=True)
+    plt.savefig(os.path.join(path_to_fig, model_name, motif+'_'+class_+{True:'_selected',False:''}[is_selected]+'.jpeg'),dpi=300,bbox_inches='tight')
 
 
 # In[9]:
