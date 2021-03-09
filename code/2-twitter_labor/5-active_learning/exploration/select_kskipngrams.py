@@ -7,6 +7,8 @@ import pandas as pd
 from glob import glob
 import os
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from decimal import Decimal
 from transformers import AutoTokenizer
