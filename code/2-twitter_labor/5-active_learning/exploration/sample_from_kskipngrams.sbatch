@@ -20,7 +20,8 @@ module purge
 module load anaconda3/2020.02
 source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
-
-srun time python -u sample_from_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > log/sample_from_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
+LOG_FOLDER=log/${MODEL_FOLDER}
+mkdir -p ${LOG_FOLDER}
+srun time python -u sample_from_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > ${LOG_FOLDER}/sample_from_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
 
 exit
