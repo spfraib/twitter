@@ -243,11 +243,11 @@ best_model_folders_dict = {
             'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
         },
         'iter1': {
-            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266173_seed-6',
-            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266168_seed-1',
-            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266179_seed-12',
-            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8',
-            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8'},
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737747_seed-8',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737741_seed-2',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737746_seed-7',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6'},
         'iter2': {
             'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454774_seed-13',
             'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454763_seed-2',
