@@ -87,11 +87,11 @@ best_model_paths_dict = {
             'job_search': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742966_seed-4'},
 
         'iter2': {
-            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327477_seed-15',
-            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327471_seed-9',
-            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327467_seed-5',
-            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327467_seed-5',
-            'job_search': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327463_seed-1'
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173786_seed-10',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173783_seed-7',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173787_seed-11',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173785_seed-9',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173784_seed-8'
         },},
     'MX': {
         'iter0': {
