@@ -25,3 +25,5 @@ mkdir -p ${LOG_FOLDER}
 srun time python -u sample_from_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > ${LOG_FOLDER}/sample_from_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
 
 exit
+
+# sbatch --array=0-49 sample_from_kskipngrams.sbatch
