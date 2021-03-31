@@ -2,8 +2,8 @@
 
 #SBATCH --job-name=evaluation_metrics
 #SBATCH --nodes=1
-#SBATCH --mem=60GB
-#SBATCH --time=24:00:00
+#SBATCH --mem=120GB
+#SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=slurm_evaluation_metrics_%j.out
 #SBATCH --mail-type=BEGIN
