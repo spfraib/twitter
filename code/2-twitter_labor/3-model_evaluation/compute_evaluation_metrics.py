@@ -86,7 +86,10 @@ if __name__ == '__main__':
             logger.info(f'# tweets with score > {args.threshold}: {all_df.shape[0]}')
             # compute and save expansion rate
             results_dict[inference_folder][label] = dict()
-            expansion_rate = all_seedlist_df.shape[0] / all_df.shape[0]
+            if all_df.shape[0] == 0:
+                expansion_rate = np.nan
+            else:
+                expansion_rate = all_seedlist_df.shape[0] / all_df.shape[0]
             logger.info(f'Expansion rate: {expansion_rate}')
             results_dict[inference_folder][label]['expansion_rate'] = expansion_rate
             # compute and save diversity score
