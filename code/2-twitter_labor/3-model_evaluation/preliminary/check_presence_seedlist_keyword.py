@@ -67,11 +67,10 @@ if __name__ == '__main__':
                "unemployed",
                "jobless"
                ]}
-    country_code = 'US'
-    ngram_list = [re.compile(regex) for regex in ngram_dict[country_code]]
+    ngram_list = [re.compile(regex) for regex in ngram_dict[args.country_code]]
     random_df['seedlist_keyword'] = random_df['text'].apply(lambda x: regex_match_string(regex_list=ngram_list, mystring=x))
     random_df = random_df[['tweet_id', 'seedlist_keyword']]
-    output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{country_code}/evaluation_seedlist_keyword'
+    output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation_seedlist_keyword'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     random_df.to_parquet(os.path.join(output_path, 'evaluation_seedlist_keyword.parquet'), index=False)
