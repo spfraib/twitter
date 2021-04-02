@@ -13,10 +13,10 @@
 
 cd /scratch/mt4493
 zip -r womply_data.zip womply_data/
-
+echo 'Zipped womply'
 cd /scratch/mt4493/twitter_labor/twitter-labor-data/data
 zip -r pretraining.zip pretraining/
-echo 'Zipped pretraining '
+echo 'Zipped pretraining'
 zip -r tweets_2020.zip tweets_2020/
 echo 'Zipped tweets_2020'
 zip -r archive.zip archive/
