@@ -10,6 +10,9 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
+METHOD=$1
+THRESHOLD=$2
+TOPK=$3
 
 module purge
 module load anaconda3/2020.02
@@ -21,6 +24,9 @@ echo "pyenv activated"
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation
 
 python3 compute_evaluation_metrics.py \
---country_code US
+--country_code US \
+--method ${METHOD} \
+--threshold ${THRESHOLD} \
+--topk ${TOPK}
 
 exit

@@ -6,6 +6,7 @@ import os
 from sentence_transformers import SentenceTransformer, util
 import torch
 import numpy as np
+import re
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -18,8 +19,10 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
+    parser.add_argument("--method", type=str)
     parser.add_argument("--threshold", type=float,
                         default=0.95)
+    parser.add_argument("--topk", type=int)
     args = parser.parse_args()
     return args
 
@@ -76,11 +79,14 @@ if __name__ == '__main__':
             logger.info('Loaded scores')
             all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
             all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
-            # keep aside 50 top tweets
-            top_df = all_df[:50]
-            top_df['tweet_type'] = 'top_50'
+            # # keep aside 50 top tweets
+            # top_df = all_df[:50]
+            # top_df['tweet_type'] = 'top_50'
             # restrict to score > T
-            all_df = all_df.loc[all_df['score'] > args.threshold].reset_index(drop=True)
+            if args.method == 'threshold':
+                all_df = all_df.loc[all_df['score'] > args.threshold].reset_index(drop=True)
+            elif args.method == 'topk':
+                all_df = all_df[:args.topk]
             all_seedlist_df = all_df.loc[all_df['seedlist_keyword'] == 1]
             all_df['inference_folder'] = inference_folder
             logger.info(f'# tweets with score > {args.threshold}: {all_df.shape[0]}')
@@ -103,27 +109,34 @@ if __name__ == '__main__':
             # else:
             #     results_dict[inference_folder][label]['diversity_score'] = np.nan
             # save tweets to label for precision estimate
-            if all_df.shape[0] > 0:
-                sample_df = all_df.sample(n=50).reset_index(drop=True)
-                sample_df['tweet_type'] = 'sample_50'
-                to_label_df = pd.concat([top_df, sample_df]).reset_index(drop=True)
-                to_label_list.append(to_label_df)
-            else:
-                logger.info('Only sending top 50 tweets to labeling')
-                to_label_list.append(top_df)
+            # if all_df.shape[0] > 0:
+            #     sample_df = all_df.sample(n=50).reset_index(drop=True)
+            #     sample_df['tweet_type'] = 'sample_50'
+            #     to_label_df = pd.concat([top_df, sample_df]).reset_index(drop=True)
+            #     to_label_list.append(to_label_df)
+            # else:
+            #     logger.info('Only sending top 50 tweets to labeling')
+            #     to_label_list.append(top_df)
     # organize results
     results_df = pd.DataFrame.from_dict(results_dict)
     results_list = list()
     for inference_folder in inference_folder_dict[args.country_code]:
         results_iter_df = results_df[inference_folder].apply(pd.Series)
-        results_iter_df['iter'] = inference_folder
+        iter_number = int(re.findall('iter_(\d)', inference_folder)[0])
+        results_iter_df['iter'] = iter_number
         results_list.append(results_iter_df)
     results_df = pd.concat(results_list)
     # save results
-    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/threshold_{int(args.threshold*100)}'
+    if args.method == 'threshold':
+        folder_name = f'threshold_{int(args.threshold*100)}'
+    elif args.method == 'topk':
+        folder_name = f'top_{args.topk}'
+    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/{folder_name}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    results_df.to_csv(os.path.join(output_path, 'expansion.csv'))
+    results_df = results_df.reset_index()
+    results_df = results_df.sort_values(by=['index', 'iter']).reset_index(drop=True)
+    results_df.to_csv(os.path.join(output_path, 'expansion.csv'), index=False)
     # appended_to_label_df = pd.concat(to_label_list)
     # output_path = f'{data_path}/evaluation/{args.country_code}/{args.inference_folder}'
     # if not os.path.exists(output_path):
