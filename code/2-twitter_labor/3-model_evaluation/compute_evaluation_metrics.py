@@ -121,6 +121,8 @@ if __name__ == '__main__':
     results_df = pd.concat(results_list)
     # save results
     output_path = f'{data_path}/evaluation_metrics/{args.country_code}/threshold_{int(args.threshold*100)}'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
     results_df.to_csv(os.path.join(output_path, 'expansion.csv'))
     # appended_to_label_df = pd.concat(to_label_list)
     # output_path = f'{data_path}/evaluation/{args.country_code}/{args.inference_folder}'
