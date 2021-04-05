@@ -21,8 +21,10 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
-def regex_match_string(regex_list, mystring):
+def regex_match_string(ngram_list, regex_list, mystring):
     if any(regex.match(mystring) for regex in regex_list):
+        return 1
+    elif any(regex in mystring for regex in ngram_list):
         return 1
     else:
         return 0
@@ -67,8 +69,9 @@ if __name__ == '__main__':
                "unemployed",
                "jobless"
                ]}
-    ngram_list = [re.compile(regex) for regex in ngram_dict[args.country_code]]
-    random_df['seedlist_keyword'] = random_df['text'].apply(lambda x: regex_match_string(regex_list=ngram_list, mystring=x))
+    regex_list = [re.compile(regex) for regex in ngram_dict[args.country_code]]
+    random_df['text_lower'] = random_df['text'].str.lower()
+    random_df['seedlist_keyword'] = random_df['text_lower'].apply(lambda x: regex_match_string(ngram_list=ngram_dict[args.country_code], regex_list=regex_list, mystring=x))
     random_df = random_df[['tweet_id', 'seedlist_keyword']]
     output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation_seedlist_keyword'
     if not os.path.exists(output_path):
