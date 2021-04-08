@@ -20,6 +20,6 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/preliminary
 
-python3 check_presence_sentence.py
+python3 check_presence_sentences.py
 
 exit
