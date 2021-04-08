@@ -10,8 +10,6 @@ def read_json(filename: str):
     with open(filename) as f_in:
         return json.load(f_in)
 
-def get_score(model, )
-
 if __name__ == '__main__':
     country_code = 'US'
     labels = ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_offer', 'job_search']
