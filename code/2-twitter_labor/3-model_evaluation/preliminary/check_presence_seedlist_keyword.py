@@ -22,7 +22,7 @@ def get_args_from_command_line():
     return args
 
 def regex_match_string(ngram_list, regex_list, mystring):
-    if any(regex.match(mystring) for regex in regex_list):
+    if any(regex.search(mystring) for regex in regex_list):
         return 1
     elif any(regex in mystring for regex in ngram_list):
         return 1
