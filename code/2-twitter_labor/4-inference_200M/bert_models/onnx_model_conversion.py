@@ -80,19 +80,32 @@ best_model_paths_dict = {
             'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
         },
         'iter1': {
-            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242456_seed-1',
-            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242463_seed-8',
-            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242458_seed-3',
-            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242460_seed-5',
-            'job_search': 'neuralmind-bert-base-portuguese-cased_mar1_iter1_3242461_seed-6'},
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742972_seed-10',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742970_seed-8',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742966_seed-4'},
 
         'iter2': {
-            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327477_seed-15',
-            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327471_seed-9',
-            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327467_seed-5',
-            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327467_seed-5',
-            'job_search': 'neuralmind-bert-base-portuguese-cased_mar4_iter2_3327463_seed-1'
-        },},
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173786_seed-10',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173783_seed-7',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173787_seed-11',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173785_seed-9',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173784_seed-8'
+        },
+        'iter3': {
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518525_seed-12',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1'},
+        'iter4': {
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677938_seed-6',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1'},
+    },
     'MX': {
         'iter0': {
             'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
@@ -102,17 +115,29 @@ best_model_paths_dict = {
             'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
         },
         'iter1': {
-            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266173_seed-6',
-            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266168_seed-1',
-            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266179_seed-12',
-            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8',
-            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar2_iter1_3266175_seed-8'},
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737747_seed-8',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737741_seed-2',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737746_seed-7',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6'},
         'iter2': {
-            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454774_seed-13',
-            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454763_seed-2',
-            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454773_seed-12',
-            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454767_seed-6',
-            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar7_iter2_3454770_seed-9'},
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138955_seed-14',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138956_seed-15',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138953_seed-12',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138951_seed-10',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138943_seed-2'},
+        'iter3': {
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375824_seed-2',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375831_seed-9',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375830_seed-8'},
+        'iter4': {
+            'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597713_seed-4',
+            'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+            'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+            'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597712_seed-3',
+            'job_search': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597710_seed-1'},
     }
 }
 

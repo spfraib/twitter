@@ -15,7 +15,9 @@ MODEL_FOLDER=$2
 
 module purge
 module load anaconda3/2020.02
-source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
+#source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
+
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
 python3 select_kskipngrams.py \
 --country_code ${COUNTRY_CODE} \

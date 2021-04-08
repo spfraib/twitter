@@ -20,3 +20,5 @@ source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
 srun time python -u count_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > log/count_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
 exit
+
+# sbatch --array=0-4 count_kskipngrams.sbatch
