@@ -14,7 +14,7 @@
 module purge
 module load anaconda3/2020.02
 
-source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
+source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
 
 echo "pyenv activated"
 
