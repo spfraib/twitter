@@ -5,7 +5,7 @@
 #SBATCH --mem=120GB
 #SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --output=slurm_evaluation_metrics_%j.out
+#SBATCH --output=slurm_estimate_recall_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu

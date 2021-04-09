@@ -3,9 +3,6 @@ import argparse
 import logging
 from pathlib import Path
 import os
-from sentence_transformers import SentenceTransformer, util
-import torch
-import numpy as np
 import re
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
