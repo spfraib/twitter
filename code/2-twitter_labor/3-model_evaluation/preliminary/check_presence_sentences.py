@@ -46,6 +46,7 @@ if __name__ == '__main__':
         print(label)
         sentences_df = pd.read_csv(os.path.join(sentences_path, f'US-{label}.csv'))
         sentences_list = sentences_df['text'].tolist()
+        sentences_list = [sentence.lower() for sentence in sentences_list]
         random_df[f'sentence_{label}'] = random_df['text_lower'].apply(lambda x: sentence_in_string(sentence_list=sentences_list, mystring=x))
         print(random_df[f'sentence_{label}'].value_counts(dropna=False))
         print(random_df[f'sentence_{label}'].value_counts(dropna=False, normalize=True))
