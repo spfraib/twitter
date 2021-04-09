@@ -48,10 +48,10 @@ if __name__ == '__main__':
         sentences_list = sentences_df['text'].tolist()
         sentences_list = [sentence.lower() for sentence in sentences_list]
         random_df[f'sentence_{label}'] = random_df['text_lower'].apply(lambda x: sentence_in_string(sentence_list=sentences_list, mystring=x))
-        print(random_df[f'sentence_{label}'].value_counts(dropna=False))
-        print(random_df[f'sentence_{label}'].value_counts(dropna=False, normalize=True))
-    # random_df = random_df[['tweet_id', 'seedlist_keyword']]
-    # output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation_seedlist_keyword'
-    # if not os.path.exists(output_path):
-    #     os.makedirs(output_path)
-    # random_df.to_parquet(os.path.join(output_path, 'evaluation_seedlist_keyword.parquet'), index=False)
+        # print(random_df[f'sentence_{label}'].value_counts(dropna=False))
+        # print(random_df[f'sentence_{label}'].value_counts(dropna=False, normalize=True))
+    random_df = random_df[['tweet_id'] + [f'seedlist_{label}' for label in labels]]
+    output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation_seedlist_keyword'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    random_df.to_parquet(os.path.join(output_path, 'evaluation_sentences.parquet'), index=False)
