@@ -20,7 +20,7 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
 echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/diversity
 
 python3 compute_diversity.py \
 --topk ${TOPK}
