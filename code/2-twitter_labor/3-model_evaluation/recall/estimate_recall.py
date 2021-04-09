@@ -19,7 +19,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--method", type=str)
+    parser.add_argument("--method", type=str, default='topk')
     parser.add_argument("--threshold", type=float,
                         default=0.95)
     parser.add_argument("--topk", type=int)
