@@ -53,6 +53,7 @@ if __name__ == '__main__':
         logger.info(f'**** Inference folder: {inference_folder} ****')
         results_dict[inference_folder] = dict()
         for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
+            results_dict[inference_folder][label] = dict()
             logger.info(f'** Class: {label} **')
             scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
             scores_df = pd.concat(
