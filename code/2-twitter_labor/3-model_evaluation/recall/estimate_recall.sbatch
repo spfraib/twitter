@@ -1,12 +1,11 @@
 #!/bin/bash
 
-#SBATCH --job-name=estimate_recall
+#SBATCH --job-name=evaluation_metrics
 #SBATCH --nodes=1
+#SBATCH --mem=120GB
+#SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=10GB
-#SBATCH --time=24:00:00
-#SBATCH --gres=gpu:1
-#SBATCH --output=slurm_estimate_recall_%j.out
+#SBATCH --output=slurm_evaluation_metrics_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
@@ -18,7 +17,7 @@ source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
 
 echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation
+cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/recall
 
 python3 estimate_recall.py
 
