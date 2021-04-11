@@ -33,16 +33,16 @@ if __name__ == '__main__':
 
     inference_path = os.path.join(data_path, 'inference')
     for inference_folder in inference_folder_dict[args.country_code]:
-        logger.info(f'**** Inference folder: {inference_folder} ****')
+        print(f'**** Inference folder: {inference_folder} ****')
         for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
-            logger.info(f'** Class: {label} **')
+            print(f'** Class: {label} **')
             scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
             scores_df = pd.concat(
                 pd.read_parquet(parquet_file)
                 for parquet_file in scores_path.glob('*.parquet')
             )
-            logger.info('Loaded scores')
+            print('Loaded scores')
             scores_df = scores_df[:args.topk]
             unique_count = len(scores_df['score'].unique())
-            logger.info(f'Unique score count: {unique_count}')
-            logger.info(f'Unique score share: {unique_count/args.topk}')
+            print(f'Unique score count: {unique_count}')
+            print(f'Unique score share: {unique_count/args.topk}')
