@@ -112,7 +112,7 @@ def inference(onnx_model, model_dir, examples):
         Onnx inference with batch tokenization
         """
 
-        if i % 100 == 0:
+        # if i % 100 == 0:
         # print(i, '/', NUM_BATCHES)
 
         tokens = get_tokens(tokens_dict, i)
