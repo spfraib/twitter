@@ -10,6 +10,8 @@ import re
 import json
 from scipy.special import softmax
 import scipy
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
