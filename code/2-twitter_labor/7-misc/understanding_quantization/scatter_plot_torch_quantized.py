@@ -109,7 +109,7 @@ if __name__ == '__main__':
             trained_models_path = '/scratch/mt4493/twitter_labor/trained_models'
             model_iter = int(re.findall('_(\d)-', inference_folder)[0])
             best_model_path = os.path.join(trained_models_path, args.country_code,
-                                           best_model_folders_dict[args.country_code][f'iter{model_iter}'], label,
+                                           best_model_folders_dict[args.country_code][f'iter{model_iter}'][label], label,
                                            'models/best_model')
             train_args = read_json(filename=os.path.join(best_model_path, 'model_args.json'))
             model = ClassificationModel('bert', best_model_path, args=train_args)
