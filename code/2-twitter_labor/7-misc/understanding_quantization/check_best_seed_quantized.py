@@ -222,7 +222,7 @@ if __name__ == '__main__':
                 folder_path = os.path.join(model_folder_path, model_folder)
                 model_path = os.path.join(folder_path,
                                           label, 'models', 'best_model')
-                if 'config.json' in os.listdir(model_path):
+                if os.path.exists(model_path) and 'config.json' in os.listdir(model_path):
                     onnx_path = os.path.join(model_path, 'onnx')
                     if not os.path.exists(onnx_path):
                         os.makedirs(onnx_path)
