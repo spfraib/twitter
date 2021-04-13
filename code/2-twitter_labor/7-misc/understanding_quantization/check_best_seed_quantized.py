@@ -222,46 +222,47 @@ if __name__ == '__main__':
                 folder_path = os.path.join(model_folder_path, model_folder)
                 model_path = os.path.join(folder_path,
                                           label, 'models', 'best_model')
-                onnx_path = os.path.join(model_path, 'onnx')
-                if not os.path.exists(onnx_path):
-                    os.makedirs(onnx_path)
+                if 'config.json' in os.listdir(model_path):
+                    onnx_path = os.path.join(model_path, 'onnx')
+                    if not os.path.exists(onnx_path):
+                        os.makedirs(onnx_path)
 
-                    convert(framework="pt",
-                            model=model_path,
-                            tokenizer=convert_model_path_to_model_name(model_path),
-                            output=Path(os.path.join(onnx_path, 'converted.onnx')),
-                            opset=11,
-                            pipeline_name='sentiment-analysis')
+                        convert(framework="pt",
+                                model=model_path,
+                                tokenizer=convert_model_path_to_model_name(model_path),
+                                output=Path(os.path.join(onnx_path, 'converted.onnx')),
+                                opset=11,
+                                pipeline_name='sentiment-analysis')
 
-                    optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
-                    quantized_output = quantize(optimized_output)
+                        optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
+                        quantized_output = quantize(optimized_output)
 
-                    verify(Path(os.path.join(onnx_path, 'converted.onnx')))
-                    verify(optimized_output)
-                    verify(quantized_output)
+                        verify(Path(os.path.join(onnx_path, 'converted.onnx')))
+                        verify(optimized_output)
+                        verify(quantized_output)
 
-                # load evaluation data
-                path_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test'
-                path_evaluation_data = os.path.join(path_data, args.country_code, data_folder, 'train_test',
-                                                    f'val_{label}.csv')
-                val_df = pd.read_csv(path_evaluation_data, lineterminator='\n')
-                val_df = val_df[['tweet_id', 'text', "class"]]
-                val_df.columns = ['tweet_id', 'text', 'labels']
-                examples = val_df['text'].tolist()
-                # run inference
-                NUM_TWEETS = len(examples)
-                BATCH_SIZE = 1
-                NUM_BATCHES = int(np.ceil(NUM_TWEETS / BATCH_SIZE))
-                onnx_labels = inference(os.path.join(onnx_path,
-                                                     'converted-optimized-quantized.onnx'),
-                                        model_path,
-                                        examples)
-                scores = [element[1] for element in onnx_labels]
-                y_pred = np.vectorize(convert_score_to_predictions)(scores)
-                # compute AUC
-                fpr, tpr, thresholds = metrics.roc_curve(val_df['labels'], scores)
-                auc_eval = metrics.auc(fpr, tpr)
-                results_dict[count][label][model_folder] = auc_eval
+                    # load evaluation data
+                    path_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test'
+                    path_evaluation_data = os.path.join(path_data, args.country_code, data_folder, 'train_test',
+                                                        f'val_{label}.csv')
+                    val_df = pd.read_csv(path_evaluation_data, lineterminator='\n')
+                    val_df = val_df[['tweet_id', 'text', "class"]]
+                    val_df.columns = ['tweet_id', 'text', 'labels']
+                    examples = val_df['text'].tolist()
+                    # run inference
+                    NUM_TWEETS = len(examples)
+                    BATCH_SIZE = 1
+                    NUM_BATCHES = int(np.ceil(NUM_TWEETS / BATCH_SIZE))
+                    onnx_labels = inference(os.path.join(onnx_path,
+                                                         'converted-optimized-quantized.onnx'),
+                                            model_path,
+                                            examples)
+                    scores = [element[1] for element in onnx_labels]
+                    y_pred = np.vectorize(convert_score_to_predictions)(scores)
+                    # compute AUC
+                    fpr, tpr, thresholds = metrics.roc_curve(val_df['labels'], scores)
+                    auc_eval = metrics.auc(fpr, tpr)
+                    results_dict[count][label][model_folder] = auc_eval
             best_model_dict[count][label]['best_pytorch'] = best_model_paths_dict[args.country_code][f"iter{count}"][
                 label]
             best_model_dict[count][label]['best_quantized'] = max(results_dict[count][label],
