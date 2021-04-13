@@ -244,7 +244,9 @@ if __name__ == '__main__':
                 path_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test'
                 path_evaluation_data = os.path.join(path_data, args.country_code, data_folder, 'train_test',
                                                     f'val_{label}.csv')
-                val_df = pd.read_csv(path_evaluation_data)
+                val_df = pd.read_csv(path_evaluation_data, lineterminator='\n')
+                val_df = val_df[['tweet_id', 'text', "class"]]
+                val_df.columns = ['tweet_id', 'text', 'labels']
                 examples = val_df['text'].tolist()
                 # run inference
                 NUM_TWEETS = len(examples)
@@ -257,7 +259,7 @@ if __name__ == '__main__':
                 scores = [element[1] for element in onnx_labels]
                 y_pred = np.vectorize(convert_score_to_predictions)(scores)
                 # compute AUC
-                fpr, tpr, thresholds = metrics.roc_curve(val_df['class'], scores)
+                fpr, tpr, thresholds = metrics.roc_curve(val_df['labels'], scores)
                 auc_eval = metrics.auc(fpr, tpr)
                 results_dict[count][label][model_folder] = auc_eval
             best_model_dict[count][label]['best_pytorch'] = best_model_paths_dict[args.country_code][f"iter{count}"][
