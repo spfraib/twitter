@@ -22,6 +22,7 @@ from scipy.special import softmax
 import scipy
 from sklearn import metrics
 import logging
+import time
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -230,6 +231,7 @@ if __name__ == '__main__':
                 if os.path.exists(model_path) and 'config.json' in os.listdir(model_path):
                     onnx_path = os.path.join(model_path, 'onnx')
                     if not os.path.exists(onnx_path):
+                        logger.info('Converting model to ONNX')
                         os.makedirs(onnx_path)
 
                         convert(framework="pt",
@@ -258,10 +260,14 @@ if __name__ == '__main__':
                     NUM_TWEETS = len(examples)
                     BATCH_SIZE = 1
                     NUM_BATCHES = int(np.ceil(NUM_TWEETS / BATCH_SIZE))
+                    logger.info('Start inference')
+                    start_inference = time.time()
                     onnx_labels = inference(os.path.join(onnx_path,
                                                          'converted-optimized-quantized.onnx'),
                                             model_path,
                                             examples)
+                    end_inference = time.time()
+                    logger.info(f'Inference lasted {end_inference - start_inference} seconds.')
                     scores = [element[1] for element in onnx_labels]
                     y_pred = np.vectorize(convert_score_to_predictions)(scores)
                     # compute AUC
