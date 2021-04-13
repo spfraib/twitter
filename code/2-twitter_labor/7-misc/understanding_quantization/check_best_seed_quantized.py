@@ -206,14 +206,18 @@ if __name__ == '__main__':
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10'
             }}}
     results_dict = dict()
+    best_model_dict = dict()
     for count, data_folder in enumerate(data_folder_dict[args.country_code]):
         relevant_model_folders = [model_folder for model_folder in os.listdir(model_folder_path) if
                                   data_folder in model_folder]
         results_dict[count] = dict()
+        best_model_dict[count] = dict()
+
         print(f'*** Iteration {count} ***')
         for label in labels:
             print(f'** Label: {label} **')
             results_dict[count][label] = dict()
+            best_model_dict[count][label] = dict()
             for model_folder in relevant_model_folders:
                 folder_path = os.path.join(model_folder_path, model_folder)
                 model_path = os.path.join(folder_path,
@@ -253,10 +257,25 @@ if __name__ == '__main__':
                 scores = [element[1] for element in onnx_labels]
                 y_pred = np.vectorize(convert_score_to_predictions)(scores)
                 # compute AUC
-                fpr, tpr, thresholds = metrics.roc_curve(val_df['labels'], scores)
+                fpr, tpr, thresholds = metrics.roc_curve(val_df['class'], scores)
                 auc_eval = metrics.auc(fpr, tpr)
                 results_dict[count][label][model_folder] = auc_eval
-            print(f'Best PyTorch model: {best_model_paths_dict[args.country_code][f"iter{count}"][label]}')
-            print(f'Best quantized model: {max(results_dict[count][label], key=results_dict[count][label].get)}')
-            print(
-                f'Same best seed: {best_model_paths_dict[args.country_code][f"iter{count}"][label] == max(results_dict[count][label], key=results_dict[count][label].get)}')
+            best_model_dict[count][label]['best_pytorch'] = best_model_paths_dict[args.country_code][f"iter{count}"][
+                label]
+            best_model_dict[count][label]['best_quantized'] = max(results_dict[count][label],
+                                                                  key=results_dict[count][label].get)
+            best_model_dict[count][label]['same_best'] = best_model_paths_dict[args.country_code][f"iter{count}"][
+                                                             label] == max(results_dict[count][label],
+                                                                           key=results_dict[count][label].get)
+    results_list = list()
+    results_df = pd.DataFrame.from_dict(best_model_dict)
+    for iter_number in range(5):
+        results_iter_df = results_df[iter_number].apply(pd.Series).reset_index()
+        results_iter_df['iter'] = iter_number
+        results_list.append(results_iter_df)
+        # print(results_iter_df)
+    results_df = pd.concat(results_list).reset_index(drop=True)
+    output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/debugging/check_best_seed'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    results_df.to_csv(os.path.join(output_path, f'{args.country_code}.csv'), index=False)

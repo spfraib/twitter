@@ -114,7 +114,7 @@ if __name__ == '__main__':
                                            best_model_folders_dict[args.country_code][f'iter{model_iter}'][label], label,
                                            'models/best_model')
             train_args = read_json(filename=os.path.join(best_model_path, 'model_args.json'))
-            model = ClassificationModel('bert', best_model_path, args=train_args)
+            model = ClassificationModel('bert', best_model_path, args=train_args, use_cuda=True)
             predictions, raw_outputs = model.predict(all_df['text'].tolist())
             scores = np.array([softmax(element)[1] for element in raw_outputs])
             all_df['pytorch_score'] = scores
