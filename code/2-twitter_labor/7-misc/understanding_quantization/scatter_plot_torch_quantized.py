@@ -94,11 +94,12 @@ if __name__ == '__main__':
     inference_path = os.path.join(data_path, 'inference')
     results_dict = dict()
     to_label_list = list()
-    for inference_folder in inference_folder_dict[args.country_code]:
-        print(f'**** Inference folder: {inference_folder} ****')
-        results_dict[inference_folder] = dict()
-        for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
-            print(f'** Class: {label} **')
+    for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
+        print(f'** Class: {label} **')
+        results_dict[label] = dict()
+        for inference_folder in inference_folder_dict[args.country_code]:
+            print(f'**** Inference folder: {inference_folder} ****')
+            results_dict[label][inference_folder] = dict()
             scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
             scores_df = pd.concat(
                 pd.read_parquet(parquet_file)
@@ -122,9 +123,9 @@ if __name__ == '__main__':
             all_df['pytorch_score_rank'] = all_df['pytorch_score'].rank(method='dense', ascending=False)
             all_df['quantized_score_rank'] = all_df['score'].rank(method='dense', ascending=False)
             # calculate correlation statistics
-            print(f"Spearman correlation (from scipy): {scipy.stats.spearmanr(all_df['pytorch_score'], all_df['score'])}")
-            print(f"Spearman correlation (rank + pearson): {scipy.stats.pearsonr(all_df['pytorch_score_rank'], all_df['quantized_score_rank'])}")
-            print(f"Kendall Tau: {scipy.stats.kendalltau(all_df['pytorch_score_rank'], all_df['quantized_score_rank'])}")
+            results_dict[label][inference_folder]['Spearman correlation (from scipy)'] = scipy.stats.spearmanr(all_df['pytorch_score'], all_df['score'])
+            results_dict[label][inference_folder]['Spearman correlation (rank + pearson)'] = scipy.stats.pearsonr(all_df['pytorch_score_rank'], all_df['quantized_score_rank'])
+            results_dict[label][inference_folder]['Kendall Tau'] = scipy.stats.kendalltau(all_df['pytorch_score_rank'], all_df['quantized_score_rank'])
             # plot top tweets
             all_df.plot.scatter(x='pytorch_score', y='score', c='DarkBlue')
             fig_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/fig'
@@ -133,3 +134,19 @@ if __name__ == '__main__':
                 os.makedirs(output_path)
             plt.savefig(os.path.join(output_path, f'{label}.png'),bbox_inches='tight', format='png' ,dpi=1200, transparent=False)
 
+
+    results_df = pd.DataFrame.from_dict(results_dict).T
+    results_list = list()
+    for inference_folder in results_df.columns:
+        results_iter_df = results_df[inference_folder].apply(pd.Series)
+        iter_number = int(re.findall('iter_(\d)', inference_folder)[0])
+        results_iter_df['iter'] = iter_number
+        results_list.append(results_iter_df)
+        # print(results_iter_df)
+    results_df = pd.concat(results_list).reset_index()
+    results_df = results_df.sort_values(by=['index', 'iter']).reset_index(drop=True)
+
+    output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/debugging/rank_correlation_torch_quantized'
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
+    results_df.to_csv(os.path.join(output_path, f'{args.country_code}.csv'), index=False)

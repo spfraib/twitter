@@ -277,6 +277,8 @@ if __name__ == '__main__':
         results_list.append(results_iter_df)
         # print(results_iter_df)
     results_df = pd.concat(results_list).reset_index(drop=True)
+    results_df = results_df.sort_values(by=['index', 'iter']).reset_index(drop=True)
+
     output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/debugging/check_best_seed'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
