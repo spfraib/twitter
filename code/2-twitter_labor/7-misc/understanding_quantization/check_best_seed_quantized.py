@@ -278,8 +278,9 @@ if __name__ == '__main__':
                     results_dict[count][label][model_folder] = auc_eval
             best_model_dict[count][label]['best_pytorch'] = best_model_paths_dict[args.country_code][f"iter{count}"][
                 label]
-            best_model_dict[count][label]['best_quantized'] = max(results_dict[count][label],
+            best_model_dict[count][label]['best_model_quantized'] = max(results_dict[count][label],
                                                                   key=results_dict[count][label].get)
+            best_model_dict[count][label]['best_auc_quantized'] = max(results_dict[count][label].values())
             best_model_dict[count][label]['same_best'] = best_model_paths_dict[args.country_code][f"iter{count}"][
                                                              label] == max(results_dict[count][label],
                                                                            key=results_dict[count][label].get)
