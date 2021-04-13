@@ -26,6 +26,14 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+def compute_mean_max_diversity(matrix):
+    max_list = list()
+    for i in range(matrix.size()[0]):
+        tensor = matrix[i] * -1
+        max_list.append(tensor.max().item())
+    return np.average(max_list)
+
+
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
@@ -84,7 +92,8 @@ if __name__ == '__main__':
                 tweet_list = all_df['text'].tolist()
                 embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
                 cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
-                diversity_score = (-torch.sum(cosine_scores) / (len(tweet_list) ** 2)).item()
+                diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
+                # diversity_score = (-torch.sum(cosine_scores) / (len(tweet_list) ** 2)).item()
                 logger.info(f'Diversity score: {diversity_score}')
                 results_dict[inference_folder][label]['diversity_score'] = diversity_score
             else:
