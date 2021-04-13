@@ -225,6 +225,7 @@ if __name__ == '__main__':
             results_dict[count][label] = dict()
             best_model_dict[count][label] = dict()
             for model_folder in relevant_model_folders:
+                logger.info(model_folder)
                 folder_path = os.path.join(model_folder_path, model_folder)
                 model_path = os.path.join(folder_path,
                                           label, 'models', 'best_model')
