@@ -281,6 +281,7 @@ if __name__ == '__main__':
             best_model_dict[count][label]['same_best'] = best_model_paths_dict[args.country_code][f"iter{count}"][
                                                              label] == max(results_dict[count][label],
                                                                            key=results_dict[count][label].get)
+            logger.info(best_model_dict[count][label])
     results_list = list()
     results_df = pd.DataFrame.from_dict(best_model_dict)
     for iter_number in range(5):
