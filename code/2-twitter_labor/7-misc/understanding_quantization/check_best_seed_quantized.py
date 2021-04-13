@@ -21,7 +21,12 @@ import multiprocessing
 from scipy.special import softmax
 import scipy
 from sklearn import metrics
+import logging
 
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def convert_model_path_to_model_name(model_path):
     if 'bertweet' in model_path:
