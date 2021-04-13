@@ -63,7 +63,7 @@ def inference(onnx_model, model_dir, examples):
     options.intra_op_num_threads = 16  # does not seem to make a difference, always parallelized
     # options.inter_op_num_threads = multiprocessing.cpu_count()
 
-    # print(onnx_model)
+    # logger.info(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
 
     # pytorch pretrained model and tokenizer
@@ -74,7 +74,7 @@ def inference(onnx_model, model_dir, examples):
 
     tokenizer_str = "TokenizerFast"
 
-    # print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
+    # logger.info("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
     #     quantized_str, tokenizer_str))
     start_batch_tokenization = time.time()
     tokens_dict = tokenizer.batch_encode_plus(examples, max_length=128)
@@ -97,7 +97,7 @@ def inference(onnx_model, model_dir, examples):
         minibatch['attention_mask'] = np.stack((
             [get_tokens(token_batch, i)['attention_mask'][0] for i in range(number_examples_in_this_batch)]
         ), axis=0)
-        # print('y')
+        # logger.info('y')
         minibatches_list.append(minibatch)
 
     # tokens_dict = tokenizer.batch_encode_plus(examples, padding='longest')
@@ -113,7 +113,7 @@ def inference(onnx_model, model_dir, examples):
         """
 
         # if i % 100 == 0:
-        # print(i, '/', NUM_BATCHES)
+        # logger.info(i, '/', NUM_BATCHES)
 
         tokens = get_tokens(tokens_dict, i)
         # inference
@@ -134,17 +134,17 @@ def inference(onnx_model, model_dir, examples):
         onnx_inference = onnx_inference + onnx_logits.detach().cpu().numpy().tolist()
         # onnx_inference.append(onnx_logits.detach().cpu().numpy()[0].tolist())
         # total_build_label_time = total_build_label_time + (time.time() - start_build_label)
-    #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
+    #         logger.info(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
     end_onnx_inference_batch = time.time()
-    # print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
-    # print("Total inference time (in seconds): ", total_inference_time)
-    # print("Total build label time (in seconds): ", total_build_label_time)
-    # print("Duration ONNX inference (in seconds) with {} and batch tokenization: ".format(tokenizer_str),
-    # print("Duration ONNX inference (in seconds): ",
+    # logger.info("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
+    # logger.info("Total inference time (in seconds): ", total_inference_time)
+    # logger.info("Total build label time (in seconds): ", total_build_label_time)
+    # logger.info("Duration ONNX inference (in seconds) with {} and batch tokenization: ".format(tokenizer_str),
+    # logger.info("Duration ONNX inference (in seconds): ",
     #       end_onnx_inference_batch - start_onnx_inference_batch,
     #       (end_onnx_inference_batch - start_onnx_inference_batch) / len(examples))
-    # print(onnx_inference)
+    # logger.info(onnx_inference)
     return onnx_inference
 
 
@@ -213,9 +213,9 @@ if __name__ == '__main__':
         results_dict[count] = dict()
         best_model_dict[count] = dict()
 
-        print(f'*** Iteration {count} ***')
+        logger.info(f'*** Iteration {count} ***')
         for label in labels:
-            print(f'** Label: {label} **')
+            logger.info(f'** Label: {label} **')
             results_dict[count][label] = dict()
             best_model_dict[count][label] = dict()
             for model_folder in relevant_model_folders:
@@ -276,7 +276,7 @@ if __name__ == '__main__':
         results_iter_df = results_df[iter_number].apply(pd.Series).reset_index()
         results_iter_df['iter'] = iter_number
         results_list.append(results_iter_df)
-        # print(results_iter_df)
+        # logger.info(results_iter_df)
     results_df = pd.concat(results_list).reset_index(drop=True)
     results_df = results_df.sort_values(by=['index', 'iter']).reset_index(drop=True)
 
