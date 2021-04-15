@@ -13,6 +13,8 @@
 
 COUNTRY_CODE=$1
 INFERENCE_FOLDER=$2
+ITERATION_NUMBER=$3
+
 
 module purge
 module load anaconda3/2020.02
@@ -23,4 +25,5 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_lear
 
 python3 adaptive_retrieval/retrieve_top_tweets.py \
 --country_code ${COUNTRY_CODE} \
---inference_folder ${INFERENCE_FOLDER}
+--inference_folder ${INFERENCE_FOLDER} \
+--iteration_number "${ITERATION_NUMBER}"
