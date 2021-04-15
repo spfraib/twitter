@@ -23,4 +23,4 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_lear
 
 python3 adaptive_retrieval/retrieve_top_tweets.py \
 --country_code ${COUNTRY_CODE} \
---inference_folder ${INFERENCE_FOLDER} 
+--inference_folder ${INFERENCE_FOLDER}
