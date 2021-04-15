@@ -11,7 +11,7 @@ def get_args_from_command_line():
                         help="Country code",
                         default="US")
     parser.add_argument("--inference_folder", type=str)
-    # parser.add_argument("--iteration_number", type=str)
+    parser.add_argument("--iteration_number", type=str)
 
     args = parser.parse_args()
     return args
@@ -51,15 +51,15 @@ if __name__ == '__main__':
                               3: 'feb25_iter3'},
                             'MX': {0: 'feb27_iter0', 1: 'mar12_iter1', 2: 'mar23_iter2', 3: 'mar30_iter3'},
                             'BR': {0: 'feb16_iter0', 1: 'mar12_iter1', 2: 'mar24_iter2', 3: 'apr1_iter3'}}
-    # for iteration_number in range(int(args.iteration_number)):
-    #     print(f'Iteration {iteration_number}')
-    #     random_count = random_df.shape[0]
-    #     data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
-    #     path_to_labelled = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{data_folder_name}/raw'
-    #     random_df = discard_already_labelled_tweets(
-    #         path_to_labelled=path_to_labelled,
-    #         to_label_df=random_df)
-    #     print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
+    for iteration_number in range(int(args.iteration_number)):
+        print(f'Iteration {iteration_number}')
+        random_count = random_df.shape[0]
+        data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
+        path_to_labelled = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{data_folder_name}/raw'
+        random_df = discard_already_labelled_tweets(
+            path_to_labelled=path_to_labelled,
+            to_label_df=random_df)
+        print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
 
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
