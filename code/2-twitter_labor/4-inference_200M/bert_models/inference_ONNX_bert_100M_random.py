@@ -286,7 +286,7 @@ if args.method == 0:
     }
 
 elif args.method == 1:
-    best_model_paths_dict = {
+    best_model_folders_dict = {
         'US': {
             'iter1': {
                 'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598877_seed-5',
