@@ -11,6 +11,7 @@
 
 COUNTRY_CODE=$1
 ITER=$2
+METHOD=$3
 
 module purge
 module load anaconda3/2020.02
@@ -23,6 +24,7 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_2
 
 python3 onnx_model_conversion.py \
 --iteration_number ${ITER} \
---country_code ${COUNTRY_CODE}
+--country_code ${COUNTRY_CODE} \
+--method ${METHOD}
 
 exit
