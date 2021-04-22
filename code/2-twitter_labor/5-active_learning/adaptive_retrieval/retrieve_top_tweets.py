@@ -16,6 +16,7 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     parquet_file_list = list(Path(path_to_labelled).glob('*.parquet'))
     if len(parquet_file_list) > 0:
@@ -25,7 +26,7 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
             df = pd.concat(map(pd.read_parquet, parquet_file_list)).reset_index(drop=True)
         print(f'Shape old labels: {df.shape[0]}' )
         df = df[['tweet_id']]
-        df['tweet_id'] = df['tweet_id'].astype(str)
+        df['tweet_id'] = df['tweet_id'].apply(lambda x: str(int(float(x))))
         df = df.drop_duplicates().reset_index(drop=True)
         print(f'Shape old labels (after dropping duplicates): {df.shape[0]}' )
         list_labelled_tweet_ids = df['tweet_id'].tolist()
