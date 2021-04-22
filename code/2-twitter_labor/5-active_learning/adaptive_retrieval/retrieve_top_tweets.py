@@ -44,6 +44,7 @@ if __name__ == '__main__':
         pd.read_parquet(parquet_file)
         for parquet_file in random_path_new_samples.glob('*.parquet')
     )
+    random_df['tweet_id'] = random_df['tweet_id'].apply(lambda x: str(int(float(x))))
     print('Loaded random data')
     print('Shape random data', random_df.shape)
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
