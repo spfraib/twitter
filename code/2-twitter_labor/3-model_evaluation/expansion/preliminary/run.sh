@@ -1,0 +1,1 @@
+for iter_num in {0..4}; do echo "Iteration $iter_num" >> output.txt; for class_label in is_unemployed lost_job_1mo job_search is_hired_1mo job_offer; do python predict_with_model.py --iter_num $iter_num --class_label $class_label --input_folder data --threshold 0.5 >> output.txt; done; done
