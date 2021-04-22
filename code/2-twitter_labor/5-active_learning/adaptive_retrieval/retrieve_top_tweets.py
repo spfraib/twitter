@@ -46,7 +46,7 @@ if __name__ == '__main__':
     print('Loaded random data')
     print('Shape random data', random_df.shape)
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
-                              1: 'feb22_iter1',
+                              1: 'apr19_iter1_adaptive',
                               2: 'feb23_iter2',
                               3: 'feb25_iter3'},
                             'MX': {0: 'feb27_iter0', 1: 'mar12_iter1', 2: 'mar23_iter2', 3: 'mar30_iter3'},
