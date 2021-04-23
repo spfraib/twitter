@@ -35,6 +35,21 @@ def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     else:
         return to_label_df
 
+def discard_already_labelled_tweets_csv(path_to_labelled, to_label_df):
+    parquet_file_list = list(Path(path_to_labelled).glob('*.csv'))
+    if len(parquet_file_list) > 0:
+        df = pd.concat(map(pd.read_csv, parquet_file_list)).reset_index(drop=True)
+        print(f'Shape old labels (CSV): {df.shape[0]}' )
+        df = df[['tweet_id']]
+        df['tweet_id'] = df['tweet_id'].apply(lambda x: str(int(float(x))))
+        df = df.drop_duplicates().reset_index(drop=True)
+        print(f'Shape old labels (CSV) (after dropping duplicates): {df.shape[0]}' )
+        list_labelled_tweet_ids = df['tweet_id'].tolist()
+        to_label_df = to_label_df[~to_label_df['tweet_id'].isin(list_labelled_tweet_ids)].reset_index(drop=True)
+        return to_label_df
+    else:
+        return to_label_df
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     data_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
@@ -59,6 +74,9 @@ if __name__ == '__main__':
         data_folder_name = raw_labels_path_dict[args.country_code][iteration_number]
         path_to_labelled = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{data_folder_name}/raw'
         random_df = discard_already_labelled_tweets(
+            path_to_labelled=path_to_labelled,
+            to_label_df=random_df)
+        random_df = discard_already_labelled_tweets_csv(
             path_to_labelled=path_to_labelled,
             to_label_df=random_df)
         print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
