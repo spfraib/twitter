@@ -16,9 +16,9 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
                     replication
                 )
             )
-            # break
-        # break
-    # break
+            break
+        break
+    break
 
 
 
