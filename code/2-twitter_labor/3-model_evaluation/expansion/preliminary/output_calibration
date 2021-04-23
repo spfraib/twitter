@@ -1,0 +1,30 @@
+Calibrating jan5_iter0
+Sampled 12 of each label for is_unemployed
+Sampled 16 of each label for lost_job_1mo
+Sampled 116 of each label for job_search
+Sampled 95 of each label for is_hired_1mo
+Sampled 54 of each label for job_offer
+Calibrating feb22_iter1
+Sampled 77 of each label for is_unemployed
+Sampled 61 of each label for lost_job_1mo
+Sampled 119 of each label for job_search
+Sampled 118 of each label for is_hired_1mo
+Sampled 52 of each label for job_offer
+Calibrating feb23_iter2
+Sampled 111 of each label for is_unemployed
+Sampled 39 of each label for lost_job_1mo
+Sampled 103 of each label for job_search
+Sampled 132 of each label for is_hired_1mo
+Sampled 47 of each label for job_offer
+Calibrating feb25_iter3
+Sampled 75 of each label for is_unemployed
+Sampled 18 of each label for lost_job_1mo
+Sampled 145 of each label for job_search
+Sampled 122 of each label for is_hired_1mo
+Sampled 43 of each label for job_offer
+Calibrating mar1_iter4
+Sampled 122 of each label for is_unemployed
+Sampled 49 of each label for lost_job_1mo
+Sampled 141 of each label for job_search
+Sampled 128 of each label for is_hired_1mo
+Sampled 43 of each label for job_offer
