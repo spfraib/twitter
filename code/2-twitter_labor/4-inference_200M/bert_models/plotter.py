@@ -41,7 +41,7 @@ for file in tqdm.tqdm(os.listdir(data_folder_path+'/is_unemployed/')):
     merged['mean_squared_error'] = mean_squared_error(merged['torch_score'], merged['onnx_score'])
 
 
-    merged = merged.head(1)
+    # merged = merged.head(1)
 
 
 
@@ -74,7 +74,7 @@ data_input_agg_df['kendalltau_mean'] = -1.0 * data_input_agg_df['kendalltau_mean
 
 
 # print(data_input_agg_df.shape)
-# print(data_input_agg_df.head())
+print(data_input_agg_df)
 # print(data_input_agg_df.columns)
 
 
