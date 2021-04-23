@@ -31,16 +31,16 @@ Step 1 :
 
 If you are working in NYU campus, please open an iTerm window, run command
 
-ssh -L $port:localhost:$port $USER@prince.hpc.nyu.edu
+ssh -L $port:localhost:$port $USER@greene.hpc.nyu.edu
 
 If you are working off campus, you should already have ssh tunneling setup through HPC bastion host, 
-that you can directly login to prince with command
+that you can directly login to greene with command
 
-ssh $USER@prince
+ssh $USER@greene
 
 Please open an iTerm window, run command
 
-ssh -L $port:localhost:$port $USER@prince
+ssh -L $port:localhost:$port $USER@greene
 
 Step 2:
 
@@ -50,7 +50,7 @@ The Jupyter Notebook is running at: $(hostname)
 
 the URL is something: http://localhost:${port}/?token=XXXXXXXX (see your token below)
 
-you should be able to connect to jupyter notebook running remotly on prince compute node with above url
+you should be able to connect to jupyter notebook running remotly on greene compute node with above url
 
 EOF
 
