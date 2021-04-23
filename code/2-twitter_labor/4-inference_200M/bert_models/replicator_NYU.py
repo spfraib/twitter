@@ -1,4 +1,6 @@
 import os
+import onnxruntime as ort
+print(ort.get_device())
 
 for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-optimized-quantized.onnx']:
     for batchsize in [1, 2, 5, 10, 20]:

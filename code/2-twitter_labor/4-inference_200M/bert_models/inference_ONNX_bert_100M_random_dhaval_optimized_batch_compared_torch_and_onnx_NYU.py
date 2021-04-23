@@ -104,6 +104,7 @@ def onnx_inference(onnx_model, model_dir, examples):
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.intra_op_num_threads = 16 # does not seem to make a difference, always parallelized
     # options.inter_op_num_threads = multiprocessing.cpu_count()
+    print(ort.get_device())
 
     # print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
@@ -281,6 +282,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     onnx_predictions_random_df['num_tweets'] = NUM_TWEETS
     onnx_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
     onnx_predictions_random_df['onnx_model_type'] = MODEL_TYPE
+    onnx_predictions_random_df['device'] = ort.get_device()
     # merged = onnx_predictions_random_df.merge(tweets_random)
 
     #
