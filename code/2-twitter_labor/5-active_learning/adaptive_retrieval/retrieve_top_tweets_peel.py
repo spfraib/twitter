@@ -45,7 +45,7 @@ if __name__ == '__main__':
     random_df = random_df.join(F.broadcast(labels), on='tweet_id', how='left_anti')
 
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
-        path_to_scores = os.path.join('/user/mt4493/twitter/twitter-labor-data/inference', args.country_code, args.model_folder, 'output',
+        path_to_scores = os.path.join('/user/mt4493/twitter/twitter-labor-data/inference', args.country_code, args.inference_folder, 'output',
                                       label)  # Prediction scores from classification
         scores_df = spark.read.parquet(path_to_scores)
         path_to_adaptive_retrieval_sets = os.path.join('/user/mt4493/twitter/twitter-labor-data/adaptive_retrieval_sets', args.country_code,
