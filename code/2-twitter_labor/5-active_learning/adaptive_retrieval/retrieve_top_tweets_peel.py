@@ -26,6 +26,7 @@ def run_cmd(args_list):
 
 if __name__ == '__main__':
     spark = SparkSession.builder.appName("").getOrCreate()
+    spark.sparkContext.setLogLevel("ERROR")
     args = get_args_from_command_line()
     path_to_tweets = os.path.join('/user/mt4493/twitter/twitter-labor-data/random_samples/random_samples_splitted',
                                   args.country_code,
