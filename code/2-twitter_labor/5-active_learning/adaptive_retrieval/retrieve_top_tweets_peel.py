@@ -25,6 +25,7 @@ def run_cmd(args_list):
     return s_return, s_output, s_err
 
 if __name__ == '__main__':
+    spark = SparkSession.builder.appName("").getOrCreate()
     args = get_args_from_command_line()
     path_to_tweets = os.path.join('/user/mt4493/twitter/twitter-labor-data/random_samples/random_samples_splitted',
                                   args.country_code,
