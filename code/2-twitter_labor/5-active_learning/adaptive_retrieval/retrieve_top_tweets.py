@@ -20,13 +20,10 @@ def get_args_from_command_line():
 def discard_already_labelled_tweets(path_to_labelled, to_label_df):
     parquet_file_list = list(Path(path_to_labelled).glob('*.parquet'))
     if len(parquet_file_list) > 0:
-        if 'jan5_iter0' in path_to_labelled:
-            df = pd.read_parquet(os.path.join(path_to_labelled, 'labels.parquet'))
-        else:
-            df = pd.concat(map(pd.read_parquet, parquet_file_list)).reset_index(drop=True)
+        df = pd.read_parquet(os.path.join(path_to_labelled, 'all_labels_with_text.parquet'))
         print(f'Shape old labels: {df.shape[0]}' )
         df = df[['tweet_id']]
-        df['tweet_id'] = df['tweet_id'].apply(lambda x: str(int(float(x))))
+        # df['tweet_id'] = df['tweet_id'].apply(lambda x: str(int(float(x))))
         df = df.drop_duplicates().reset_index(drop=True)
         print(f'Shape old labels (after dropping duplicates): {df.shape[0]}' )
         list_labelled_tweet_ids = df['tweet_id'].tolist()
@@ -76,9 +73,9 @@ if __name__ == '__main__':
         random_df = discard_already_labelled_tweets(
             path_to_labelled=path_to_labelled,
             to_label_df=random_df)
-        random_df = discard_already_labelled_tweets_csv(
-            path_to_labelled=path_to_labelled,
-            to_label_df=random_df)
+        # random_df = discard_already_labelled_tweets_csv(
+        #     path_to_labelled=path_to_labelled,
+        #     to_label_df=random_df)
         print(f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
 
     sample_df_list = list()
@@ -99,4 +96,4 @@ if __name__ == '__main__':
     output_path = f'{data_path}/active_learning/adaptive_retrieval/{args.country_code}/{args.inference_folder}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
-    appended_sample_df.to_csv(os.path.join(output_path, 'top_tweets.csv'), index=False)
+    appended_sample_df.to_parquet(os.path.join(output_path, 'top_tweets.parquet'), index=False)
