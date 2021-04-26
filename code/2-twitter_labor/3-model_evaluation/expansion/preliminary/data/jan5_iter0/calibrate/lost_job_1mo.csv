@@ -1,180 +1,180 @@
-rank,tweet_id,text,score,point,class
-1,1712283565,Got kicked out last night.,0.996340274810791,0,0
-2,5.65013246316462E+016,"Got laid off today. Next Friday will be my last day.  I'm sad & very stressed, but the xanax & ice cream are making me feel a little better.",0.996230900287628,0,1
-3,2131140348,Got shut out this morning.,0.996049344539642,0,0
-4,3.23167969599427E+017,Guess I got sent off today,0.996018350124359,0,0
-5,4.9524363198113E+017,Just got flipped off 👌,0.996010661125183,0,0
-6,1.07887836045191E+018,Just got dropped off 😐😐😐,0.995974957942963,0,0
-7,1.14276761684036E+018,I got cursed out last night.,0.995974004268646,0,0
-8,3.63460622132187E+017,@fromheretoLI @Rdowling21 sorry bro. I got arrested yesterday. Just got out.,0.995960056781769,0,0
-9,3.57878089176457E+017,"Apparently I got fired today. Huh, that's unfortunate. #Fired http://t.co/5Wg3qA7len",0.995956003665924,0,1
-10,6.64565981407121E+017,Just got fired. No reason.,0.995943486690521,0,1
-11,6.23923960296542E+017,Just got called off of work today so someone do something with me!!!,0.995940804481506,1,0
-12,2.97142413879828E+017,Just got kicked out of my house. Who's house can I stay at tonight?,0.995925068855285,1,0
-13,2.14918692247585E+017,Just got pissed off!! Good nite...,0.995922684669495,1,0
-14,3.20253096674615E+017,Had to have surgery to remove my gall bladder Wednesday...Ugh. Just got released from the hospital today. Very sore but happy to be home.,0.995918452739716,1,0
-15,1.24585339487653E+018,I just got laid off 😢,0.995879054069519,1,1
-16,2.8184022543147E+017,Just got checked out .,0.995861113071442,1,0
-17,9.06233320710832E+017,I've already called Holly 3 times today and I just got out of school...,0.995856940746307,1,0
-18,2.96478557453025E+017,I just got pulled over. WTF!!,0.995841801166534,1,0
-19,24988865380,Just got kicked out. Hopefully theres a hotel somewhere.,0.995840847492218,1,0
-20,3.81975911240716E+017,Just got pissed the fuck off .,0.99582976102829,1,0
-101,6.99617144795836E+017,I got out of bed today. Go me!,0.995403051376343,2,0
-102,6136439091757056,Just got knocked out. Hahah foots bleeding.,0.995401978492737,2,0
-103,1.80099163046941E+017,i just got jumped..!!!,0.995400011539459,2,0
-104,4.89908442510152E+017,Well...I just got kicked out of my house 😳,0.995392084121704,2,0
-105,2.27179538998784E+017,i got ditched today wow,0.995391249656677,2,0
-106,1.05443972545135E+018,I got kicked out of the taco bell in my building this morning. I've reached my peak.,0.99538642168045,2,0
-107,7.53761568177873E+017,Lol just got fired.😹✌🏻️ whoops.,0.995381593704224,2,1
-108,2.98856753859269E+017,Just got put out the library !,0.995380997657776,2,0
-109,2.97715294762332E+017,Well I lost my phone last night.,0.995377540588379,2,0
-110,7.29346608966599E+017,I just got dumped..?,0.995372354984283,2,0
-317,1.77289284208955E+017,"I honestly just got dumped Monday and @Scottie_Martin 's tweets can make me smile! And feel better
+rank,tweet_id,text,score,point,class,Calibrated score,log_score
+1,1712283565.0,Got kicked out last night.,0.996340274810791,0,0,0.9064989967175731,-0.0015923139511867
+2,5.65013246316462e+16,"Got laid off today. Next Friday will be my last day.  I'm sad & very stressed, but the xanax & ice cream are making me feel a little better.",0.996230900287628,0,1,0.8980178398143795,-0.0016399917982938
+3,2131140348.0,Got shut out this morning.,0.996049344539642,0,0,0.8755597000775767,-0.0017191459834855
+4,3.23167969599427e+17,Guess I got sent off today,0.996018350124359,0,0,0.8698341627314747,-0.001732660286804
+5,4.9524363198113e+17,Just got flipped off 👌,0.996010661125183,0,0,0.8682925133436831,-0.0017360129386927
+6,1.07887836045191e+18,Just got dropped off 😐😐😐,0.995974957942963,0,0,0.8604334169367664,-0.0017515810179778
+7,1.14276761684036e+18,I got cursed out last night.,0.995974004268646,0,0,0.8602067922581851,-0.0017519968674812
+8,3.63460622132187e+17,@fromheretoLI @Rdowling21 sorry bro. I got arrested yesterday. Just got out.,0.995960056781769,0,0,0.8567874707237456,-0.0017580787119616
+9,3.57878089176457e+17,"Apparently I got fired today. Huh, that's unfortunate. #Fired http://t.co/5Wg3qA7len",0.995956003665924,0,1,0.8557563063102455,-0.0017598461015429
+10,6.64565981407121e+17,Just got fired. No reason.,0.995943486690521,0,1,0.8524546212190327,-0.0017653042618306
+11,6.23923960296542e+17,Just got called off of work today so someone do something with me!!!,0.995940804481506,1,0,0.8516452147749162,-0.0017664738765313
+12,2.97142413879828e+17,Just got kicked out of my house. Who's house can I stay at tonight?,0.995925068855285,1,0,0.7473691098553407,-0.001773335679556
+13,2.14918692247585e+17,Just got pissed off!! Good nite...,0.995922684669495,1,0,0.7466191328540606,-0.0017743753561383
+14,3.20253096674615e+17,Had to have surgery to remove my gall bladder Wednesday...Ugh. Just got released from the hospital today. Very sore but happy to be home.,0.995918452739716,1,0,0.7453634048266294,-0.0017762207882024
+15,1.24585339487653e+18,I just got laid off 😢,0.995879054069519,1,1,0.7327678012952934,-0.0017934018771481
+16,2.8184022543147e+17,Just got checked out .,0.995861113071442,1,0,0.726456431734627,-0.0018012258660332
+17,9.06233320710832e+17,I've already called Holly 3 times today and I just got out of school...,0.995856940746307,1,0,0.7249385108700691,-0.001803045418534
+18,2.96478557453025e+17,I just got pulled over. WTF!!,0.995841801166534,1,0,0.7192772686312431,-0.0018096478587681
+19,24988865380.0,Just got kicked out. Hopefully theres a hotel somewhere.,0.995840847492218,1,0,0.718912806374515,-0.0018100637638755
+20,3.81975911240716e+17,Just got pissed the fuck off .,0.99582976102829,1,0,0.7146104351379328,-0.0018148986899794
+101,6.99617144795836e+17,I got out of bed today. Go me!,0.995403051376343,2,0,0.5655365883243733,-0.0020010322740563
+102,6136439091757056.0,Just got knocked out. Hahah foots bleeding.,0.995401978492737,2,0,0.5653513465326188,-0.0020015003735666
+103,1.80099163046941e+17,i just got jumped..!!!,0.995400011539459,2,0,0.565013808522503,-0.0020023585573127
+104,4.89908442510152e+17,Well...I just got kicked out of my house 😳,0.995392084121704,2,0,0.5636800714869439,-0.0020058173150547
+105,2.27179538998784e+17,i got ditched today wow,0.995391249656677,2,0,0.5635421129302705,-0.0020061813964195
+106,1.05443972545135e+18,I got kicked out of the taco bell in my building this morning. I've reached my peak.,0.99538642168045,2,0,0.5627527985511224,-0.0020082878731641
+107,7.53761568177873e+17,Lol just got fired.😹✌🏻️ whoops.,0.995381593704224,2,1,0.5619783175909789,-0.0020103943601254
+108,2.98856753859269e+17,Just got put out the library !,0.995380997657776,2,0,0.5618837111285078,-0.0020106544209528
+109,2.97715294762332e+17,Well I lost my phone last night.,0.995377540588379,2,0,0.5613392890332258,-0.002012162776822
+110,7.29346608966599e+17,I just got dumped..?,0.995372354984283,2,0,0.5605361457723912,-0.0020144253204486
+317,1.77289284208955e+17,"I honestly just got dumped Monday and @Scottie_Martin 's tweets can make me smile! And feel better
 
--Erin",0.995012938976288,3,0
-318,9.91582198171074E+016,Just got locked out of my office... :(,0.995009660720825,3,0
-319,3.73977352868348E+017,"Lost my keys. 
-I'd use my extra one but I lost it last night.",0.995008826255798,3,0
-320,1.97124267157111E+017,I just got outtttt @palmsheaaa woooop,0.995007753372192,3,0
-321,8.85997836042719E+017,Just got pulled over.... again 🤦🏽‍♂️,0.995005071163178,3,0
-322,2.9682485672765E+017,Just lost power-very spooky with the rain.,0.995003283023834,3,0
-323,2.4304897494732E+017,Just got thrown out of verizon #yolo,0.995001375675201,3,0
-324,3.61432510636368E+017,Just got sick outta nowhere... Great,0.995000422000885,3,0
-325,2.60119963883409E+017,Just got laid...now weed,0.99499785900116,3,0
-326,8.68941682892583E+017,Wow I got fried today,0.994994342327118,3,0
-1001,1.09044820568522E+018,"Oh, I got broken up with today. https://t.co/QkCmYyCfZI",0.994467258453369,4,0
-1002,1.19834151033442E+018,"I got banned for 12 hours last week. I used the word “slaq”
-Except I used the correct letter on the end. I said @KellyannePolls should have  blank @wolfblitzer for being ugly about her marriage. I got out in twitter jail. https://t.co/kyKWRxnUrp",0.99446702003479,4,0
-1003,5.56399595955159E+016,Just got out of class and my stomach is growling.,0.9944669008255,4,0
-1004,4.56153330935271E+017,Got pulled over for the first time last night.,0.994466602802277,4,0
-1005,6.9479634238473E+017,Just got punched in the chest 👊🏾,0.994466483592987,4,0
-1006,4.26453070088655E+017,I broke out in hives today. That wasn't fun.,0.99446564912796,4,0
-1007,7.96353093734728E+017,Just lost a friend. Wow. I am super close to having an emotional breakdown.,0.994463860988617,4,0
-1008,1.17420223325413E+017,I went the fuck off today,0.994463860988617,4,0
-1009,3.18342265338675E+016,Just got out of church. Potters House in Las Vegas! Sin City! Believe it brotha!,0.994463860988617,4,0
-1010,4.80082713610052E+017,I just got home yesterday and I already want to go back. Thanks for nothing.  😔😥,0.994463384151459,4,0
-2155,5.83468781210481E+017,"I got pulled over today and I was hoping the police officer would be like \""April Fools\"" and let me go. But he didn't..",0.993951320648193,5,0
-2156,7.8958956245667E+017,Tbh I've done nothing with my life since I got home today.,0.993951082229614,5,0
-2157,8.33190659104191E+017,I lost friends today... thank you those of you that did me that favor. 👍🏻,0.993950843811035,5,0
-2158,4.19563268412154E+017,I just got kicked out of my own basement by my brother and his friends so feel free to come save me anyone 😅,0.993950843811035,5,0
-2159,1730283592,"Lost my billfold last night; spent the morning canceling cards, digging out my passport, making sure I could still travel Monday. Sigh.",0.993949770927429,5,0
-2160,5.4128391478274E+017,"I got kicked out the party last night 😂😅
+-Erin",0.995012938976288,3,0,0.5198355960966824,-0.0021712717271722
+318,9.91582198171074e+16,Just got locked out of my office... :(,0.995009660720825,3,0,0.5193611861312889,-0.0021727025935936
+319,3.73977352868348e+17,"Lost my keys. 
+I'd use my extra one but I lost it last night.",0.995008826255798,3,0,0.5192390809719459,-0.0021730668148899
+320,1.97124267157111e+17,I just got outtttt @palmsheaaa woooop,0.995007753372192,3,0,0.5190812694159447,-0.0021735350998626
+321,8.85997836042719e+17,Just got pulled over.... again 🤦🏽‍♂️,0.995005071163178,3,0,0.5186826353818053,-0.0021747058145029
+322,2.9682485672765e+17,Just lost power-very spooky with the rain.,0.995003283023834,3,0,0.5184135501599964,-0.0021754862926837
+323,2.4304897494732e+17,Just got thrown out of verizon #yolo,0.995001375675201,3,0,0.5181235168385643,-0.0021763188042889
+324,3.61432510636368e+17,Just got sick outta nowhere... Great,0.995000422000885,3,0,0.517977314274935,-0.0021767350606897
+325,2.60119963883409e+17,Just got laid...now weed,0.99499785900116,3,0,0.5175803946860874,-0.0021778537517442
+326,8.68941682892583e+17,Wow I got fried today,0.994994342327118,3,0,0.5170260354123652,-0.002179388704625
+1001,1.09044820568522e+18,"Oh, I got broken up with today. https://t.co/QkCmYyCfZI",0.994467258453369,4,0,0.20038251961942719,-0.0024095108875668
+1002,1.19834151033442e+18,"I got banned for 12 hours last week. I used the word “slaq”
+Except I used the correct letter on the end. I said @KellyannePolls should have  blank @wolfblitzer for being ugly about her marriage. I got out in twitter jail. https://t.co/kyKWRxnUrp",0.99446702003479,4,0,0.20027439991512938,-0.0024096150075212
+1003,5.56399595955159e+16,Just got out of class and my stomach is growling.,0.9944669008255,4,0,0.20022037303820697,-0.002409667067508
+1004,4.56153330935271e+17,Got pulled over for the first time last night.,0.994466602802277,4,0,0.20008540193194446,-0.0024097972175015
+1005,6.9479634238473e+17,Just got punched in the chest 👊🏾,0.994466483592987,4,0,0.2000314518925405,-0.0024098492775102
+1006,4.26453070088655e+17,I broke out in hives today. That wasn't fun.,0.99446564912796,4,0,0.1996544149407674,-0.0024102136977441
+1007,7.96353093734728e+17,Just lost a friend. Wow. I am super close to having an emotional breakdown.,0.994463860988617,4,0,0.19885007835934448,-0.0024109945992749
+1008,1.17420223325413e+17,I went the fuck off today,0.994463860988617,4,0,0.19885007835934448,-0.0024109945992749
+1009,3.18342265338675e+16,Just got out of church. Potters House in Las Vegas! Sin City! Believe it brotha!,0.994463860988617,4,0,0.19885007835934448,-0.0024109945992749
+1010,4.80082713610052e+17,I just got home yesterday and I already want to go back. Thanks for nothing.  😔😥,0.994463384151459,4,0,0.19863641390947845,-0.0024112028399202
+2155,5.83468781210481e+17,"I got pulled over today and I was hoping the police officer would be like \""April Fools\"" and let me go. But he didn't..",0.993951320648193,5,0,0.09960625642384795,-0.0026348849100958
+2156,7.8958956245667e+17,Tbh I've done nothing with my life since I got home today.,0.993951082229614,5,0,0.09959424347748452,-0.0026349890840965
+2157,8.33190659104191e+17,I lost friends today... thank you those of you that did me that favor. 👍🏻,0.993950843811035,5,0,0.09958224220733866,-0.0026350932581223
+2158,4.19563268412154e+17,I just got kicked out of my own basement by my brother and his friends so feel free to come save me anyone 😅,0.993950843811035,5,0,0.09958224220733866,-0.0026350932581223
+2159,1730283592.0,"Lost my billfold last night; spent the morning canceling cards, digging out my passport, making sure I could still travel Monday. Sigh.",0.993949770927429,5,0,0.09952838055002719,-0.0026355620415478
+2160,5.4128391478274e+17,"I got kicked out the party last night 😂😅
 There wqs fights...
 Domestic disputes
 My shit got stolen 
-Hah my night tho... &lt;&lt;",0.993948936462402,5,0
-2161,6.11750707645944E+017,Literally just got so sad 😞😢 https://t.co/b8VHWFa7nk,0.993948936462402,5,0
-2162,4.59411969582592E+017,"Just got out of school, man I can't wait to get home and sleep :) 😊😴 http://t.co/wa01J9JLj5",0.993948578834534,5,0
-2163,3.67469076471226E+017,Just got back !!,0.993948459625244,5,0
-2164,4.52499307447718E+017,Lost both my credit cards and cracked my phone last night.....,0.993948101997376,5,0
-4642,10957218184,"Just got released from the county jail downtown, that place is whaaaaaaaack!",0.993225872516632,6,0
-4643,4.23579151686435E+017,"Just Got Home, Ugh!!! Tired Af!!! &amp; Hungry😒",0.993225753307342,6,0
-4644,2.33713021724287E+017,I just got sleepy... !!,0.993224918842316,6,0
-4645,1.60858936151523E+017,Just ran out of gas and brake fluid....,0.993224680423737,6,0
-4646,1.99829913337999E+017,My son has pissed me off to the Max today...lost my house keys now we running late again SMH!,0.993224322795868,6,0
-4647,8.19288031458902E+017,I think i just lost her...,0.993224322795868,6,0
-4648,6.62757116969656E+017,Just got thrown off a mechanical running shoe #RocknRoll,0.993224263191223,6,0
-4649,3.45935940461658E+017,Got tore up last night..trying to remember what happened.,0.993224024772644,6,0
-4650,2.38036361649738E+017,Just got caught at a red light. It's ok. @charliemars on radio. All good.,0.993223905563354,6,0
-4651,3.94218900826513E+017,Just hopped off the plane. What's good San Francisco?,0.993223905563354,6,0
-10001,5.17561448084435E+017,Just got home. Anamanaguchi was mindnumbingly awesome. Pics soon.,0.992007970809936,7,0
-10002,2.32842124624802E+017,@KaneBeatz u arrived my dude.  stay focused and keep rising. i just got out last month. we need to link up. it would be good to see u fam.,0.992007493972778,7,0
-10003,1.158374540982E+018,Wow I just got pulled over no seat beat &amp; otp + 30 over speed limit &amp; got a warning 😢 thank God,0.992007493972778,7,0
-10004,9.79441504782635E+017,@ColeTheBlackCat i lost my sweet Tigger yesterday :( Marm looks so much like my Tig tig https://t.co/LeNHY454DS,0.992006838321686,7,0
-10005,3.77637366573199E+017,It just hit me..... ill be in St. Louis for my birthday week.,0.992006480693817,7,0
-10006,8.34636131929035E+017,I just woke up and I'm so upset and idk why,0.992006480693817,7,0
-10007,3.64216741834273E+017,I fell out the bed last night @K0URTNAEEE,0.992006242275238,7,0
-10008,2.84217513838006E+017,I just lost in something,0.992006123065948,7,0
-10009,1.924024298815E+017,"Just got lifted. #earlier i wrote out \""finna get lifted.\"" But then I got lifted n forgot",0.992006123065948,7,0
-10010,2.7869928820743E+017,@YoMomRetweetsMe right ! I got in trouble today so I ain't ask agin,0.992006003856659,7,0
-17783,1465176892,The mood on campus is somber today.  We lost a great man today.  My condolences go out to President Papadakis' family.,0.990249693393707,8,0
-17784,17288098728,Ok so we just lost... By 4.. Not bad. I think I stressed my shoulder again #fml,0.990249693393707,8,0
-17785,6.7101899534508E+016,HOME! Just got out the shower; Time to let mother nature play its part.,0.990249693393707,8,0
-17786,7.2220809162265E+017,Just got back from the hospital and the only good thing about my injury is I get prescribed Percocet's 😛😍,0.990249574184418,8,0
-17787,1.39959680276513E+017,"So I just left this club, with my parents..... To crazy!",0.990249216556549,8,0
-17788,24859811670,"Ah, it just came to me.",0.99024909734726,8,0
-17789,1.55810959867396E+017,Just got back to the manor! (@ Davis Manor) http://t.co/6gwfdYxy,0.99024885892868,8,0
-17790,9.41612738261811E+016,Soo tired. The beach wore me out today :(,0.99024885892868,8,0
-17791,9.61124018786132E+017,Man I was for sure I wasn't going to get sick &amp; I can't even be mad cause I warned &amp; it caught up a week later😩,0.990248739719391,8,0
-17792,7.96406517301907E+017,@HillaryClinton lost and i got a 90 cent raise at work all in the same day . Can today get any better ? Would be hard to think so !,0.990248501300812,8,0
-31623,4.63097013903835E+017,Still cant believe I lost my phone yesterday lol,0.986392319202423,9,0
-31624,6.8165824264933E+017,"@jonahbailey yeah, if I had some, I would do that. But I just got back into town and I am unprepared.",0.986392021179199,9,0
-31625,3.53217411777962E+017,@Ukbarber it's crazy how different one day feels from another.  I got 6 Monday.  Struggled for 2.5 yesterday.,0.986391544342041,9,0
-31626,2.49226131990012E+017,Just got beat up😫 #life of a #nerd,0.986391305923462,9,0
-31627,6.15694587005375E+017,I just got off Been at work since 8am,0.986390709877014,9,0
-31628,6.47035951055815E+017,"Had a bad day yesterday, wanted nothing more than to give up. But I'm not going too.",0.986390471458435,9,0
-31629,1.20998306354087E+018,@missmorgyn Awwww darn... that’s exactly what I got today.,0.986390471458435,9,0
-31630,3.48255095374348E+017,"@LilMamaLinds its totally fine, I didn't cut it far enough &amp; crashed into the side of my garage door today &amp; broke the glass on my headlight",0.986390054225922,9,0
-31631,4.09949828895228E+017,Just got home from the mountains. Seems it's a little cold in SF. 53 in the apt! http://t.co/j2Y8UikTpm,0.986389935016632,9,0
-31632,1.03209364198305E+018,"Lost it all, got it back.. https://t.co/s7fIjnaYkt",0.986389935016632,9,0
-56235,6.48669146738237E+017,just got bitched at I'm literally about to snap and disappear fuck this fuck everything I'm done,0.976023852825165,10,0
-56236,7.75382897112916E+017,Great I locked myself out of my car!!!,0.976022958755493,10,0
-56237,6.56893660777153E+017,"Lost the only man I've ever loved to gun violence September 27, 2015.",0.976022601127624,10,0
-56238,9.09577216962437E+017,Just got serenaded in Little Tokyo 😀 https://t.co/7Uz9iw7Fht,0.97602254152298,10,0
-56239,3.37289477682766E+017,"At this point idc anymore, I wish I could say sorry but.... oh well.",0.976022303104401,10,0
-56240,27730602428,Just got back from NYC!  Saw friends and family and had a fabulous time...,0.976022064685822,10,0
-56241,2.96991632149082E+017,I didn't go to sleep last night. Damn its hittin me,0.976020157337189,10,0
-56242,1.22958572399878E+018,@CoreyLaJoie You had no time to go anywhere. No one is to blame. It was a horrible accident.,0.976019322872162,10,0
-56243,1.0839729810244E+017,@23RAMZ23 man it was great!!! Shout out to seattle! Great people up there! Just got back home now. Thanks for the recom on the eats,0.97601842880249,10,0
-56244,2.88346557160489E+017,Just woke up. #pale #winter #selfie #tired #dude #hungry #america #ny #cold #italian #italia #food #blah http://t.co/Rs3Vmt21,0.976018071174622,10,0
-100001,1.18160664242664E+018,I feel very ugly and unlovable today.,0.936209440231323,11,0
-100002,3.98592879079076E+017,@goodears95 send me a beat bro!  I just came home!  I'm tryna work my dude!,0.936208009719849,11,0
-100003,5.47845897460404E+017,Seriously just bawled! Got out of the shower to Brooklynn putting this on the tree!! &amp; saying she… http://t.co/0pBHlKRmzU,0.936206936836243,11,0
-100004,2.89605752614691E+017,Well the end of my night was truly great.,0.936205983161926,11,0
-100005,4.72856358434669E+017,“@SheswantstheD: so we gon' build a snowman OR NAH?  http://t.co/DUy0RiEnqd” i just died 😂 @spnmoose,0.936204969882965,11,0
-100006,1.23192230788444E+018,"@_xoVESPER Me, me, me!
-Starting going back last week. It hurt.",0.936204254627228,11,0
-100007,4.39404288230433E+017,"I just woke up, late on my second day back smh",0.936202049255371,11,0
-100008,4.83833226340082E+017,im really lost.,0.936201274394989,11,0
-100009,5.13451426781987E+017,@HeyoTheo it's 12:15pm here in Hawaii . lol I just woke up,0.936197757720947,11,0
-100010,5.59801330982982E+017,a Blink 182 song came on my phone and i just got upset,0.936194598674774,11,0
-158490,5.48773826855584E+017,It stopped 😅,0.776308476924896,12,0
-158491,5451341169,"I was just stood up, at work :-(",0.776300430297852,12,0
-158492,3.50807545583108E+017,"Well, my mom called.",0.77629554271698,12,0
-158493,6.75194503016423E+017,I just reboot my router and modem.  OMG!!!! https://t.co/CzEYXeAIzS,0.776292324066162,12,0
-158494,9.61283763702395E+017,i just cut my hair and I’m devastated 💔,0.776291489601135,12,0
-158495,6.29071848035193E+017,I'm so exhausted from today omg,0.776289224624634,12,0
-158496,9.91177834969211E+016,"@ApoloOhno I went to see dentist today. Then, he finally found 1 cavity of my left tooth. Oh,no!",0.776286959648132,12,0
-158497,7.39230872176464E+017,"Hi I'm Kamal, insurgents blew up my mudhut today, but at least I didn't have to wait 8 mins. for coffee like @MaxwellsHouse, that poor guy 🙄",0.776285469532013,12,0
-158498,5.87709055906533E+017,I about got pulled over today for not wearing a helmet... How am I supposed to get to school now? Oh well!,0.776278913021088,12,0
-158499,1.2160615125544E+018,We got ripped off. Vince McMahon got that much to send people over just to fake fight. https://t.co/FwcodBgUTG,0.776274681091309,12,0
-251189,1.06702815526785E+017,Haven't been on twitter in a min. So much has happened this week its a shame.,0.32409206032753,13,0
-251190,6.88820334452052E+017,Well....it is starting to snow outside!,0.324086159467697,13,0
-251191,6.25485699983082E+017,And we won!!!!! ⚽️🇲🇽🏆,0.324085921049118,13,0
-251192,1.01761449070628E+018,Well shit wya? https://t.co/VxiFkvBcgs,0.324085265398026,13,0
-251193,8.82035979770528E+017,"@Liamerven welp, that didn't last long. What a bummer.",0.324080616235733,13,0
-251194,3.68939002327335E+017,"@richarddeitsch Watching on SDTV and it's not in 16:9, which is incredibly frustrating (was letterbox for other shows). Things are cut off.",0.324075073003769,13,0
-251195,6.39965030629405E+017,@garyjkemp @JonesysJukebox   Perfect social commentary!  It just made my day!,0.32407334446907,13,0
-251196,3.290883887686E+017,@JanelleFiore I was just there..!!,0.324072539806366,13,0
-251197,7.96553883174732E+017,It is still fucking with me. https://t.co/ILeCzEmlO3,0.324070066213608,13,0
-251198,7.83776671421784E+017,Cool guess I'm not eating dinner tonight,0.324067324399948,13,0
-398108,7.09906244153119E+017,@fvcetime I'm literally pissed.,0.07226224988699,14,0
-398109,4.65281611013968E+017,I got so sunburnt today😢😩,0.072262115776539,14,0
-398110,2.39768386207359E+017,But can't seem to go..,0.072262041270733,14,0
-398111,2.59419781759902E+017,Blocking the world out for a while...,0.072261571884155,14,0
-398112,2.3172528120177E+017,Well a little later than expected but finally on my way home!,0.072261266410351,14,0
-398113,4.42549567251579E+017,Yep broke my toe lol #Panama,0.072260223329067,14,0
-398114,4.65481774739358E+017,My uncle was laid to rest yesterday. @LogarthSheppy has been a wonderful support at my side through this painful time in my family,0.072260193526745,14,0
-398115,5.13389439935332E+017,Gonna get dumb high today everybody's going out and I got the house all to my self 👌😂,0.072258368134499,14,0
-398116,6.43199613910954E+017,Just got of work &amp; my phone is on 3%,0.072257071733475,14,0
-398117,4.01544932273308E+017,To far gone to turn back now.,0.072256915271282,14,0
-630958,3.71362461485515E+017,I'm not wearing jeans on the first day of school.,0.023937517777085,15,0
-630959,9.91322965823377E+017,"@jenna_mackinnon It was blue receipt day yesterday - we caved, and went, and we were happy.",0.02393751218915,15,0
-630960,6.68907665758798E+017,rip to me THIS FUCKED ME UP https://t.co/PbBYFFlRCI,0.023937501013279,15,0
-630961,1973793380,I hate driving home at the end of the month. cops everywhere.,0.02393726631999,15,0
-630962,12012426732,Something is definately wrong with me. I just don't want to shop anymore. And the stuff I bought last night I'm going to return.,0.02393726631999,15,0
-630963,2.16662627257033E+017,Been stuck in traffic since lousianna 😱😲😢😣,0.023937102407217,15,0
-630964,3.45809269734851E+016,"I've never slept so poorly sober in my life....rise and grind, gotta get out of the city and off to work",0.023936934769154,15,0
-630965,6.11216044439511E+017,Done killing myself at work. Back to killing myself at the gym. #gymselfie https://t.co/7VdUDBnHxG,0.023936910554767,15,0
-630966,2.81992802206904E+017,@matt_dinning It's actually 1 AM.,0.023936867713928,15,0
-630967,3.79681729838993E+017,That was annoying. Bitch should not have gotten any rights. Ugh whatever.,0.023936856538057,15,0
-1000001,1.09439503141744E+018,Ain’t no bad blood over here I’m just on a rant lol,0.011446497403085,16,0
-1000002,6.62427362324279E+017,I'm outta here next Wednesday 😎😌‼️,0.011446497403085,16,0
-1000003,2.40565341799993E+017,"@Harry_Styles Oh sorry that was me, and im a woman....",0.011446497403085,16,0
-1000004,5.63031977272812E+017,Please go back to your own school and get out of mine,0.011446497403085,16,0
-1000005,2.96774106320368E+017,It was 60 degrees yesterday.  #truestory http://t.co/k0yoanbb,0.011446486227214,16,0
-1000006,5.63837180812882E+017,Have to admit the sky was calling my name today . . . so I ditched what I was doing and went flying. #goodchoice #TGIF,0.011446464806795,16,0
-1000007,5.19849868647739E+017,Everytime I get off of the highway I forget I have to drive at normal speed..whoops,0.011446464806795,16,0
-1000008,3672493222,Lots of errands to run! On my way back to the church now!,0.011446421965957,16,0
-1000009,1.06949779337333E+018,@halsey Wtf happened now people always coming for you I can’t keep up,0.011446411721408,16,0
-1000010,4.49053490325627E+017,Sigh... idk wtf to do!,0.011446389369667,16,0
+Hah my night tho... &lt;&lt;",0.993948936462402,5,0,0.09948665044612356,-0.0026359266512286
+2161,6.11750707645944e+17,Literally just got so sad 😞😢 https://t.co/b8VHWFa7nk,0.993948936462402,5,0,0.09948665044612356,-0.0026359266512286
+2162,4.59411969582592e+17,"Just got out of school, man I can't wait to get home and sleep :) 😊😴 http://t.co/wa01J9JLj5",0.993948578834534,5,0,0.099468809396829,-0.0026360829126137
+2163,3.67469076471226e+17,Just got back !!,0.993948459625244,5,0,0.09946286813643448,-0.0026361349997549
+2164,4.52499307447718e+17,Lost both my credit cards and cracked my phone last night.....,0.993948101997376,5,0,0.0994450615955329,-0.002636291261215
+4642,10957218184.0,"Just got released from the county jail downtown, that place is whaaaaaaaack!",0.993225872516632,6,0,0.08282771316559463,-0.0029519760437137
+4643,4.23579151686435e+17,"Just Got Home, Ugh!!! Tired Af!!! &amp; Hungry😒",0.993225753307342,6,0,0.08282597900863282,-0.0029520281687553
+4644,2.33713021724287e+17,I just got sleepy... !!,0.993224918842316,6,0,0.08281384251274332,-0.0029523930442201
+4645,1.60858936151523e+17,Just ran out of gas and brake fluid....,0.993224680423737,6,0,0.08281037577818448,-0.0029524972944092
+4646,1.99829913337999e+17,My son has pissed me off to the Max today...lost my house keys now we running late again SMH!,0.993224322795868,6,0,0.08280517637184762,-0.0029526536697401
+4647,8.19288031458902e+17,I think i just lost her...,0.993224322795868,6,0,0.08280517637184762,-0.0029526536697401
+4648,6.62757116969656e+17,Just got thrown off a mechanical running shoe #RocknRoll,0.993224263191223,6,0,0.0828043098852166,-0.0029526797323008
+4649,3.45935940461658e+17,Got tore up last night..trying to remember what happened.,0.993224024772644,6,0,0.08280084417026465,-0.0029527839825588
+4650,2.38036361649738e+17,Just got caught at a red light. It's ok. @charliemars on radio. All good.,0.993223905563354,6,0,0.08279911145166477,-0.0029528361076974
+4651,3.94218900826513e+17,Just hopped off the plane. What's good San Francisco?,0.993223905563354,6,0,0.08279911145166477,-0.0029528361076974
+10001,5.17561448084435e+17,Just got home. Anamanaguchi was mindnumbingly awesome. Pics soon.,0.992007970809936,7,0,0.06755991803192582,-0.0034848382643051
+10002,2.32842124624802e+17,@KaneBeatz u arrived my dude.  stay focused and keep rising. i just got out last month. we need to link up. it would be good to see u fam.,0.992007493972778,7,0,0.06755443652069178,-0.0034850470204868
+10003,1.158374540982e+18,Wow I just got pulled over no seat beat &amp; otp + 30 over speed limit &amp; got a warning 😢 thank God,0.992007493972778,7,0,0.06755443652069178,-0.0034850470204868
+10004,9.79441504782635e+17,@ColeTheBlackCat i lost my sweet Tigger yesterday :( Marm looks so much like my Tig tig https://t.co/LeNHY454DS,0.992006838321686,7,0,0.06754689976192965,-0.0034853340604004
+10005,3.77637366573199e+17,It just hit me..... ill be in St. Louis for my birthday week.,0.992006480693817,7,0,0.06754278895827101,-0.0034854906277063
+10006,8.34636131929035e+17,I just woke up and I'm so upset and idk why,0.992006480693817,7,0,0.06754278895827101,-0.0034854906277063
+10007,3.64216741834273e+17,I fell out the bed last night @K0URTNAEEE,0.992006242275238,7,0,0.06754004848351815,-0.0034855950059414
+10008,2.84217513838006e+17,I just lost in something,0.992006123065948,7,0,0.06753867826443563,-0.0034856471950686
+10009,1.924024298815e+17,"Just got lifted. #earlier i wrote out \""finna get lifted.\"" But then I got lifted n forgot",0.992006123065948,7,0,0.06753867826443563,-0.0034856471950686
+10010,2.7869928820743e+17,@YoMomRetweetsMe right ! I got in trouble today so I ain't ask agin,0.992006003856659,7,0,0.06753730805756157,-0.0034856993842016
+17783,1465176892.0,The mood on campus is somber today.  We lost a great man today.  My condolences go out to President Papadakis' family.,0.990249693393707,8,0,0.04824436897335376,-0.0042552833921792
+17784,17288098728.0,Ok so we just lost... By 4.. Not bad. I think I stressed my shoulder again #fml,0.990249693393707,8,0,0.04824436897335376,-0.0042552833921792
+17785,6.7101899534508e+16,HOME! Just got out the shower; Time to let mother nature play its part.,0.990249693393707,8,0,0.04824436897335376,-0.0042552833921792
+17786,7.2220809162265e+17,Just got back from the hospital and the only good thing about my injury is I get prescribed Percocet's 😛😍,0.990249574184418,8,0,0.04824311720432666,-0.0042553356738814
+17787,1.39959680276513e+17,"So I just left this club, with my parents..... To crazy!",0.990249216556549,8,0,0.04823936195599726,-0.0042554925190264
+17788,24859811670.0,"Ah, it just came to me.",0.99024909734726,8,0,0.048238110226152583,-0.0042555448007538
+17789,1.55810959867396e+17,Just got back to the manor! (@ Davis Manor) http://t.co/6gwfdYxy,0.99024885892868,8,0,0.04823560679583623,-0.0042556493642282
+17790,9.41612738261811e+16,Soo tired. The beach wore me out today :(,0.99024885892868,8,0,0.04823560679583623,-0.0042556493642282
+17791,9.61124018786132e+17,Man I was for sure I wasn't going to get sick &amp; I can't even be mad cause I warned &amp; it caught up a week later😩,0.990248739719391,8,0,0.04823435509538716,-0.0042557016459744
+17792,7.96406517301907e+17,@HillaryClinton lost and i got a 90 cent raise at work all in the same day . Can today get any better ? Would be hard to think so !,0.990248501300812,8,0,0.0482318517238758,-0.0042558062094861
+31623,4.63097013903835e+17,Still cant believe I lost my phone yesterday lol,0.986392319202423,9,0,0.01645621166885673,-0.005950318144879
+31624,6.8165824264933e+17,"@jonahbailey yeah, if I had some, I would do that. But I just got back into town and I am unprepared.",0.986392021179199,9,0,0.01645458802460281,-0.0059504493602775
+31625,3.53217411777962e+17,@Ukbarber it's crazy how different one day feels from another.  I got 6 Monday.  Struggled for 2.5 yesterday.,0.986391544342041,9,0,0.01645199046409082,-0.0059506593049973
+31626,2.49226131990012e+17,Just got beat up😫 #life of a #nerd,0.986391305923462,9,0,0.01645069180857948,-0.0059507642773953
+31627,6.15694587005375e+17,I just got off Been at work since 8am,0.986390709877014,9,0,0.016447445533619882,-0.0059510267085014
+31628,6.47035951055815e+17,"Had a bad day yesterday, wanted nothing more than to give up. But I'm not going too.",0.986390471458435,9,0,0.016446147169159323,-0.0059511316809883
+31629,1.20998306354087e+18,@missmorgyn Awwww darn... that’s exactly what I got today.,0.986390471458435,9,0,0.016446147169159323,-0.0059511316809883
+31630,3.48255095374348e+17,"@LilMamaLinds its totally fine, I didn't cut it far enough &amp; crashed into the side of my garage door today &amp; broke the glass on my headlight",0.986390054225922,9,0,0.01644387523143801,-0.0059513153829011
+31631,4.09949828895228e+17,Just got home from the mountains. Seems it's a little cold in SF. 53 in the apt! http://t.co/j2Y8UikTpm,0.986389935016632,9,0,0.016443226153143427,-0.0059513678691764
+31632,1.03209364198305e+18,"Lost it all, got it back.. https://t.co/s7fIjnaYkt",0.986389935016632,9,0,0.016443226153143427,-0.0059513678691764
+56235,6.48669146738237e+17,just got bitched at I'm literally about to snap and disappear fuck this fuck everything I'm done,0.976023852825165,10,0,0.000327718639971319,-0.0105395685794521
+56236,7.75382897112916e+17,Great I locked myself out of my car!!!,0.976022958755493,10,0,0.0003276034897901267,-0.0105399664075397
+56237,6.56893660777153e+17,"Lost the only man I've ever loved to gun violence September 27, 2015.",0.976022601127624,10,0,0.00032755744101088755,-0.0105401255388769
+56238,9.09577216962437e+17,Just got serenaded in Little Tokyo 😀 https://t.co/7Uz9iw7Fht,0.97602254152298,10,0,0.0003275497668417602,-0.0105401520607717
+56239,3.37289477682766e+17,"At this point idc anymore, I wish I could say sorry but.... oh well.",0.976022303104401,10,0,0.00032751907195696986,-0.0105402581483686
+56240,27730602428.0,Just got back from NYC!  Saw friends and family and had a fabulous time...,0.976022064685822,10,0,0.0003274883799393843,-0.0105403642359913
+56241,2.96991632149082e+17,I didn't go to sleep last night. Damn its hittin me,0.976020157337189,10,0,0.0003272429469860644,-0.0105412129379067
+56242,1.22958572399878e+18,@CoreyLaJoie You had no time to go anywhere. No one is to blame. It was a horrible accident.,0.976019322872162,10,0,0.0003271356277312878,-0.0105415842455163
+56243,1.0839729810244e+17,@23RAMZ23 man it was great!!! Shout out to seattle! Great people up there! Just got back home now. Thanks for the recom on the eats,0.97601842880249,10,0,0.000327020681746041,-0.0105419820754503
+56244,2.88346557160489e+17,Just woke up. #pale #winter #selfie #tired #dude #hungry #america #ny #cold #italian #italia #food #blah http://t.co/Rs3Vmt21,0.976018071174622,10,0,0.00032697471462543126,-0.0105421412075256
+100001,1.18160664242664e+18,I feel very ugly and unlovable today.,0.936209440231323,11,0,4.995093143625918e-11,-0.0286269839950527
+100002,3.98592879079076e+17,@goodears95 send me a beat bro!  I just came home!  I'm tryna work my dude!,0.936208009719849,11,0,4.9922762782218867e-11,-0.0286276475898504
+100003,5.47845897460404e+17,Seriously just bawled! Got out of the shower to Brooklynn putting this on the tree!! &amp; saying she… http://t.co/0pBHlKRmzU,0.936206936836243,11,0,4.9901646716735235e-11,-0.0286281452866143
+100004,2.89605752614691e+17,Well the end of my night was truly great.,0.936205983161926,11,0,4.988288437895621e-11,-0.0286285876842169
+100005,4.72856358434669e+17,“@SheswantstheD: so we gon' build a snowman OR NAH?  http://t.co/DUy0RiEnqd” i just died 😂 @spnmoose,0.936204969882965,11,0,4.986295712453139e-11,-0.028629057732163
+100006,1.23192230788444e+18,"@_xoVESPER Me, me, me!
+Starting going back last week. It hurt.",0.936204254627228,11,0,4.9848895620339476e-11,-0.0286293895310194
+100007,4.39404288230433e+17,"I just woke up, late on my second day back smh",0.936202049255371,11,0,4.980556427350028e-11,-0.0286304125790898
+100008,4.83833226340082e+17,im really lost.,0.936201274394989,11,0,4.979034868979687e-11,-0.0286307720289838
+100009,5.13451426781987e+17,@HeyoTheo it's 12:15pm here in Hawaii . lol I just woke up,0.936197757720947,11,0,4.9721351748065894e-11,-0.0286324033822423
+100010,5.59801330982982e+17,a Blink 182 song came on my phone and i just got upset,0.936194598674774,11,0,4.965945297022899e-11,-0.0286338688403941
+158490,5.48773826855584e+17,It stopped 😅,0.776308476924896,12,0,2.0655639501402923e-38,-0.1099656715183997
+158491,5451341169.0,"I was just stood up, at work :-(",0.776300430297852,12,0,2.0590203411672815e-38,-0.1099701731101488
+158492,3.50807545583108e+17,"Well, my mom called.",0.77629554271698,12,0,2.0550558286088757e-38,-0.1099729074331014
+158493,6.75194503016423e+17,I just reboot my router and modem.  OMG!!!! https://t.co/CzEYXeAIzS,0.776292324066162,12,0,2.052449221595912e-38,-0.1099747080942032
+158494,9.61283763702395e+17,i just cut my hair and I’m devastated 💔,0.776291489601135,12,0,2.0517739744547048e-38,-0.1099751749334854
+158495,6.29071848035193e+17,I'm so exhausted from today omg,0.776289224624634,12,0,2.0499422804108344e-38,-0.1099764420712091
+158496,9.91177834969211e+16,"@ApoloOhno I went to see dentist today. Then, he finally found 1 cavity of my left tooth. Oh,no!",0.776286959648132,12,0,2.0481122215866328e-38,-0.1099777092126305
+158497,7.39230872176464e+17,"Hi I'm Kamal, insurgents blew up my mudhut today, but at least I didn't have to wait 8 mins. for coffee like @MaxwellsHouse, that poor guy 🙄",0.776285469532013,12,0,2.04690912659752e-38,-0.1099785428603183
+158498,5.87709055906533e+17,I about got pulled over today for not wearing a helmet... How am I supposed to get to school now? Oh well!,0.776278913021088,12,0,2.0416238988648903e-38,-0.1099822109291563
+158499,1.2160615125544e+18,We got ripped off. Vince McMahon got that much to send people over just to fake fight. https://t.co/FwcodBgUTG,0.776274681091309,12,0,2.038219773683258e-38,-0.1099845785173127
+251189,1.06702815526785e+17,Haven't been on twitter in a min. So much has happened this week its a shame.,0.32409206032753,13,0,7.441530964543051e-116,-0.4893316082710245
+251190,6.88820334452052e+17,Well....it is starting to snow outside!,0.324086159467697,13,0,7.42423574562637e-116,-0.4893395156976728
+251191,6.25485699983082e+17,And we won!!!!! ⚽️🇲🇽🏆,0.324085921049118,13,0,7.423537794395222e-116,-0.4893398351926846
+251192,1.01761449070628e+18,Well shit wya? https://t.co/VxiFkvBcgs,0.324085265398026,13,0,7.421618766815722e-116,-0.4893407138051785
+251193,8.82035979770528e+17,"@Liamerven welp, that didn't last long. What a bummer.",0.324080616235733,13,0,7.408025339746234e-116,-0.4893469440174948
+251194,3.68939002327335e+17,"@richarddeitsch Watching on SDTV and it's not in 16:9, which is incredibly frustrating (was letterbox for other shows). Things are cut off.",0.324075073003769,13,0,7.391850328386699e-116,-0.4893543724643753
+251195,6.39965030629405e+17,@garyjkemp @JonesysJukebox   Perfect social commentary!  It just made my day!,0.32407334446907,13,0,7.386813734776027e-116,-0.4893566888877788
+251196,3.290883887686e+17,@JanelleFiore I was just there..!!,0.324072539806366,13,0,7.38447028438062e-116,-0.4893577672270249
+251197,7.96553883174732e+17,It is still fucking with me. https://t.co/ILeCzEmlO3,0.324070066213608,13,0,7.377270998765149e-116,-0.4893610821385129
+251198,7.83776671421784e+17,Cool guess I'm not eating dinner tonight,0.324067324399948,13,0,7.369299269042247e-116,-0.489364756527802
+398108,7.09906244153119e+17,@fvcetime I'm literally pissed.,0.07226224988699,14,0,5.560002078838659e-159,-1.1410885207877408
+398109,4.65281611013968e+17,I got so sunburnt today😢😩,0.072262115776539,14,0,5.559708056900102e-159,-1.1410893267892557
+398110,2.39768386207359e+17,But can't seem to go..,0.072262041270733,14,0,5.559544718097126e-159,-1.141089774568521
+398111,2.59419781759902e+17,Blocking the world out for a while...,0.072261571884155,14,0,5.558515793980091e-159,-1.1410925955885087
+398112,2.3172528120177e+17,Well a little later than expected but finally on my way home!,0.072261266410351,14,0,5.557846278991701e-159,-1.1410944315002445
+398113,4.42549567251579e+17,Yep broke my toe lol #Panama,0.072260223329067,14,0,5.555560738000661e-159,-1.1411007005256557
+398114,4.65481774739358e+17,My uncle was laid to rest yesterday. @LogarthSheppy has been a wonderful support at my side through this painful time in my family,0.072260193526745,14,0,5.555495450642538e-159,-1.1411008796419946
+398115,5.13389439935332e+17,Gonna get dumb high today everybody's going out and I got the house all to my self 👌😂,0.072258368134499,14,0,5.55149806223622e-159,-1.141111850658737
+398116,6.43199613910954e+17,Just got of work &amp; my phone is on 3%,0.072257071733475,14,0,5.548660847545942e-159,-1.1411196424879226
+398117,4.01544932273308e+17,To far gone to turn back now.,0.072256915271282,14,0,5.548318523158972e-159,-1.141120582890557
+630958,3.71362461485515e+17,I'm not wearing jeans on the first day of school.,0.023937517777085,15,0,2.9466194798892966e-167,-1.6209208861604278
+630959,9.91322965823377e+17,"@jenna_mackinnon It was blue receipt day yesterday - we caved, and went, and we were happy.",0.02393751218915,15,0,2.946612987141014e-167,-1.6209209875414332
+630960,6.68907665758798e+17,rip to me THIS FUCKED ME UP https://t.co/PbBYFFlRCI,0.023937501013279,15,0,2.946600001686197e-167,-1.6209211903035332
+630961,1973793380.0,I hate driving home at the end of the month. cops everywhere.,0.02393726631999,15,0,2.9463273203561284e-167,-1.6209254483294633
+630962,12012426732.0,Something is definately wrong with me. I just don't want to shop anymore. And the stuff I bought last night I'm going to return.,0.02393726631999,15,0,2.9463273203561284e-167,-1.6209254483294633
+630963,2.16662627257033e+17,Been stuck in traffic since lousianna 😱😲😢😣,0.023937102407217,15,0,2.9461368912194745e-167,-1.620928422213599
+630964,3.45809269734851e+16,"I've never slept so poorly sober in my life....rise and grind, gotta get out of the city and off to work",0.023936934769154,15,0,2.9459421468790095e-167,-1.6209314637070684
+630965,6.11216044439511e+17,Done killing myself at work. Back to killing myself at the gym. #gymselfie https://t.co/7VdUDBnHxG,0.023936910554767,15,0,2.9459140182047417e-167,-1.6209319030356657
+630966,2.81992802206904e+17,@matt_dinning It's actually 1 AM.,0.023936867713928,15,0,2.9458642527462826e-167,-1.620932680310435
+630967,3.79681729838993e+17,That was annoying. Bitch should not have gotten any rights. Ugh whatever.,0.023936856538057,15,0,2.945851270591069e-167,-1.620932883077994
+1000001,1.09439503141744e+18,Ain’t no bad blood over here I’m just on a rant lol,0.011446497403085,16,0,2.138949315502092e-169,-1.941327385920072
+1000002,6.62427362324279e+17,I'm outta here next Wednesday 😎😌‼️,0.011446497403085,16,0,2.138949315502092e-169,-1.941327385920072
+1000003,2.40565341799993e+17,"@Harry_Styles Oh sorry that was me, and im a woman....",0.011446497403085,16,0,2.138949315502092e-169,-1.941327385920072
+1000004,5.63031977272812e+17,Please go back to your own school and get out of mine,0.011446497403085,16,0,2.138949315502092e-169,-1.941327385920072
+1000005,2.96774106320368e+17,It was 60 degrees yesterday.  #truestory http://t.co/k0yoanbb,0.011446486227214,16,0,2.1389398893474482e-169,-1.9413278099468552
+1000006,5.63837180812882e+17,Have to admit the sky was calling my name today . . . so I ditched what I was doing and went flying. #goodchoice #TGIF,0.011446464806795,16,0,2.138921822667532e-169,-1.941328622665998
+1000007,5.19849868647739e+17,Everytime I get off of the highway I forget I have to drive at normal speed..whoops,0.011446464806795,16,0,2.138921822667532e-169,-1.941328622665998
+1000008,3672493222.0,Lots of errands to run! On my way back to the church now!,0.011446421965957,16,0,2.1388856897655026e-169,-1.9413302481088464
+1000009,1.06949779337333e+18,@halsey Wtf happened now people always coming for you I can’t keep up,0.011446411721408,16,0,2.138877049378588e-169,-1.9413306368026328
+1000010,4.49053490325627e+17,Sigh... idk wtf to do!,0.011446389369667,16,0,2.13885819774863e-169,-1.941331484862924

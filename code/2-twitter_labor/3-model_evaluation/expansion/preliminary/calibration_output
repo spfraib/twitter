@@ -1,0 +1,30 @@
+Calibrating is_hired_1mo
+Sampled 60 positives for is_hired_1mo
+Sampled 74 positives for is_hired_1mo
+Sampled 80 positives for is_hired_1mo
+Sampled 80 positives for is_hired_1mo
+Sampled 81 positives for is_hired_1mo
+Calibrating is_unemployed
+Sampled 7 positives for is_unemployed
+Sampled 44 positives for is_unemployed
+Sampled 65 positives for is_unemployed
+Sampled 52 positives for is_unemployed
+Sampled 74 positives for is_unemployed
+Calibrating lost_job_1mo
+Sampled 5 positives for lost_job_1mo
+Sampled 37 positives for lost_job_1mo
+Sampled 23 positives for lost_job_1mo
+Sampled 7 positives for lost_job_1mo
+Sampled 36 positives for lost_job_1mo
+Calibrating job_search
+Sampled 69 positives for job_search
+Sampled 74 positives for job_search
+Sampled 67 positives for job_search
+Sampled 98 positives for job_search
+Sampled 100 positives for job_search
+Calibrating job_offer
+Sampled 142 positives for job_offer
+Sampled 143 positives for job_offer
+Sampled 145 positives for job_offer
+Sampled 149 positives for job_offer
+Sampled 148 positives for job_offer
