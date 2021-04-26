@@ -3,7 +3,7 @@
 #SBATCH --job-name=calibrate_scores
 #SBATCH --nodes=1
 #SBATCH --mem=20GB
-#SBATCH --time=24:00:00
+#SBATCH --time=40:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=slurm_calibrate_scores_%j.out
 #SBATCH --mail-type=BEGIN
