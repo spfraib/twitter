@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=get_logit_scores_seedlist
 #SBATCH --nodes=1
-#SBATCH --mem=40GB
+#SBATCH --mem=60GB
 #SBATCH --time=40:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=slurm_get_logit_scores_seedlist_%j.out
