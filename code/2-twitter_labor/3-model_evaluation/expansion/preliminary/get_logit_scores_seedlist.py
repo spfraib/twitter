@@ -6,15 +6,18 @@ from config import *
 import argparse
 from glob import glob
 from pathlib import Path
+import os
+import logging
 
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--class_label", type=str)
-    parser.add_argument("--input_folder", type=str)
-    parser.add_argument("--iter_num", type=int)
-    parser.add_argument("--threshold", type=float)
+    parser.add_argument("--threshold", type=float, default=0.5)
     args = parser.parse_args()
     return args
 
@@ -52,39 +55,14 @@ if __name__ == '__main__':
     random_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/evaluation'
     random_df = pd.concat([pd.read_parquet(path) for path in Path(random_path).glob('*.parquet')])
     random_df['text_lowercase'] = random_df['text'].apply(lambda x: x.lower())
-    list_US_ngrams = ['laid off',
-                      'lost my job',
-                      'found [.\w\s\d]*job',
-                      'got [.\w\s\d]*job',
-                      'started[.\w\s\d]*job',
-                      'new job',
-                      'unemployment',
-                      'anyone[.\w\s\d]*hiring',
-                      'wish[.\w\s\d]*job',
-                      'need[.\w\s\d]*job',
-                      'searching[.\w\s\d]*job',
-                      'job',
-                      'hiring',
-                      'opportunity',
-                      'apply',
-                      "(^|\W)i[ve|'ve| ][\w\s\d]* fired",
-                      '(^|\W)just[\w\s\d]* hired',
-                      "(^|\W)i[m|'m|ve|'ve| am| have]['\w\s\d]*unemployed",
-                      "(^|\W)i[m|'m|ve|'ve| am| have]['\w\s\d]*jobless",
-                      '(^|\W)looking[\w\s\d]* gig[\W]',
-                      '(^|\W)applying[\w\s\d]* position[\W]',
-                      '(^|\W)find[\w\s\d]* job[\W]',
-                      'i got fired',
-                      'just got fired',
-                      'i got hired',
-                      'unemployed',
-                      'jobless']
     output_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/evaluation_seedlist_logit_scores'
-    for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
+    results_dict = dict()
+    for label in column_names:
+        logger.info(f'Label: {label}')
         path_model = f'{input_path}/models/jan5_iter0/{label}.pkl'
         model = pickle.load(open(path_model, 'rb'))
-        preds = predict(random_df, model, args.class_label, regex=list_US_ngrams)
-        final_df = 
-        # load the data
-        df = pd.read_csv(path)
-        # make lower case
+        preds = predict(random_df, model, label, regex=regex).reset_index(drop=True)
+        final_df = random_df.join(preds)
+        final_df.to_parquet(os.path.join(output_path, f'{label}.parquet'), index=False)
+        results_dict[label] = count(preds, args.threshold)
+    logger.info(results_dict)

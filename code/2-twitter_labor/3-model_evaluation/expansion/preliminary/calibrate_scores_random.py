@@ -278,3 +278,13 @@ for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'job_offer', 'is_une
         scores_df = spark.read.parquet(path_to_scores)
         df = random_df.join(scores_df, on='tweet_id', how='inner')
         df = df.withColumn("calibrated_score", calibrateUDF(col("score")))
+
+
+inference_folder = folder_dict[0][0]
+data_folder = folder_dict[0][1]
+params = params_dict[label][data_folder]['params']
+calibrateUDF = F.udf(lambda x: F.mean([1 / (1 + F.exp(-(param[0] * x + param[1]))) for param in params]), FloatType())
+path_to_scores = os.path.join('/user/mt4493/twitter/twitter-labor-data/inference', country_code, inference_folder, 'output', label)  # Prediction scores from classification
+scores_df = spark.read.parquet(path_to_scores)
+df = random_df.join(scores_df, on='tweet_id', how='inner')
+df = df.withColumn("calibrated_score", calibrateUDF(col("score")))
