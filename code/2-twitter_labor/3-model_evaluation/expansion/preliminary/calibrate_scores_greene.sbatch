@@ -10,6 +10,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
+SET=$1
 
 module purge
 module load anaconda3/2020.02
@@ -20,6 +21,7 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary
 
-python3 calibrate_scores_greene.py
+python3 calibrate_scores_greene.py \
+--set ${SET}
 
 exit
