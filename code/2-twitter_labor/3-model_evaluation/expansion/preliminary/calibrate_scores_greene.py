@@ -46,18 +46,17 @@ if __name__ == '__main__':
         4: [{
                 'eval': 'iter_4-convbert-3297962-evaluation',
                 'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']}
-
-    for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
-        logger.info(f'Label: {label}')
-        for iter in range(5):
-            logger.info(f'Iteration {iter}')
+    for iter in range(5):
+        logger.info(f'Iteration {iter}')
+        for label in ['job_search', 'job_offer','is_hired_1mo', 'lost_job_1mo', 'is_unemployed']:
+            logger.info(f'Label: {label}')
             inference_folder = folder_dict[iter][0][args.set]
             data_folder = folder_dict[iter][1]
             params = params_dict[label][data_folder]['params']
             path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                           args.country_code,
                                           inference_folder, 'output', label)
-            scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
+            scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
             scores_df['calibrated_score'] = scores_df['score'].apply(lambda x: calibrate(x, params=params))
             output_path = os.path.join(Path(path_to_scores).parents[1], 'calibrated_output', label)
             if not os.path.exists(output_path):
