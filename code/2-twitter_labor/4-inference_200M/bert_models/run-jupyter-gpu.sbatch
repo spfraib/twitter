@@ -3,24 +3,17 @@
 #SBATCH --job-name=jupyter
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=10GB
-#SBATCH --time=168:00:00
-##SBATCH --gres=gpu:1
+#SBATCH --mem=6GB
+#SBATCH --gres=gpu:1
+#SBATCH --time=4:00:00
 
 module purge
-module load anaconda3/2020.02
-
-source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate
-
-echo "pyenv activated"
-
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
-
 
 port=$(shuf -i 10000-65500 -n 1)
 
-/usr/bin/ssh -N -f -R $port:localhost:$port log-0
 /usr/bin/ssh -N -f -R $port:localhost:$port log-1
+/usr/bin/ssh -N -f -R $port:localhost:$port log-2
+/usr/bin/ssh -N -f -R $port:localhost:$port log-3
 
 cat<<EOF
 
@@ -59,7 +52,17 @@ if [ "$SLURM_JOBTMP" != "" ]; then
     export XDG_RUNTIME_DIR=$SLURM_JOBTMP
 fi
 
+if [[ $(hostname -s) =~ ^g ]]; then nv="--nv"; fi
+
+singularity exec $nv \
+	    --overlay /scratch/mt4493/jupyter_old/manu.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "
+#source /ext3/env.sh
+source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate 
 jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
+"
+
 
 
 
