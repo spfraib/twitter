@@ -56,7 +56,7 @@ if __name__ == '__main__':
             path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                           args.country_code,
                                           inference_folder, 'output', label)
-            scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
+            scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
             scores_df['calibrated_score'] = scores_df['score'].apply(lambda x: calibrate(x, params=params))
             output_path = os.path.join(Path(path_to_scores).parents[1], 'calibrated_output', label)
             if not os.path.exists(output_path):
