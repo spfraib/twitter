@@ -48,7 +48,7 @@ if __name__ == '__main__':
                 'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']}
     for iter in range(5):
         logger.info(f'Iteration {iter}')
-        for label in ['job_search', 'job_offer']:  # 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed',
+        for label in ['job_search', 'job_offer','is_hired_1mo', 'lost_job_1mo', 'is_unemployed']:
             logger.info(f'Label: {label}')
             inference_folder = folder_dict[iter][0][args.set]
             data_folder = folder_dict[iter][1]
