@@ -235,7 +235,7 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             # ####################################################################################################################################
             # print('Save Predictions of random Tweets:')
             # start_time = time.time()
-            final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/temp_output_speedtest'
+            final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/temp_output_speedtest_standalone'
             # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
             if not os.path.exists(os.path.join(final_output_path, column)):
                 # print('>>>> directory doesnt exists, creating it')
