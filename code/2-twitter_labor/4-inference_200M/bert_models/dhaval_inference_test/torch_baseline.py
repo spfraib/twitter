@@ -95,7 +95,7 @@ tweets_random = pd.DataFrame()
 #     tweets_random = pd.concat([tweets_random,
 #                                pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
 #     break
-tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test')[['tweet_id', 'text']]
+tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
 # tweets_random = pd.read_parquet('/Users/dval/work_temp/twitter_from_nyu/data/random/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
 
 

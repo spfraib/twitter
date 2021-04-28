@@ -8,8 +8,8 @@ from sklearn.metrics import mean_squared_error
 
 pd.set_option('display.max_columns', None)
 
-data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/output_faster'
-# data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_output_speedtest_standalone'
+# data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/output_faster'
+data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_output_speedtest_standalone'
 
 torch_reference_df = pd.read_csv(data_folder_path+'/torch_reference.csv')
 torch_reference_df = torch_reference_df[['tweet_id',
@@ -17,16 +17,19 @@ torch_reference_df = torch_reference_df[['tweet_id',
                                          'torch_time_per_tweet'
                                          ]]
 
+# print(torch_reference_df.head())
+
 data_input_df = pd.DataFrame()
 
-for file in tqdm.tqdm(os.listdir(data_folder_path+'/is_unemployed/')):
+for file in tqdm.tqdm(os.listdir(data_folder_path+'/job_search/')):
     # print('reading', data_folder_path+'/'+file)
-    current_file = pd.read_csv(data_folder_path+'/is_unemployed/'+file)
+    current_file = pd.read_csv(data_folder_path+'/job_search/'+file)
     # print(current_file.dtypes)
     # print(current_file.head())
     #since the columns we care about are the same for all rows
 
     merged = current_file.merge(torch_reference_df)
+    print(merged.head())
     # merged = onnx_predictions_random_df.merge(tweets_random)
     # merged = merged.merge(torch_predictions_random_df)
 
@@ -125,8 +128,8 @@ plot <- ggplot(data=r_output, aes(x=onnx_batchsize, y=**_mean, color=model)) +
         # geom_jitter()+
         theme_bw()+
         theme(legend.position="top")            
-ggsave(file='plots/**_rep.png', width = 5, height = 5, dpi = 300)
-# ggsave(file='plots/**_nyu_rep.png', width = 5, height = 5, dpi = 300)
+# ggsave(file='plots/**_rep.png', width = 5, height = 5, dpi = 300)
+ggsave(file='plots/**_nyu.png', width = 5, height = 5, dpi = 300)
 '''
 R_RUN_STRING = R_RUN_STRING_TEMPLATE.replace('**', Y_AXIS)
 
