@@ -166,11 +166,11 @@ elif args.method == 1:
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997893_seed-12'
             },
             'iter4': {
-                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297481_seed-7',
-                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297477_seed-3',
-                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297478_seed-4',
-                'job_offer': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297477_seed-3',
-                'job_search': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10'
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026892_seed-10',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026889_seed-7',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026894_seed-12'
             }}}
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
     logger.info(f'*****************************{label}*****************************')
