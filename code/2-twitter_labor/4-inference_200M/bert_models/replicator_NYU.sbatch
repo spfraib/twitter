@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=i@dval.me
+#SBATCH --mail-user=nuclearr.d@gmail.com
 #SBATCH --output=slurm_inference_berts_%j.out
 
 module purge
