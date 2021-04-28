@@ -177,12 +177,13 @@ start_time = time.time()
 tweets_random = pd.DataFrame()
 # print('path_to_data', path_to_data)
 for file in os.listdir(path_to_data):
-    # print('reading', file)
+    print('reading', file)
     tweets_random = pd.concat([tweets_random,
                                pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
+    break
 
 # print('input shape', tweets_random.shape)
-NUM_TWEETS = 1
+NUM_TWEETS = 1000
 tweets_random = tweets_random.head(NUM_TWEETS)
 
 tweets_random = tweets_random.drop_duplicates('text')
@@ -268,9 +269,9 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
                                               'rep-' + str(REPLICATION) + '-' +
                                               '.csv'))
 
-            break
-        break
-    break
+    #         break
+    #     break
+    # break
 
 
 
