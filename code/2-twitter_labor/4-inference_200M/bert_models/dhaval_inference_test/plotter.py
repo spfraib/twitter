@@ -9,15 +9,13 @@ from sklearn.metrics import mean_squared_error
 pd.set_option('display.max_columns', None)
 
 data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/output_faster'
+# data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_output_speedtest_standalone'
 
 torch_reference_df = pd.read_csv(data_folder_path+'/torch_reference.csv')
 torch_reference_df = torch_reference_df[['tweet_id',
                                          'torch_score',
                                          'torch_time_per_tweet'
                                          ]]
-# print(torch_reference_df.head())
-# print(torch_reference_df.dtypes)
-
 
 data_input_df = pd.DataFrame()
 
@@ -57,16 +55,20 @@ for file in tqdm.tqdm(os.listdir(data_folder_path+'/is_unemployed/')):
 
 data_input_df = data_input_df[[
        'onnx_batchsize', 'onnx_model_type',
-       'speedup_frac', 'kendalltau', 'spearmanr', 'mean_squared_error'
+       'speedup_frac', 'kendalltau', 'spearmanr', 'mean_squared_error',
+       'torch_time_per_tweet', 'onnx_time_per_tweet'
     ]]
 
 data_input_agg_df = data_input_df.groupby(['onnx_batchsize', 'onnx_model_type']).agg(['mean', 'std'])
 data_input_agg_df.reset_index(inplace=True)
+print(data_input_agg_df.head())
 data_input_agg_df.columns = ['onnx_batchsize', 'onnx_model_type',
                              'speedup_frac_mean','speedup_frac_std',
                              'kendalltau_mean','kendalltau_std',
                              'spearmanr_mean','spearmanr_std',
-                             'mean_squared_error_mean','mean_squared_error_std'
+                             'mean_squared_error_mean','mean_squared_error_std',
+                             'torch_time_per_tweet_mean','torch_time_per_tweet_std',
+                             'onnx_time_per_tweet_mean','onnx_time_per_tweet_std'
                              ]
 
 data_input_agg_df['model'] = data_input_agg_df['onnx_model_type'].astype(str).str[:-5]
@@ -74,7 +76,7 @@ data_input_agg_df['kendalltau_mean'] = -1.0 * data_input_agg_df['kendalltau_mean
 
 
 # print(data_input_agg_df.shape)
-print(data_input_agg_df)
+# print(data_input_agg_df)
 # print(data_input_agg_df.columns)
 
 
@@ -104,8 +106,10 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 # print(test)
 
 # rdf = pandas2ri.py2ri(all_results)
+Y_AXIS = 'onnx_time_per_tweet'
+# Y_AXIS = 'torch_time_per_tweet'
 # Y_AXIS = 'speedup_frac'
-Y_AXIS = 'kendalltau'
+# Y_AXIS = 'kendalltau'
 # Y_AXIS = 'spearmanr'
 # Y_AXIS = 'mean_squared_error'
 
@@ -121,7 +125,8 @@ plot <- ggplot(data=r_output, aes(x=onnx_batchsize, y=**_mean, color=model)) +
         # geom_jitter()+
         theme_bw()+
         theme(legend.position="top")            
-ggsave(file='**.png', width = 5, height = 5, dpi = 300)
+ggsave(file='plots/**_rep.png', width = 5, height = 5, dpi = 300)
+# ggsave(file='plots/**_nyu_rep.png', width = 5, height = 5, dpi = 300)
 '''
 R_RUN_STRING = R_RUN_STRING_TEMPLATE.replace('**', Y_AXIS)
 
