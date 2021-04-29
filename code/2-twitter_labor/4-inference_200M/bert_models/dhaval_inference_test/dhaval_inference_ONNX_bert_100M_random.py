@@ -140,7 +140,7 @@ def get_env_var(varname, default):
 # # loading data
 # ####################################################################################################################################
 
-path_to_data = args.input_path
+# path_to_data = args.input_path
 
 print('Load random Tweets:')
 
@@ -184,6 +184,8 @@ for file in os.listdir(path_to_data):
 
 # print('input shape', tweets_random.shape)
 NUM_TWEETS = 1000
+BATCH_SIZE = 1
+MODEL_TYPE = 'manu_current'
 tweets_random = tweets_random.head(NUM_TWEETS)
 
 tweets_random = tweets_random.drop_duplicates('text')
@@ -209,43 +211,91 @@ onnx_path = os.path.join(onnx_model_path, 'onnx')
 # model_type = 'converted-optimized.onnx'
 model_type = 'converted-optimized-quantized.onnx'
 
-####################################################################################################################################
-# TOKENIZATION and INFERENCE
-####################################################################################################################################
-print('Predictions of random Tweets:')
-start_time = time.time()
-onnx_labels = inference(os.path.join(onnx_path, model_type),
-                                    onnx_model_path,
-                                    examples)
+    ####################################################################################################################################
+    # TOKENIZATION and INFERENCE
+    ####################################################################################################################################
 
-print('time taken:', str(time.time() - start_time), 'seconds')
-print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+for REPLICATION in range(5):
+    print('Predictions of random Tweets:')
+    start_time = time.time()
+    onnx_labels = inference(os.path.join(onnx_path, model_type),
+                                        onnx_model_path,
+                                        examples)
 
-# ####################################################################################################################################
-# # SAVING
-# ####################################################################################################################################
-# print('Save Predictions of random Tweets:')
-# start_time = time.time()
-# final_output_path = args.output_path
-# if not os.path.exists(os.path.join(final_output_path, column)):
-#     print('>>>> directory doesnt exists, creating it')
-#     os.makedirs(os.path.join(final_output_path, column))
-# # create dataframe containing tweet id and probabilities
-# predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-# predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-# # reformat dataframe
-# predictions_random_df = predictions_random_df[['second']]
-# predictions_random_df.columns = ['score']
+    onnx_total_time = float(str(time.time() - start_time))
+    onnx_per_tweet = onnx_total_time / tweets_random.shape[0]
 
-# print(predictions_random_df.head())
-# predictions_random_df.to_parquet(
-# os.path.join(final_output_path, column,
-#              str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+    print('time taken:', str(time.time() - start_time), 'seconds')
+    print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
 
-# print('saved to:\n', os.path.join(final_output_path, column,
-#                                   str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-# 'saved')
 
-# print('save time taken:', str(time.time() - start_time), 'seconds')
 
-# print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+    # ####################################################################################################################################
+    # # SAVING
+    # ####################################################################################################################################
+    # print('Save Predictions of random Tweets:')
+    # start_time = time.time()
+    # final_output_path = args.output_path
+    # if not os.path.exists(os.path.join(final_output_path, column)):
+    #     print('>>>> directory doesnt exists, creating it')
+    #     os.makedirs(os.path.join(final_output_path, column))
+    # # create dataframe containing tweet id and probabilities
+    # predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+    # predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+    # # reformat dataframe
+    # predictions_random_df = predictions_random_df[['second']]
+    # predictions_random_df.columns = ['score']
+
+    # print(predictions_random_df.head())
+    # predictions_random_df.to_parquet(
+    # os.path.join(final_output_path, column,
+    #              str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+
+    # print('saved to:\n', os.path.join(final_output_path, column,
+    #                                   str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+    # 'saved')
+
+    # print('save time taken:', str(time.time() - start_time), 'seconds')
+
+    # print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+
+
+    # ####################################################################################################################################
+    # # CALCULATIONS
+    # ####################################################################################################################################
+    # print('Save Predictions of random Tweets:')
+    # start_time = time.time()
+    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
+    # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
+    if not os.path.exists(os.path.join(final_output_path, column)):
+        # print('>>>> directory doesnt exists, creating it')
+        os.makedirs(os.path.join(final_output_path, column))
+    # create dataframe containing tweet id and probabilities
+    onnx_predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['onnx_score_not_relevant', 'onnx_score'])
+    onnx_predictions_random_df = onnx_predictions_random_df.set_index(tweets_random.tweet_id)
+    onnx_predictions_random_df['tweet_id'] = onnx_predictions_random_df.index
+    onnx_predictions_random_df = onnx_predictions_random_df.reset_index(drop=True)
+    onnx_predictions_random_df = onnx_predictions_random_df[['tweet_id', 'onnx_score']]
+    onnx_predictions_random_df['onnx_time_per_tweet'] = onnx_per_tweet
+    onnx_predictions_random_df['num_tweets'] = NUM_TWEETS
+    onnx_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
+    onnx_predictions_random_df['onnx_model_type'] = MODEL_TYPE
+    onnx_predictions_random_df['device'] = ort.get_device()
+
+    onnx_predictions_random_df.to_csv(
+    # merged.to_csv(
+                os.path.join(final_output_path, column,
+                 str(getpass.getuser()) + '_random' + '-' +
+                                   str(MODEL_TYPE) + '-' +
+                                   'bs-' + str(BATCH_SIZE) + '-' +
+                                   'rep-' + str(REPLICATION) +
+                                 '.csv'))
+
+    print('saved to:\n', os.path.join(final_output_path, column,
+      str(getpass.getuser()) + '_random' + '-' +
+                                  str(MODEL_TYPE) + '-' +
+                                  'bs-' + str(BATCH_SIZE) + '-' +
+                                  'rep-' + str(REPLICATION) +
+                                  '.csv'))
+          
+#     break
