@@ -13,7 +13,7 @@ plot_a_b = False
 plot_score_calib = False
 
 # number of times to sample data
-num_samples = 10
+num_samples = 10000
 params_dict = {}
 for label in column_names:
     params_dict[label] = {}
