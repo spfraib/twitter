@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=nuclearr.d@gmail.com
-#SBATCH --output=slurm_inference_berts_%j.outs
+#SBATCH --output=slurm_inference_berts_%j.out
 
 module purge
 
@@ -58,7 +58,14 @@ fi
 
 if [[ $(hostname -s) =~ ^g ]]; then nv="--nv"; fi
 
+singularity exec $nv \
+	    --overlay /scratch/mt4493/jupyter_old/manu.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.0-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "
+#source /ext3/env.sh
+source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate 
 jupyter notebook --no-browser --port $port --notebook-dir=$(pwd)
+"
 
 
 
