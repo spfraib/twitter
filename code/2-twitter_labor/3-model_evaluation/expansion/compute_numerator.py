@@ -69,6 +69,7 @@ if __name__ == '__main__':
                 'new_samples': 'iter_4-convbert_adaptive-6061488-new_samples'}, 'apr27_iter4_adaptive']},
     }
     results_dict = dict()
+    logger.info(f'Active learning method: {args.active_learning}')
     for iter in range(5):
         logger.info(f'Iteration {iter}')
         results_dict[iter] = dict()
