@@ -23,8 +23,11 @@ def get_args_from_command_line():
     parser.add_argument("--threshold", type=float,
                         default=0.95)
     parser.add_argument("--topk", type=int)
+    parser.add_argument("--active_learning", type=str, default='our_method')
+
     args = parser.parse_args()
     return args
+
 
 def compute_mean_max_diversity(matrix):
     max_list = list()
@@ -32,7 +35,6 @@ def compute_mean_max_diversity(matrix):
         tensor = matrix[i] * -1
         max_list.append(tensor.max().item())
     return np.average(max_list)
-
 
 
 if __name__ == '__main__':
@@ -43,9 +45,14 @@ if __name__ == '__main__':
     random_path_new_samples = Path(os.path.join(random_path, args.country_code, 'evaluation'))
 
     inference_folder_dict = {
-        'US': ['iter_0-convbert-969622-evaluation', 'iter_1-convbert-3050798-evaluation',
-               'iter_2-convbert-3134867-evaluation', 'iter_3-convbert-3174249-evaluation',
-               'iter_4-convbert-3297962-evaluation']}
+        'US': {
+            'our_method': ['iter_0-convbert-969622-evaluation', 'iter_1-convbert-3050798-evaluation',
+                           'iter_2-convbert-3134867-evaluation', 'iter_3-convbert-3174249-evaluation',
+                           'iter_4-convbert-3297962-evaluation'],
+            'adaptive': ['iter_0-convbert-969622-evaluation', 'iter_1-convbert_adaptive-5612019-evaluation',
+                         'iter_2-convbert_adaptive-5972342-evaluation', 'iter_3-convbert_adaptive-5998181-evaluation',
+                         'iter_4-convbert_adaptive-6057405-evaluation']
+            }}
     diversity_model_dict = {
         'US': 'stsb-roberta-large',
         'MX': 'distiluse-base-multilingual-cased-v2',
@@ -62,7 +69,7 @@ if __name__ == '__main__':
     inference_path = os.path.join(data_path, 'inference')
     results_dict = dict()
     to_label_list = list()
-    for inference_folder in inference_folder_dict[args.country_code]:
+    for inference_folder in inference_folder_dict[args.country_code][args.active_learning]:
         logger.info(f'**** Inference folder: {inference_folder} ****')
         results_dict[inference_folder] = dict()
         for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
@@ -118,10 +125,10 @@ if __name__ == '__main__':
     results_df = pd.concat(results_list)
     # save results
     if args.method == 'threshold':
-        folder_name = f'threshold_{int(args.threshold*100)}'
+        folder_name = f'threshold_{int(args.threshold * 100)}'
     elif args.method == 'topk':
         folder_name = f'top_{args.topk}'
-    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/{folder_name}'
+    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/{folder_name}/{args.active_learning}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     results_df = results_df.reset_index()
