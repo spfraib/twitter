@@ -236,11 +236,11 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             # ####################################################################################################################################
             # print('Save Predictions of random Tweets:')
             # start_time = time.time()
-            final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/temp_output_speedtest_standalone'
+            final_output_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
             # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
-            if not os.path.exists(os.path.join(final_output_path, column)):
+            if not os.path.exists(os.path.join(final_output_path)):
                 # print('>>>> directory doesnt exists, creating it')
-                os.makedirs(os.path.join(final_output_path, column))
+                os.makedirs(os.path.join(final_output_path))
             # create dataframe containing tweet id and probabilities
             onnx_predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['onnx_score_not_relevant', 'onnx_score'])
             onnx_predictions_random_df = onnx_predictions_random_df.set_index(tweets_random.tweet_id)
@@ -255,14 +255,14 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             
             onnx_predictions_random_df.to_csv(
             # merged.to_csv(
-                        os.path.join(final_output_path, column,
+                        os.path.join(final_output_path,
                          str(getpass.getuser()) + '_random' + '-' +
                                            str(MODEL_TYPE) + '-' +
                                            'bs-' + str(BATCH_SIZE) + '-' +
                                            'rep-' + str(REPLICATION) + '-' +
                                              '.csv'))
 
-            print('saved to:\n', os.path.join(final_output_path, column,
+            print('saved to:\n', os.path.join(final_output_path,
                   str(getpass.getuser()) + '_random' + '-' +
                                               str(MODEL_TYPE) + '-' +
                                               'bs-' + str(BATCH_SIZE) + '-' +

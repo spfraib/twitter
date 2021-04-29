@@ -143,8 +143,8 @@ for REPLICATION in range(5):
     # print('time taken:', torch_total_time, 'seconds')
     # print('per tweet:', torch_per_tweet, 'seconds')
     # print(torch_labels)
-    # MODEL_TYPE  = 'torch_nyu'
-    MODEL_TYPE  = 'torch_laptop'
+    MODEL_TYPE  = 'torch_nyu'
+    # MODEL_TYPE  = 'torch_laptop'
 
     torch_predictions_random_df = pd.DataFrame(data=torch_labels, columns=['torch_score'])
     torch_predictions_random_df = torch_predictions_random_df.set_index(tweets_random.tweet_id)
@@ -170,9 +170,9 @@ for REPLICATION in range(5):
 
     torch_predictions_random_df.to_csv(
     # merged.to_csv(
-                os.path.join(final_output_path, 'torch_reference_nyu_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
+                os.path.join(final_output_path, 'torch_reference_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
 
-    print('saved to:\n', os.path.join(final_output_path, 'torch_reference_nyu_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
+    print('saved to:\n', os.path.join(final_output_path, 'torch_reference_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
 
 
     # break
