@@ -236,7 +236,7 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             # ####################################################################################################################################
             # print('Save Predictions of random Tweets:')
             # start_time = time.time()
-            final_output_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
+            final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
             # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
             if not os.path.exists(os.path.join(final_output_path)):
                 # print('>>>> directory doesnt exists, creating it')
@@ -269,9 +269,9 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
                                               'rep-' + str(REPLICATION) + '-' +
                                               '.csv'))
 
-    #         break
-    #     break
-    # break
+#             break
+#         break
+#     break
 
 
 
