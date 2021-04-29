@@ -5,6 +5,9 @@ import argparse
 import pickle
 from pathlib import Path
 import logging
+import socket
+from numba import jit
+
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -16,20 +19,27 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str, default='US')
-    parser.add_argument("--set", type=str)
+    parser.add_argument("--set", type=str, default='new_samples')
 
     args = parser.parse_args()
     return args
 
-
-def calibrate(score, params):
-    return np.mean([1 / (1 + np.exp(-(param[0] * score + param[1]))) for param in params], axis=0)
+@jit(nopython=True)
+def calibrate(score_array, params_array, output_array):
+    for count, score in enumerate(score_array):
+        calibrated_score = 0
+        for param in params_array:
+            calibrated_score += 1 / (1 + np.exp(-(param[0] * score + param[1])))
+        output_array[count] = calibrated_score/len(params_array)
+    return output_array
 
 
 if __name__ == '__main__':
+    # Get args
     args = get_args_from_command_line()
+    # Load params
     path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
-    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict.pkl'), 'rb'))
+    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict_our_method_10000.pkl'), 'rb'))
     folder_dict = {
         0: [{
                 'eval': 'iter_0-convbert-969622-evaluation',
@@ -46,18 +56,21 @@ if __name__ == '__main__':
         4: [{
                 'eval': 'iter_4-convbert-3297962-evaluation',
                 'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']}
-    for iter in range(5):
+    for iter in [0]:
         logger.info(f'Iteration {iter}')
         for label in ['job_search', 'job_offer','is_hired_1mo', 'lost_job_1mo', 'is_unemployed']:
             logger.info(f'Label: {label}')
             inference_folder = folder_dict[iter][0][args.set]
-            data_folder = folder_dict[iter][1]
-            params = params_dict[label][data_folder]['params']
+            data_folder = folder_dict[iter][0]['eval']
+            params_array = np.asarray(params_dict[label][data_folder]['params'])
             path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                           args.country_code,
                                           inference_folder, 'output', label)
             scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
-            scores_df['calibrated_score'] = scores_df['score'].apply(lambda x: calibrate(x, params=params))
+            logger.info('Loaded scores')
+            score_array = scores_df['score'].to_numpy()
+            output_array = np.zeros(shape=(len(params_array),))
+            scores_df['calibrated_score'] = calibrate(score_array=score_array, params_array=params_array, output_array=output_array)
             output_path = os.path.join(Path(path_to_scores).parents[1], 'calibrated_output', label)
             if not os.path.exists(output_path):
                 os.makedirs(output_path)

@@ -11,6 +11,7 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 
 TOPK=$1
+ACTIVE_LEARNING_METHOD=$2
 
 module purge
 module load anaconda3/2020.02
@@ -22,6 +23,7 @@ echo "pyenv activated"
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/diversity
 
 python3 compute_diversity.py \
---topk ${TOPK}
+--topk ${TOPK} \
+--active_learning ${ACTIVE_LEARNING_METHOD}
 
 exit
