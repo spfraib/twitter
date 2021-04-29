@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error
 
 pd.set_option('display.max_columns', None)
 
-# data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/output_faster'
+# data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/output_local'
 data_folder_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_output_speedtest_standalone'
 
 torch_reference_df = pd.read_csv(data_folder_path+'/torch_reference.csv')
@@ -29,7 +29,7 @@ for file in tqdm.tqdm(os.listdir(data_folder_path+'/job_search/')):
     #since the columns we care about are the same for all rows
 
     merged = current_file.merge(torch_reference_df)
-    print(merged.head())
+    # print(merged.head())
     # merged = onnx_predictions_random_df.merge(tweets_random)
     # merged = merged.merge(torch_predictions_random_df)
 
@@ -40,17 +40,6 @@ for file in tqdm.tqdm(os.listdir(data_folder_path+'/job_search/')):
     merged['kendalltau'] = scipy.stats.kendalltau(merged['pytorch_score_rank'], merged['onnx_score']).correlation
     merged['spearmanr'] = scipy.stats.spearmanr(merged['torch_score'], merged['onnx_score']).correlation
     merged['mean_squared_error'] = mean_squared_error(merged['torch_score'], merged['onnx_score'])
-
-
-    # merged = merged.head(1)
-
-
-
-
-
-
-
-
 
     data_input_df = pd.concat([data_input_df,
                                merged])
@@ -108,34 +97,35 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 # )
 # print(test)
 
+for Y_AXIS in ['onnx_time_per_tweet', 'torch_time_per_tweet', 'speedup_frac', 'kendalltau', 'spearmanr', 'mean_squared_error']:
 # rdf = pandas2ri.py2ri(all_results)
-Y_AXIS = 'onnx_time_per_tweet'
+# Y_AXIS = 'onnx_time_per_tweet'
 # Y_AXIS = 'torch_time_per_tweet'
 # Y_AXIS = 'speedup_frac'
 # Y_AXIS = 'kendalltau'
 # Y_AXIS = 'spearmanr'
 # Y_AXIS = 'mean_squared_error'
 
-ro.globalenv['r_output'] = r_from_pd_df
+    ro.globalenv['r_output'] = r_from_pd_df
 
-R_RUN_STRING_TEMPLATE = '''
-library('ggplot2')
-r_output$onnx_batchsize <- as.factor(r_output$onnx_batchsize)
-plot <- ggplot(data=r_output, aes(x=onnx_batchsize, y=**_mean, color=model)) + 
-        geom_point(size=0.1)+
-        geom_pointrange(aes(ymin=**_mean-**_std, ymax=**_mean+**_std))+
-        # geom_path()+
-        # geom_jitter()+
-        theme_bw()+
-        theme(legend.position="top")            
-# ggsave(file='plots/**_rep.png', width = 5, height = 5, dpi = 300)
-ggsave(file='plots/**_nyu.png', width = 5, height = 5, dpi = 300)
-'''
-R_RUN_STRING = R_RUN_STRING_TEMPLATE.replace('**', Y_AXIS)
+    R_RUN_STRING_TEMPLATE = '''
+    library('ggplot2')
+    r_output$onnx_batchsize <- as.factor(r_output$onnx_batchsize)
+    plot <- ggplot(data=r_output, aes(x=onnx_batchsize, y=**_mean, color=model)) + 
+            geom_point(size=0.1)+
+            geom_pointrange(aes(ymin=**_mean-**_std, ymax=**_mean+**_std))+
+            # geom_path()+
+            # geom_jitter()+
+            theme_bw()+
+            theme(legend.position="top")            
+    # ggsave(file='plots/**_local.png', width = 5, height = 5, dpi = 300)
+    ggsave(file='plots/**_nyu.png', width = 5, height = 5, dpi = 300)
+    '''
+    R_RUN_STRING = R_RUN_STRING_TEMPLATE.replace('**', Y_AXIS)
 
 
-print('plotting..\n', R_RUN_STRING)
-ro.r(R_RUN_STRING)
+    print('plotting..\n', R_RUN_STRING)
+    ro.r(R_RUN_STRING)
 
 # geom_point()+
 # geom_pointrange(aes(ymin=estimate-CI, ymax=estimate+CI), alpha=0.9, fill = 'darkgreen')+
