@@ -95,8 +95,8 @@ tweets_random = pd.DataFrame()
 #     tweets_random = pd.concat([tweets_random,
 #                                pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
 #     break
-tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
-# tweets_random = pd.read_parquet('/Users/dval/work_temp/twitter_from_nyu/data/random/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
+# tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
+tweets_random = pd.read_parquet('/Users/dval/work_temp/twitter_from_nyu/data/random/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
 
 
 
@@ -124,8 +124,8 @@ column = "job_search"
 ####################################################################################################################################
 # TORCH TOKENIZATION and INFERENCE
 ####################################################################################################################################
-torch_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
-# torch_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model/'
+# torch_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
+torch_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model/'
 torch_path_best_model = torch_model_path
 
 train_args = read_json(filename=os.path.join(torch_path_best_model, 'model_args.json'))
@@ -143,12 +143,16 @@ for REPLICATION in range(5):
     # print('time taken:', torch_total_time, 'seconds')
     # print('per tweet:', torch_per_tweet, 'seconds')
     # print(torch_labels)
+    # MODEL_TYPE  = 'torch_nyu'
+    MODEL_TYPE  = 'torch_laptop'
 
     torch_predictions_random_df = pd.DataFrame(data=torch_labels, columns=['torch_score'])
     torch_predictions_random_df = torch_predictions_random_df.set_index(tweets_random.tweet_id)
     torch_predictions_random_df['tweet_id'] = torch_predictions_random_df.index
     torch_predictions_random_df = torch_predictions_random_df.reset_index(drop=True)
     torch_predictions_random_df['torch_time_per_tweet'] = torch_per_tweet
+    torch_predictions_random_df['model'] = MODEL_TYPE
+    torch_predictions_random_df['replication'] = REPLICATION
     # torch_predictions_random_df['num_tweets'] = NUM_TWEETS
     # torch_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
     # torch_predictions_random_df.columns = ['tweet_id', 'onnx_score']
@@ -159,18 +163,19 @@ for REPLICATION in range(5):
 
 
 
-    MODEL_TYPE  = 'torch_nyu'
 
-    # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_temp_output_speedtest_standalone'
-    # final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/temp_output_speedtest_standalone'
-    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
+    final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output/'
+    # final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
 
 
     torch_predictions_random_df.to_csv(
     # merged.to_csv(
-                os.path.join(final_output_path, 'torch_reference_nyu_rep-{}_nyu.csv'.format(REPLICATION)))
+                os.path.join(final_output_path, 'torch_reference_nyu_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
 
-    print('saved to:\n', os.path.join(final_output_path, 'torch_reference_nyu_rep-{}.csv'.format(REPLICATION)))
+    print('saved to:\n', os.path.join(final_output_path, 'torch_reference_nyu_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
+
+
+    # break
 
 
 
