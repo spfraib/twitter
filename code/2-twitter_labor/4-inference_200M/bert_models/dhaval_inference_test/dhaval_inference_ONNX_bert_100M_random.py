@@ -178,9 +178,10 @@ tweets_random = pd.DataFrame()
 # print('path_to_data', path_to_data)
 for file in os.listdir(path_to_data):
     print('reading', file)
-    tweets_random = pd.concat([tweets_random,
-                               pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
-    break
+    if file == 'part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet':
+        tweets_random = pd.concat([tweets_random,
+                                   pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
+    # break
 
 # print('input shape', tweets_random.shape)
 NUM_TWEETS = 1000

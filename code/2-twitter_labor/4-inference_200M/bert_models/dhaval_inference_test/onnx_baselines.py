@@ -23,6 +23,7 @@ from simpletransformers.classification import ClassificationModel
 from scipy.special import softmax
 import scipy
 from sklearn.metrics import mean_squared_error
+from tqdm import tqdm
 
 # BATCH_SIZE = int(args.batchsize)
 
@@ -124,7 +125,7 @@ def onnx_inference(onnx_model, model_dir, examples, NUM_BATCHES):
     start_onnx_inference_batch = time.time()
 
     # for i in range(len(examples)):
-    for i, minibatch in enumerate(minibatches_list):
+    for i, minibatch in enumerate(tqdm(minibatches_list)):
         """
         Onnx inference with batch tokenization
         """
@@ -167,8 +168,8 @@ def get_env_var(varname, default):
 # # loading data
 # ####################################################################################################################################
 
-path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test'
-# path_to_data = '/Users/dval/work_temp/twitter_from_nyu/data/random'
+# path_to_data = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test'
+path_to_data = '/Users/dval/work_temp/twitter_from_nyu/data/random'
 
 # print('Load random Tweets:')
 
@@ -177,12 +178,13 @@ start_time = time.time()
 tweets_random = pd.DataFrame()
 # print('path_to_data', path_to_data)
 for file in os.listdir(path_to_data):
-    print('reading', file)
-    tweets_random = pd.concat([tweets_random,
-                               pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
-    break
+    # print('reading', file)
+    if file == 'part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet':
+        tweets_random = pd.concat([tweets_random,
+                                   pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
+    # break
 
-# print('input shape', tweets_random.shape)
+print('input shape', tweets_random.shape)
 NUM_TWEETS = 1000
 tweets_random = tweets_random.head(NUM_TWEETS)
 
@@ -197,10 +199,10 @@ examples = tweets_random.text.values.tolist()
 # for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
     # loop_start = time.time()
 
-column = "job_search"
+# column = "job_search"
 
-onnx_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
-# onnx_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model'
+# onnx_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
+onnx_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model'
 
 
 onnx_path = os.path.join(onnx_model_path, 'onnx')
@@ -236,8 +238,8 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             # ####################################################################################################################################
             # print('Save Predictions of random Tweets:')
             # start_time = time.time()
-            final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
-            # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
+            # final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
+            final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
             if not os.path.exists(os.path.join(final_output_path)):
                 # print('>>>> directory doesnt exists, creating it')
                 os.makedirs(os.path.join(final_output_path))
@@ -250,28 +252,33 @@ for model_type in ['converted.onnx', 'converted-optimized.onnx', 'converted-opti
             onnx_predictions_random_df['onnx_time_per_tweet'] = onnx_per_tweet
             onnx_predictions_random_df['num_tweets'] = NUM_TWEETS
             onnx_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
-            onnx_predictions_random_df['onnx_model_type'] = MODEL_TYPE
+            onnx_predictions_random_df['onnx_model_type'] = "laptop_"+MODEL_TYPE
+            # onnx_predictions_random_df['onnx_model_type'] = MODEL_TYPE
             onnx_predictions_random_df['device'] = ort.get_device()
             
             onnx_predictions_random_df.to_csv(
             # merged.to_csv(
                         os.path.join(final_output_path,
-                         str(getpass.getuser()) + '_random' + '-' +
-                                           str(MODEL_TYPE) + '-' +
+                                        # str(getpass.getuser()) +
+                                     'random' + '-' +
+                                           # str(MODEL_TYPE) + '-' +
+                                           str("laptop_"+MODEL_TYPE) + '-' +
                                            'bs-' + str(BATCH_SIZE) + '-' +
                                            'rep-' + str(REPLICATION) + '-' +
                                              '.csv'))
 
             print('saved to:\n', os.path.join(final_output_path,
-                  str(getpass.getuser()) + '_random' + '-' +
-                                              str(MODEL_TYPE) + '-' +
+                                            # str(getpass.getuser()) +
+                                              'random' + '-' +
+                                              # str(MODEL_TYPE) + '-' +
+                                              str("laptop_"+MODEL_TYPE) + '-' +
                                               'bs-' + str(BATCH_SIZE) + '-' +
                                               'rep-' + str(REPLICATION) + '-' +
                                               '.csv'))
 
-#             break
-#         break
-#     break
+    #         break
+    #     break
+    # break
 
 
 
