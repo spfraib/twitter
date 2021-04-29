@@ -51,7 +51,7 @@ if __name__ == '__main__':
         for label in ['job_search', 'job_offer','is_hired_1mo', 'lost_job_1mo', 'is_unemployed']:
             logger.info(f'Label: {label}')
             inference_folder = folder_dict[iter][0][args.set]
-            data_folder = folder_dict[iter][1]
+            data_folder = folder_dict[iter][0]['eval']
             params = params_dict[label][data_folder]['params']
             path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
                                           args.country_code,
