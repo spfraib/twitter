@@ -29,7 +29,8 @@ then
       echo SLURM_ARRAY_TASK_ID=test
 fi
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random_dhaval_optimized_batch_compared_torch_and_onnx_NYU_standalone.py > dhaval_inference_ONNX_bert_100M_random_dhaval_optimized_batch_compared_torch_and_onnx_NYU_standalone.log 2>&1
+#srun time python -u inference_ONNX_bert_100M_random_dhaval_optimized_batch_compared_torch_and_onnx_NYU_standalone.py > dhaval_inference_ONNX_bert_100M_random_dhaval_optimized_batch_compared_torch_and_onnx_NYU_standalone.log 2>&1
+srun time python -u onnx_baselines.py > dhaval_onnx_baselines.py.log 2>&1
 echo 'done'
 
 exit
