@@ -29,7 +29,7 @@ def calibrate(score, params):
 if __name__ == '__main__':
     args = get_args_from_command_line()
     path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
-    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict.pkl'), 'rb'))
+    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict_our_method_10000.pkl'), 'rb'))
     folder_dict = {
         0: [{
                 'eval': 'iter_0-convbert-969622-evaluation',
