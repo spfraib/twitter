@@ -16,7 +16,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str, default='US')
-    parser.add_argument("--set", type=str)
+    parser.add_argument("--set", type=str, default='new_samples')
 
     args = parser.parse_args()
     return args
@@ -46,7 +46,7 @@ if __name__ == '__main__':
         4: [{
                 'eval': 'iter_4-convbert-3297962-evaluation',
                 'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']}
-    for iter in range(5):
+    for iter in [0]:
         logger.info(f'Iteration {iter}')
         for label in ['job_search', 'job_offer','is_hired_1mo', 'lost_job_1mo', 'is_unemployed']:
             logger.info(f'Label: {label}')

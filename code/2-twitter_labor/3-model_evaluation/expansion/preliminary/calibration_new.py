@@ -5,26 +5,25 @@ import matplotlib.pyplot as plt
 from config import *
 import pickle
 import warnings
+import os
 
 warnings.filterwarnings('ignore')
 
 plot_a_b = False
 plot_score_calib = False
-single = False
+single = True
 
-<<<<<<< HEAD
 # number of times to sample data
 num_samples = 10000
-=======
-num_samples = 1000
 print(f'Calibrating with {num_samples}')
->>>>>>> 9d56d18121efd44e8fd6791e138ebd5ae389448c
+path_data = '/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference/US'
+fig_path = '/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
 params_dict = {}
 for label in column_names:
     params_dict[label] = {}
-    for i, iter_name in enumerate(new_iter_names):
+    for i, iter_name in enumerate(iter_names_our_method):
         # load data
-        df = pd.read_csv(f'data/{iter_name}/calibrate/{label}.csv')
+        df = pd.read_csv(f'{path_data}/{iter_name}/{label}.csv')
         # df['log_score'] = np.log10(df['score'])
         params = []
         params_dict[label][iter_name] = {}
@@ -52,11 +51,11 @@ for label in column_names:
             # get all A, B for each of the model
             params.append([model.coef_[0][0], model.intercept_[0]])
 
-        print(f'Sampled {len(positives_df)} positives for {label}')
+        print(f'Sampled {len(positives_df)} positives for {label}, {iter_name}')
         # calculate the calibrated score:  avg(logit(ax+b))
         all_calibrated_scores = [1 / (1 + np.exp(-(param[0] * df['score'] + param[1]))) for param in params]
         df['Calibrated score'] = np.mean(all_calibrated_scores, axis=0)
-
+        params_dict[label][iter_name]['params'] = params
         if single:
             # plot A, B obtained from logistic regression
             if plot_a_b and len(params) >= 10:
@@ -87,42 +86,45 @@ for label in column_names:
             # get the Platt calibrated score mean
             calibrated = [np.mean(df[i:i + 10]['Calibrated score']) for i in range(0, len(df), 10)]
             # plot
-            plt.scatter(rank, values, label='Bert score', marker='x')
-            plt.plot(rank, values)
-            plt.scatter(rank, positives, label='share of positive labels', marker='x')
-            plt.plot(rank, positives)
-            plt.scatter(rank, calibrated, marker='x', label=f'Platt calibrated score iter_{i} (n={len(positives_df)})')
-            plt.plot(rank, calibrated)
-            plt.axvspan(0, 1e4, alpha=0.05, color='gray')
-            plt.axvline(1e4, ls='--', color='black')
-            plt.title(f'Calibrated Score to rank of {label} with {num_samples} samples')
-            plt.xlabel('Rank of predicted score')
-            plt.ylabel("Calibrated score")
-            plt.legend(loc='best')
-            plt.xscale('log')
-            plt.savefig(f'figures/{iter_name}/{label}_mean_score_single_{num_samples}')
-            plt.show()
-
-        else:
-            rank = [df.iloc[i]['rank'] for i in range(0, len(df), 10)]
-            calibrated = [np.mean(df[i:i + 10]['Calibrated score']) for i in range(0, len(df), 10)]
-            plt.scatter(rank, calibrated, marker='x', label=f'Platt score iter_{i} (n={len(positives_df)})')
-            line = plt.plot(rank, calibrated)
-            # for scores in all_calibrated_scores:
-            # std = np.std(all_calibrated_scores, axis=0)
-            # plt.fill_between(df['rank'], df['score'] - std, df['score'] + std, alpha=0.1, color=line[0]._color)
-            plt.axvspan(0, 1e4, alpha=0.05, color='gray')
-            plt.axvline(1e4, ls='--', color='black')
-            plt.title(f'Calibrated Score to rank of {label} with {num_samples} samples')
-            plt.xlabel('Rank of predicted score')
-            plt.ylabel("Calibrated score")
-            plt.legend(loc='best')
-            plt.xscale('log')
-            plt.savefig(f'figures/{iter_name}/{label}_mean_score_combined_{num_samples}')
-        # save the variables to a dict to save for later
-        params_dict[label][iter_name]['params'] = params
+            fig, ax = plt.subplots(figsize=(6, 6))
+            ax.scatter(rank, values, label='Bert score', marker='x')
+            ax.plot(rank, values)
+            ax.scatter(rank, positives, label='share of positive labels', marker='x')
+            ax.plot(rank, positives)
+            ax.scatter(rank, calibrated, marker='x', label=f'Platt calibrated score iter_{i} (n={len(positives_df)})')
+            ax.plot(rank, calibrated)
+            ax.set_xscale('log')
+            ax.axvspan(0, 1e4, alpha=0.05, color='gray')
+            ax.axvline(10000,linewidth=.75,color='k',linestyle='--')
+            ax.set_title(f'Calibrated Score to rank of {label} with {num_samples} samples')
+            ax.set_xlabel('Rank of predicted score')
+            ax.set_ylabel("Calibrated score")
+            ax.legend(loc='best')
+            if not os.path.exists(f'{fig_path}/figures/{iter_name}'):
+                os.makedirs(f'{fig_path}/figures/{iter_name}')
+            plt.savefig(f'{fig_path}/figures/{iter_name}/{label}_mean_score_single_{num_samples}_our_method')
+            # plt.show()
+        #
+        # else:
+        #     rank = [df.iloc[i]['rank'] for i in range(0, len(df), 10)]
+        #     calibrated = [np.mean(df[i:i + 10]['Calibrated score']) for i in range(0, len(df), 10)]
+        #     plt.scatter(rank, calibrated, marker='x', label=f'Platt score iter_{i} (n={len(positives_df)})')
+        #     line = plt.plot(rank, calibrated)
+        #     # for scores in all_calibrated_scores:
+        #     # std = np.std(all_calibrated_scores, axis=0)
+        #     # plt.fill_between(df['rank'], df['score'] - std, df['score'] + std, alpha=0.1, color=line[0]._color)
+        #     plt.axvspan(0, 1e4, alpha=0.05, color='gray')
+        #     plt.axvline(1e4, ls='--', color='black')
+        #     plt.title(f'Calibrated Score to rank of {label} with {num_samples} samples')
+        #     plt.xlabel('Rank of predicted score')
+        #     plt.ylabel("Calibrated score")
+        #     plt.legend(loc='best')
+        #     plt.xscale('log')
+        #     plt.savefig(f'figures/{iter_name}/{label}_mean_score_combined_{num_samples}')
+        # # save the variables to a dict to save for later
+        # params_dict[label][iter_name]['params'] = params
         # save the results
-        df.to_csv(f'data/{iter_name}/calibrate/{label}.csv', index=False)
+        # df.to_csv(f'data/{iter_name}/calibrate/{label}.csv', index=False)
 
     if not single:
         plt.savefig(f'figures/{label}/iter_predicted_score_{num_samples}')
@@ -140,4 +142,4 @@ for label in column_names:
 #                   ...},
 #  ...}
 
-pickle.dump(params_dict, open('calibration_dict.pkl', 'wb'))
+pickle.dump(params_dict, open(f'{fig_path}/calibration_dict_our_method_{num_samples}.pkl', 'wb'))

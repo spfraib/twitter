@@ -29,7 +29,8 @@ regex = ['laid off',
 column_names = ['is_hired_1mo', 'is_unemployed', 'lost_job_1mo', 'job_search', 'job_offer']
 iter_names = ['jan5_iter0', 'feb22_iter1', 'feb23_iter2', 'feb25_iter3', 'mar1_iter4']
 
-new_iter_names = ['iter_0-convbert-969622-evaluation', 'iter_1-convbert_adaptive-5612019-evaluation', 'iter_2-convbert_adaptive-5972342-evaluation', 'iter_3-convbert_adaptive-5998181-evaluation', 'iter_4-convbert_adaptive-6057405-evaluation']
+iter_names_our_method = ['iter_0-convbert-969622-evaluation', 'iter_1-convbert-3050798-evaluation', 'iter_2-convbert-3134867-evaluation', 'iter_3-convbert-3174249-evaluation', 'iter_4-convbert-3297962-evaluation']
+iter_names_adaptive = ['iter_0-convbert-969622-evaluation', 'iter_1-convbert_adaptive-5612019-evaluation', 'iter_2-convbert_adaptive-5972342-evaluation', 'iter_3-convbert_adaptive-5998181-evaluation', 'iter_4-convbert_adaptive-6057405-evaluation']
 
 ITERATIONS = 10
 labels = ['no', 'yes']
