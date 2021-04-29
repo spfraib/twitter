@@ -197,7 +197,7 @@ examples = tweets_random.text.values.tolist()
 # for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
     # loop_start = time.time()
 
-column = "is_unemployed"
+column = "job_search"
 
 onnx_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
 # onnx_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model'
