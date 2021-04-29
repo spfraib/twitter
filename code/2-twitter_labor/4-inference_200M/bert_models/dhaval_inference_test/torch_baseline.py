@@ -95,8 +95,8 @@ tweets_random = pd.DataFrame()
 #     tweets_random = pd.concat([tweets_random,
 #                                pd.read_parquet(path_to_data+'/'+file)[['tweet_id', 'text']]])
 #     break
-# tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
-tweets_random = pd.read_parquet('/Users/dval/work_temp/twitter_from_nyu/data/random/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
+tweets_random = pd.read_parquet('/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/US/test/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
+# tweets_random = pd.read_parquet('/Users/dval/work_temp/twitter_from_nyu/data/random/part-02998-2eecee1d-0c7f-44e8-af29-0810926e4b56-c000.snappy.parquet')[['tweet_id', 'text']]
 
 
 
@@ -124,8 +124,8 @@ column = "job_search"
 ####################################################################################################################################
 # TORCH TOKENIZATION and INFERENCE
 ####################################################################################################################################
-# torch_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
-torch_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model/'
+torch_model_path = '/scratch/mt4493/twitter_labor/trained_models/US/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/job_search/models/best_model/'
+# torch_model_path = '/Users/dval/work_temp/twitter_from_nyu/inference/DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10/best_model/'
 torch_path_best_model = torch_model_path
 
 train_args = read_json(filename=os.path.join(torch_path_best_model, 'model_args.json'))
@@ -164,8 +164,8 @@ for REPLICATION in range(5):
 
 
 
-    final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output/'
-    # final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
+    # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output/'
+    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
 
 
     torch_predictions_random_df.to_csv(
