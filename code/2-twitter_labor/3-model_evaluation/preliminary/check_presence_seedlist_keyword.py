@@ -72,7 +72,7 @@ if __name__ == '__main__':
     regex_list = [re.compile(regex) for regex in ngram_dict[args.country_code]]
     random_df['text_lower'] = random_df['text'].str.lower()
     random_df['seedlist_keyword'] = random_df['text_lower'].apply(lambda x: regex_match_string(ngram_list=ngram_dict[args.country_code], regex_list=regex_list, mystring=x))
-    random_df = random_df[['tweet_id', 'seedlist_keyword']]
+    random_df = random_df[['tweet_id', 'text_lower', 'seedlist_keyword']]
     output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/{args.country_code}/evaluation_seedlist_keyword'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
