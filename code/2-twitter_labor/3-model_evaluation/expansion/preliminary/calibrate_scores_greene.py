@@ -69,7 +69,7 @@ if __name__ == '__main__':
             scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
             logger.info('Loaded scores')
             score_array = scores_df['score'].to_numpy()
-            output_array = np.zeros(shape=(len(params_array),))
+            output_array = np.zeros(shape=(len(score_array),))
             scores_df['calibrated_score'] = calibrate(score_array=score_array, params_array=params_array, output_array=output_array)
             output_path = os.path.join(Path(path_to_scores).parents[1], 'calibrated_output', label)
             if not os.path.exists(output_path):

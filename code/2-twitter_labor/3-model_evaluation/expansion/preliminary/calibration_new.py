@@ -34,10 +34,9 @@ for label in column_names:
         # sample min(len(positives_df), len(negatives_df)) rows from the data without replacement
         for negative_df in [negatives_df.sample(n=min(len(positives_df), len(negatives_df)), replace=False) for _ in
                             range(num_samples)]:
-            balanced_df = pd.concat([positives_df, negative_df])
-            d = balanced_df.sample(n=len(balanced_df), replace=True)
-            while len(d['class'].unique()) == 1:
-                d = balanced_df.sample(n=len(balanced_df), replace=True)
+            dp = positives_df.sample(n=len(positives_df), replace=True)
+            dn = negative_df.sample(n=len(negative_df), replace=True)
+            d = pd.concat([dp, dn])
             # build logistic regression model to fit data
             # get the scores and labels
             X = np.asarray(d['score']).reshape((-1, 1))
