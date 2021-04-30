@@ -317,7 +317,7 @@ elif args.method == 1:
             }}}
 
 elif args.method == 2:
-    best_model_paths_dict = {
+    best_model_folders_dict = {
         'US': {
             'iter1': {
                 'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196561_seed-11',
@@ -346,7 +346,7 @@ elif args.method == 2:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026894_seed-12'
             }}}
-    
+
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
     print('\n\n!!!!!', column)
     loop_start = time.time()
