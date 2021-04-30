@@ -110,7 +110,7 @@ if __name__ == '__main__':
         logger.info(f'Calibrated score for root: {calibrate(root, params)}')
         # Load scores
         inference_path = os.path.join(data_path,'inference')
-        scores_path = Path(os.path.join(inference_path, args.country_code, args.inference_folder, 'calibrated_output', label))
+        scores_path = Path(os.path.join(inference_path, args.country_code, args.inference_folder, 'output', label))
         scores_df = pd.concat(
             pd.read_parquet(parquet_file)
             for parquet_file in scores_path.glob('*.parquet')
