@@ -20,7 +20,7 @@ path_data = '/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-
 fig_path = '/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
 params_dict = {}
 
-iter_names_list = ['']
+iter_names_list = ['iter_1-convbert_uncertainty-6200469-evaluation']
 for label in column_names:
     params_dict[label] = {}
     for i, iter_name in enumerate(iter_names_our_method):
