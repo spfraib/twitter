@@ -57,7 +57,7 @@ if __name__ == '__main__':
         pd.read_parquet(parquet_file)
         for parquet_file in random_path_new_samples.glob('*.parquet')
     )
-    random_df['tweet_id'] = random_df['tweet_id'].apply(lambda x: str(int(float(x))))
+    # random_df['tweet_id'] = random_df['tweet_id'].apply(lambda x: str(int(float(x))))
     logger.info('Loaded random data')
     logger.info(f'Shape random data: {random_df.shape[0]}')
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
@@ -115,7 +115,7 @@ if __name__ == '__main__':
             pd.read_parquet(parquet_file)
             for parquet_file in scores_path.glob('*.parquet')
         )
-        logger.info('Loadded scores')
+        logger.info('Loaded scores')
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
         logger.info('Merged scores and text')
         # sample 100 tweets around 0.5
