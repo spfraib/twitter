@@ -1,0 +1,57 @@
+import os
+import numpy as np
+import pandas as pd
+import argparse
+import subprocess
+from pathlib import Path
+from itertools import product
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def get_args_from_command_line():
+    """Parse the command line arguments."""
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--country_code", type=str, default='US')
+    args = parser.parse_args()
+    return args
+
+
+if __name__ == '__main__':
+    args = get_args_from_command_line()
+    # Load tweets
+    path_to_tweets = os.path.join(
+        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted',
+        args.country_code,
+        'evaluation')  # Random set of tweets
+    tweets = pd.concat([pd.read_parquet(path) for path in Path(path_to_tweets).glob('*.parquet')])
+    tweets = tweets[['tweet_id', 'text']]
+
+    model_folder_list = ['iter_0-convbert-969622-evaluation', 'iter_1-convbert-3050798-evaluation',
+                         'iter_2-convbert-3134867-evaluation',
+                         'iter_3-convbert-3174249-evaluation', 'iter_4-convbert-3297962-evaluation',
+                         'iter_0-convbert-969622-evaluation',
+                         'iter_1-convbert_adaptive-5612019-evaluation', 'iter_2-convbert_adaptive-5972342-evaluation',
+                         'iter_3-convbert_adaptive-5998181-evaluation', 'iter_4-convbert_adaptive-6057405-evaluation']
+    for model_folder in model_folder_list:
+        logger.info(f'Folder: {model_folder}')
+        path_to_evals = os.path.join(
+            '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
+            args.country_code, model_folder)  # Where to store the sampled tweets to be labeled
+        if not os.path.exists(path_to_evals):
+            os.makedirs(path_to_evals)
+        for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
+            logger.info(f'Class: {label}')
+            path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
+                                          args.country_code, model_folder, 'output',
+                                          label)  # Prediction scores from classification
+            scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
+            scores['rank'] = scores['score'].rank(method='first', ascending=False)
+            scores = scores[scores['rank'].between(21, 50)]
+            df = tweets.merge(scores, on=['tweet_id'])
+            df = df.sort_values(by=['rank'], ascending=True).reset_index(drop=True)
+            output_path = os.path.join(path_to_evals, f'extra_{label}.csv')
+            df.to_csv(output_path, index=False)
