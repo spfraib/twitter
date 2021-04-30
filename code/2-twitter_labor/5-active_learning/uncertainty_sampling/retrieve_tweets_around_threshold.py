@@ -59,7 +59,7 @@ if __name__ == '__main__':
     )
     random_df['tweet_id'] = random_df['tweet_id'].apply(lambda x: str(int(float(x))))
     logger.info('Loaded random data')
-    logger.info('Shape random data', random_df.shape)
+    logger.info(f'Shape random data: {random_df.shape[0]}')
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
                               1: 'apr19_iter1_adaptive',
                               2: 'apr22_iter2_adaptive',
@@ -120,11 +120,11 @@ if __name__ == '__main__':
         logger.info('Merged scores and text')
         # sample 100 tweets around 0.5
         all_df['modified_score'] = all_df['score'] - root
-        above_threshold_df = all_df.loc[all_df['modified_calibrated_score'] > 0].nsmallest(50, 'modified_calibrated_score')
-        below_threshold_df = all_df.loc[all_df['modified_calibrated_score'] < 0].nlargest(50, 'modified_calibrated_score')
+        above_threshold_df = all_df.loc[all_df['modified_score'] > 0].nsmallest(50, 'modified_score')
+        below_threshold_df = all_df.loc[all_df['modified_score'] < 0].nlargest(50, 'modified_score')
         sample_df = pd.concat([above_threshold_df, below_threshold_df]).reset_index(drop=True)
         sample_df['label'] = label
-        sample_df = sample_df[['tweet_id', 'text', 'label', 'calibrated_score']]
+        sample_df = sample_df[['tweet_id', 'text', 'label', 'score']]
         sample_df_list.append(sample_df)
     appended_sample_df = pd.concat(sample_df_list)
     output_path = f'{data_path}/active_learning/uncertainty_sampling/{args.country_code}/{args.inference_folder}'
