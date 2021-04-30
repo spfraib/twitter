@@ -3,9 +3,9 @@
 #SBATCH --job-name=jupyter
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=6GB
-#SBATCH --gres=gpu:1
-#SBATCH --time=4:00:00
+#SBATCH --mem=3GB
+#SBATCH --gres=gpu:0
+#SBATCH --time=24:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=nuclearr.d@gmail.com

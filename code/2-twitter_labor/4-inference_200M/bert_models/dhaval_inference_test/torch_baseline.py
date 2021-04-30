@@ -133,41 +133,49 @@ train_args = read_json(filename=os.path.join(torch_path_best_model, 'model_args.
 train_args['use_cuda'] = False
 torch_best_model = ClassificationModel('bert', torch_path_best_model, args=train_args, use_cuda=False)
 
-start_time = time.time()
-torch_labels = torch_inference(torch_best_model,
-                        examples)
-torch_total_time = float(str(time.time() - start_time))
-torch_per_tweet = torch_total_time / tweets_random.shape[0]
-# print('time taken:', torch_total_time, 'seconds')
-# print('per tweet:', torch_per_tweet, 'seconds')
-# print(torch_labels)
+for REPLICATION in range(5):
 
-torch_predictions_random_df = pd.DataFrame(data=torch_labels, columns=['torch_score'])
-torch_predictions_random_df = torch_predictions_random_df.set_index(tweets_random.tweet_id)
-torch_predictions_random_df['tweet_id'] = torch_predictions_random_df.index
-torch_predictions_random_df = torch_predictions_random_df.reset_index(drop=True)
-torch_predictions_random_df['torch_time_per_tweet'] = torch_per_tweet
-# torch_predictions_random_df['num_tweets'] = NUM_TWEETS
-# torch_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
-# torch_predictions_random_df.columns = ['tweet_id', 'onnx_score']
-# reformat dataframe
-# torch_predictions_random_df = torch_predictions_random_df[['tweet_id', 'second']]
-# print(tweets_random.head() )
-# print(torch_predictions_random_df.head())
+    start_time = time.time()
+    torch_labels = torch_inference(torch_best_model,
+                            examples)
+    torch_total_time = float(str(time.time() - start_time))
+    torch_per_tweet = torch_total_time / tweets_random.shape[0]
+    # print('time taken:', torch_total_time, 'seconds')
+    # print('per tweet:', torch_per_tweet, 'seconds')
+    # print(torch_labels)
+    MODEL_TYPE  = 'torch_nyu'
+    # MODEL_TYPE  = 'torch_laptop'
+
+    torch_predictions_random_df = pd.DataFrame(data=torch_labels, columns=['torch_score'])
+    torch_predictions_random_df = torch_predictions_random_df.set_index(tweets_random.tweet_id)
+    torch_predictions_random_df['tweet_id'] = torch_predictions_random_df.index
+    torch_predictions_random_df = torch_predictions_random_df.reset_index(drop=True)
+    torch_predictions_random_df['torch_time_per_tweet'] = torch_per_tweet
+    torch_predictions_random_df['model'] = MODEL_TYPE
+    torch_predictions_random_df['replication'] = REPLICATION
+    # torch_predictions_random_df['num_tweets'] = NUM_TWEETS
+    # torch_predictions_random_df['onnx_batchsize'] = BATCH_SIZE
+    # torch_predictions_random_df.columns = ['tweet_id', 'onnx_score']
+    # reformat dataframe
+    # torch_predictions_random_df = torch_predictions_random_df[['tweet_id', 'second']]
+    # print(tweets_random.head() )
+    # print(torch_predictions_random_df.head())
 
 
 
-MODEL_TYPE  = 'torch'
 
-# final_output_path = '/Users/dval/work_temp/twitter_from_nyu/nyu_temp_output_speedtest_standalone'
-final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/temp_output_speedtest_standalone'
+    # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output/'
+    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
 
 
-torch_predictions_random_df.to_csv(
-# merged.to_csv(
-            os.path.join(final_output_path, 'torch_reference.csv'))
+    torch_predictions_random_df.to_csv(
+    # merged.to_csv(
+                os.path.join(final_output_path, 'torch_reference_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
 
-print('saved to:\n', os.path.join(final_output_path, 'torch_reference.csv'))
+    print('saved to:\n', os.path.join(final_output_path, 'torch_reference_rep-{}_{}.csv'.format(REPLICATION, MODEL_TYPE)))
+
+
+    # break
 
 
 
