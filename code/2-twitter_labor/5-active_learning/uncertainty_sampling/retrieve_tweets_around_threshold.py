@@ -97,7 +97,7 @@ if __name__ == '__main__':
             'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']}
 
     path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
-    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict_our_method_10000.pkl'), 'rb'))
+    params_dict = pickle.load(open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{args.iteration_number - 1}.pkl'), 'rb'))
     inference_folder = folder_dict[0][0]['eval']
     
     sample_df_list = list()

@@ -6,6 +6,7 @@ from config import *
 import pickle
 import warnings
 import os
+import re
 
 warnings.filterwarnings('ignore')
 
@@ -21,9 +22,10 @@ fig_path = '/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/co
 params_dict = {}
 
 iter_names_list = ['iter_1-convbert_uncertainty-6200469-evaluation']
+iter_number = int(re.findall('iter_(\d)', iter_names_list[0])[0])
 for label in column_names:
     params_dict[label] = {}
-    for i, iter_name in enumerate(iter_names_our_method):
+    for i, iter_name in enumerate(iter_names_list):
         # load data
         df = pd.read_csv(f'{path_data}/{iter_name}/{label}.csv')
         # df['log_score'] = np.log10(df['score'])
@@ -143,4 +145,4 @@ for label in column_names:
 #                   ...},
 #  ...}
 
-pickle.dump(params_dict, open(f'{fig_path}/calibration_dict_our_method_{num_samples}.pkl', 'wb'))
+pickle.dump(params_dict, open(f'{fig_path}/calibration_dicts/calibration_dict_uncertainty_{num_samples}_iter{iter_number}.pkl', 'wb'))
