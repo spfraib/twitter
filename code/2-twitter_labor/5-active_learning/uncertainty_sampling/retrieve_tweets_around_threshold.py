@@ -98,7 +98,7 @@ if __name__ == '__main__':
     params_dict = pickle.load(
         open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{int(args.iteration_number) - 1}.pkl'),
              'rb'))
-    inference_eval_folder = folder_dict[int(args.iteration_number - 1)]['inference_eval']
+    inference_eval_folder = folder_dict[int(args.iteration_number) - 1]['inference_eval']
 
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
