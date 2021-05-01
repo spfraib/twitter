@@ -61,7 +61,7 @@ if __name__ == '__main__':
     logger.info('Loaded random data')
     logger.info(f'Shape random data: {random_df.shape[0]}')
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
-                              1: 'apr19_iter1_adaptive',
+                              1: 'apr30_iter1_uncertainty',
                               2: 'apr22_iter2_adaptive',
                               3: 'feb25_iter3'},
                             'MX': {0: 'feb27_iter0', 1: 'mar12_iter1', 2: 'mar23_iter2', 3: 'mar30_iter3'},
@@ -84,7 +84,7 @@ if __name__ == '__main__':
             'eval': 'iter_0-convbert-969622-evaluation',
             'new_samples': 'iter_0-convbert-1122153-new_samples'}, 'jan5_iter0'],
         1: [{
-            'eval': 'iter_1-convbert-3050798-evaluation',
+            'eval': 'iter_1-convbert_uncertainty-6200469-evaluation',
             'new_samples': 'iter_1-convbert-3062566-new_samples'}, 'feb22_iter1'],
         2: [{
             'eval': 'iter_2-convbert-3134867-evaluation',
@@ -98,7 +98,7 @@ if __name__ == '__main__':
 
     path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
     params_dict = pickle.load(open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{args.iteration_number - 1}.pkl'), 'rb'))
-    inference_folder = folder_dict[0][0]['eval']
+    inference_folder = folder_dict[args.iteration_number - 1][0]['eval']
     
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
