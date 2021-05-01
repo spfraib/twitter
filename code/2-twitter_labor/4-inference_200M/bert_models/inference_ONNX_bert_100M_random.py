@@ -326,11 +326,11 @@ elif args.method == 2:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196560_seed-10',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196553_seed-3'},
             'iter2': {
-                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972290_seed-14',
-                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972289_seed-13',
-                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972286_seed-10',
-                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972278_seed-2',
-                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972280_seed-4'
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244850_seed-11',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244843_seed-4',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244841_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244840_seed-1',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244850_seed-11'
             },
             'iter3': {
                 'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997887_seed-6',
