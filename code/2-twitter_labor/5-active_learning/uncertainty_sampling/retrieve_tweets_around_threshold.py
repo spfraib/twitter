@@ -72,8 +72,8 @@ if __name__ == '__main__':
             'inference_eval': 'iter_1-convbert_uncertainty-6200469-evaluation',
             'data_folder': 'apr30_iter1_uncertainty'},
         2: {
-            'inference_eval': '',
-            'data_folder': ''},
+            'inference_eval': 'iter_2-convbert_uncertainty-6253253-evaluation',
+            'data_folder': 'may1_iter2_uncertainty'},
         3: {
             'inference_eval': '',
             'data_folder': ''},
