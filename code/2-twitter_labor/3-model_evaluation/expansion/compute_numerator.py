@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import argparse
 from scipy import stats
+from scipy import optimize
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -23,6 +24,9 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+def func(x, param_pair):
+    return 1 / (1 + np.exp(-(param_pair[0] * x + param_pair[1]))) - 0.5
+
 
 def calibrate(score, param):
     return 1 / (1 + np.exp(-(param[0] * score + param[1])))
@@ -31,7 +35,7 @@ def calibrate(score, param):
 if __name__ == '__main__':
     args = get_args_from_command_line()
 
-    path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary'
+    path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
     params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict_our_method_10000.pkl'), 'rb'))
 
     folder_dict = {
@@ -87,8 +91,8 @@ if __name__ == '__main__':
             for count, param_pair in enumerate(params):
                 if count % 1000 == 0:
                     logger.info(count)
-                scores_df['calibrated_score'] = scores_df['score'].apply(lambda x: calibrate(x, param_pair))
-                numerator_list.append(scores_df.loc[scores_df['calibrated_score'] > 0.5].shape[0])
+                root = -param_pair[1]/param_pair[0]
+                numerator_list.append(scores_df.loc[scores_df['score'] > root].shape[0])
             results_dict[iter][label] = dict()
             results_dict[iter][label]['mean'] = np.mean(numerator_list, axis=0)
             results_dict[iter][label]['sem'] = stats.sem(numerator_list)
