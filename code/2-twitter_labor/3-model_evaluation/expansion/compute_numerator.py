@@ -36,7 +36,11 @@ if __name__ == '__main__':
     args = get_args_from_command_line()
 
     path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
-    params_dict = pickle.load(open(os.path.join(path_to_params, 'calibration_dict_our_method_10000.pkl'), 'rb'))
+    if args.active_learning == 'our_method':
+        filename = 'calibration_dict_our_method_10000.pkl'
+    elif args.active_learning == 'adaptive':
+        filename = 'calibration_dict_adaptive_10000.pkl'
+    params_dict = pickle.load(open(os.path.join(path_to_params, filename), 'rb'))
 
     folder_dict = {
         'our_method': {
