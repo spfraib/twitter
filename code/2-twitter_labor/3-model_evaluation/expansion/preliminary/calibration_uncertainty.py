@@ -22,7 +22,7 @@ fig_path = '/home/manuto/Documents/world_bank/bert_twitter_labor/code/twitter/co
 params_dict = {}
 
 # iter_names_list = ['iter_1-convbert_uncertainty-6200469-evaluation']
-iter_names_list = ['iter_2-convbert_uncertainty-6253253-evaluation']
+iter_names_list = ['iter_3-convbert_uncertainty-6318280-evaluation']
 
 iter_number = int(re.findall('iter_(\d)', iter_names_list[0])[0])
 for label in column_names:
