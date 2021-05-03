@@ -89,10 +89,13 @@ if __name__ == '__main__':
                 [pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')]).reset_index()
             numerator_list = list()
             for count, param_pair in enumerate(params):
-                if count % 1000 == 0:
-                    logger.info(count)
-                root = -param_pair[1]/param_pair[0]
-                numerator_list.append(scores_df.loc[scores_df['score'] > root].shape[0])
+                if not param_pair[0] == 0:
+                    if count % 1000 == 0:
+                        logger.info(count)
+                    root = -param_pair[1]/param_pair[0]
+                    numerator_list.append(scores_df.loc[scores_df['score'] > root].shape[0])
+                else:
+                    logger.info('Discarded param pair with A=0')
             results_dict[iter][label] = dict()
             results_dict[iter][label]['mean'] = np.mean(numerator_list, axis=0)
             results_dict[iter][label]['sem'] = stats.sem(numerator_list)
