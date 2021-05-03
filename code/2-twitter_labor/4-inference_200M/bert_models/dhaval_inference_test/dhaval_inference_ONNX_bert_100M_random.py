@@ -286,14 +286,14 @@ for REPLICATION in range(5):
     onnx_predictions_random_df.to_csv(
     # merged.to_csv(
                 os.path.join(final_output_path, column,
-                 str(getpass.getuser()) + '_random' + '-' +
+                 str(getpass.getuser()) + '_current_manu_inference_no_BATCHES' + '-' +
                                    str(MODEL_TYPE) + '-' +
                                    'bs-' + str(BATCH_SIZE) + '-' +
                                    'rep-' + str(REPLICATION) +
                                  '.csv'))
 
     print('saved to:\n', os.path.join(final_output_path, column,
-      str(getpass.getuser()) + '_random' + '-' +
+      str(getpass.getuser()) + '_current_manu_inference_no_BATCHES' + '-' +
                                   str(MODEL_TYPE) + '-' +
                                   'bs-' + str(BATCH_SIZE) + '-' +
                                   'rep-' + str(REPLICATION) +
