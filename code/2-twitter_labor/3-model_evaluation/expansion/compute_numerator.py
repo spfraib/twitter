@@ -20,12 +20,12 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str, default='US')
     parser.add_argument("--set", type=str, default='eval')
     parser.add_argument("--active_learning", type=str)
-
+    parser.add_argument("--threshold", type=float, default=0.5)
     args = parser.parse_args()
     return args
 
-def func(x, param_pair):
-    return 1 / (1 + np.exp(-(param_pair[0] * x + param_pair[1]))) - 0.5
+def func(x, param_pair, threshold):
+    return 1 / (1 + np.exp(-(param_pair[0] * x + param_pair[1]))) - threshold
 
 
 def calibrate(score, param):
@@ -78,6 +78,8 @@ if __name__ == '__main__':
     }
     results_dict = dict()
     logger.info(f'Active learning method: {args.active_learning}')
+    logger.info(f'Threshold: {args.threshold}')
+
     for iter in range(5):
         logger.info(f'Iteration {iter}')
         results_dict[iter] = dict()
@@ -96,7 +98,10 @@ if __name__ == '__main__':
                 if not param_pair[0] == 0:
                     if count % 1000 == 0:
                         logger.info(count)
-                    root = -param_pair[1]/param_pair[0]
+                    if args.threshold == 0.5:
+                        root = -param_pair[1]/param_pair[0]
+                    else:
+                        root = optimize.brentq(func, 0, 1, args=(param_pair, args.threshold))
                     numerator_list.append(scores_df.loc[scores_df['score'] > root].shape[0])
                 else:
                     logger.info('Discarded param pair with A=0')
