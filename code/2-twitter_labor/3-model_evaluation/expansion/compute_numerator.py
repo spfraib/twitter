@@ -101,7 +101,8 @@ if __name__ == '__main__':
         # load (A,B) pairs
         path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
         params_dict = pickle.load(open(os.path.join(path_to_params, f'calibration_dict_{al_method}_10000.pkl'), 'rb'))
-        results_dict[iter_nb] = dict()
+        results_dict[al_method] = dict()
+        results_dict[al_method][iter_nb] = dict()
         inference_folder = folder_dict[al_method][iter_nb][0]['eval']
         params = params_dict[label][inference_folder]['params']
         # load scores
@@ -126,9 +127,9 @@ if __name__ == '__main__':
                 logger.info('Discarded param pair with A=0')
         # compute and store results
         root_mean = optimize.brentq(func_mean, 0, 1, args=(params, args.threshold))
-        results_dict[iter_nb][label] = dict()
-        results_dict[iter_nb][label]['numerator'] = scores_df.loc[scores_df['score'] > root_mean].shape[0]
-        results_dict[iter_nb][label]['sem'] = stdev(numerator_list)
+        results_dict[al_method][iter_nb][label] = dict()
+        results_dict[al_method][iter_nb][label]['numerator'] = scores_df.loc[scores_df['score'] > root_mean].shape[0]
+        results_dict[al_method][iter_nb][label]['sem'] = stdev(numerator_list)
     # save results dict
     output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/expansion/expansion_{str(SLURM_ARRAY_TASK_ID)}.json'
     with open(output_path, 'w') as f:
