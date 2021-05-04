@@ -100,7 +100,7 @@ if __name__ == '__main__':
         logger.info(f'Label: {label}')
         # load (A,B) pairs
         path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
-        params_dict = pickle.load(open(os.path.join(path_to_params, f'calibration_dict_{al_method}_10000.pkl'), 'rb'))
+        params_dict = pickle.load(open(os.path.join(path_to_params, f'calibration_dict_{al_method}_10000_extra.pkl'), 'rb'))
         results_dict[al_method] = dict()
         results_dict[al_method][iter_nb] = dict()
         inference_folder = folder_dict[al_method][iter_nb][0]['eval']
