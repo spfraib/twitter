@@ -25,8 +25,7 @@ produced with dhaval_inference_ONNX_bert_100M_random.py which is the current/Man
 NYU)
 
 4. /Users/dval/work_temp/twitter_from_nyu/output/replication_output_data/torch_reference_rep-*_torch_laptop.csv: 
-produced by 
-torch_baseline.py run on laptop 
+produced by torch_baseline.py run on laptop 
 
 5. /Users/dval/work_temp/twitter_from_nyu/output/replication_output_data/torch_reference_rep-*_torch_nyu.csv same as 
 above, run on NYU 
@@ -34,9 +33,10 @@ above, run on NYU
 """
 comparator_list = [
     {'manu_inference_no_BATCHES': 'statusquo'}, # manu current approach no batches, onnx, see 3.
-    {'torch_laptop': 'laptop'}, #torch on laptop see 4. above
-    # {'torch_nyu': 'nyu'}, #torch on laptop see 4. above
-    {'random-laptop_converted': 'laptop'}
+    # {'torch_laptop': 'torch_laptop'}, #torch on laptop see 4. above
+    # {'torch_nyu': 'torch_nyu'}, #torch on laptop see 4. above
+    {'random-laptop_converted': 'onnx_laptop'} # onnx on laptop, see 2.
+    # {'mt4493_random-converted': 'onnx_nyu'} # onnx on laptop, see 2.
                    ]
 assert len(comparator_list) == 2, 'you can only compare two runs at a time yo'
 
@@ -45,15 +45,17 @@ def is_unique(s):
     return (a[0] == a).all()
 
 model_list = []
+location_list = []
 list_dataframes_to_merge = []
 for COMPARATOR_dict in comparator_list:
     file_string = list(COMPARATOR_dict.items())[0][0]
     location = list(COMPARATOR_dict.items())[0][1]
+    location_list.append(location)
     data_input_df = pd.DataFrame()
     for file in tqdm.tqdm(os.listdir(data_folder_path)):
         if file_string in file:
 
-            print('reading', data_folder_path+'/'+file)
+            # print('reading', data_folder_path+'/'+file)
             current_file = pd.read_csv(data_folder_path+file)
 
             if 'onnx_batchsize' not in current_file.columns:
@@ -83,15 +85,16 @@ for COMPARATOR_dict in comparator_list:
     # print(data_input_df.head())
 
     # check that all models in the column are the same
-    assert is_unique(data_input_df['model'])
-    model = data_input_df['model'].iloc[0]
-    model_list.append(model)
+    # assert is_unique(data_input_df['model'])
+    # model = data_input_df['model'].iloc[0]
+    if len(pd.unique(data_input_df['model'])) > 1:
+        model_list = list(pd.unique(data_input_df['model']))
 
     data_input_df = data_input_df[[
            # 'onnx_batchsize', 'onnx_model_type',
-           # 'speedup_frac', 'kendalltau', 'spearmanr', 'mean_squared_error',
+           # 'time_relative', 'kendalltau', 'spearmanr', 'mean_squared_error',
            'tweet_id',
-           # 'model',
+           'model',
            'score',
            'time_per_tweet',
            'batch_size'
@@ -100,31 +103,33 @@ for COMPARATOR_dict in comparator_list:
 
 
     # data_input_agg_df = data_input_df.groupby(['tweet_id', 'model', 'batch_size']).agg(['mean', 'std'])
-    data_input_agg_df = data_input_df.groupby(['tweet_id', 'batch_size']).agg(['mean', 'std'])
+    data_input_agg_df = data_input_df.groupby(['tweet_id', 'model', 'batch_size']).agg(['mean', 'std'])
     data_input_agg_df.reset_index(inplace=True)
     # print(data_input_agg_df.head())
     # modifier_string = location + "_" + model
-    modifier_string = location + "_" + model
+    # modifier_string = location + "_" + model
     data_input_agg_df.columns = [
                                  'tweet_id',
-                                 # 'model',
+                                 'model',
                                  'batch_size',
-                                 'score_{}'.format(modifier_string),
-                                 'score_{}_std'.format(modifier_string),
-                                 'time_per_tweet_{}'.format(modifier_string),
-                                 'time_per_tweet_{}_std'.format(modifier_string),
+                                 'score_{}'.format(location),
+                                 'score_{}_std'.format(location),
+                                 'time_per_tweet_{}'.format(location),
+                                 'time_per_tweet_{}_std'.format(location),
                                  # 'batch_size','batch_size_std'
                                  # 'batch_size_{}_mean'.format(COMPARATOR),'batch_size_{}_std'.format(COMPARATOR)
                                  # 'onnx_time_per_tweet_mean','onnx_time_per_tweet_std'
                                  ]
 
+    # data_input_agg_df['score_{}'.format(location)]
+
     data_input_agg_df = data_input_agg_df[[
         'tweet_id',
-        # 'model',
+        'model',
         'batch_size',
-        'score_{}'.format(modifier_string),
+        'score_{}'.format(location),
         # 'score_{}_std'.format(modifier_string),
-        'time_per_tweet_{}'.format(modifier_string),
+        'time_per_tweet_{}'.format(location),
         # 'time_per_tweet_{}_std'.format(modifier_string),
     ]]
 
@@ -134,49 +139,85 @@ for COMPARATOR_dict in comparator_list:
 from functools import reduce
 merged_df = reduce(lambda x,y: pd.merge(x , y,
                             # left_on=['tweet_id', 'batch_size', 'model'],
-                            left_on=['tweet_id', 'batch_size'],
+                            left_on=['tweet_id'],
+                            # left_on=['tweet_id', 'batch_size'],
                             # right_on=['tweet_id', 'batch_size', 'model'],
-                            right_on=['tweet_id', 'batch_size'],
+                            right_on=['tweet_id'],
+                            # right_on=['tweet_id', 'batch_size'],
                             how='inner'),
                    list_dataframes_to_merge)
 
 print(merged_df.shape, list_dataframes_to_merge[0].shape, list_dataframes_to_merge[1].shape)
 print(merged_df.head())
 
+first_comparator = location_list[0]
+second_comparator = location_list[1]
 
-first_comparator = list(comparator_list[0].items())[0][1] + "_" + model_list[0]
-second_comparator = list(comparator_list[1].items())[0][1] + "_" + model_list[1]
-# second_comparator = list(comparator_list[1].items())[0][1] + "_" + list(comparator_list[1].items())[0][0]
+if len(model_list) == 0:
+    # first_comparator = list(comparator_list[0].items())[0][1] + "_" + model_list[0]
+    # second_comparator = list(comparator_list[1].items())[0][1] + "_" + model_list[1]
+    # # second_comparator = list(comparator_list[1].items())[0][1] + "_" + list(comparator_list[1].items())[0][0]
 
-merged_df['speedup_frac'] = merged_df['time_per_tweet_{}'.format(first_comparator)] / merged_df[
-    'time_per_tweet_{}'.format(second_comparator)]
+    merged_df['time_relative'] = merged_df['time_per_tweet_{}'.format(first_comparator)] / merged_df[
+        'time_per_tweet_{}'.format(second_comparator)]
 
-merged_df['score_rank'] = merged_df['score_{}'.format(first_comparator)].rank(method='dense', ascending=False)
-merged_df['kendalltau'] = scipy.stats.kendalltau(merged_df['score_rank'],
-                                                 merged_df['score_{}'.format(second_comparator)]).correlation
-merged_df['spearmanr'] = scipy.stats.spearmanr(merged_df['score_{}'.format(first_comparator)],
-                                               merged_df['score_{}'.format(second_comparator)]).correlation
-merged_df['MSE'] = mean_squared_error(merged_df['score_{}'.format(first_comparator)],
-                                                     merged_df['score_{}'.format(second_comparator)])
+    merged_df['score_rank'] = merged_df['score_{}'.format(first_comparator)].rank(method='dense', ascending=False)
+    merged_df['kendalltau'] = scipy.stats.kendalltau(merged_df['score_rank'],
+                                                     merged_df['score_{}'.format(second_comparator)]).correlation
+    merged_df['spearmanr'] = scipy.stats.spearmanr(merged_df['score_{}'.format(first_comparator)],
+                                                   merged_df['score_{}'.format(second_comparator)]).correlation
+    merged_df['MSE'] = mean_squared_error(merged_df['score_{}'.format(first_comparator)],
+                                                         merged_df['score_{}'.format(second_comparator)])
 
-merged_df['kendalltau'] = -1.0 * merged_df['kendalltau']
+    merged_df['kendalltau'] = -1.0 * merged_df['kendalltau']
 
-# print(merged_df.head())
+    # merged_df = merged_df.drop_duplicates()
+
+else: #one of the comparison has many models, need to calculate stats by model
+    multi_model_merge = pd.DataFrame()
+    for model in model_list:
+        this_model_data = merged_df[merged_df['model_y'] == model]
+        for batch_size in list(pd.unique(this_model_data['batch_size_y'])):
+            this_model_this_bs_data = this_model_data[this_model_data['batch_size_y'] == batch_size]
+            # print('hey')
+            time_relative = this_model_this_bs_data['time_per_tweet_{}'.format(first_comparator)] / this_model_this_bs_data['time_per_tweet_{}'.format(second_comparator)]
+            assert len(pd.unique(time_relative)) == 1
+            time_relative = list(pd.unique(time_relative))[0]
+
+            score_rank = this_model_this_bs_data['score_{}'.format(first_comparator)].rank(method='dense', ascending=False)
+            kendalltau = scipy.stats.kendalltau(score_rank, this_model_this_bs_data['score_{}'.format(second_comparator)]).correlation
+            spearmanr = scipy.stats.spearmanr(this_model_this_bs_data['score_{}'.format(first_comparator)], this_model_this_bs_data['score_{}'.format(second_comparator)]).correlation
+            MSE = mean_squared_error(this_model_this_bs_data['score_{}'.format(first_comparator)], this_model_this_bs_data['score_{}'.format(second_comparator)])
+
+            kendalltau = -1.0 * kendalltau
+
+            multi_model_merge = multi_model_merge.append({
+                'model_y': model,
+                'batch_size_y': batch_size,
+                'time_relative': time_relative,
+                'kendalltau': kendalltau,
+                'spearmanr': spearmanr,
+                'MSE': MSE,
+            }, ignore_index=True)
+    merged_df = multi_model_merge
+
+print(merged_df.head())
 
 r_df = merged_df[[
-    # 'model',
-    'batch_size',
+    'model_y',
+    'batch_size_y',
     'spearmanr',
     'MSE',
-    'kendalltau'
+    'kendalltau',
+    'time_relative'
 ]]
 
 # print(r_df.head())
 
 r_simplified_df = r_df.drop_duplicates()
-print(r_df.shape, r_simplified_df)
+# print(r_df.shape, r_simplified_df)
 
-print(r_simplified_df.head())
+# print(r_simplified_df.head())
 
 
 import pandas as pd
@@ -197,7 +238,7 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 # in the future you might have to use parse https://rpy2.github.io/doc/v3.4.x/html/rinterface.html#parsing-and-evaluating-r-code
 # test = parse(
 # '''
-# plot <- ggplot(data=r_from_pd_df, aes(x=onnx_batchsize, y=speedup_frac_mean)) + geom_point()
+# plot <- ggplot(data=r_from_pd_df, aes(x=onnx_batchsize, y=time_relative_mean)) + geom_point()
 # ggsave(file='test.png', width = 5, height = 5, dpi = 300)
 # '''
 # )
@@ -206,7 +247,7 @@ with localconverter(ro.default_converter + pandas2ri.converter):
 # filename_endstring = comparator_list[0]+"_vs_"+comparator_list[1]
 filename_endstring = first_comparator + "_vs_" + second_comparator
 
-for Y_AXIS in ['spearmanr', 'MSE', 'kendalltau']:
+for Y_AXIS in ['spearmanr', 'MSE', 'kendalltau', 'time_relative']:
 
     print('>>plotting:', filename_endstring, Y_AXIS)
 
@@ -215,15 +256,15 @@ for Y_AXIS in ['spearmanr', 'MSE', 'kendalltau']:
     R_RUN_STRING_TEMPLATE = '''
     library('ggplot2')
     # r_output$onnx_batchsize <- as.factor(r_output$onnx_batchsize)
-    plot <- ggplot(data=r_output, aes(x=batch_size, y=**)) +
-    # plot <- ggplot(data=r_output, aes(x=batch_size, y=**, color=model)) +
-            geom_point(size=0.1)+
+    # plot <- ggplot(data=r_output, aes(x=batch_size, y=**)) +
+    plot <- ggplot(data=r_output, aes(x=batch_size_y, y=**, color=model_y)) +
+            geom_point()+
             # geom_pointrange(aes(ymin=**_mean-**_std, ymax=**_mean+**_std))+
-            # geom_path()+
+            geom_path()+
             # geom_jitter()+
             theme_bw()+
-            theme(legend.position="top")
-    ggsave(file='plots/temp/**_REPLACE2.png', width = 5, height = 5, dpi = 300)
+            # theme(legend.position="top")
+    ggsave(file='plots/**_REPLACE2.png', width = 5, height = 5, dpi = 300)
     '''
     R_RUN_STRING = R_RUN_STRING_TEMPLATE.replace('**', Y_AXIS)
     R_RUN_STRING = R_RUN_STRING.replace('REPLACE2', filename_endstring)
@@ -232,6 +273,7 @@ for Y_AXIS in ['spearmanr', 'MSE', 'kendalltau']:
     print('plotting..\n', R_RUN_STRING)
     ro.r(R_RUN_STRING)
 
+    # break
 
 
 
