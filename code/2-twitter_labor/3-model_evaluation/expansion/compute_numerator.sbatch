@@ -10,8 +10,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-ACTIVE_LEARNING_METHOD=$1
-THRESHOLD=$2
 
 module purge
 module load anaconda3/2020.02
@@ -22,8 +20,6 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion
 
-python3 compute_numerator.py \
---active_learning ${ACTIVE_LEARNING_METHOD} \
---threshold ${THRESHOLD}
+python3 compute_numerator.py
 
 exit
