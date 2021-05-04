@@ -94,6 +94,7 @@ if __name__ == '__main__':
 
     for combination in selected_combinations:
         al_method, iter_nb, label = combination
+        iter_nb = int(iter_nb)
         logger.info(f'Active learning method: {al_method}')
         logger.info(f'Iteration {iter_nb}')
         logger.info(f'Label: {label}')
