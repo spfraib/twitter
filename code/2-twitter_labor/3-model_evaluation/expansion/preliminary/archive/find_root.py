@@ -16,7 +16,7 @@ folder_dict = {
             'eval': 'iter_0-convbert-969622-evaluation',
             'new_samples': 'iter_0-convbert-1122153-new_samples'}, 'jan5_iter0'],
     1: [{
-            'eval': 'iter_1-convbert-3050798-evaluation',
+            'eval': 'iter_1-convbxert-3050798-evaluation',
             'new_samples': 'iter_1-convbert-3062566-new_samples'}, 'feb22_iter1'],
     2: [{
             'eval': 'iter_2-convbert-3134867-evaluation',

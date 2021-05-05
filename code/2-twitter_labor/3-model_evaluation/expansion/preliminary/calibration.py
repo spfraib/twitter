@@ -41,6 +41,9 @@ if __name__ == '__main__':
         for i, iter_name in enumerate(iter_list):
             # load data
             df = pd.read_csv(f'{path_data}/{iter_name}/{label}.csv')
+            if 'extra_is_hired_1mo.csv' in os.listdir(f'{path_data}/{iter_name}'):
+                extra_df = pd.read_csv(f'{path_data}/{iter_name}/extra_{label}.csv')
+                df = pd.concat([df, extra_df]).reset_index(drop=True)
             # df['log_score'] = np.log10(df['score'])
             params = []
             params_dict[label][iter_name] = {}
@@ -118,7 +121,7 @@ if __name__ == '__main__':
                 ax.legend(loc='best')
                 if not os.path.exists(f'{fig_path}/figures/{iter_name}'):
                     os.makedirs(f'{fig_path}/figures/{iter_name}')
-                plt.savefig(f'{fig_path}/figures/{iter_name}/{label}_mean_score_single_{num_samples}_{args.active_learning}')
+                plt.savefig(f'{fig_path}/figures/{iter_name}/{label}_mean_score_single_{num_samples}_{args.active_learning}_extra')
                 # plt.show()
             #
             # else:
@@ -158,4 +161,4 @@ if __name__ == '__main__':
     #                   ...},
     #  ...}
 
-    pickle.dump(params_dict, open(f'{fig_path}/calibration_dict_{args.active_learning}_{num_samples}.pkl', 'wb'))
+    pickle.dump(params_dict, open(f'{fig_path}/calibration_dict_{args.active_learning}_{num_samples}_extra.pkl', 'wb'))
