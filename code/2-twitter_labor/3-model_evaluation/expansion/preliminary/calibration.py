@@ -26,6 +26,8 @@ if __name__ == '__main__':
         iter_list = iter_names_our_method
     elif args.active_learning == 'adaptive':
         iter_list = iter_names_adaptive
+    elif args.active_learning == 'uncertainty':
+        iter_list = iter_names_uncertainty
     plot_a_b = False
     plot_score_calib = False
     single = True
