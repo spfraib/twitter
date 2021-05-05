@@ -102,7 +102,7 @@ if __name__ == '__main__':
     results_dict = dict()
     to_label_list = list()
     for combination in selected_combinations:
-        inference_folder = inference_folder[combination[0]][combination[1]]
+        inference_folder = inference_folder_dict[combination[0]][combination[1]]
         logger.info(f'**** Inference folder: {inference_folder} ****')
         results_dict[inference_folder] = dict()
         label = combination[2]
