@@ -68,9 +68,6 @@ if __name__ == '__main__':
                 'eval': 'iter_4-convbert-3297962-evaluation',
                 'new_samples': 'iter_4-convbert-3308838-new_samples'}, 'mar1_iter4']},
         'adaptive': {
-            0: [{
-                'eval': 'iter_0-convbert-969622-evaluation',
-                'new_samples': 'iter_0-convbert-1122153-new_samples'}, 'jan5_iter0'],
             1: [{
                 'eval': 'iter_1-convbert_adaptive-5612019-evaluation',
                 'new_samples': 'iter_1-convbert_adaptive-5644714-new_samples'}, 'apr19_iter1_adaptive'],
@@ -83,10 +80,26 @@ if __name__ == '__main__':
             4: [{
                 'eval': 'iter_4-convbert_adaptive-6057405-evaluation',
                 'new_samples': 'iter_4-convbert_adaptive-6061488-new_samples'}, 'apr27_iter4_adaptive']},
-    }
+        'uncertainty': {
+            1: [{
+                'eval': 'iter_1-convbert_uncertainty-6200469-evaluation',
+                'new_samples': 'iter_1-convbert_uncertainty-6208289-new_samples'}, 'apr30_iter1_uncertainty'],
+            2: [{
+                'eval': 'iter_2-convbert_uncertainty-6253253-evaluation',
+                'new_samples': 'iter_2-convbert_uncertainty-6293350-new_samples'}, 'may1_iter2_uncertainty'],
+            3: [{
+                'eval': 'iter_3-convbert_uncertainty-6318280-evaluation',
+                'new_samples': 'iter_3-convbert_uncertainty-6342807-new_samples'}, 'may2_iter3_uncertainty'],
+            # 4: [{
+            #     'eval': 'iter_4-convbert_adaptive-6057405-evaluation',
+            #     'new_samples': 'iter_4-convbert_adaptive-6061488-new_samples'}, 'apr27_iter4_adaptive']
+        }
+        }
     results_dict = dict()
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
-    combinations_list = list(itertools.product(*[['our_method', 'adaptive'], range(5), labels]))
+    combinations_list = list(itertools.product(*[['our_method', 'adaptive', 'uncertainty'], range(5), labels]))
+    combinations_list = [combination for combination in combinations_list if
+                         combination[:2] not in [ ('uncertainty', 4)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
