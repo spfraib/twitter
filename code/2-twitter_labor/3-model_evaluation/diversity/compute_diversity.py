@@ -145,7 +145,7 @@ if __name__ == '__main__':
         folder_name = f'threshold_{int(args.threshold * 100)}'
     elif args.method == 'topk':
         folder_name = f'top_{args.topk}'
-    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/diversity/{folder_name}
+    output_path = f'{data_path}/evaluation_metrics/{args.country_code}/diversity/{folder_name}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     # save results dict
