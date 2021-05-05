@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=diversity
 #SBATCH --nodes=1
-#SBATCH --mem=120GB
+#SBATCH --mem=60GB
 #SBATCH --time=10:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=slurm_evaluation_diversity_%j.out
@@ -20,6 +20,6 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/diversity
 
-python3 compute_diversity.py 
+python3 compute_diversity.py
 
 exit
