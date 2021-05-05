@@ -254,36 +254,68 @@ our_method_new_dict = {
 adaptive_new_dict = {
     0: {
         'is_unemployed': {
-            'numerator': 5293,
-            'sem': 16444813.87614342},
+            'numerator': 5363,
+            'sem': 16693273.716407115},
+        'job_search': {
+            'numerator': 9955,
+            'sem': 4007.9818390547352},
         'lost_job_1mo': {
             'numerator': 110,
-            'sem': 2016.8052889055243},
-        'job_search': {
-            'numerator': 10012,
-            'sem': 4091.8871731020613},
+            'sem': 2507.0304745155704},
         'is_hired_1mo': {
-            'numerator': 5874,
-            'sem': 1420.4752054008109},
+            'numerator': 5876,
+            'sem': 1440.5507101946998},
         'job_offer': {
             'numerator': 397551,
-            'sem': 21371.65412176454}},
+            'sem': 21053.672213431728}},
     1: {
-        'job_search': {
-            'numerator': 13663,
-            'sem': 5549.774344602734},
         'is_unemployed': {
             'numerator': 12031,
             'sem': 7726.799776019945},
-        'job_offer': {
-            'numerator': 452457,
-            'sem': 62954.13118906742},
         'lost_job_1mo': {
             'numerator': 111,
             'sem': 515.2125927164042},
+        'job_search': {
+            'numerator': 13663,
+            'sem': 5549.774344602734},
         'is_hired_1mo': {
             'numerator': 13799,
-            'sem': 5795.455532339655}},
+            'sem': 5795.455532339655},
+        'job_offer': {
+            'numerator': 452457,
+            'sem': 62954.13118906742}},
+    2: {
+        'job_search': {
+            'numerator': 153855,
+            'sem': 11781.304215985185},
+        'is_unemployed': {
+            'numerator': 4371,
+            'sem': 1269.4789663340573},
+        'job_offer': {
+            'numerator': 573631,
+            'sem': 56246.765267860545},
+        'lost_job_1mo': {
+            'numerator': 418,
+            'sem': 5649172.944711616},
+        'is_hired_1mo': {
+            'numerator': 16584,
+            'sem': 3087.7931741284956}},
+    4: {
+        'is_unemployed': {
+            'numerator': 16014,
+            'sem': 6253.689632372853},
+        'is_hired_1mo': {
+            'numerator': 8766,
+            'sem': 2875.0965294760767},
+        'lost_job_1mo': {
+            'numerator': 1238,
+            'sem': 480.9785550015688},
+        'job_search': {
+            'numerator': 17117,
+            'sem': 1808.3838577036793},
+        'job_offer': {
+            'numerator': 502520,
+            'sem': 41362.28738283996}},
     3: {
         'is_unemployed': {
             'numerator': 1002,
@@ -291,44 +323,78 @@ adaptive_new_dict = {
         'is_hired_1mo': {
             'numerator': 7953,
             'sem': 1637.1488788134022},
-        'lost_job_1mo': {
-            'numerator': 1047,
-            'sem': 266.4834153426912},
         'job_search': {
             'numerator': 46384,
             'sem': 3869.1915428802877},
+        'lost_job_1mo': {
+            'numerator': 1047,
+            'sem': 266.4834153426912},
         'job_offer': {
             'numerator': 512423,
-            'sem': 41770.65447128737}},
-    4: {
+            'sem': 41770.65447128737}}}
+
+uncertainty_new_dict = {
+    0: {
         'is_unemployed': {
-            'numerator': 16014,
-            'sem': 6253.689632372853},
-        'lost_job_1mo': {
-            'numerator': 1238,
-            'sem': 480.9785550015688},
-        'job_offer': {
-            'numerator': 502520,
-            'sem': 41362.28738283996},
+            'numerator': 5363,
+            'sem': 16693273.716407115},
         'job_search': {
-            'numerator': 17117,
-            'sem': 1808.3838577036793},
+            'numerator': 9955,
+            'sem': 4007.9818390547352},
+        'lost_job_1mo': {
+            'numerator': 110,
+            'sem': 2507.0304745155704},
         'is_hired_1mo': {
-            'numerator': 8766,
-            'sem': 2875.0965294760767}},
+            'numerator': 5876,
+            'sem': 1440.5507101946998},
+        'job_offer': {
+            'numerator': 397551,
+            'sem': 21053.672213431728}},
+    1: {
+        'is_unemployed': {
+            'numerator': 3231,
+            'sem': 1212.8294165440386},
+        'lost_job_1mo': {
+            'numerator': 550,
+            'sem': 3463249.2733861697},
+        'job_offer': {
+            'numerator': 612936,
+            'sem': 55788.61109484994},
+        'job_search': {
+            'numerator': 42877,
+            'sem': 27488.157467541965},
+        'is_hired_1mo': {
+            'numerator': 97379,
+            'sem': 47509.68387021411}},
+    3: {
+        'job_search': {
+            'numerator': 91869,
+            'sem': 31592.686413025483},
+        'job_offer': {
+            'numerator': 515531,
+            'sem': 88059.71269241623},
+        'is_unemployed': {
+            'numerator': 19933,
+            'sem': 5128.033384996177},
+        'lost_job_1mo': {
+            'numerator': 1073,
+            'sem': 223.0537012649752},
+        'is_hired_1mo': {
+            'numerator': 27873,
+            'sem': 3591.460342131989}},
     2: {
-        'is_unemployed': {
-            'numerator': 4371,
-            'sem': 1269.4789663340573},
         'is_hired_1mo': {
-            'numerator': 16584,
-            'sem': 3087.7931741284956},
-        'job_search': {
-            'numerator': 153855,
-            'sem': 11781.304215985185},
-        'lost_job_1mo': {
-            'numerator': 418,
-            'sem': 5649172.944711616},
+            'numerator': 20796,
+            'sem': 2850.188326217433},
+        'is_unemployed': {
+            'numerator': 12728,
+            'sem': 1683.5269055835647},
         'job_offer': {
-            'numerator': 573631,
-            'sem': 56246.765267860545}}}
+            'numerator': 398094,
+            'sem': 9086.272249684558},
+        'lost_job_1mo': {
+            'numerator': 641,
+            'sem': 238.74600378892737},
+        'job_search': {
+            'numerator': 51412,
+            'sem': 2581.8115256688216}}}

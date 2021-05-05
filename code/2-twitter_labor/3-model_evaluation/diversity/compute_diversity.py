@@ -100,13 +100,21 @@ if __name__ == '__main__':
 
     inference_path = os.path.join(data_path, 'inference')
     results_dict = dict()
-    to_label_list = list()
     for combination in selected_combinations:
         inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
-        logger.info(f'**** Inference folder: {inference_folder} ****')
-        results_dict[inference_folder] = dict()
+        method = combination[0]
+        iter_nb = int(combination[1])
         label = combination[2]
-        logger.info(f'** Class: {label} **')
+        logger.info(f'Active learning method: {method}')
+        logger.info(f'Iteration number: {iter_nb}')
+        logger.info(f'Class: {label}')
+        if method not in results_dict.keys():
+            results_dict[method] = dict()
+        if iter_nb not in results_dict[method].keys():
+            results_dict[method][iter_nb] = dict()
+        if label not in results_dict[method][iter_nb].keys():
+            results_dict[method][iter_nb][label] = dict()
+
         scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
         scores_df = pd.concat(
             pd.read_parquet(parquet_file)
@@ -126,7 +134,6 @@ if __name__ == '__main__':
             all_df = all_df[:args.topk]
         all_df['inference_folder'] = inference_folder
 
-        results_dict[inference_folder][label] = dict()
         # compute and save diversity score
         if all_df.shape[0] > 0:
             tweet_list = all_df['text'].tolist()
@@ -137,9 +144,9 @@ if __name__ == '__main__':
             diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
             # diversity_score = (-torch.sum(cosine_scores) / (len(tweet_list) ** 2)).item()
             logger.info(f'Diversity score: {diversity_score}')
-            results_dict[inference_folder][label]['diversity_score'] = diversity_score
+            results_dict[method][iter_nb][label]['diversity_score'] = diversity_score
         else:
-            results_dict[inference_folder][label]['diversity_score'] = np.nan
+            results_dict[method][iter_nb][label]['diversity_score'] = np.nan
     # save results
     if args.method == 'threshold':
         folder_name = f'threshold_{int(args.threshold * 100)}'

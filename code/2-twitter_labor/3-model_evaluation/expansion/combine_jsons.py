@@ -20,5 +20,7 @@ for json_file in json_list:
                     final_dict[k][k_2][k_3] = json_dict[k][k_2][k_3]
 
 print(final_dict['our_method'])
-
+print('\n')
 print(final_dict['adaptive'])
+print('\n')
+print(final_dict['uncertainty'])
