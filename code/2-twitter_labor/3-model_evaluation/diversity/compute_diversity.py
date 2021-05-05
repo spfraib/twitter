@@ -73,12 +73,13 @@ if __name__ == '__main__':
         'uncertainty': {
             1: 'iter_1-convbert_uncertainty-6200469-evaluation',
             2: 'iter_2-convbert_uncertainty-6253253-evaluation',
-            3: 'iter_3-convbert_uncertainty-6318280-evaluation'}}
+            3: 'iter_3-convbert_uncertainty-6318280-evaluation',
+            4: 'iter_4-convbert_uncertainty-6423646-evaluation'}}
     # Define and select combination
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
     combinations_list = list(itertools.product(*[['our_method', 'adaptive', 'uncertainty'], range(5), labels]))
     combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty', 4)]]
+                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
