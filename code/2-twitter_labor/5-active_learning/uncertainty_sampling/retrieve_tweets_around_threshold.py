@@ -21,6 +21,7 @@ def get_args_from_command_line():
                         default="US")
     parser.add_argument("--inference_folder", type=str)
     parser.add_argument("--iteration_number", type=str)
+    parser.add_argument("--calibration", type=int)
 
     args = parser.parse_args()
     return args
@@ -64,22 +65,40 @@ if __name__ == '__main__':
     # random_df['tweet_id'] = random_df['tweet_id'].apply(lambda x: str(int(float(x))))
     logger.info('Loaded random data')
     logger.info(f'Shape random data: {random_df.shape[0]}')
-    folder_dict = {
-        0: {
-            'inference_eval': 'iter_0-convbert-969622-evaluation',
-            'data_folder': 'jan5_iter0'},
-        1: {
-            'inference_eval': 'iter_1-convbert_uncertainty-6200469-evaluation',
-            'data_folder': 'apr30_iter1_uncertainty'},
-        2: {
-            'inference_eval': 'iter_2-convbert_uncertainty-6253253-evaluation',
-            'data_folder': 'may1_iter2_uncertainty'},
-        3: {
-            'inference_eval': 'iter_3-convbert_uncertainty-6318280-evaluation',
-            'data_folder': 'may2_iter3_uncertainty'},
-        4: {
-            'inference_eval': '',
-            'data_folder': ''}}
+    if args.calibration == 1:
+        folder_dict = {
+            0: {
+                'inference_eval': 'iter_0-convbert-969622-evaluation',
+                'data_folder': 'jan5_iter0'},
+            1: {
+                'inference_eval': 'iter_1-convbert_uncertainty-6200469-evaluation',
+                'data_folder': 'apr30_iter1_uncertainty'},
+            2: {
+                'inference_eval': 'iter_2-convbert_uncertainty-6253253-evaluation',
+                'data_folder': 'may1_iter2_uncertainty'},
+            3: {
+                'inference_eval': 'iter_3-convbert_uncertainty-6318280-evaluation',
+                'data_folder': 'may2_iter3_uncertainty'},
+            4: {
+                'inference_eval': '',
+                'data_folder': ''}}
+    elif args.calibration == 0:
+        folder_dict = {
+            0: {
+                'inference_eval': 'iter_0-convbert-969622-evaluation',
+                'data_folder': 'jan5_iter0'},
+            1: {
+                'inference_eval': '',
+                'data_folder': ''},
+            2: {
+                'inference_eval': '',
+                'data_folder': ''},
+            3: {
+                'inference_eval': '',
+                'data_folder': ''},
+            4: {
+                'inference_eval': '',
+                'data_folder': ''}}
     for iteration_number in range(int(args.iteration_number)):
         logger.info(f'Iteration {iteration_number}')
         random_count = random_df.shape[0]
@@ -93,21 +112,17 @@ if __name__ == '__main__':
         #     to_label_df=random_df)
         logger.info(
             f'Dropped {str(random_count - random_df.shape[0])} tweets already labelled at iteration {iteration_number}')
-
-    path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
-    params_dict = pickle.load(
-        open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{int(args.iteration_number) - 1}.pkl'),
-             'rb'))
+    if args.calibration == 1:
+        path_to_params = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-model_evaluation/expansion/preliminary/calibration_dicts'
+        params_dict = pickle.load(
+            open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{int(args.iteration_number) - 1}.pkl'),
+                 'rb'))
     inference_eval_folder = folder_dict[int(args.iteration_number) - 1]['inference_eval']
 
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
         logger.info(f'Label: {label}')
-        # find root
-        params = params_dict[label][inference_eval_folder]['params']
-        root = optimize.brentq(func, 0, 1, args=(params))
-        logger.info(f'Root: {root}')
-        logger.info(f'Calibrated score for root: {calibrate(root, params)}')
+
         # Load scores
         inference_path = os.path.join(data_path, 'inference')
         scores_path = Path(os.path.join(inference_path, args.country_code, args.inference_folder, 'output', label))
@@ -119,7 +134,14 @@ if __name__ == '__main__':
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
         logger.info('Merged scores and text')
         # sample 100 tweets around 0.5
-        all_df['modified_score'] = all_df['score'] - root
+        if args.calibration == 1:
+            params = params_dict[label][inference_eval_folder]['params']
+            root = optimize.brentq(func, 0, 1, args=(params))
+            logger.info(f'Root: {root}')
+            logger.info(f'Calibrated score for root: {calibrate(root, params)}')
+            all_df['modified_score'] = all_df['score'] - root
+        elif args.calibration == 0:
+            all_df['modified_score'] = all_df['score'] - 0.5
         above_threshold_df = all_df.loc[all_df['modified_score'] > 0].nsmallest(50, 'modified_score')
         below_threshold_df = all_df.loc[all_df['modified_score'] < 0].nlargest(50, 'modified_score')
         sample_df = pd.concat([above_threshold_df, below_threshold_df]).reset_index(drop=True)
@@ -127,7 +149,11 @@ if __name__ == '__main__':
         sample_df = sample_df[['tweet_id', 'text', 'label', 'score']]
         sample_df_list.append(sample_df)
     appended_sample_df = pd.concat(sample_df_list)
-    output_path = f'{data_path}/active_learning/uncertainty_sampling/{args.country_code}/{args.inference_folder}'
+    if args.calibration == 1:
+        output_path = f'{data_path}/active_learning/uncertainty_sampling/{args.country_code}/{args.inference_folder}'
+    elif args.calibration == 0:
+        output_path = f'{data_path}/active_learning/uncertainty_sampling/{args.country_code}/{args.inference_folder}_no_calibration'
+
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     appended_sample_df.to_parquet(os.path.join(output_path, 'top_tweets.parquet'), index=False)
