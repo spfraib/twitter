@@ -5,6 +5,7 @@
 #SBATCH --mem=60GB
 #SBATCH --time=10:00:00
 #SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
 #SBATCH --output=slurm_evaluation_diversity_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END

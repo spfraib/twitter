@@ -9,6 +9,8 @@ import numpy as np
 import re
 import itertools
 import json
+from ranks import ranks_dict
+import torch
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -21,7 +23,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--method", type=str, default='topk')
+    parser.add_argument("--selection_method", type=str, default='threshold_calibrated')
     parser.add_argument("--threshold", type=float,
                         default=0.95)
     parser.add_argument("--topk", type=int, default=10000)
@@ -90,7 +92,11 @@ if __name__ == '__main__':
         'US': 'stsb-roberta-large',
         'MX': 'distiluse-base-multilingual-cased-v2',
         'BR': 'distiluse-base-multilingual-cased-v2'}
-    diversity_model = SentenceTransformer(diversity_model_dict[args.country_code])
+    if torch.cuda.is_available():
+        device = 'gpu'
+    else:
+        device = 'cpu'
+    diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
 
     # load random set
     random_df = pd.concat(
@@ -103,18 +109,18 @@ if __name__ == '__main__':
     results_dict = dict()
     for combination in selected_combinations:
         inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
-        method = combination[0]
+        al_method = combination[0]
         iter_nb = int(combination[1])
         label = combination[2]
-        logger.info(f'Active learning method: {method}')
+        logger.info(f'Active learning method: {al_method}')
         logger.info(f'Iteration number: {iter_nb}')
         logger.info(f'Class: {label}')
-        if method not in results_dict.keys():
-            results_dict[method] = dict()
-        if iter_nb not in results_dict[method].keys():
-            results_dict[method][iter_nb] = dict()
-        if label not in results_dict[method][iter_nb].keys():
-            results_dict[method][iter_nb][label] = dict()
+        if al_method not in results_dict.keys():
+            results_dict[al_method] = dict()
+        if iter_nb not in results_dict[al_method].keys():
+            results_dict[al_method][iter_nb] = dict()
+        if label not in results_dict[al_method][iter_nb].keys():
+            results_dict[al_method][iter_nb][label] = dict()
 
         scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
         scores_df = pd.concat(
@@ -124,15 +130,15 @@ if __name__ == '__main__':
         logger.info('Loaded scores')
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
         all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
-        # # keep aside 50 top tweets
-        # top_df = all_df[:50]
-        # top_df['tweet_type'] = 'top_50'
-        # restrict to score > T
-        if args.method == 'threshold':
+
+        if args.selection_method == 'threshold':
             all_df = all_df.loc[all_df['score'] > args.threshold].reset_index(drop=True)
             logger.info(f'# tweets with score > {args.threshold}: {all_df.shape[0]}')
-        elif args.method == 'topk':
+        elif args.selection_method == 'topk':
             all_df = all_df[:args.topk]
+        elif args.selection_method == 'threshold_calibrated':
+            rank = ranks_dict[al_method][iter_nb][label]['numerator']
+            all_df = all_df[:rank]
         all_df['inference_folder'] = inference_folder
 
         # compute and save diversity score
@@ -140,19 +146,24 @@ if __name__ == '__main__':
             tweet_list = all_df['text'].tolist()
             embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
             logger.info('Converted tweets to embeddings')
+            embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
+            torch.save(embeddings, embeddings_path)
+            logger.info(f'Saved at {embeddings_path}')
             cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
             logger.info('Computed cosine similarity')
             diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
             # diversity_score = (-torch.sum(cosine_scores) / (len(tweet_list) ** 2)).item()
             logger.info(f'Diversity score: {diversity_score}')
-            results_dict[method][iter_nb][label]['diversity_score'] = diversity_score
+            results_dict[al_method][iter_nb][label]['diversity_score'] = diversity_score
         else:
-            results_dict[method][iter_nb][label]['diversity_score'] = np.nan
+            results_dict[al_method][iter_nb][label]['diversity_score'] = np.nan
     # save results
-    if args.method == 'threshold':
+    if args.selection_method == 'threshold':
         folder_name = f'threshold_{int(args.threshold * 100)}'
-    elif args.method == 'topk':
+    elif args.selection_method == 'topk':
         folder_name = f'top_{args.topk}'
+    elif args.selection_method == 'threshold_calibrated':
+        folder_name = f'threshold_calibrated'
     output_path = f'{data_path}/evaluation_metrics/{args.country_code}/diversity/{folder_name}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
