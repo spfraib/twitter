@@ -34,6 +34,7 @@ iter_names_adaptive = ['iter_0-convbert-969622-evaluation', 'iter_1-convbert_ada
 iter_names_uncertainty = ['iter_1-convbert_uncertainty-6200469-evaluation',
                          'iter_2-convbert_uncertainty-6253253-evaluation',
                          'iter_3-convbert_uncertainty-6318280-evaluation',
+                          'iter_4-convbert_uncertainty-6423646-evaluation'
                          ]
 ITERATIONS = 10
 labels = ['no', 'yes']
