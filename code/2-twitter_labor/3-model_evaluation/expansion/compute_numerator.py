@@ -99,7 +99,7 @@ if __name__ == '__main__':
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
     combinations_list = list(itertools.product(*[['our_method', 'adaptive', 'uncertainty'], range(5), labels]))
     combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty', 4)]]
+                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
