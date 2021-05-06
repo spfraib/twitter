@@ -90,9 +90,9 @@ if __name__ == '__main__':
             3: [{
                 'eval': 'iter_3-convbert_uncertainty-6318280-evaluation',
                 'new_samples': 'iter_3-convbert_uncertainty-6342807-new_samples'}, 'may2_iter3_uncertainty'],
-            # 4: [{
-            #     'eval': 'iter_4-convbert_adaptive-6057405-evaluation',
-            #     'new_samples': 'iter_4-convbert_adaptive-6061488-new_samples'}, 'apr27_iter4_adaptive']
+            4: [{
+                'eval': 'iter_4-convbert_uncertainty-6423646-evaluation',
+                'new_samples': 'iter_4-convbert_adaptive-6061488-new_samples'}, 'may3_iter4_uncertainty']
         }
         }
     results_dict = dict()
