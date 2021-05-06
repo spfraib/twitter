@@ -377,7 +377,7 @@ elif args.method == 3:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378407_seed-9',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378409_seed-11'
             }}}
-    
+
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
     print('\n\n!!!!!', column)
     loop_start = time.time()
