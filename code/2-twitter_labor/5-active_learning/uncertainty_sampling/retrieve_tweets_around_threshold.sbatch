@@ -14,6 +14,7 @@
 COUNTRY_CODE=$1
 INFERENCE_FOLDER=$2
 ITERATION_NUMBER=$3
+CALIBRATION=$4
 
 
 module purge
@@ -26,4 +27,5 @@ cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_lear
 python3 uncertainty_sampling/retrieve_tweets_around_threshold.py \
 --country_code ${COUNTRY_CODE} \
 --inference_folder ${INFERENCE_FOLDER} \
---iteration_number "${ITERATION_NUMBER}"
+--iteration_number "${ITERATION_NUMBER}" \
+--calibration ${CALIBRATION}
