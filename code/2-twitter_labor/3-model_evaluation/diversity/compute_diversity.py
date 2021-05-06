@@ -93,7 +93,7 @@ if __name__ == '__main__':
         'MX': 'distiluse-base-multilingual-cased-v2',
         'BR': 'distiluse-base-multilingual-cased-v2'}
     if torch.cuda.is_available():
-        device = 'gpu'
+        device = 'cuda'
     else:
         device = 'cpu'
     diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
