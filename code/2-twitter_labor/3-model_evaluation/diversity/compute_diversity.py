@@ -129,6 +129,7 @@ if __name__ == '__main__':
         )
         logger.info('Loaded scores')
         all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
+        logger.info('Merged random set and scores')
         all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
 
         if args.selection_method == 'threshold':
@@ -139,16 +140,21 @@ if __name__ == '__main__':
         elif args.selection_method == 'threshold_calibrated':
             rank = ranks_dict[al_method][iter_nb][label]['numerator']
             all_df = all_df[:rank]
+            logger.info(f'# tweets with calibrated score > 0.5: {all_df.shape[0]}')
         all_df['inference_folder'] = inference_folder
 
         # compute and save diversity score
         if all_df.shape[0] > 0:
             tweet_list = all_df['text'].tolist()
-            embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
-            logger.info('Converted tweets to embeddings')
             embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
-            torch.save(embeddings, embeddings_path)
-            logger.info(f'Saved at {embeddings_path}')
+            if os.path.exists(embeddings_path):
+                embeddings = torch.load(embeddings_path)
+                logger.info('Loaded embeddings')
+            else:
+                embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
+                logger.info('Converted tweets to embeddings')
+                torch.save(embeddings, embeddings_path)
+                logger.info(f'Saved at {embeddings_path}')
             cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
             logger.info('Computed cosine similarity')
             diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
