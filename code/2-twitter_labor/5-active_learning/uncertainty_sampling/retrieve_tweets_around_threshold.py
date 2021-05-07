@@ -88,8 +88,8 @@ if __name__ == '__main__':
                 'inference_eval': 'iter_0-convbert-969622-evaluation',
                 'data_folder': 'jan5_iter0'},
             1: {
-                'inference_eval': '',
-                'data_folder': ''},
+                'inference_eval': 'iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
+                'data_folder': 'may6_iter1_uncertainty_uncalibrated'},
             2: {
                 'inference_eval': '',
                 'data_folder': ''},
