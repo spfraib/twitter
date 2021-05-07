@@ -92,7 +92,7 @@ if __name__ == '__main__':
                 'data_folder': 'may6_iter1_uncertainty_uncalibrated'},
             2: {
                 'inference_eval': '',
-                'data_folder': ''},
+                'data_folder': 'may7_iter2_uncertainty_uncalibrated'},
             3: {
                 'inference_eval': '',
                 'data_folder': ''},
@@ -117,7 +117,6 @@ if __name__ == '__main__':
         params_dict = pickle.load(
             open(os.path.join(path_to_params, f'calibration_dict_uncertainty_10000_iter{int(args.iteration_number) - 1}.pkl'),
                  'rb'))
-    inference_eval_folder = folder_dict[int(args.iteration_number) - 1]['inference_eval']
 
     sample_df_list = list()
     for label in ['is_hired_1mo', 'lost_job_1mo', 'job_search', 'is_unemployed', 'job_offer']:
@@ -135,6 +134,7 @@ if __name__ == '__main__':
         logger.info('Merged scores and text')
         # sample 100 tweets around 0.5
         if args.calibration == 1:
+            inference_eval_folder = folder_dict[int(args.iteration_number) - 1]['inference_eval']
             params = params_dict[label][inference_eval_folder]['params']
             root = optimize.brentq(func, 0, 1, args=(params))
             logger.info(f'Root: {root}')
