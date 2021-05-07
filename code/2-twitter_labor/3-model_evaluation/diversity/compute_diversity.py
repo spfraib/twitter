@@ -87,27 +87,9 @@ if __name__ == '__main__':
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'Selected combinations: {selected_combinations}')
 
-    # load model
-    diversity_model_dict = {
-        'US': 'stsb-roberta-large',
-        'MX': 'distiluse-base-multilingual-cased-v2',
-        'BR': 'distiluse-base-multilingual-cased-v2'}
-    if torch.cuda.is_available():
-        device = 'cuda'
-    else:
-        device = 'cpu'
-    diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
-
-    # load random set
-    random_df = pd.concat(
-        pd.read_parquet(parquet_file)
-        for parquet_file in random_path_new_samples.glob('*.parquet')
-    )
-    logger.info('Loaded random data')
-
-    inference_path = os.path.join(data_path, 'inference')
     results_dict = dict()
-    for combination in selected_combinations:
+    if len(selected_combinations) == 1:
+        combination = selected_combinations[0]
         inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
         al_method = combination[0]
         iter_nb = int(combination[1])
@@ -122,47 +104,71 @@ if __name__ == '__main__':
         if label not in results_dict[al_method][iter_nb].keys():
             results_dict[al_method][iter_nb][label] = dict()
 
-        scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
-        scores_df = pd.concat(
-            pd.read_parquet(parquet_file)
-            for parquet_file in scores_path.glob('*.parquet')
-        )
-        logger.info('Loaded scores')
-        all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
-        logger.info('Merged random set and scores')
-        all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
+        # load model
+        diversity_model_dict = {
+            'US': 'stsb-roberta-large',
+            'MX': 'distiluse-base-multilingual-cased-v2',
+            'BR': 'distiluse-base-multilingual-cased-v2'}
+        if torch.cuda.is_available():
+            device = 'cuda'
+        else:
+            device = 'cpu'
+        diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
 
-        if args.selection_method == 'threshold':
-            all_df = all_df.loc[all_df['score'] > args.threshold].reset_index(drop=True)
-            logger.info(f'# tweets with score > {args.threshold}: {all_df.shape[0]}')
-        elif args.selection_method == 'topk':
-            all_df = all_df[:args.topk]
-        elif args.selection_method == 'threshold_calibrated':
-            rank = ranks_dict[al_method][iter_nb][label]['numerator']
-            all_df = all_df[:rank]
-            logger.info(f'# tweets with calibrated score > 0.5: {all_df.shape[0]}')
-        all_df['inference_folder'] = inference_folder
+        # if embeddings don't exist, load text
+        embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
+        if not os.path.exists(embeddings_path):
+            # load random set
+            random_df = pd.concat(
+                pd.read_parquet(parquet_file)
+                for parquet_file in random_path_new_samples.glob('*.parquet')
+            )
+            logger.info('Loaded random data')
+
+            # load scores
+            inference_path = os.path.join(data_path, 'inference')
+            scores_path = Path(os.path.join(inference_path, args.country_code, inference_folder, 'output', label))
+            scores_df = pd.concat(
+                pd.read_parquet(parquet_file)
+                for parquet_file in scores_path.glob('*.parquet')
+            )
+            logger.info('Loaded scores')
+            all_df = scores_df.merge(random_df, on="tweet_id", how='inner')
+            logger.info('Merged random set and scores')
+            all_df = all_df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
+
+            if args.selection_method == 'threshold':
+                all_df = all_df.loc[all_df['score'] > args.threshold].reset_index(drop=True)
+                logger.info(f'# tweets with score > {args.threshold}: {all_df.shape[0]}')
+            elif args.selection_method == 'topk':
+                all_df = all_df[:args.topk]
+            elif args.selection_method == 'threshold_calibrated':
+                rank = ranks_dict[al_method][iter_nb][label]['numerator']
+                all_df = all_df[:rank]
+                logger.info(f'# tweets with calibrated score > 0.5: {all_df.shape[0]}')
+            all_df['inference_folder'] = inference_folder
+            tweet_list = all_df['text'].tolist()
 
         # compute and save diversity score
-        if all_df.shape[0] > 0:
-            tweet_list = all_df['text'].tolist()
-            embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
-            if os.path.exists(embeddings_path):
-                embeddings = torch.load(embeddings_path)
-                logger.info('Loaded embeddings')
-            else:
-                embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
-                logger.info('Converted tweets to embeddings')
-                torch.save(embeddings, embeddings_path)
-                logger.info(f'Saved at {embeddings_path}')
-            cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
-            logger.info('Computed cosine similarity')
-            diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
-            # diversity_score = (-torch.sum(cosine_scores) / (len(tweet_list) ** 2)).item()
-            logger.info(f'Diversity score: {diversity_score}')
-            results_dict[al_method][iter_nb][label]['diversity_score'] = diversity_score
+        embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
+        if os.path.exists(embeddings_path):
+            embeddings = torch.load(embeddings_path)
+            logger.info('Loaded embeddings')
+            logger.info(f'Size: {embeddings.size()}')
         else:
-            results_dict[al_method][iter_nb][label]['diversity_score'] = np.nan
+            embeddings = diversity_model.encode(tweet_list, convert_to_tensor=True)
+            logger.info('Converted tweets to embeddings')
+            torch.save(embeddings, embeddings_path)
+            logger.info(f'Saved at {embeddings_path}')
+        cosine_scores = util.pytorch_cos_sim(embeddings, embeddings)
+        logger.info('Computed cosine similarity')
+        mean_diversity_score = (-torch.sum(cosine_scores) / (list(embeddings.size())[0] ** 2)).item()
+        mean_max_diversity_score = compute_mean_max_diversity(matrix=cosine_scores)
+        logger.info(f'Mean diversity score: {mean_diversity_score}')
+        logger.info(f'Mean max diversity score: {mean_max_diversity_score}')
+        results_dict[al_method][iter_nb][label]['mean_diversity_score'] = mean_max_diversity_score
+        results_dict[al_method][iter_nb][label]['mean_max_diversity_score'] = mean_max_diversity_score
+
     # save results
     if args.selection_method == 'threshold':
         folder_name = f'threshold_{int(args.threshold * 100)}'
