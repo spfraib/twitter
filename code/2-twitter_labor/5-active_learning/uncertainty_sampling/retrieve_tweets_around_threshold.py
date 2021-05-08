@@ -91,11 +91,11 @@ if __name__ == '__main__':
                 'inference_eval': 'iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
                 'data_folder': 'may6_iter1_uncertainty_uncalibrated'},
             2: {
-                'inference_eval': '',
+                'inference_eval': 'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
                 'data_folder': 'may7_iter2_uncertainty_uncalibrated'},
             3: {
-                'inference_eval': '',
-                'data_folder': ''},
+                'inference_eval': 'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation',
+                'data_folder': 'may8_iter3_uncertainty_uncalibrated'},
             4: {
                 'inference_eval': '',
                 'data_folder': ''}}
