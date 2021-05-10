@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=diversity_numba
 #SBATCH --nodes=1
-#SBATCH --mem=120GB
+#SBATCH --mem=60GB
 #SBATCH --time=30:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=slurm_evaluation_diversity_numba_%j.out
