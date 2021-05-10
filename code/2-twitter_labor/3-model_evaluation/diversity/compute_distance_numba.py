@@ -134,6 +134,8 @@ if __name__ == '__main__':
             elif args.method == 'distance_with_seed':
                 positive_seed_embedding_path = f'{data_path}/evaluation_metrics/US/diversity/embeddings_positive_train/jan5_iter0_{label}.pt'
                 embeddings_positive_seed = torch.load(positive_seed_embedding_path, map_location=torch.device('cpu'))
+                embeddings_positive_seed = embeddings_positive_seed.cpu().detach().numpy()
+                logger.info(f'# of seed positives: {embeddings_positive_seed.shape[0]}')
                 D = np.zeros((embeddings.shape[0], embeddings_positive_seed.shape[0]))
                 logger.info('Starting to calculate pairwise similarity')
                 D = sim(E1=embeddings, E2=embeddings_positive_seed, D=D)
