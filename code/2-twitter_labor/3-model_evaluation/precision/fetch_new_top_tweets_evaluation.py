@@ -42,9 +42,10 @@ if __name__ == '__main__':
     #                      'iter_3-convbert_uncertainty-6318280-evaluation',
     #                      ]
     # model_folder_list = ['iter_4-convbert_uncertainty-6423646-evaluation']
-    model_folder_list = ['iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
-                         'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
-                         'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation']
+    # model_folder_list = ['iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
+    #                      'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
+    #                      'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation']
+    model_folder_list = ['iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation']
     for model_folder in model_folder_list:
         logger.info(f'Folder: {model_folder}')
         path_to_evals = os.path.join(
