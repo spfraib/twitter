@@ -97,7 +97,7 @@ if __name__ == '__main__':
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
     combinations_list = list(itertools.product(*[['our_method', 'adaptive', 'uncertainty'], range(5), labels]))
     combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0)]]
+                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty', 4)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
@@ -108,6 +108,10 @@ if __name__ == '__main__':
         al_method = combination[0]
         iter_nb = int(combination[1])
         label = combination[2]
+        # prepare results_dict
+        results_dict = dict()
+        results_dict[al_method] = dict()
+        results_dict[al_method][iter_nb] = dict()
         # define output paths
         data_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
         output_path = f'{data_path}/evaluation_metrics/US/diversity/threshold_calibrated_{args.method}'
@@ -126,9 +130,6 @@ if __name__ == '__main__':
                 logger.info('Done. Computing diversity metrics')
                 mean_diversity_dict = mean_diversity(D)
                 mean_max_diversity_dict = mean_max_diversity(D)
-                results_dict = dict()
-                results_dict[al_method] = dict()
-                results_dict[al_method][iter_nb] = dict()
                 results_dict[al_method][iter_nb][label] =  {**mean_diversity_dict, **mean_max_diversity_dict}
             elif args.method == 'distance_with_seed':
                 positive_seed_embedding_path = f'{data_path}/evaluation_metrics/US/diversity/embeddings_positive_train/jan5_iter0_{label}.pt'
@@ -138,9 +139,6 @@ if __name__ == '__main__':
                 D = sim(E1=embeddings, E2=embeddings_positive_seed, D=D)
                 logger.info('Done. Computing diversity metrics')
                 mean_max_diversity_dict = mean_max_diversity(D)
-                results_dict = dict()
-                results_dict[al_method] = dict()
-                results_dict[al_method][iter_nb] = dict()
                 results_dict[al_method][iter_nb][label] =  mean_max_diversity_dict
             logger.info(f'Metrics: {results_dict}')
             # save results
