@@ -62,7 +62,8 @@ if __name__ == '__main__':
     raw_labels_path_dict = {'US': {0: 'jan5_iter0',
                               1: 'apr19_iter1_adaptive',
                               2: 'apr22_iter2_adaptive',
-                              3: 'feb25_iter3'},
+                              3: 'apr26_iter3_adaptive',
+                            4: 'apr27_iter4_adaptive'},
                             'MX': {0: 'feb27_iter0', 1: 'mar12_iter1', 2: 'mar23_iter2', 3: 'mar30_iter3'},
                             'BR': {0: 'feb16_iter0', 1: 'mar12_iter1', 2: 'mar24_iter2', 3: 'apr1_iter3'}}
     for iteration_number in range(int(args.iteration_number)):
