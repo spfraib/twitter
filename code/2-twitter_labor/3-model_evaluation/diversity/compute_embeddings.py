@@ -92,6 +92,17 @@ if __name__ == '__main__':
         *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
     combinations_list = [combination for combination in combinations_list if
                          combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
+    # combinations_list = combinations_list + [('adaptive', 1, 'job_offer'), ('adaptive', 2, 'job_offer'),
+    #                      ('adaptive', 2, 'is_hired_1mo'), ('adaptive', 2, 'job_search'),
+    #                      ('adaptive', 3, 'is_hired_1mo'), ('adaptive', 4, 'job_search'),
+    #                      ('exploit_explore_retrieval', 1, 'lost_job_1mo'),
+    #                      ('exploit_explore_retrieval', 2, 'is_unemployed'),
+    #                      ('exploit_explore_retrieval', 2, 'job_offer'),
+    #                      ('exploit_explore_retrieval', 4, 'is_hired_1mo'),
+    #                      ('exploit_explore_retrieval', 4, 'job_offer'),
+    #                      ('uncertainty', 2, 'is_hired_1mo'),
+    #                      ]
+    # combinations_list = list(set(combinations_list)))
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
