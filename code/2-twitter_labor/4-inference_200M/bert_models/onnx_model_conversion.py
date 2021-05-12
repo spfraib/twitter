@@ -172,6 +172,13 @@ elif args.method == 1:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026894_seed-12'
             },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739858_seed-6',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739863_seed-11',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739854_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739861_seed-9',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739853_seed-1'
+            }
         }}
 
 elif args.method == 2:
