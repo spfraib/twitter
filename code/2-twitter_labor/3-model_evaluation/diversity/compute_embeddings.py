@@ -9,7 +9,6 @@ import numpy as np
 import re
 import itertools
 import json
-from ranks import ranks_dict
 import torch
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -23,7 +22,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--selection_method", type=str, default='topk')
+    parser.add_argument("--selection_method", type=str, default='threshold_calibrated')
     parser.add_argument("--threshold", type=float,
                         default=0.95)
     parser.add_argument("--topk", type=int, default=1000000)
@@ -88,15 +87,23 @@ if __name__ == '__main__':
         }}
     # Define and select combination
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
-    combinations_list = list(itertools.product(*[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
+    combinations_list = list(itertools.product(
+        *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
     combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0), ('explore_exploit_retrieval', 5), ('adaptive', 5)]]
+                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0),
+                                                 ('explore_exploit_retrieval', 5)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'Selected combinations: {selected_combinations}')
 
     results_dict = dict()
+    rank_dict = {
+        'is_hired_1mo': 50000,
+        'is_unemployed': 10000,
+        'job_offer': 800000,
+        'job_search': 250000,
+        'lost_job_1mo': 1000}
     if len(selected_combinations) == 1:
         combination = selected_combinations[0]
         inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
@@ -119,7 +126,7 @@ if __name__ == '__main__':
         diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
 
         # if embeddings don't exist, load text
-        embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings_top_tweets/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
+        embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings_bis/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
         if not os.path.exists(embeddings_path):
             # load random set
             random_df = pd.concat(
@@ -146,7 +153,7 @@ if __name__ == '__main__':
             elif args.selection_method == 'topk':
                 all_df = all_df[:args.topk]
             elif args.selection_method == 'threshold_calibrated':
-                rank = ranks_dict[al_method][iter_nb][label]['numerator']
+                rank = rank_dict[label]
                 all_df = all_df[:rank]
                 logger.info(f'# tweets with calibrated score > 0.5: {all_df.shape[0]}')
             all_df['inference_folder'] = inference_folder
