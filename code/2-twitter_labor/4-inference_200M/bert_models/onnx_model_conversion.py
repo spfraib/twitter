@@ -171,7 +171,8 @@ elif args.method == 1:
                 'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026889_seed-7',
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026894_seed-12'
-            }}}
+            },
+        }}
 
 elif args.method == 2:
     best_model_paths_dict = {
@@ -241,7 +242,15 @@ elif args.method == 3:
                 'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653473_seed-12',
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653464_seed-3',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653472_seed-11'
-            }}}
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737085_seed-12',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737082_seed-9',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737074_seed-1',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737077_seed-4',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737086_seed-13'
+            }
+        }}
 
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
     logger.info(f'*****************************{label}*****************************')
