@@ -65,7 +65,8 @@ if __name__ == '__main__':
             1: 'iter_1-convbert-3050798-evaluation',
             2: 'iter_2-convbert-3134867-evaluation',
             3: 'iter_3-convbert-3174249-evaluation',
-            4: 'iter_4-convbert-3297962-evaluation'},
+            4: 'iter_4-convbert-3297962-evaluation',
+            5: 'iter_5-convbert-6746181-evaluation'},
         'adaptive': {
             1: 'iter_1-convbert_adaptive-5612019-evaluation',
             2: 'iter_2-convbert_adaptive-5972342-evaluation',
@@ -90,8 +91,7 @@ if __name__ == '__main__':
     combinations_list = list(itertools.product(
         *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
     combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0),
-                                                 ('explore_exploit_retrieval', 5)]]
+                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
     selected_combinations = list(np.array_split(
         combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
