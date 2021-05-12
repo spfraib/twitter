@@ -202,7 +202,15 @@ elif args.method == 2:
                 'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378403_seed-5',
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378407_seed-9',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378409_seed-11'
-            }}}
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711052_seed-2',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711053_seed-3',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711059_seed-9',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711055_seed-5',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711054_seed-4'
+            }
+        }}
 
 elif args.method == 3:
     best_model_paths_dict = {
