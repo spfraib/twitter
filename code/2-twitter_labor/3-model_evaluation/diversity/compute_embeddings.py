@@ -164,3 +164,5 @@ if __name__ == '__main__':
             logger.info('Converted tweets to embeddings')
             torch.save(embeddings, embeddings_path)
             logger.info(f'Saved at {embeddings_path}')
+        else:
+            logger.info('Embeddings already exist')
