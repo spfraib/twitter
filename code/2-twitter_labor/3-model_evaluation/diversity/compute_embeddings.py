@@ -114,7 +114,7 @@ if __name__ == '__main__':
         'is_unemployed': 10000,
         'job_offer': 800000,
         'job_search': 250000,
-        'lost_job_1mo': 1000}
+        'lost_job_1mo': 2000}
     if len(selected_combinations) == 1:
         combination = selected_combinations[0]
         inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
