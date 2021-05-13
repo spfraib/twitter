@@ -87,11 +87,11 @@ if __name__ == '__main__':
             5: 'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation'
         }}
     # Define and select combination
-    labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
-    combinations_list = list(itertools.product(
-        *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
-    combinations_list = [combination for combination in combinations_list if
-                         combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
+    # labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
+    # combinations_list = list(itertools.product(
+    #     *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
+    # combinations_list = [combination for combination in combinations_list if
+    #                      combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
     # combinations_list = combinations_list + [('adaptive', 1, 'job_offer'), ('adaptive', 2, 'job_offer'),
     #                      ('adaptive', 2, 'is_hired_1mo'), ('adaptive', 2, 'job_search'),
     #                      ('adaptive', 3, 'is_hired_1mo'), ('adaptive', 4, 'job_search'),
@@ -103,9 +103,10 @@ if __name__ == '__main__':
     #                      ('uncertainty', 2, 'is_hired_1mo'),
     #                      ]
     # combinations_list = list(set(combinations_list)))
-    selected_combinations = list(np.array_split(
-        combinations_list,
-        SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+    # selected_combinations = list(np.array_split(
+    #     combinations_list,
+    #     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+    selected_combinations = [('exploit_explore_retrieval', 5, 'lost_job_1mo')]
     logger.info(f'Selected combinations: {selected_combinations}')
 
     results_dict = dict()
