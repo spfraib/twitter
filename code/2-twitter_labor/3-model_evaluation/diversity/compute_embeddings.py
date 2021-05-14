@@ -57,9 +57,9 @@ if __name__ == '__main__':
     # define paths
     data_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
     random_path = f'{data_path}/random_samples/random_samples_splitted'
-    random_path_new_samples = Path(os.path.join(random_path, args.country_code, 'evaluation'))
+    random_path_evaluation = Path(os.path.join(random_path, args.country_code, 'evaluation'))
 
-    inference_folder_dict = {
+    inference_folder_dict = { 'US': {
         'exploit_explore_retrieval': {
             0: 'iter_0-convbert-969622-evaluation',
             1: 'iter_1-convbert-3050798-evaluation',
@@ -85,13 +85,27 @@ if __name__ == '__main__':
             3: 'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation',
             4: 'iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation',
             5: 'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation'
-        }}
+        }},
+        'MX': {'exploit_explore_retrieval' : {0: 'iter_0-beto-3201262-evaluation',
+                                              1: 'iter_1-beto-3741011-evaluation',
+                                              2: 'iter_2-beto-4141605-evaluation',
+                                              3: 'iter_3-beto-4379208-evaluation',
+                                              4: 'iter_4-beto-4608158-evaluation'}},
+        'BR': {'exploit_explore_retrieval': {0: 'iter_0-bertimbau-2877651-evaluation',
+                                             1: 'iter_1-bertimbau-3774133-evaluation',
+                                             2: 'iter_2-bertimbau-4180985-evaluation',
+                                             3: 'iter_3-bertimbau-4518774-evaluation',
+                                             4: 'iter_4-bertimbau-4688729-evaluation'}}}
     # Define and select combination
-    # labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
-    # combinations_list = list(itertools.product(
-    #     *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
-    # combinations_list = [combination for combination in combinations_list if
-    #                      combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
+    labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
+    if args.country_code == 'US':
+        combinations_list = list(itertools.product(
+            *[['exploit_explore_retrieval', 'adaptive', 'uncertainty', 'uncertainty_uncalibrated'], range(6), labels]))
+        combinations_list = [combination for combination in combinations_list if
+                             combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
+    else:
+        combinations_list = list(itertools.product(
+            *[['exploit_explore_retrieval'], range(5), labels]))
     # combinations_list = combinations_list + [('adaptive', 1, 'job_offer'), ('adaptive', 2, 'job_offer'),
     #                      ('adaptive', 2, 'is_hired_1mo'), ('adaptive', 2, 'job_search'),
     #                      ('adaptive', 3, 'is_hired_1mo'), ('adaptive', 4, 'job_search'),
@@ -103,22 +117,22 @@ if __name__ == '__main__':
     #                      ('uncertainty', 2, 'is_hired_1mo'),
     #                      ]
     # combinations_list = list(set(combinations_list)))
-    # selected_combinations = list(np.array_split(
-    #     combinations_list,
-    #     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-    selected_combinations = [('exploit_explore_retrieval', 5, 'lost_job_1mo')]
+    selected_combinations = list(np.array_split(
+        combinations_list,
+        SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+    # selected_combinations = [('exploit_explore_retrieval', 5, 'lost_job_1mo')]
     logger.info(f'Selected combinations: {selected_combinations}')
 
     results_dict = dict()
     rank_dict = {
         'is_hired_1mo': 50000,
-        'is_unemployed': 10000,
+        'is_unemployed': 50000,
         'job_offer': 800000,
         'job_search': 250000,
-        'lost_job_1mo': 2000}
+        'lost_job_1mo': 10000}
     if len(selected_combinations) == 1:
         combination = selected_combinations[0]
-        inference_folder = inference_folder_dict[combination[0]][int(combination[1])]
+        inference_folder = inference_folder_dict[args.country_code][combination[0]][int(combination[1])]
         al_method = combination[0]
         iter_nb = int(combination[1])
         label = combination[2]
@@ -138,12 +152,16 @@ if __name__ == '__main__':
         diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
 
         # if embeddings don't exist, load text
-        embeddings_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/US/diversity/embeddings_bis/embeddings_{al_method}_iter{iter_nb}_{label}.pt'
+        embeddings_folder= f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/evaluation_metrics/{args.country_code}/diversity/embeddings_bis'
+        if not os.path.exists(embeddings_folder):
+            os.makedirs(embeddings_folder)
+
+        embeddings_path = os.path.join(embeddings_folder, f'embeddings_{al_method}_iter{iter_nb}_{label}.pt')
         if not os.path.exists(embeddings_path):
             # load random set
             random_df = pd.concat(
                 pd.read_parquet(parquet_file)
-                for parquet_file in random_path_new_samples.glob('*.parquet')
+                for parquet_file in random_path_evaluation.glob('*.parquet')
             )
             logger.info('Loaded random data')
 
