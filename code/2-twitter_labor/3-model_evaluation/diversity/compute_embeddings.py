@@ -20,8 +20,7 @@ logger = logging.getLogger(__name__)
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--country_code", type=str,
-                        default="US")
+    parser.add_argument("--country_code", type=str)
     parser.add_argument("--selection_method", type=str, default='threshold_calibrated')
     parser.add_argument("--threshold", type=float,
                         default=0.95)
