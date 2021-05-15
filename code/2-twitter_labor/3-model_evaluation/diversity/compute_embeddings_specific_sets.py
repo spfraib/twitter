@@ -59,7 +59,7 @@ if __name__ == '__main__':
     combinations_list = list(itertools.product(
         *[['MX', 'BR'], labels]))
     selected_combinations = list(np.array_split(
-        labels,
+        combinations_list,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     # selected_combinations = [('exploit_explore_retrieval', 5, 'lost_job_1mo')]
     logger.info(f'Selected combinations: {selected_combinations}')
