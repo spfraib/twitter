@@ -84,7 +84,7 @@ if __name__ == '__main__':
             device = 'cuda'
         else:
             device = 'cpu'
-        diversity_model = SentenceTransformer(diversity_model_dict[args.country_code], device=device)
+        diversity_model = SentenceTransformer(diversity_model_dict[country_code], device=device)
 
         # if embeddings don't exist, load text
         embeddings_folder= f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/keyword_model/sample_diversity/{country_code}/embeddings'
