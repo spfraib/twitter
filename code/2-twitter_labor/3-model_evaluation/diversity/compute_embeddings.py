@@ -58,43 +58,48 @@ if __name__ == '__main__':
     random_path = f'{data_path}/random_samples/random_samples_splitted'
     random_path_evaluation = Path(os.path.join(random_path, args.country_code, 'evaluation'))
 
-    inference_folder_dict = { 'US': {
-        'exploit_explore_retrieval': {
-            0: 'iter_0-convbert-969622-evaluation',
-            1: 'iter_1-convbert-3050798-evaluation',
-            2: 'iter_2-convbert-3134867-evaluation',
-            3: 'iter_3-convbert-3174249-evaluation',
-            4: 'iter_4-convbert-3297962-evaluation',
-            5: 'iter_5-convbert-6746181-evaluation'},
-        'adaptive': {
-            1: 'iter_1-convbert_adaptive-5612019-evaluation',
-            2: 'iter_2-convbert_adaptive-5972342-evaluation',
-            3: 'iter_3-convbert_adaptive-5998181-evaluation',
-            4: 'iter_4-convbert_adaptive-6057405-evaluation',
-            5: 'iter_5-convbert_adaptive-6742239-evaluation'},
-        'uncertainty': {
-            1: 'iter_1-convbert_uncertainty-6200469-evaluation',
-            2: 'iter_2-convbert_uncertainty-6253253-evaluation',
-            3: 'iter_3-convbert_uncertainty-6318280-evaluation',
-            4: 'iter_4-convbert_uncertainty-6423646-evaluation',
-            5: 'iter_5-convbert_uncertainty-6737138-evaluation'},
-        'uncertainty_uncalibrated': {
-            1: 'iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
-            2: 'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
-            3: 'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation',
-            4: 'iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation',
-            5: 'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation'
-        }},
-        'MX': {'exploit_explore_retrieval' : {0: 'iter_0-beto-3201262-evaluation',
-                                              1: 'iter_1-beto-3741011-evaluation',
-                                              2: 'iter_2-beto-4141605-evaluation',
-                                              3: 'iter_3-beto-4379208-evaluation',
-                                              4: 'iter_4-beto-4608158-evaluation'}},
-        'BR': {'exploit_explore_retrieval': {0: 'iter_0-bertimbau-2877651-evaluation',
-                                             1: 'iter_1-bertimbau-3774133-evaluation',
-                                             2: 'iter_2-bertimbau-4180985-evaluation',
-                                             3: 'iter_3-bertimbau-4518774-evaluation',
-                                             4: 'iter_4-bertimbau-4688729-evaluation'}}}
+    inference_folder_dict = {
+        'US': {
+            'exploit_explore_retrieval': {
+                0: 'iter_0-convbert-969622-evaluation',
+                1: 'iter_1-convbert-3050798-evaluation',
+                2: 'iter_2-convbert-3134867-evaluation',
+                3: 'iter_3-convbert-3174249-evaluation',
+                4: 'iter_4-convbert-3297962-evaluation',
+                5: 'iter_5-convbert-6746181-evaluation'},
+            'adaptive': {
+                1: 'iter_1-convbert_adaptive-5612019-evaluation',
+                2: 'iter_2-convbert_adaptive-5972342-evaluation',
+                3: 'iter_3-convbert_adaptive-5998181-evaluation',
+                4: 'iter_4-convbert_adaptive-6057405-evaluation',
+                5: 'iter_5-convbert_adaptive-6742239-evaluation'},
+            'uncertainty': {
+                1: 'iter_1-convbert_uncertainty-6200469-evaluation',
+                2: 'iter_2-convbert_uncertainty-6253253-evaluation',
+                3: 'iter_3-convbert_uncertainty-6318280-evaluation',
+                4: 'iter_4-convbert_uncertainty-6423646-evaluation',
+                5: 'iter_5-convbert_uncertainty-6737138-evaluation'},
+            'uncertainty_uncalibrated': {
+                1: 'iter_1-convbert_uncertainty_uncalibrated-6480837-evaluation',
+                2: 'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
+                3: 'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation',
+                4: 'iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation',
+                5: 'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation'
+            }},
+        'MX': {
+            'exploit_explore_retrieval': {
+                0: 'iter_0-beto-3201262-evaluation',
+                1: 'iter_1-beto-3741011-evaluation',
+                2: 'iter_2-beto-4141605-evaluation',
+                3: 'iter_3-beto-4379208-evaluation',
+                4: 'iter_4-beto-4608158-evaluation'}},
+        'BR': {
+            'exploit_explore_retrieval': {
+                0: 'iter_0-bertimbau-2877651-evaluation',
+                1: 'iter_1-bertimbau-3774133-evaluation',
+                2: 'iter_2-bertimbau-4180985-evaluation',
+                3: 'iter_3-bertimbau-4518774-evaluation',
+                4: 'iter_4-bertimbau-4688729-evaluation'}}}
     # Define and select combination
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
     if args.country_code == 'US':
