@@ -1,15 +1,14 @@
 #!/bin/bash
 
-#SBATCH --job-name=compute_embeddings_specific
+#SBATCH --job-name=compute_embeddings_boris
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=60GB
 #SBATCH --time=24:00:00
-#SBATCH --gres=gpu:1
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_compute_embeddings_specific_%j.out
+#SBATCH --output=slurm_compute_embeddings_boris_%j.out
 
 COUNTRY_CODE=$1
 
