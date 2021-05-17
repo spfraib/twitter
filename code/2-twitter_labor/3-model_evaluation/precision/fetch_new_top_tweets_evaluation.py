@@ -46,9 +46,13 @@ if __name__ == '__main__':
     #                      'iter_2-convbert_uncertainty_uncalibrated-6578026-evaluation',
     #                      'iter_3-convbert_uncertainty_uncalibrated-6596620-evaluation']
     # model_folder_list = ['iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation']
-    model_folder_list = ['iter_5-convbert-6746181-evaluation', 'iter_5-convbert_adaptive-6742239-evaluation',
-                         'iter_5-convbert_uncertainty-6737138-evaluation',
-                         'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation']
+    model_folder_dict = {'MX': ['iter_0-beto-3201262-evaluation', 'iter_1-beto-3741011-evaluation',
+                         'iter_2-beto-4141605-evaluation',
+                         'iter_3-beto-4379208-evaluation', 'iter_4-beto-4608158-evaluation'],
+                        'BR': ['iter_0-bertimbau-2877651-evaluation', 'iter_1-bertimbau-3774133-evaluation',
+                               'iter_2-bertimbau-4180985-evaluation', 'iter_3-bertimbau-4518774-evaluation',
+                               'iter_4-bertimbau-4688729-evaluation']}
+    model_folder_list = model_folder_dict[args.country_code]
     for model_folder in model_folder_list:
         logger.info(f'Folder: {model_folder}')
         path_to_evals = os.path.join(
