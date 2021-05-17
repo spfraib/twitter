@@ -92,14 +92,16 @@ if __name__ == '__main__':
                 1: 'iter_1-beto-3741011-evaluation',
                 2: 'iter_2-beto-4141605-evaluation',
                 3: 'iter_3-beto-4379208-evaluation',
-                4: 'iter_4-beto-4608158-evaluation'}},
+                4: 'iter_4-beto-4608158-evaluation',
+                5: 'iter_5-beto-6886543-evaluation'}},
         'BR': {
             'exploit_explore_retrieval': {
                 0: 'iter_0-bertimbau-2877651-evaluation',
                 1: 'iter_1-bertimbau-3774133-evaluation',
                 2: 'iter_2-bertimbau-4180985-evaluation',
                 3: 'iter_3-bertimbau-4518774-evaluation',
-                4: 'iter_4-bertimbau-4688729-evaluation'}}}
+                4: 'iter_4-bertimbau-4688729-evaluation',
+                5: 'iter_5-bertimbau-6899149-evaluation'}}}
     # Define and select combination
     labels = ['job_search', 'job_offer', 'is_hired_1mo', 'lost_job_1mo', 'is_unemployed']
     if args.country_code == 'US':
@@ -109,7 +111,7 @@ if __name__ == '__main__':
                              combination[:2] not in [('adaptive', 0), ('uncertainty', 0), ('uncertainty_uncalibrated', 0)]]
     else:
         combinations_list = list(itertools.product(
-            *[['exploit_explore_retrieval'], range(5), labels]))
+            *[['exploit_explore_retrieval'], 5, labels]))
     # combinations_list = combinations_list + [('adaptive', 1, 'job_offer'), ('adaptive', 2, 'job_offer'),
     #                      ('adaptive', 2, 'is_hired_1mo'), ('adaptive', 2, 'job_search'),
     #                      ('adaptive', 3, 'is_hired_1mo'), ('adaptive', 4, 'job_search'),
