@@ -1,21 +1,23 @@
-import pandas as pd
-import pyarrow.parquet as pq
+# +
+import pprint
+import uuid
+import tarfile
+import tempfile
 import os
 import json
-from resize_images import resize_img
 import argparse
-from glob import glob
-import multiprocessing as mp
-from m3inference import M3Inference
-import pprint
+
+import pandas as pd
+import pyarrow.parquet as pq
 import numpy as np
+import multiprocessing as mp
 
-languages = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
-user_data_dir = "/scratch/spf248/twitter/data/users/decahose/users_profile/"
+from glob import glob
+from m3inference import M3Inference
 
+# -
 
 def get_env_var(varname,default):
-    
     if os.environ.get(varname) != None:
         var = int(os.environ.get(varname))
         print(varname,':', var)
@@ -26,61 +28,51 @@ def get_env_var(varname,default):
 
 
 # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID',0)
-SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID',0)
-SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT',1)
-SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE',mp.cpu_count())
+SLURM_JOB_ID            = get_env_var('SLURM_JOB_ID', 0)
+SLURM_ARRAY_TASK_ID     = get_env_var('SLURM_ARRAY_TASK_ID', 0)
+SLURM_ARRAY_TASK_COUNT  = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
+SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
 
+# +
 # Add arguments
+languages = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
+
 parser = argparse.ArgumentParser("Run demographic inference using M3 package")
-parser.add_argument("--images_dir", type = str, help = "Directory containing images for users in the target country", default = "/scratch/spf248/twitter/data/classification/US/profile_pictures_sam/")
-parser.add_argument("--resized_images_dir", type = str, help = "where to store resized images for users in the target country", default = "/scratch/spf248/twitter/data/classification/US/profile_pictures_resized_random/")
-parser.add_argument("--output_dir", type = str, help = "where to save the inference results", default = "/scratch/spf248/twitter/data/classification/US/inference_results")
+
+parser.add_argument("--user_data_dir", type = str, 
+                    default = "/scratch/spf248/twitter/data/user_timeline/user_timeline_crawled/US/",
+                    help = "where to store resized images for users in the target country")
+
+parser.add_argument("--resized_images_dir", type = str, 
+                    default = "/scratch/spf248/joao/data/profile_pictures/resized_tars/US/",
+                    help = "where to store resized images for users in the target country")
+
+parser.add_argument("--output_dir", type = str, 
+                    default = "/scratch/spf248/joao/data/inference_results/US/",
+                    help = "where to save the inference results")
+
 parser.add_argument("--country", help = "Name of the country: Enter US or MX or BR", default = "US")
 
 
+# +
 # Parse Arguments
 args = parser.parse_args()
-images_dir = args.images_dir
 resized_images_dir = args.resized_images_dir
 country = args.country
 output_dir = args.output_dir
+user_data_dir = args.user_data_dir
 
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-
-result_file = open(os.path.join(output_dir,f"inference_{SLURM_ARRAY_TASK_ID}"),'w')
-
-dirs = os.listdir(images_dir)
-
-user_image_mapping = {}
-
-for d in dirs:
-    path = os.path.join(images_dir,d)
-    files = os.listdir(path)
-    for f in files:
-        temp = f.split('.')
-        if len(temp) == 2:
-            user_image_mapping[temp[0]] = os.path.join(path,f)
-    
-
-def get_local_path(row):
-    user = row['id']
-    if user not in user_image_mapping:
-        return "UNAVAILABLE"
-    else:
-        orig_path = user_image_mapping[user]
-        image_name = orig_path.split("/")[-1]
-        resized_path = os.path.join(resized_images_dir,image_name)
-        resize_img(orig_path,resized_path)
-        return resized_path
+#args = parser.parse_args(args=[])
+#resized_images_dir = "../serverdata/profile_pictures/resized_tars/BR/"
+#country = "BR"
+#output_dir = "../serverdata/inference_results/BR/"
+#user_data_dir = "../serverdata/user_timeline_crawled/BR/"
 
 
-
+# +
 def set_lang(row):
-	return languages[country]
-
+    return languages[country]
 
 def findMax(pred):
     label = None
@@ -90,29 +82,115 @@ def findMax(pred):
             maxm = val
             label = key
     return label
+
+
+# +
+def get_files_from_tar(tfile):
+    if isinstance(tfile, str):
+        tfile = tarfile.open(tfile, 'r', ignore_zeros=True)
+    return tfile.getnames()
+
+def get_id_from_filename(filename):
+    base = os.path.basename(filename)
+    return os.path.splitext(base)[0]
+
+
+# -
+
+def generate_user_image_map(images_dir):
+    user_image_mapping = {}
+    for d in os.listdir(images_dir):
+        tarf = os.path.join(images_dir, d)
+        files = get_files_from_tar(tarf)
+        
+        for f in files:
+            uid = get_id_from_filename(f)
+            user_image_mapping[uid] = (tarf, f)
+            # saves <id>: (path_to_tar, file_member)
+            # Example: '1182331536': ('../resized_tars/BR/118.tar', '1182331536.jpeg'),
+            
+    return user_image_mapping
+
+
+
+def get_local_path(row, tmpdir, user_image_mapping):
+    user = row['id']
+    if user not in user_image_mapping:
+        return np.nan
+    else:
+        
+        tfilename, tmember = user_image_mapping[user]
+        tmpd = tempfile.TemporaryDirectory()
+        with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
+            tarf.extract(tmember, path=tmpdir)
+            
+        return os.path.join(tmpdir, tmember)
+
+
+# +
+# Load previous inferences, if they exist
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
     
-parquet_path = list(np.array_split(glob(os.path.join(user_data_dir,'*.parquet')),SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-df = pq.read_table(source=parquet_path).to_pandas()
+files_on_output = glob(os.path.join(output_dir, "*"))
 
-df = df.rename(columns={'id_str': 'id', 'profile_image_url_https': 'img_path'})
-df = df[['id','name','screen_name','description','lang','img_path']]
-df['img_path'] = df.apply(get_local_path,axis=1)
+if len(files_on_output) > 0:
+    previous_result = pd.concat([pd.read_csv(f) for f in files_on_output if f.endswith(".csv.gz")])
+    known_ids = set(map(str, previous_result["user"].unique()))
+    print("A total of %d ids were already known." % (len(known_ids))) 
+else:
+    known_ids = set([])
+# -
 
-df_filtered = df[df['img_path']!="UNAVAILABLE"]
-df_filtered['lang']= df_filtered.apply(set_lang,axis=1)
-df_json = json.loads(df_filtered.to_json(orient = 'records'))
+user_image_mapping = generate_user_image_map(resized_images_dir)
 
+# +
+selected_parquets = list(np.array_split(glob(os.path.join(user_data_dir,'*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 
-# Run inference
-m3 = M3Inference() # see docstring for details
-predictions = m3.infer(df_json) # also see docstring for details
+if len(selected_parquets) == 0:
+    print("ERROR: NO PARQUETS WERE FOUND!")
 
-for item in predictions.items():
-    user, pred = item
-    gender = findMax(pred['gender'])
-    age = findMax(pred['age'])
-    org = findMax(pred['org'])
-    res = f"{user}\t{gender}\t{age}\t{org}"
-    result_file.write(res)
+print("Reading %d parquets" % (len(selected_parquets)))
 
-result_file.close()
+df = pq.read_table(source=selected_parquets).to_pandas()
+
+# Remove uids that we had already calculated before
+df = df[~df["user_id"].isin(known_ids)]
+
+# +
+df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
+df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
+df['lang']= df.apply(set_lang,axis=1)
+
+for (ichunk, chunk) in enumerate(np.array_split(df, 100)):
+    
+    if chunk.shape[0] == 0:
+        continue
+    
+    with tempfile.TemporaryDirectory() as tmpd:
+        chunk['img_path'] = chunk.apply(lambda x: get_local_path(x, tmpd, user_image_mapping), axis=1)
+        chunk = chunk.dropna()
+
+        if chunk.shape[0] == 0:
+            continue
+
+        df_json = json.loads(chunk.to_json(orient = 'records'))
+        print("Procesing chunk %d -- another %d users" % (ichunk, len(df_json)))
+
+        # Run inference
+        m3 = M3Inference() # see docstring for details
+        predictions = m3.infer(df_json) # also see docstring for details
+# -
+
+        if predictions:
+            result_file = os.path.join(output_dir, "processed_%s.csv.gz" % str(uuid.uuid4()))
+
+            rows = []
+            for item in predictions.items():
+                user, pred = item
+                row = {"user": user, "gender": findMax(pred['gender']), 
+                       "age": findMax(pred['age']), "org": findMax(pred['org'])}
+                rows.append(row)   
+
+            pd.DataFrame(rows).to_csv(result_file, index=False)
+print("Process completed!")
