@@ -121,6 +121,13 @@ if args.method == 0:
                 'job_offer': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886437_seed-6',
                 'job_search': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886436_seed-5'
             },
+            'iter6': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053031_seed-4',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053036_seed-9',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053029_seed-2',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053030_seed-3',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053034_seed-7'
+            },
         },
         'MX': {
             'iter0': {
