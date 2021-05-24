@@ -310,6 +310,13 @@ if args.method == 0:
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886421_seed-5',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886423_seed-7'
             },
+            'iter6': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may24_iter6_7100993_seed-14',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may24_iter6_7100986_seed-7',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may24_iter6_7100985_seed-6',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may24_iter6_7100992_seed-13',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may24_iter6_7100990_seed-11'
+            },
         }
     }
 
