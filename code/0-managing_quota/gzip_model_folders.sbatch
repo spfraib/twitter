@@ -12,8 +12,6 @@
 #SBATCH --output=slurm_zip_%j.out
 
 cd /scratch/mt4493/twitter_labor/trained_models
+tar --use-compress-program="pigz -k " -cf MX.tar.gz MX
 
-tar -zcvf MX_old_models.tar.gz MX
-
-tar -zcvf BR_old_models.tar.gz BR
 
