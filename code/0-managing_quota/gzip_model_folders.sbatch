@@ -11,7 +11,8 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_zip_%j.out
 
+COUNTRY_CODE = $1
 cd /scratch/mt4493/twitter_labor/trained_models
-tar --use-compress-program="pigz -k " -cf MX.tar.gz MX
+tar --use-compress-program="pigz -k " -cf ${COUNTRY_CODE}.tar.gz ${COUNTRY_CODE}
 
 
