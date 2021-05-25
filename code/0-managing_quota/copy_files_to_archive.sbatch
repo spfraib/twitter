@@ -13,7 +13,7 @@
 
 COUNTRY_CODE=$1
 
-cd /archive/mt4493
+cd /scratch/mt4493/twitter_labor/trained_models/
 
-cp -r /scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE} trained_models
+cp -r ${COUNTRY_CODE} /archive/mt4493/trained_models
 
