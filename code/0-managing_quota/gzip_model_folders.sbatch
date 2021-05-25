@@ -14,6 +14,6 @@
 COUNTRY_CODE=$1
 
 cd /scratch/mt4493/twitter_labor/trained_models
-tar --use-compress-program="pigz -k " -cf ${COUNTRY_CODE}.tar.gz ${COUNTRY_CODE}
+tar --use-compress-program="pigz -k " -cf ${COUNTRY_CODE}_old.tar.gz ${COUNTRY_CODE}_old
 
 
