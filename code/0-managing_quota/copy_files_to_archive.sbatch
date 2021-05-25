@@ -11,7 +11,9 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_copy_archive_%j.out
 
+COUNTRY_CODE=$1
+
 cd /archive/mt4493
 
-cp -r /scratch/mt4493/twitter_labor/trained_models/MX trained_models
+cp -r /scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE} trained_models
 
