@@ -9,10 +9,12 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-MODEL_FOLDER=$1
+COUNTRY_CODE=$1
+ITER=$2
+METHOD=$3
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 
 source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
@@ -20,6 +22,9 @@ echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
-python3 onnx_model_conversion.py /scratch/mt4493/twitter_labor/trained_models/${MODEL_FOLDER}/{}/models/best_model
+python3 onnx_model_conversion.py \
+--iteration_number ${ITER} \
+--country_code ${COUNTRY_CODE} \
+--method ${METHOD}
 
 exit

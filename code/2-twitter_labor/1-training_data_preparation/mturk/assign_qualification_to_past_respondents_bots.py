@@ -20,6 +20,7 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Country code",
                         default="US")
+    parser.add_argument("--iteration_number", type=str)
     args = parser.parse_args()
     return args
 
@@ -45,9 +46,8 @@ if __name__ == '__main__':
     dataCenter = "nyu.ca1"
     fileFormat = "csv"
 
-    survey_folder_path_list = glob(os.path.join(path_to_data, country_code, 'labeling', '*'))
-    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if
-                               'labels.pkl' not in survey_folder_path]
+    survey_folder_path_list = glob(os.path.join(path_to_data, country_code, f'iter{args.iteration_number}', 'labeling', '*'))
+    survey_folder_path_list = [survey_folder_path for survey_folder_path in survey_folder_path_list if not any(l in survey_folder_path for l in ['labels.pkl', 'labels.parquet']) ]
     print(survey_folder_path_list)
 
     worker_id_list = list()

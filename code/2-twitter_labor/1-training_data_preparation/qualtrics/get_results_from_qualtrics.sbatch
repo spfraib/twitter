@@ -15,9 +15,10 @@ COUNTRY_CODE=$1
 SURVEY_ID=$2
 REJECT_BOTS=$3
 HITID=$4
+ITERATION_NB=$5
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 
 source /scratch/mt4493/twitter_labor/code/envs/inference_env/bin/activate
 
@@ -29,12 +30,15 @@ python3 qualtrics/get_results_from_qualtrics.py \
 --surveyId ${SURVEY_ID} \
 --reject_bots ${REJECT_BOTS} \
 --HITId ${HITID} \
+--iteration_number ${ITERATION_NB}
 
 
 echo '******** Merging results from Qualtrics ********'
 python3 qualtrics/merge-all-qualtrics-results.py \
---country_code ${COUNTRY_CODE}
+--country_code ${COUNTRY_CODE} \
+--iteration_number ${ITERATION_NB}
 
 echo '******** Assigning qualification to past respondents ********'
 python3 mturk/assign_qualification_to_past_respondents_bots.py \
---country_code ${COUNTRY_CODE}
+--country_code ${COUNTRY_CODE} \
+--iteration_number ${ITERATION_NB}

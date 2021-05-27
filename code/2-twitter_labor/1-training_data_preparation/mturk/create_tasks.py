@@ -64,7 +64,7 @@ money_per_tweet_dict = {
     'MX': 0.1
 }
 
-money_for_hit = money_per_tweet_dict[args.country_code] * ntweets
+money_for_hit = int(money_per_tweet_dict[args.country_code] * ntweets)
 
 keys_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data/keys/mturk'
 with open(os.path.join(keys_path, 'access_key_id.txt'), 'r') as f:
@@ -152,7 +152,7 @@ print("QUESTION:", question)
 if args.country_code == 'MX':
     QualificationRequirements_list = [
         {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'QualificationTypeId': '3RDXJZR9A1H33MQ79TZZWYBXX8WCYD',
             'Comparator': 'DoesNotExist',
             'RequiredToPreview': True,
             'ActionsGuarded': 'PreviewAndAccept'
@@ -230,7 +230,8 @@ else:
             'ActionsGuarded': 'PreviewAndAccept'
         },
         {
-            'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            #'QualificationTypeId': '3YLTB9JB8TED72KIAHT6K4NASKY63F',
+            'QualificationTypeId': '3RDXJZR9A1H33MQ79TZZWYBXX8WCYD',
             'Comparator': 'DoesNotExist',
             'RequiredToPreview': True,
             'ActionsGuarded': 'PreviewAndAccept'

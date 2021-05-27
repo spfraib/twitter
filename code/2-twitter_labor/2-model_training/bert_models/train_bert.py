@@ -58,6 +58,7 @@ import numpy as np
 from datetime import datetime
 import time
 import pytz
+import json
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -84,9 +85,12 @@ def get_args_from_command_line():
     parser.add_argument("--output_dir", type=str, help="Define a folder to store the saved models")
     parser.add_argument("--slurm_job_timestamp", type=str, help="Timestamp when job is launched", default="0")
     parser.add_argument("--slurm_job_id", type=str, help="ID of the job that ran training", default="0")
-    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch")
-    parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default="10")
+    parser.add_argument("--intra_epoch_evaluation", type=ParseBoolean, help="Whether to do several evaluations per epoch", default=False)
+    parser.add_argument("--nb_evaluations_per_epoch", type=int, help="Number of evaluation to perform per epoch", default=10)
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
+    parser.add_argument("--segment", type=int, default=0)
+    parser.add_argument("--seed", type=int, default=0)
+
 
     args = parser.parse_args()
     return args
@@ -163,6 +167,10 @@ def copy_folder(src, dst):
             shutil.copy(src, dst)
         else: raise
 
+def read_json(filename: str):
+    with open(filename) as f_in:
+        return json.load(f_in)
+
 if __name__ == "__main__":
     # Define args from command line
     args = get_args_from_command_line()
@@ -173,18 +181,18 @@ if __name__ == "__main__":
     # Import data
     train_df = pd.read_csv(args.train_data_path, lineterminator='\n')
     eval_df = pd.read_csv(args.eval_data_path, lineterminator='\n')
+    text_column = 'text_segment' if args.segment == 1 else 'text'
     if args.holdout_data_path:
         holdout_df = pd.read_csv(args.holdout_data_path, lineterminator='\n')
-        holdout_df = holdout_df[['text', 'class']]
+        holdout_df = holdout_df[[text_column, 'class']]
         holdout_df.columns = ['text', 'labels']
-        verify_data_format(holdout_df)
         verify_data_format(holdout_df)
 
     # Reformat the data
-    train_df = train_df[["text", "class"]]
-    eval_df = eval_df[["text", "class"]]
-    train_df.columns = ['text', 'labels']
-    eval_df.columns = ['text', 'labels']
+    train_df = train_df[['tweet_id', text_column, "class"]]
+    eval_df = eval_df[['tweet_id', text_column, "class"]]
+    train_df.columns = ['tweet_id', 'text', 'labels']
+    eval_df.columns = ['tweet_id', 'text', 'labels']
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
@@ -207,14 +215,15 @@ if __name__ == "__main__":
         use_cuda = False
     # Create a ClassificationModel
     ## Define arguments
+    name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
     classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
                                       'evaluate_during_training_verbose': True,
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
-                                      "early_stopping_patience": 3,
-                                      "early_stopping_delta": 0, "early_stopping_metric": "eval_loss",
-                                      "early_stopping_metric_minimize": True}
+                                      "early_stopping_delta": 0, "early_stopping_metric": "auroc",
+                                      "early_stopping_metric_minimize": False, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" ,
+                                      "manual_seed": args.seed}
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
@@ -262,10 +271,11 @@ if __name__ == "__main__":
             print("The {} folder is copied at {} and the former best_model folder is renamed overall_best_model.".format(best_model_after_first_epoch_path, path_to_store_best_model))
 
     # Load best model (in terms of evaluation loss)
-    best_model = ClassificationModel(args.model_name, path_to_store_best_model)
+    train_args = read_json(filename=os.path.join(path_to_store_best_model, 'model_args.json'))
+    best_model = ClassificationModel(args.model_name, path_to_store_best_model, args=train_args)
 
     # EVALUATION ON EVALUATION SET
-    result, model_outputs, wrong_predictions = best_model.eval_model(eval_df)
+    result, model_outputs, wrong_predictions = best_model.eval_model(eval_df[['text', 'labels']])
     scores = np.array([softmax(element)[1] for element in model_outputs])
     y_pred = np.vectorize(convert_score_to_predictions)(scores)
     # Compute AUC
@@ -287,12 +297,13 @@ if __name__ == "__main__":
                                   'auc': auc_eval
                                   }
     # Save evaluation results on eval set
+    segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
+    seed_str = f'seed-{args.seed}'
     if "/" in args.model_type:
-        args.model_type = args.model_type.replace('/', '_')
-    name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
+        args.model_type = args.model_type.replace('/', '-')
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              '{}_'.format(args.model_type) + str(slurm_job_id),
-                                              name_val_file + '_evaluation.csv')
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{name_val_file}_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
         os.makedirs(os.path.dirname(path_to_store_eval_results))
     pd.DataFrame.from_dict(eval_results_eval_set_dict, orient='index', columns=['value']).to_csv(
@@ -300,10 +311,10 @@ if __name__ == "__main__":
     logging.info(
         "The evaluation on the evaluation set is done. The results were saved at {}".format(path_to_store_eval_results))
     # Save scores
-    eval_df['{}_scores'.format(args.model_type)] = scores
+    eval_df['score'] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                             '{}_'.format(args.model_type) + str(slurm_job_id),
-                                             name_val_file + "_scores.csv")
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{name_val_file}_scores.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
         os.makedirs(os.path.dirname(path_to_store_eval_scores))
     eval_df.to_csv(path_to_store_eval_scores, index=False)
@@ -311,7 +322,7 @@ if __name__ == "__main__":
 
     # EVALUATION ON HOLDOUT SET
     if args.holdout_data_path:
-        result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df)
+        result, model_outputs, wrong_predictions = best_model.eval_model(holdout_df[['tweet_id', 'labels']])
         scores = np.array([softmax(element)[1] for element in model_outputs])
         y_pred = np.vectorize(convert_score_to_predictions)(scores)
         # Compute AUC
@@ -334,8 +345,8 @@ if __name__ == "__main__":
         # Save evaluation results on holdout set
         name_holdout_file = os.path.splitext(os.path.basename(args.holdout_data_path))[0]
         path_to_store_holdout_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                                     '{}_'.format(args.model_type) + str(slurm_job_id),
-                                                     name_holdout_file + '_evaluation.csv')
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{name_holdout_file}_evaluation.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_results)):
             os.makedirs(os.path.dirname(path_to_store_holdout_results))
         pd.DataFrame.from_dict(eval_results_holdout_set_dict, orient='index', columns=['value']).to_csv(
@@ -346,8 +357,8 @@ if __name__ == "__main__":
         # Save scores
         holdout_df['{}_scores'.format(args.model_type)] = scores
         path_to_store_holdout_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                                    '{}_'.format(args.model_type) + str(slurm_job_id),
-                                                    name_holdout_file + "_scores.csv")
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{name_holdout_file}_scores.csv')
         if not os.path.exists(os.path.dirname(path_to_store_holdout_scores)):
             os.makedirs(os.path.dirname(path_to_store_holdout_scores))
         holdout_df.to_csv(path_to_store_holdout_scores, index=False)

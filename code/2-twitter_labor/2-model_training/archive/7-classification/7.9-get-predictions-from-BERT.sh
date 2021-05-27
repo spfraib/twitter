@@ -43,7 +43,7 @@ module purge
 # and load the module for the software we are using:
 #module load matlab/2016b
 #module load mongodb/3.4.10
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 source ~/mypython/py3.7/bin/activate
 
 # the script will have started running in $HOME, so we need to move into the 

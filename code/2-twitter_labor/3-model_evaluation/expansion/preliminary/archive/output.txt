@@ -1,0 +1,30 @@
+Iteration 0
+We got 191 tweets with 'score > 0.5' out of 1361 for is_unemployed
+We got 14 tweets with 'score > 0.5' out of 1363 for lost_job_1mo
+We got 66 tweets with 'score > 0.5' out of 1365 for job_search
+We got 64 tweets with 'score > 0.5' out of 1365 for is_hired_1mo
+We got 93 tweets with 'score > 0.5' out of 1366 for job_offer
+Iteration 1
+We got 181 tweets with 'score > 0.5' out of 1499 for is_unemployed
+We got 12 tweets with 'score > 0.5' out of 1500 for lost_job_1mo
+We got 70 tweets with 'score > 0.5' out of 1502 for job_search
+We got 77 tweets with 'score > 0.5' out of 1501 for is_hired_1mo
+We got 132 tweets with 'score > 0.5' out of 1502 for job_offer
+Iteration 2
+We got 120 tweets with 'score > 0.5' out of 1610 for is_unemployed
+We got 12 tweets with 'score > 0.5' out of 1613 for lost_job_1mo
+We got 73 tweets with 'score > 0.5' out of 1617 for job_search
+We got 68 tweets with 'score > 0.5' out of 1615 for is_hired_1mo
+We got 162 tweets with 'score > 0.5' out of 1617 for job_offer
+Iteration 3
+We got 157 tweets with 'score > 0.5' out of 1775 for is_unemployed
+We got 14 tweets with 'score > 0.5' out of 1779 for lost_job_1mo
+We got 80 tweets with 'score > 0.5' out of 1782 for job_search
+We got 76 tweets with 'score > 0.5' out of 1782 for is_hired_1mo
+We got 186 tweets with 'score > 0.5' out of 1785 for job_offer
+Iteration 4
+We got 190 tweets with 'score > 0.5' out of 1910 for is_unemployed
+We got 16 tweets with 'score > 0.5' out of 1914 for lost_job_1mo
+We got 131 tweets with 'score > 0.5' out of 1919 for job_search
+We got 50 tweets with 'score > 0.5' out of 1918 for is_hired_1mo
+We got 184 tweets with 'score > 0.5' out of 1920 for job_offer

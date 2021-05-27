@@ -22,8 +22,10 @@ def get_args_from_command_line():
     parser.add_argument("--surveyId", type=str)
     parser.add_argument("--reject_bots", type=int, default=0)
     parser.add_argument("--HITId", type=str, default=None)
-    parser.add_argument("--sam_API", type=str, default=0)
+    parser.add_argument("--sam_API", type=int)
     parser.add_argument("--discard_x", type=int, default=3)
+    parser.add_argument("--iteration_number", type=str)
+
     args = parser.parse_args()
     return args
 
@@ -81,7 +83,7 @@ def fill_assignment_worker_ids_dict(assignments_dict, assignment_worker_ids_dict
 
 if __name__ == "__main__":
     args = get_args_from_command_line()
-    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/labeling'
+    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{args.iteration_number}/labeling'
     if args.sam_API == 1:
         with open('/scratch/spf248/twitter/data/keys/qualtrics/apiToken', 'r') as f:
             apiToken = eval(f.readline())
@@ -256,6 +258,15 @@ if __name__ == "__main__":
                                                                              assignment_worker_ids_dict=assignment_worker_ids_dict)
 
         for bot_id in bots:
+            try:
+                mturk.associate_qualification_with_worker(
+                    QualificationTypeId='3RDXJZR9A1H33MQ79TZZWYBXX8WCYD',
+                    WorkerId=bot_id,
+                    IntegerValue=1,
+                    SendNotification=False)
+                print(f'Assigned bot qualification to bot {bot_id}')
+            except:
+                print(f'Failed to assign bot qualification to bot {bot_id}')
             if bot_id in assignment_worker_ids_dict.keys():
                 assignment_id = assignment_worker_ids_dict[bot_id]
                 try:

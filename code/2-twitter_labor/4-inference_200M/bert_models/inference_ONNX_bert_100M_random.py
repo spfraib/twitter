@@ -1,13 +1,6 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-print('running inference_ONNX_bert_100M_random.py')
-
-import sys
 import os
 import torch
 import onnxruntime as ort
-import argparse
 import pandas as pd
 import numpy as np
 import os
@@ -15,19 +8,31 @@ import time
 import torch.nn.functional as F
 import onnx
 import getpass
-
-sys.path.append('/scratch/da2734/twitter/jobs/inference_200M/utils_for_inference')
-from onnxruntime_tools import optimizer
-from transformers import BertConfig, BertTokenizer, BertTokenizerFast, BertForSequenceClassification
-
-print('libs loaded')
-
+from transformers import AutoTokenizer
+import time
+import pyarrow.parquet as pq
+from glob import glob
+import os
+import numpy as np
 import argparse
+import logging
+import socket
+import multiprocessing
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+print('libs loaded')
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--model_path", help="path to pytorch models (with onnx model in model_path/onnx/")
-parser.add_argument("--output_path", help="path where inference csv is saved")
+parser.add_argument("--input_path", type=str, help="path to input data")
+parser.add_argument("--output_path", type=str, help="path where inference csv is saved")
+parser.add_argument("--country_code", type=str, help="path where inference csv is saved")
+parser.add_argument("--iteration_number", type=int)
+parser.add_argument("--method", type=int)
+
 
 args = parser.parse_args()
 
@@ -47,7 +52,7 @@ def get_tokens(tokens_dict, i):
     return tokens
 
 
-def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
+def inference(onnx_model, model_dir, examples):
     quantized_str = ''
     if 'quantized' in onnx_model:
         quantized_str = 'quantized'
@@ -58,12 +63,18 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
     options.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL
     options.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
     options.intra_op_num_threads = 1
+    # options.inter_op_num_threads = multiprocessing.cpu_count()
+
     print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
 
     # pytorch pretrained model and tokenizer
-    tokenizer = BertTokenizerFast.from_pretrained(model_dir)
-    tokenizer_str = "BertTokenizerFast"
+    if 'bertweet' in onnx_model:
+        tokenizer = AutoTokenizer.from_pretrained(model_dir, normalization=True)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_dir)
+
+    tokenizer_str = "TokenizerFast"
 
     print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
         quantized_str, tokenizer_str))
@@ -79,7 +90,7 @@ def inference(onnx_model, model_dir, examples, fast_tokenizer, num_threads):
         """
 
         if i % 100 == 0:
-            print('[inference... ]', i, 'out of ', len(examples))
+            print(f'[inference: {i} out of {str(len(examples))}')
 
         tokens = get_tokens(tokens_dict, i)
         # inference
@@ -122,30 +133,21 @@ def get_env_var(varname, default):
 SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
 SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
 SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
-
+print('Hostname:', socket.gethostname())
 print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
 print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 # ####################################################################################################################################
 # # loading data
 # ####################################################################################################################################
 
-import time
-import pyarrow.parquet as pq
-from glob import glob
-import os
-import numpy as np
-
-path_to_data = '/scratch/spf248/twitter/data/classification/US/'
+path_to_data = args.input_path
 
 print('Load random Tweets:')
 
 start_time = time.time()
 
 paths_to_random = list(np.array_split(
-    glob(os.path.join(path_to_data, 'random', '*.parquet')),
-    #                         glob(os.path.join(path_to_data,'random_first_half','*.parquet')),
-    #                         glob(os.path.join(path_to_data,'random_10perct_sample','*.parquet')),
-    #                         glob(os.path.join(path_to_data,'random_1perct_sample','*.parquet')),
+    glob(os.path.join(path_to_data, '*.parquet')),
     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
 print('#files:', len(paths_to_random))
 
@@ -171,37 +173,296 @@ examples = tweets_random.text.values.tolist()
 
 print('convert to list:', str(time.time() - start_time), 'seconds')
 
-#model_folder_name = os.path.basename(os.path.abspath(os.path.join(args.model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
+if args.method == 0:
+    best_model_folders_dict = {
+        'US': {
+            'iter0': {
+                'lost_job_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928497_SEED_14',
+                'is_hired_1mo': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928488_SEED_5',
+                'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
+                'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
+                'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
+                # 'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
+                # 'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
+                # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+                # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
+                # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
+            },
+            'iter1': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-2',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045493_seed-7',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045500_seed-14',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045501_seed-15'},
+            'iter2': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132744_seed-9',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132736_seed-1',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132748_seed-13',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132740_seed-5',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_feb23_iter2_3132741_seed-6'
+            },
+            'iter3': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb25_iter3_3173734_seed-11',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_feb25_iter3_3173731_seed-8',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_feb25_iter3_3173735_seed-12',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_feb25_iter3_3173725_seed-2',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_feb25_iter3_3173728_seed-5'
+            },
+            'iter4': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297481_seed-7',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297477_seed-3',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297478_seed-4',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297477_seed-3',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_mar1_iter4_3297484_seed-10'
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may26_iter5_7147724_seed-14',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may26_iter5_7147721_seed-11',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may26_iter5_7147712_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may26_iter5_7147715_seed-5',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may26_iter5_7147720_seed-10'
+            },
+        },
+        'BR': {
+            'iter0': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
+            },
+            'iter1': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742972_seed-10',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742970_seed-8',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742966_seed-4'},
+            'iter2': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173786_seed-10',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173783_seed-7',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173787_seed-11',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173785_seed-9',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173784_seed-8'
+            },
+            'iter3': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518525_seed-12',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1'},
+            'iter4': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677938_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1'},
+            'iter5': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886444_seed-13',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886442_seed-11',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886435_seed-4',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886437_seed-6',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886436_seed-5'
+            },
+            'iter6': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053031_seed-4',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053036_seed-9',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053029_seed-2',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053030_seed-3',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053034_seed-7'
+            },
+        },
+        'MX': {
+            'iter0': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
+            },
+            'iter1': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737747_seed-8',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737741_seed-2',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737746_seed-7',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6'},
+            'iter2': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138955_seed-14',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138956_seed-15',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138953_seed-12',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138951_seed-10',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138943_seed-2'},
+            'iter3': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375824_seed-2',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375831_seed-9',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375830_seed-8'},
+            'iter4': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597713_seed-4',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597712_seed-3',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597710_seed-1'},
+            'iter5': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886418_seed-2',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886419_seed-3',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886422_seed-6',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886421_seed-5',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may17_iter5_6886423_seed-7'
+            },
+            'iter6': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125254_seed-7',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125255_seed-8',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125252_seed-5',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4'
+            },
+        }
+    }
+
+elif args.method == 1:
+    best_model_folders_dict = {
+        'US': {
+            'iter1': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598877_seed-5',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598877_seed-5',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598883_seed-11',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598880_seed-8',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr19_iter1_adaptive_5598880_seed-8'},
+            'iter2': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972290_seed-14',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972289_seed-13',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972286_seed-10',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972278_seed-2',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr25_iter2_adaptive_5972280_seed-4'
+            },
+            'iter3': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997887_seed-6',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997886_seed-5',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997886_seed-5',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997890_seed-9',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr26_iter3_adaptive_5997893_seed-12'
+            },
+            'iter4': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026892_seed-10',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026889_seed-7',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026884_seed-2',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr27_iter4_adaptive_6026894_seed-12'
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739858_seed-6',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739863_seed-11',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739854_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739861_seed-9',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_adaptive_6739853_seed-1'
+            }
+        }}
+
+elif args.method == 2:
+    best_model_folders_dict = {
+        'US': {
+            'iter1': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196561_seed-11',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196555_seed-5',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196561_seed-11',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196560_seed-10',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_apr30_iter1_uncertainty_6196553_seed-3'},
+            'iter2': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244850_seed-11',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244843_seed-4',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244841_seed-2',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244840_seed-1',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may1_iter2_uncertainty_6244850_seed-11'
+            },
+            'iter3': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314074_seed-4',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314072_seed-2',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314083_seed-13',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314080_seed-10',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314071_seed-1'
+            },
+            'iter4': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6349919_seed-1',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378411_seed-13',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378403_seed-5',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378407_seed-9',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378409_seed-11'
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711052_seed-2',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711053_seed-3',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711059_seed-9',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711055_seed-5',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may11_iter5_uncertainty_6711054_seed-4'
+            }
+        }}
+
+elif args.method == 3:
+    best_model_folders_dict = {
+        'US': {
+            'iter1': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may6_iter1_uncertainty_uncalibrated_6471039_seed-4',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may6_iter1_uncertainty_uncalibrated_6471042_seed-7',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may6_iter1_uncertainty_uncalibrated_6471047_seed-12',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may6_iter1_uncertainty_uncalibrated_6471036_seed-1',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may6_iter1_uncertainty_uncalibrated_6471048_seed-13'},
+            'iter2': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may7_iter2_uncertainty_uncalibrated_6518196_seed-10',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may7_iter2_uncertainty_uncalibrated_6518200_seed-14',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may7_iter2_uncertainty_uncalibrated_6518187_seed-1',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may7_iter2_uncertainty_uncalibrated_6518197_seed-11',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may7_iter2_uncertainty_uncalibrated_6518187_seed-1'
+            },
+            'iter3': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may8_iter3_uncertainty_uncalibrated_6583469_seed-5',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may8_iter3_uncertainty_uncalibrated_6583465_seed-1',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may8_iter3_uncertainty_uncalibrated_6583472_seed-8',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may8_iter3_uncertainty_uncalibrated_6583478_seed-14',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may8_iter3_uncertainty_uncalibrated_6583472_seed-8'
+            },
+            'iter4': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653463_seed-2',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653473_seed-12',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653473_seed-12',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653464_seed-3',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may10_iter4_uncertainty_uncalibrated_6653472_seed-11'
+            },
+            'iter5': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737085_seed-12',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737082_seed-9',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737074_seed-1',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737077_seed-4',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737086_seed-13'
+            }
+        }}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-
     print('\n\n!!!!!', column)
     loop_start = time.time()
-
-    model_path = args.model_path.format(column)
-    #model_folder_name = os.path.basename(os.path.abspath(os.path.join(model_path, os.path.pardir, os.path.pardir, os.path.pardir)))
+    best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
+    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+    column, 'models', 'best_model')
 
     print(model_path)
-    onnx_path = model_path + '/onnx/'
+    onnx_path = os.path.join(model_path, 'onnx')
     print(onnx_path)
 
     ####################################################################################################################################
-    # TOKENIZATION and INFERENCE 
+    # TOKENIZATION and INFERENCE
     ####################################################################################################################################
     print('Predictions of random Tweets:')
     start_time = time.time()
-    onnx_labels = inference(onnx_path + 'bert_optimized_ONNXquantized.onnx',
-                            model_path,
-                            examples,
-                            fast_tokenizer=True,
-                            num_threads=5)
+    onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+    model_path,
+    examples)
 
     print('time taken:', str(time.time() - start_time), 'seconds')
     print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
 
     ####################################################################################################################################
     # SAVING
-    ####################################################################################################################################        
+    ####################################################################################################################################
     print('Save Predictions of random Tweets:')
     start_time = time.time()
     final_output_path = args.output_path
@@ -217,15 +478,13 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
 
     print(predictions_random_df.head())
     predictions_random_df.to_parquet(
-        os.path.join(final_output_path, column,
-                     str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+    os.path.join(final_output_path, column,
+                 str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
     print('saved to:\n', os.path.join(final_output_path, column,
                                       str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-          'saved')
+    'saved')
 
     print('save time taken:', str(time.time() - start_time), 'seconds')
 
     print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
-
-#     break

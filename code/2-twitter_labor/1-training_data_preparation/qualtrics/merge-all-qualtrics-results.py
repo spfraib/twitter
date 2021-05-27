@@ -16,7 +16,7 @@ def get_args_from_command_line():
     parser.add_argument("--country_code", type=str,
                         help="Country code",
                         default="US")
-
+    parser.add_argument("--iteration_number", type=str)
     args = parser.parse_args()
     return args
 
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     args = get_args_from_command_line()
     # Country Code
     country_code = args.country_code
-    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{country_code}/labeling'
+    path_to_data = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{country_code}/iter{args.iteration_number}/labeling'
 
     print('Path to data:', path_to_data)
     print('Country Code:', country_code)
@@ -66,7 +66,7 @@ if __name__ == "__main__":
         lambda x: x == 5).dropna().index
 
     nb_tweets_to_label_dict = {
-        'US': 2964,
+        'US': 4081,
         'MX': 2783,
         'BR': 2485
     }
@@ -97,11 +97,11 @@ if __name__ == "__main__":
     labels.reset_index(inplace=True)
     labels.columns.name = ''
 
-    labels.to_pickle(os.path.join(path_to_data, 'labels.pkl'))
+    labels.to_parquet(os.path.join(path_to_data, 'labels.parquet'))
 
-    labels.tail()
+    print(labels.tail())
 
-    if args.country_code == 'US':
+    if args.country_code == 'US' and args.iteration_number == "0":
         list_old_survey_ids = ['SV_7aeWaaTnG7NiYOV',
          'SV_8uMuwiJVgsGDPjn',
          'SV_81Z6plk4o7m4k0R',

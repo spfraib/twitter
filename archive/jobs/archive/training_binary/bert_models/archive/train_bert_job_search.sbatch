@@ -18,7 +18,7 @@
 #SBATCH --output=slurm_%j.out
 
 module purge
-module load anaconda3/2019.10
+module load anaconda3/2020.02
 source /scratch/da2734/pyenv_dval_wb_twitter/py3.7/bin/activate
 #module load jupyter-kernels/py2.7
 #module load jupyter-kernels/py3.5
