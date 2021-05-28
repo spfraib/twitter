@@ -50,7 +50,8 @@ mkdir -p ${OUTPUT_LOGS}
 module purge
 module load anaconda3/2020.02
 
-source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate
+#source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate
+source /scratch/spf248/twitter/virtualenvs/mexico_virtualenv/bin/activate
 
 echo "pyenv activated"
 
