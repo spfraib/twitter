@@ -32,8 +32,6 @@ elif [ ${MODE} -eq 2 ]
 then
   INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/test
   OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
-fi
-
 elif [ ${MODE} -eq 3 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
