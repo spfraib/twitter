@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=ONNX
+#SBATCH --job-name=mxinference
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2GB
