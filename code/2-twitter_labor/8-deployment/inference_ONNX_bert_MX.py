@@ -111,6 +111,8 @@ def inference(onnx_model, model_dir, examples):
         total_build_label_time = total_build_label_time + (time.time() - start_build_label)
     #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
+        break #DEBUG
+
     end_onnx_inference_batch = time.time()
     print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
     print("Total inference time (in seconds): ", total_inference_time)
@@ -207,6 +209,7 @@ tweets_random = pd.DataFrame()
 for file in paths_to_random:
     print(file)
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
+    print('filename_without_extension')
 
     tweets_random = pd.concat([tweets_random, pd.read_parquet(file)[['tweet_id', 'text']]])
     print(tweets_random.shape)
@@ -271,7 +274,7 @@ for file in paths_to_random:
         print(predictions_random_df.head())
         predictions_random_df.to_parquet(
         os.path.join(final_output_path, column,
-                     filename_without_extension,
+                     filename_without_extension +
                      str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
         print('saved to:\n', os.path.join(final_output_path, column,
@@ -282,7 +285,7 @@ for file in paths_to_random:
 
         print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
 
-        # break #DEBUG column
+        break #DEBUG column
 
     break #DEBUG parquet file
 
