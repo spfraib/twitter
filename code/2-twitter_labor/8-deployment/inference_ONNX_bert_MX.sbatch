@@ -1,10 +1,10 @@
 #!/bin/bash
 
-#SBATCH --job-name=ONNX
+#SBATCH --job-name=mxinference
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=3GB
-#SBATCH --time=24:00:00
+#SBATCH --mem=2GB
+#SBATCH --time=48:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -32,10 +32,15 @@ elif [ ${MODE} -eq 2 ]
 then
   INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/test
   OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
+elif [ ${MODE} -eq 3 ] # MEXICO inference
+then
+  INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
+  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/bert_inferrred/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
-OUTPUT_LOGS=${OUTPUT_PATH}/logs
+#OUTPUT_LOGS=${OUTPUT_PATH}/logs #DEBUG
+OUTPUT_LOGS=/scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment/
 
 # Create output folders if they don't exist
 mkdir -p ${OUTPUT_MODELS}
@@ -45,11 +50,11 @@ mkdir -p ${OUTPUT_LOGS}
 module purge
 module load anaconda3/2020.02
 
-source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate
+source /scratch/spf248/twitter/virtualenvs/mexico_virtualenv/bin/activate
 
 echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
+cd /scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment
 
 pwd
 
@@ -58,7 +63,10 @@ then
       echo SLURM_ARRAY_TASK_ID=test
 fi
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+#srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/test.log 2>&1
+srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+#e.g.
+#python -u inference_ONNX_bert_MX.py --input_path /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/MX/ --output_path /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX/ --country_code MX --iteration_number 6 --method 0
 echo 'done'
 
 exit
