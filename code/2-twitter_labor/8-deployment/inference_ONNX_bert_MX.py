@@ -282,7 +282,7 @@ for file in paths_to_random:
 
         print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
 
-        break #DEBUG column
+        # break #DEBUG column
 
     break #DEBUG parquet file
 
