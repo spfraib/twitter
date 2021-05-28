@@ -229,59 +229,61 @@ for file in paths_to_random:
 
     print('convert to list:', str(time.time() - start_time), 'seconds')
 
-    for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-        print('\n\n!!!!!', column)
-        loop_start = time.time()
-        best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
-        column, 'models', 'best_model')
-
-        print(model_path)
-        onnx_path = os.path.join(model_path, 'onnx')
-        print(onnx_path)
-
-        ####################################################################################################################################
-        # TOKENIZATION and INFERENCE
-        ####################################################################################################################################
-        print('Predictions of random Tweets:')
-        start_time = time.time()
-        onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-        model_path,
-        examples)
-
-        print('time taken:', str(time.time() - start_time), 'seconds')
-        print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
-
-        ####################################################################################################################################
-        # SAVING
-        ####################################################################################################################################
-        print('Save Predictions of random Tweets:')
-        start_time = time.time()
-        final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
-        if not os.path.exists(os.path.join(final_output_path, column)):
-            print('>>>> directory doesnt exists, creating it')
-            os.makedirs(os.path.join(final_output_path, column))
-        # create dataframe containing tweet id and probabilities
-        predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-        predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-        # reformat dataframe
-        predictions_random_df = predictions_random_df[['second']]
-        predictions_random_df.columns = ['score']
-
-        print(predictions_random_df.head())
-        predictions_random_df.to_parquet(
-        os.path.join(final_output_path, column,
-                     filename_without_extension,
-                     str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
-
-        print('saved to:\n', os.path.join(final_output_path, column,
-                                          str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-        'saved')
-
-        print('save time taken:', str(time.time() - start_time), 'seconds')
-
-        print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
-
-        break #DEBUG column
+    # for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
+    #     print('\n\n!!!!!', column)
+    #     loop_start = time.time()
+    #     best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
+    #     model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+    #     column, 'models', 'best_model')
+    #
+    #     print(model_path)
+    #     onnx_path = os.path.join(model_path, 'onnx')
+    #     print(onnx_path)
+    #
+    #     ####################################################################################################################################
+    #     # TOKENIZATION and INFERENCE
+    #     ####################################################################################################################################
+    #     print('Predictions of random Tweets:')
+    #     start_time = time.time()
+    #     onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+    #     model_path,
+    #     examples)
+    #
+    #     print('time taken:', str(time.time() - start_time), 'seconds')
+    #     print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+    #
+    #     ####################################################################################################################################
+    #     # SAVING
+    #     ####################################################################################################################################
+    #     print('Save Predictions of random Tweets:')
+    #     start_time = time.time()
+    #     final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+    #     if not os.path.exists(os.path.join(final_output_path, column)):
+    #         print('>>>> directory doesnt exists, creating it')
+    #         os.makedirs(os.path.join(final_output_path, column))
+    #     # create dataframe containing tweet id and probabilities
+    #     predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+    #     predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+    #     # reformat dataframe
+    #     predictions_random_df = predictions_random_df[['second']]
+    #     predictions_random_df.columns = ['score']
+    #
+    #     print(predictions_random_df.head())
+    #     predictions_random_df.to_parquet(
+    #     os.path.join(final_output_path, column,
+    #                  filename_without_extension,
+    #                  str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+    #
+    #     print('saved to:\n', os.path.join(final_output_path, column,
+    #                                       str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+    #     'saved')
+    #
+    #     print('save time taken:', str(time.time() - start_time), 'seconds')
+    #
+    #     print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+    #
+    #     break #DEBUG column
 
     break #DEBUG parquet file
+
+print('done')
