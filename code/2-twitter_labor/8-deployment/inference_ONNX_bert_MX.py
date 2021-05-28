@@ -286,6 +286,6 @@ for file in paths_to_random:
 
         # break #DEBUG column
 
-    # break #DEBUG parquet file
+    break #DEBUG parquet file
 
 print('done')
