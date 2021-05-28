@@ -6,10 +6,9 @@
 #SBATCH --mem=3GB
 #SBATCH --time=48:00:00
 #SBATCH --gres=gpu:0
-#SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=nuclearr.d@gmail.com
-#SBATCH --output=slurm_inference_berts_%j.out
+#SBATCH --output=jobarray_mx_inference_%j.out
 
 COUNTRY_CODE=$1
 ITER=$2

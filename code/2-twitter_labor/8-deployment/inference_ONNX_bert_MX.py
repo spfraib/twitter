@@ -111,7 +111,7 @@ def inference(onnx_model, model_dir, examples):
         total_build_label_time = total_build_label_time + (time.time() - start_build_label)
     #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
-        break #DEBUG
+        # break #DEBUG
 
     end_onnx_inference_batch = time.time()
     print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
@@ -220,7 +220,6 @@ for file in paths_to_random:
 
     if args.drop_duplicates:
         print('dropping duplicates:')
-        # random contains 7.3G of data!!
         start_time = time.time()
         tweets_random = tweets_random.drop_duplicates('text')
         print('drop duplicates:', str(time.time() - start_time), 'seconds')
@@ -274,19 +273,19 @@ for file in paths_to_random:
         print(predictions_random_df.head())
         predictions_random_df.to_parquet(
         os.path.join(final_output_path, column,
-                     filename_without_extension +
-                     str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+                     filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
+                     + '.parquet'))
 
         print('saved to:\n', os.path.join(final_output_path, column,
-                                          str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-        'saved')
+                                          filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+                'saved')
 
         print('save time taken:', str(time.time() - start_time), 'seconds')
 
         print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
 
-        break #DEBUG column
+        # break #DEBUG column
 
-    break #DEBUG parquet file
+    # break #DEBUG parquet file
 
 print('done')
