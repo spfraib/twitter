@@ -81,7 +81,11 @@ if __name__ == '__main__':
                 'data_folder': 'may2_iter3_uncertainty'},
             4: {
                 'inference_eval': 'iter_4-convbert_uncertainty-6423646-evaluation',
-                'data_folder': 'may3_iter4_uncertainty'}}
+                'data_folder': 'may3_iter4_uncertainty'},
+            5: {
+                'inference_eval': 'iter_5-convbert_uncertainty-6737138-evaluation',
+                'data_folder': 'may11_iter5_uncertainty'
+            }}
     elif args.calibration == 0:
         folder_dict = {
             0: {
@@ -98,7 +102,12 @@ if __name__ == '__main__':
                 'data_folder': 'may8_iter3_uncertainty_uncalibrated'},
             4: {
                 'inference_eval': 'iter_4-convbert_uncertainty_uncalibrated-6653849-evaluation',
-                'data_folder': 'may10_iter4_uncertainty_uncalibrated'}}
+                'data_folder': 'may10_iter4_uncertainty_uncalibrated'},
+            5: {
+                'inference_eval': 'iter_5-convbert_uncertainty_uncalibrated-6740028-evaluation',
+                'data_folder': 'may12_iter5_uncertainty_uncalibrated'
+            }
+        }
     for iteration_number in range(int(args.iteration_number)):
         logger.info(f'Iteration {iteration_number}')
         random_count = random_df.shape[0]
