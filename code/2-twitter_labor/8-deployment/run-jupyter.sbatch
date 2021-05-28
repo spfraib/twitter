@@ -5,7 +5,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
 #SBATCH --gres=gpu:0
-#SBATCH --time=24:00:00
+#SBATCH --time=4:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=nuclearr.d@gmail.com

@@ -3,8 +3,8 @@
 #SBATCH --job-name=mxinference
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=5GB
-#SBATCH --time=24:00:00
+#SBATCH --mem=2GB
+#SBATCH --time=48:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
