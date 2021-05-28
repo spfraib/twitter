@@ -155,7 +155,7 @@ paths_to_random = list(np.array_split(
                                     glob(os.path.join(path_to_data, '*.parquet')),
                                     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
                        )
-print('#files:', len(paths_to_random))
+print('#files:', len(paths_to_random), paths_to_random)
 
 
 if args.method == 0:
@@ -211,8 +211,10 @@ for file in paths_to_random:
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
     print('filename_without_extension')
 
-    tweets_random = pd.concat([tweets_random, pd.read_parquet(file)[['tweet_id', 'text']]])
+    tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
     print(tweets_random.shape)
+
+    tweets_random = tweets_random.head(10) #DEBUG
 
     print('load random sample:', str(time.time() - start_time), 'seconds')
     print(tweets_random.shape)
