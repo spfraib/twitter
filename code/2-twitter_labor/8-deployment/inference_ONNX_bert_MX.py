@@ -214,7 +214,7 @@ for file in paths_to_random:
     tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
     print(tweets_random.shape)
 
-    tweets_random = tweets_random.head(10) #DEBUG
+    # tweets_random = tweets_random.head(10) #DEBUG
 
     print('load random sample:', str(time.time() - start_time), 'seconds')
     print(tweets_random.shape)
@@ -282,12 +282,14 @@ for file in paths_to_random:
                                           filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
                 'saved')
 
+        print('>>>>> completed', filename_without_extension)
+
         print('save time taken:', str(time.time() - start_time), 'seconds')
 
         print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
 
         # break #DEBUG column
 
-    break #DEBUG parquet file
+    # break #DEBUG parquet file
 
 print('done')
