@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=END
 #SBATCH --mail-user=nuclearr.d@gmail.com
-#SBATCH --output=jobarray_mx_inference_%j.out
+#SBATCH --output=outfiles/jobarray_mx_inference_%j.out
 
 COUNTRY_CODE=$1
 ITER=$2
