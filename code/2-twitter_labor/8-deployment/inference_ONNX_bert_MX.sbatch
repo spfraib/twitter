@@ -54,7 +54,7 @@ source /scratch/mt4493/twitter_labor/code/envs/inference_2021_env/bin/activate
 
 echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
+cd /scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment
 
 pwd
 
