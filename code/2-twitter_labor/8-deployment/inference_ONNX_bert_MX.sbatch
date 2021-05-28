@@ -3,12 +3,12 @@
 #SBATCH --job-name=mxinference
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=2GB
+#SBATCH --mem=3GB
 #SBATCH --time=48:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
-#SBATCH --mail-user=mt4493@nyu.edu
+#SBATCH --mail-user=nuclearr.d@gmail.com
 #SBATCH --output=slurm_inference_berts_%j.out
 
 COUNTRY_CODE=$1
@@ -39,8 +39,8 @@ then
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
-#OUTPUT_LOGS=${OUTPUT_PATH}/logs #DEBUG
-OUTPUT_LOGS=/scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment/
+OUTPUT_LOGS=${OUTPUT_PATH}/logs #DEBUG
+#OUTPUT_LOGS=/scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment/
 
 # Create output folders if they don't exist
 mkdir -p ${OUTPUT_MODELS}
@@ -64,7 +64,7 @@ then
 fi
 echo 'running inference..'
 #srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/test.log 2>&1
-srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}$(date +%s).log 2>&1
 #e.g.
 #python -u inference_ONNX_bert_MX.py --input_path /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/MX/ --output_path /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX/ --country_code MX --iteration_number 6 --method 0
 echo 'done'
