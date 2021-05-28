@@ -3,7 +3,7 @@
 #SBATCH --job-name=ONNX
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=3GB
+#SBATCH --mem=2GB
 #SBATCH --time=24:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=BEGIN
@@ -34,6 +34,12 @@ then
   OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
 fi
 
+elif [ ${MODE} -eq 3 ] # MEXICO inference
+then
+  INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
+  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/bert_inferrred/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}
+fi
+
 OUTPUT_MODELS=${OUTPUT_PATH}/output
 OUTPUT_LOGS=${OUTPUT_PATH}/logs
 
@@ -59,6 +65,8 @@ then
 fi
 echo 'running inference..'
 srun time python -u inference_ONNX_bert_100M_random.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+#e.g.
+#python -u inference_ONNX_bert_MX.py --input_path /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/MX/ --output_path /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX/ --country_code MX --iteration_number 6 --method 0
 echo 'done'
 
 exit
