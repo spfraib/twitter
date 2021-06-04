@@ -278,9 +278,16 @@ for file in paths_to_random:
                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
                      + '.parquet'))
 
-        print('saved to:\n', os.path.join(final_output_path, column,
+        print('saved to:',
+              column,
+              SLURM_ARRAY_TASK_ID,
+              SLURM_JOB_ID,
+              SLURM_ARRAY_TASK_COUNT,
+              filename_without_extension,
+              os.path.join(final_output_path, column,
                                           filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-                'saved')
+              str(time.time() - start_time)
+            )
 
         print('>>>>> completed', filename_without_extension)
 
