@@ -63,8 +63,9 @@ if __name__ == '__main__':
                               1: 'apr19_iter1_adaptive',
                               2: 'apr22_iter2_adaptive',
                               3: 'apr26_iter3_adaptive',
-                            4: 'apr27_iter4_adaptive',
-                            5: 'may12_iter5_adaptive'},
+                              4: 'apr27_iter4_adaptive',
+                              5: 'may12_iter5_adaptive',
+                              6: 'may28_iter6_adaptive'},
                             'MX': {0: 'feb27_iter0', 1: 'mar12_iter1', 2: 'mar23_iter2', 3: 'mar30_iter3'},
                             'BR': {0: 'feb16_iter0', 1: 'mar12_iter1', 2: 'mar24_iter2', 3: 'apr1_iter3'}}
     for iteration_number in range(int(args.iteration_number)):
