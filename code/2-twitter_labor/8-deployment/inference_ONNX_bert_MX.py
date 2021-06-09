@@ -42,6 +42,8 @@ print(args)
 
 DEBUG_MODE = args.debug_mode
 
+global_start = time.time()
+
 ####################################################################################################################################
 # HELPER FUNCTIONS
 ####################################################################################################################################
@@ -293,10 +295,14 @@ for file in paths_to_random:
 
         print('save time taken:', str(time.time() - start_time), 'seconds')
 
-        print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+        print('file loop:', column, filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
+                                                                                                  loop_start) / len(examples))
 
         # break #DEBUG column
 
     # break #DEBUG parquet file
 
-print('done')
+print('full loop:', column, filename_without_extension, str(time.time() - global_start), 'seconds',
+      (time.time() - global_start) / len(examples))
+
+print('>>done')
