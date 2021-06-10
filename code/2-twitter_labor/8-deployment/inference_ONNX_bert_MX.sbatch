@@ -34,7 +34,7 @@ then
 elif [ ${MODE} -eq 3 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
-  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/bert_inferrred/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}
+  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output

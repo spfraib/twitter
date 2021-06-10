@@ -18,6 +18,7 @@ import argparse
 import logging
 import socket
 import multiprocessing
+from functools import reduce
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -208,10 +209,12 @@ if args.method == 0:
 
 tweets_random = pd.DataFrame()
 
+TOTAL_NUM_TWEETS = 0
 for file in paths_to_random:
     print(file)
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
     print('filename_without_extension')
+
 
     tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
     print(tweets_random.shape)
@@ -232,11 +235,12 @@ for file in paths_to_random:
     start_time = time.time()
     print('converting to list')
     examples = tweets_random.text.values.tolist()
+    TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
     print('convert to list:', str(time.time() - start_time), 'seconds')
-
+    all_predictions_random_df_list = []
     for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-        print('\n\n!!!!!', column)
+        print('\n\n!!!!!column', column)
         loop_start = time.time()
         best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
         model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
@@ -252,8 +256,8 @@ for file in paths_to_random:
         print('Predictions of random Tweets:')
         start_time = time.time()
         onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-        model_path,
-        examples)
+                                model_path,
+                                examples)
 
         print('time taken:', str(time.time() - start_time), 'seconds')
         print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
@@ -272,37 +276,47 @@ for file in paths_to_random:
         predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
         # reformat dataframe
         predictions_random_df = predictions_random_df[['second']]
-        predictions_random_df.columns = ['score']
-
+        # predictions_random_df.columns = ['score']
+        predictions_random_df.columns = [column]
         print(predictions_random_df.head())
-        predictions_random_df.to_parquet(
-        os.path.join(final_output_path, column,
+
+        all_predictions_random_df_list.append(predictions_random_df)
+
+
+    all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
+                            all_predictions_random_df_list
+                            )
+
+    print('!!all_columns_df', all_columns_df.head())
+    print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
+    all_columns_df.to_parquet(
+        os.path.join(final_output_path,
                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
                      + '.parquet'))
 
-        print('saved to:',
-              column,
-              SLURM_ARRAY_TASK_ID,
-              SLURM_JOB_ID,
-              SLURM_ARRAY_TASK_COUNT,
-              filename_without_extension,
-              os.path.join(final_output_path, column,
-                                          filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-              str(time.time() - start_time)
-            )
+    print('saved to:',
+          # column,
+          SLURM_ARRAY_TASK_ID,
+          SLURM_JOB_ID,
+          SLURM_ARRAY_TASK_COUNT,
+          filename_without_extension,
+          os.path.join(final_output_path,
+                                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+          str(time.time() - start_time)
+        )
 
-        print('>>>>> completed', filename_without_extension)
+    print('>>>>> completed', filename_without_extension)
 
-        print('save time taken:', str(time.time() - start_time), 'seconds')
+    print('save time taken:', str(time.time() - start_time), 'seconds')
 
-        print('file loop:', column, filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
+    print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
                                                                                                   loop_start) / len(examples))
 
         # break #DEBUG column
 
     # break #DEBUG parquet file
 
-print('full loop:', column, filename_without_extension, str(time.time() - global_start), 'seconds',
-      (time.time() - global_start) / len(examples))
+print('full loop:', str(time.time() - global_start), 'seconds',
+      (time.time() - global_start) / TOTAL_NUM_TWEETS)
 
 print('>>done')
