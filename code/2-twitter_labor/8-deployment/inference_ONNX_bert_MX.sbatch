@@ -3,11 +3,11 @@
 #SBATCH --job-name=mxinference
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=5GB
+#SBATCH --mem=4GB
 #SBATCH --time=48:00:00
 #SBATCH --gres=gpu:0
 #SBATCH --mail-type=END
-#SBATCH --mail-user=nuclearr.d@gmail.com
+#SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=outfiles/jobarray_mx_inference_%j.out
 
 COUNTRY_CODE=$1
