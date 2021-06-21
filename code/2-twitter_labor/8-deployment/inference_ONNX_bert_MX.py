@@ -168,13 +168,13 @@ if args.resume:
 else:
     files_remaining = output_files_list
 
-print(len(files_remaining), files_remaining)
+print(len(files_remaining))
 
 paths_to_random = list(np.array_split(
         files_remaining,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
     )
-print('#files:', len(paths_to_random), paths_to_random)
+print('#files in paths_to_random', len(paths_to_random))
 
 #
 # if args.method == 0:
