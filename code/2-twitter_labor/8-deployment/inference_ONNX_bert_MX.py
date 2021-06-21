@@ -35,12 +35,13 @@ parser.add_argument("--iteration_number", type=int)
 parser.add_argument("--method", type=int)
 parser.add_argument("--debug_mode", type=bool, help="fast debug mode", default=True)
 parser.add_argument("--drop_duplicates", type=bool, help="drop duplicated tweets from parquet files", default=False)
-parser.add_argument("--resume", type=bool, help="resuming a run")
+parser.add_argument("--resume", type=int, help="resuming a run, 0 or 1")
 
 
 args = parser.parse_args()
 
 print(args)
+print(args.resume, type(args.resume))
 
 DEBUG_MODE = args.debug_mode
 
@@ -171,7 +172,7 @@ print(input_files_list[:10], unique_intput_file_id_list[:10])
 print('^^^^^^^', path_to_data, final_output_path, args.resume)
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
 print('already_processed_output_files', already_processed_output_files[:10])
-if args.resume:
+if args.resume == 1:
     files_remaining = list(set(input_files_list) - set(already_processed_output_files))
     print('true')
 else:
