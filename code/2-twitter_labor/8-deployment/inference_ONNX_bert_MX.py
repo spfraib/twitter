@@ -163,17 +163,20 @@ if not os.path.exists(os.path.join(final_output_path)):
     os.makedirs(os.path.join(final_output_path))
 
 input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
-print(input_files_list[:10])
 
-# unique_intput_file_id_list = [filename]
+unique_intput_file_id_list = [filename.split('part-')[1].split('.snappy')[0]
+                              for filename in input_files_list]
+print(input_files_list[:10], unique_intput_file_id_list[:10])
 
 print('^^^^^^^', path_to_data, final_output_path, args.resume)
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
 print('already_processed_output_files', already_processed_output_files[:10])
 if args.resume:
     files_remaining = list(set(input_files_list) - set(already_processed_output_files))
+    print('true')
 else:
     files_remaining = input_files_list
+    print('false')
 
 print(len(files_remaining))
 

@@ -66,10 +66,9 @@ then
 fi
 echo 'running inference..'
 #srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/test.log 2>&1
-srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume true > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}$(date +%s).log 2>&1
-#e.g.ls
+echo python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume false
+srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume false > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}$(date +%s).log 2>&1
 
-#python -u inference_ONNX_bert_MX.py --input_path /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/MX/ --output_path /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX/ --country_code MX --iteration_number 6 --method 0
 echo 'done'
 
 exit
