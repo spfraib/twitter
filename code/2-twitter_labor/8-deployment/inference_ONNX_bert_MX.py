@@ -155,6 +155,11 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
+final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+if not os.path.exists(os.path.join(final_output_path)):
+    print('>>>> directory doesnt exists, creating it')
+    os.makedirs(os.path.join(final_output_path))
+
 output_files_list = glob(os.path.join(path_to_data, '*.parquet'))
 print('^^^^^^^', path_to_data, final_output_path)
 if args.resume:
@@ -358,10 +363,7 @@ print('#files:', len(paths_to_random), paths_to_random)
 #         ####################################################################################################################################
 #         print('Save Predictions of random Tweets:')
 #         start_time = time.time()
-#         final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
-#         if not os.path.exists(os.path.join(final_output_path)):
-#             print('>>>> directory doesnt exists, creating it')
-#             os.makedirs(os.path.join(final_output_path))
+
 #         # create dataframe containing tweet id and probabilities
 #         predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
 #         predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
