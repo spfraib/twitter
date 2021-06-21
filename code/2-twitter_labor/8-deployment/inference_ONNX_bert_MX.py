@@ -167,7 +167,11 @@ input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
 
 unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
                               for filename in input_files_list]
-print(unique_intput_file_id_list[:10])
+filename_prefix = filename.split('part-')[0]
+filename_suffix = filename.split('part-')[1].split('-c000')[1]
+
+
+print(unique_intput_file_id_list[:10], filename_prefix, filename_suffix)
 
 print('^^^^^^^', path_to_data, final_output_path, args.resume)
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
@@ -176,8 +180,9 @@ unique_already_processed_file_id_list = [filename.split('part-')[1].split('-c000
 
 print('already_processed_output_files', unique_already_processed_file_id_list[:10])
 if args.resume == 1:
-    files_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
+    unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
     print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
+    files_remaining = [filename for filename in files_remaining]
     print('true')
 else:
     files_remaining = input_files_list
