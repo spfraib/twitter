@@ -165,15 +165,19 @@ if not os.path.exists(os.path.join(final_output_path)):
 
 input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
 
-unique_intput_file_id_list = [filename.split('part-')[1].split('.snappy')[0]
+unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
                               for filename in input_files_list]
-print(input_files_list[:10], unique_intput_file_id_list[:10])
+print(unique_intput_file_id_list[:10])
 
 print('^^^^^^^', path_to_data, final_output_path, args.resume)
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
-print('already_processed_output_files', already_processed_output_files[:10])
+unique_already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+                              for filename in already_processed_output_files]
+
+print('already_processed_output_files', unique_already_processed_file_id_list[:10])
 if args.resume == 1:
-    files_remaining = list(set(input_files_list) - set(already_processed_output_files))
+    files_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
+    print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
     print('true')
 else:
     files_remaining = input_files_list
