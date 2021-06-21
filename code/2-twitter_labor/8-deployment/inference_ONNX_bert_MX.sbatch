@@ -44,6 +44,10 @@ OUTPUT_LOGS=${OUTPUT_PATH}/logs #DEBUG
 mkdir -p ${OUTPUT_MODELS}
 mkdir -p ${OUTPUT_LOGS}
 
+echo ${INPUT_PATH}
+echo ${OUTPUT_PATH}
+echo ${OUTPUT_LOGS}
+echo ${OUTPUT_MODELS}
 
 module purge
 module load anaconda3/2020.02
