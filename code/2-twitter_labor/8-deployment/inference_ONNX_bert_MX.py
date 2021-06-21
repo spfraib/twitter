@@ -155,18 +155,25 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
-final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+# final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+final_output_path = '/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/MX/iter_6-mexrun_5GB' \
+                    '-7309008/output/is_hired_1mo' #DEBUG
 if not os.path.exists(os.path.join(final_output_path)):
     print('>>>> directory doesnt exists, creating it')
     os.makedirs(os.path.join(final_output_path))
 
-output_files_list = glob(os.path.join(path_to_data, '*.parquet'))
-print('^^^^^^^', path_to_data, final_output_path)
+input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
+print(input_files_list[:10])
+
+# unique_intput_file_id_list = [filename]
+
+print('^^^^^^^', path_to_data, final_output_path, args.resume)
+already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
+print('already_processed_output_files', already_processed_output_files[:10])
 if args.resume:
-    already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
-    files_remaining = list(set(output_files_list) - set(already_processed_output_files))
+    files_remaining = list(set(input_files_list) - set(already_processed_output_files))
 else:
-    files_remaining = output_files_list
+    files_remaining = input_files_list
 
 print(len(files_remaining))
 
