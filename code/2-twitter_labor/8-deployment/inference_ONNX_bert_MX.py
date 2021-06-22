@@ -179,26 +179,19 @@ unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
 filename_prefix = input_files_list[0].split('part-')[0]
 filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
 
-
-print(input_files_list[:4], filename_prefix, filename_suffix)
-
-print('^^^^^^^', path_to_data, final_output_path, args.resume)
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
 unique_already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
                               for filename in already_processed_output_files]
 
-print('already_processed_output_files', unique_already_processed_file_id_list[:5])
 if args.resume == 1:
     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
     files_remaining = [filename_prefix+'part-'+filename+'-c000'+filename_suffix for filename in unique_ids_remaining]
     print(files_remaining[:3])
     print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
-    print('true')
 else:
     files_remaining = input_files_list
-    print('false')
-
-print(len(files_remaining))
+print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
+      len(unique_already_processed_file_id_list))
 
 paths_to_random = list(np.array_split(
         files_remaining,
@@ -206,240 +199,240 @@ paths_to_random = list(np.array_split(
     )
 print('#files in paths_to_random', len(paths_to_random))
 
-#
-# if args.method == 0:
-#     best_model_folders_dict = {
-#         'US': {},
-#         'BR': {'iter0': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
-#             },
-#             'iter1': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742972_seed-10',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742970_seed-8',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742966_seed-4'},
-#             'iter2': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173786_seed-10',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173783_seed-7',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173787_seed-11',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173785_seed-9',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173784_seed-8'
-#             },
-#             'iter3': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518525_seed-12',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1'},
-#             'iter4': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677938_seed-6',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1'},
-#             'iter5': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886444_seed-13',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886442_seed-11',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886435_seed-4',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886437_seed-6',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886436_seed-5'
-#             },
-#             'iter6': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053031_seed-4',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053036_seed-9',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053029_seed-2',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053030_seed-3',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053034_seed-7'
-#             },
-#             'iter7': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267588_seed-15',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267588_seed-15'
-#             },
-#             'iter8': {
-#                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448808_seed-15',
-#                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448795_seed-2',
-#                 'is_unemployed': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448805_seed-12',
-#                 'job_offer': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448800_seed-7',
-#                 'job_search': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448794_seed-1'
-#             }},
-#         'MX': {
-#             'iter0': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
-#             },
-#             'iter1': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737747_seed-8',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737741_seed-2',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737746_seed-7',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6'},
-#             'iter2': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138955_seed-14',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138956_seed-15',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138953_seed-12',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138951_seed-10',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138943_seed-2'},
-#             'iter3': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375824_seed-2',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375831_seed-9',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375830_seed-8'},
-#             'iter4': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597713_seed-4',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597712_seed-3',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597710_seed-1'},
-#             'iter6': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125254_seed-7',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125255_seed-8',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125252_seed-5',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4'
-#             },
-#             'iter7': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272629_seed-7',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272633_seed-11',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272630_seed-8',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272629_seed-7',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272634_seed-12'
-#             },
-#             'iter8': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383859_seed-1',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383871_seed-13',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383867_seed-9',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383867_seed-9',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383866_seed-8'
-#             },
-#             'iter9': {
-#                 'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408605_seed-1',
-#                 'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408615_seed-11',
-#                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408607_seed-3',
-#                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408614_seed-10',
-#                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408609_seed-5'
-#             },
-#         }
-#     }
-#
-# tweets_random = pd.DataFrame()
-#
-# TOTAL_NUM_TWEETS = 0
-# for file in paths_to_random:
-#     print(file)
-#     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
-#     print('filename_without_extension')
-#
-#
-#     tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
-#     print(tweets_random.shape)
-#
-#     # tweets_random = tweets_random.head(10) #DEBUG
-#
-#     print('load random sample:', str(time.time() - start_time), 'seconds')
-#     print(tweets_random.shape)
-#
-#
-#     if args.drop_duplicates:
-#         print('dropping duplicates:')
-#         start_time = time.time()
-#         tweets_random = tweets_random.drop_duplicates('text')
-#         print('drop duplicates:', str(time.time() - start_time), 'seconds')
-#         print(tweets_random.shape)
-#
-#     start_time = time.time()
-#     print('converting to list')
-#     examples = tweets_random.text.values.tolist()
-#     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
-#
-#     print('convert to list:', str(time.time() - start_time), 'seconds')
-#     all_predictions_random_df_list = []
-#     for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-#         print('\n\n!!!!!column', column)
-#         loop_start = time.time()
-#         best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-#         model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
-#         column, 'models', 'best_model')
-#
-#         print(model_path)
-#         onnx_path = os.path.join(model_path, 'onnx')
-#         print(onnx_path)
-#
-#         ####################################################################################################################################
-#         # TOKENIZATION and INFERENCE
-#         ####################################################################################################################################
-#         print('Predictions of random Tweets:')
-#         start_time = time.time()
-#         onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-#                                 model_path,
-#                                 examples)
-#
-#         print('time taken:', str(time.time() - start_time), 'seconds')
-#         print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
-#
-#         ####################################################################################################################################
-#         # SAVING
-#         ####################################################################################################################################
-#         print('Save Predictions of random Tweets:')
-#         start_time = time.time()
 
-#         # create dataframe containing tweet id and probabilities
-#         predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-#         predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-#         # reformat dataframe
-#         predictions_random_df = predictions_random_df[['second']]
-#         # predictions_random_df.columns = ['score']
-#         predictions_random_df.columns = [column]
-#         print(predictions_random_df.head())
-#
-#         all_predictions_random_df_list.append(predictions_random_df)
-#
-#
-#     all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
-#                             all_predictions_random_df_list
-#                             )
-#
-#     print('!!all_columns_df', all_columns_df.head())
-#     print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
-#     all_columns_df.to_parquet(
-#         os.path.join(final_output_path,
-#                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
-#                      + '.parquet'))
-#
-#     print('saved to:',
-#           # column,
-#           SLURM_ARRAY_TASK_ID,
-#           SLURM_JOB_ID,
-#           SLURM_ARRAY_TASK_COUNT,
-#           filename_without_extension,
-#           os.path.join(final_output_path,
-#                                       filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-#           str(time.time() - start_time)
-#         )
-#
-#     print('>>>>> completed', filename_without_extension)
-#
-#     print('save time taken:', str(time.time() - start_time), 'seconds')
-#
-#     print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
-#                                                                                                   loop_start) / len(examples))
-#
-#         # break #DEBUG column
-#
-#     # break #DEBUG parquet file
-#
-# print('full loop:', str(time.time() - global_start), 'seconds',
-#       (time.time() - global_start) / TOTAL_NUM_TWEETS)
-#
-# print('>>done')
+if args.method == 0:
+    best_model_folders_dict = {
+        'US': {},
+        'BR': {'iter0': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
+            },
+            'iter1': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742972_seed-10',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742970_seed-8',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742966_seed-4'},
+            'iter2': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173786_seed-10',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173783_seed-7',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173787_seed-11',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173785_seed-9',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_mar24_iter2_4173784_seed-8'
+            },
+            'iter3': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518519_seed-6',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518525_seed-12',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_apr1_iter3_4518514_seed-1'},
+            'iter4': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677938_seed-6',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677934_seed-2',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_apr3_iter4_4677933_seed-1'},
+            'iter5': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886444_seed-13',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886442_seed-11',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886435_seed-4',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886437_seed-6',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may17_iter5_6886436_seed-5'
+            },
+            'iter6': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053031_seed-4',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053036_seed-9',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053029_seed-2',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053030_seed-3',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may22_iter6_7053034_seed-7'
+            },
+            'iter7': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267580_seed-7',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267588_seed-15',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_may30_iter7_7267588_seed-15'
+            },
+            'iter8': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448808_seed-15',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448795_seed-2',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448805_seed-12',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448800_seed-7',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_jun8_iter8_7448794_seed-1'
+            }},
+        'MX': {
+            'iter0': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200976_seed-10',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200974_seed-8',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200978_seed-12',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200968_seed-2',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_feb27_iter0_3200967_seed-1'
+            },
+            'iter1': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737747_seed-8',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737741_seed-2',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737746_seed-7',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar12_iter1_3737745_seed-6'},
+            'iter2': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138955_seed-14',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138956_seed-15',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138953_seed-12',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138951_seed-10',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar23_iter2_4138943_seed-2'},
+            'iter3': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375824_seed-2',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375831_seed-9',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375832_seed-10',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_mar30_iter3_4375830_seed-8'},
+            'iter4': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597713_seed-4',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597718_seed-9',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597712_seed-3',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_apr2_iter4_4597710_seed-1'},
+            'iter6': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125254_seed-7',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125255_seed-8',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125252_seed-5',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may25_iter6_7125251_seed-4'
+            },
+            'iter7': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272629_seed-7',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272633_seed-11',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272630_seed-8',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272629_seed-7',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_may31_iter7_7272634_seed-12'
+            },
+            'iter8': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383859_seed-1',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383871_seed-13',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383867_seed-9',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383867_seed-9',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jun5_iter8_7383866_seed-8'
+            },
+            'iter9': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408605_seed-1',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408615_seed-11',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408607_seed-3',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408614_seed-10',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jun6_iter9_7408609_seed-5'
+            },
+        }
+    }
+
+tweets_random = pd.DataFrame()
+
+TOTAL_NUM_TWEETS = 0
+for file in paths_to_random:
+    print(file)
+    filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
+    print('filename_without_extension')
+
+
+    tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
+    print(tweets_random.shape)
+
+    # tweets_random = tweets_random.head(10) #DEBUG
+
+    print('load random sample:', str(time.time() - start_time), 'seconds')
+    print(tweets_random.shape)
+
+
+    if args.drop_duplicates:
+        print('dropping duplicates:')
+        start_time = time.time()
+        tweets_random = tweets_random.drop_duplicates('text')
+        print('drop duplicates:', str(time.time() - start_time), 'seconds')
+        print(tweets_random.shape)
+
+    start_time = time.time()
+    print('converting to list')
+    examples = tweets_random.text.values.tolist()
+    TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
+
+    print('convert to list:', str(time.time() - start_time), 'seconds')
+    all_predictions_random_df_list = []
+    for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
+        print('\n\n!!!!!column', column)
+        loop_start = time.time()
+        best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
+        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+        column, 'models', 'best_model')
+
+        print(model_path)
+        onnx_path = os.path.join(model_path, 'onnx')
+        print(onnx_path)
+
+        ####################################################################################################################################
+        # TOKENIZATION and INFERENCE
+        ####################################################################################################################################
+        print('Predictions of random Tweets:')
+        start_time = time.time()
+        onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+                                model_path,
+                                examples)
+
+        print('time taken:', str(time.time() - start_time), 'seconds')
+        print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+
+        ####################################################################################################################################
+        # SAVING
+        ####################################################################################################################################
+        print('Save Predictions of random Tweets:')
+        start_time = time.time()
+
+        # create dataframe containing tweet id and probabilities
+        predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+        predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+        # reformat dataframe
+        predictions_random_df = predictions_random_df[['second']]
+        # predictions_random_df.columns = ['score']
+        predictions_random_df.columns = [column]
+        print(predictions_random_df.head())
+
+        all_predictions_random_df_list.append(predictions_random_df)
+
+
+    all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
+                            all_predictions_random_df_list
+                            )
+
+    print('!!all_columns_df', all_columns_df.head())
+    print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
+    all_columns_df.to_parquet(
+        os.path.join(final_output_path,
+                     filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
+                     + '.parquet'))
+
+    print('saved to:',
+          # column,
+          SLURM_ARRAY_TASK_ID,
+          SLURM_JOB_ID,
+          SLURM_ARRAY_TASK_COUNT,
+          filename_without_extension,
+          os.path.join(final_output_path,
+                                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+          str(time.time() - start_time)
+        )
+
+    print('>>>>> completed', filename_without_extension)
+
+    print('save time taken:', str(time.time() - start_time), 'seconds')
+
+    print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
+                                                                                                  loop_start) / len(examples))
+
+        # break #DEBUG column
+
+    # break #DEBUG parquet file
+
+print('full loop:', str(time.time() - global_start), 'seconds',
+      (time.time() - global_start) / TOTAL_NUM_TWEETS)
+
+print('>>done')
