@@ -41,8 +41,6 @@ parser.add_argument("--resume", type=int, help="resuming a run, 0 or 1")
 args = parser.parse_args()
 
 print(args)
-print(args.resume, type(args.resume))
-
 DEBUG_MODE = args.debug_mode
 
 global_start = time.time()
