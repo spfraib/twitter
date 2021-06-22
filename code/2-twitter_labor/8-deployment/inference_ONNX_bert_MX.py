@@ -351,6 +351,7 @@ for file in paths_to_random:
     start_time = time.time()
     print('converting to list')
     examples = tweets_random.text.values.tolist()
+    examples = examples[0] #DEBUG
     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
     print('convert to list:', str(time.time() - start_time), 'seconds')
