@@ -351,7 +351,7 @@ for file in paths_to_random:
     start_time = time.time()
     print('converting to list')
     examples = tweets_random.text.values.tolist()
-    examples = examples[0] #DEBUG
+    # examples = examples[0] #DEBUG
     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
     print('convert to list:', str(time.time() - start_time), 'seconds')
@@ -396,7 +396,7 @@ for file in paths_to_random:
 
         all_predictions_random_df_list.append(predictions_random_df)
 
-        break  # DEBUG column
+        # break  # DEBUG column
 
     all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
                             all_predictions_random_df_list
@@ -426,7 +426,7 @@ for file in paths_to_random:
 
     print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
                                                                                                   loop_start) / len(examples))
-    break #DEBUG parquet file
+    # break #DEBUG parquet file
 
 
 print('full loop:', str(time.time() - global_start), 'seconds',
