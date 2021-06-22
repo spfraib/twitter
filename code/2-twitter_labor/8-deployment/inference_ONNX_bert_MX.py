@@ -155,7 +155,7 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
-# final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
 
 if not os.path.exists(os.path.join(final_output_path)):
     print('>>>> directory doesnt exists, creating it')
@@ -396,6 +396,7 @@ for file in paths_to_random:
 
         all_predictions_random_df_list.append(predictions_random_df)
 
+        break  # DEBUG column
 
     all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
                             all_predictions_random_df_list
@@ -425,10 +426,8 @@ for file in paths_to_random:
 
     print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
                                                                                                   loop_start) / len(examples))
+    break #DEBUG parquet file
 
-        # break #DEBUG column
-
-    # break #DEBUG parquet file
 
 print('full loop:', str(time.time() - global_start), 'seconds',
       (time.time() - global_start) / TOTAL_NUM_TWEETS)
