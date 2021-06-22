@@ -55,9 +55,7 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
-# final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
-final_output_path = '/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/MX/iter_6-mexrun_5GB' \
-                    '-7309008/output/is_hired_1mo' #DEBUG
+final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
 
 if not os.path.exists(os.path.join(final_output_path)):
     print('>>>> directory doesnt exists, creating it')
