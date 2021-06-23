@@ -35,6 +35,7 @@ parser.add_argument("--iteration_number", type=int)
 parser.add_argument("--method", type=int)
 parser.add_argument("--debug_mode", type=bool, help="fast debug mode", default=True)
 parser.add_argument("--drop_duplicates", type=bool, help="drop duplicated tweets from parquet files", default=False)
+parser.add_argument("--resume", type=int, help="resuming a run, 0 or 1")
 
 
 args = parser.parse_args()
@@ -154,11 +155,46 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
+final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+
+if not os.path.exists(os.path.join(final_output_path)):
+    print('>>>> directory doesnt exists, creating it')
+    os.makedirs(os.path.join(final_output_path))
+
+input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
+
+"""
+creating a list of unique file ids assuming this file name structure:
+/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/part-00000-52fdb0a4-e509-49fe-9f3a-d809594bba7d-c000.snappy.parquet
+in this case:
+unique_intput_file_id_list will contain 00000-52fdb0a4-e509-49fe-9f3a-d809594bba7d
+filename_prefix is /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/part-
+filename_suffix is -c000.snappy.parquet
+"""
+unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+                              for filename in input_files_list]
+filename_prefix = input_files_list[0].split('part-')[0]
+filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
+
+already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
+unique_already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+                              for filename in already_processed_output_files]
+
+if args.resume == 1:
+    unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
+    files_remaining = [filename_prefix+'part-'+filename+'-c000'+filename_suffix for filename in unique_ids_remaining]
+    print(files_remaining[:3])
+    print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
+else:
+    files_remaining = input_files_list
+print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
+      len(unique_already_processed_file_id_list))
+
 paths_to_random = list(np.array_split(
-                                    glob(os.path.join(path_to_data, '*.parquet')),
-                                    SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
-                       )
-print('#files:', len(paths_to_random), paths_to_random)
+        files_remaining,
+        SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
+    )
+print('#files in paths_to_random', len(paths_to_random))
 
 
 if args.method == 0:
@@ -315,6 +351,7 @@ for file in paths_to_random:
     start_time = time.time()
     print('converting to list')
     examples = tweets_random.text.values.tolist()
+    # examples = examples[0] #DEBUG
     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
     print('convert to list:', str(time.time() - start_time), 'seconds')
@@ -347,10 +384,7 @@ for file in paths_to_random:
         ####################################################################################################################################
         print('Save Predictions of random Tweets:')
         start_time = time.time()
-        final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
-        if not os.path.exists(os.path.join(final_output_path)):
-            print('>>>> directory doesnt exists, creating it')
-            os.makedirs(os.path.join(final_output_path))
+
         # create dataframe containing tweet id and probabilities
         predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
         predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
@@ -362,6 +396,7 @@ for file in paths_to_random:
 
         all_predictions_random_df_list.append(predictions_random_df)
 
+        # break  # DEBUG column
 
     all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
                             all_predictions_random_df_list
@@ -391,10 +426,8 @@ for file in paths_to_random:
 
     print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
                                                                                                   loop_start) / len(examples))
-
-        # break #DEBUG column
-
     # break #DEBUG parquet file
+
 
 print('full loop:', str(time.time() - global_start), 'seconds',
       (time.time() - global_start) / TOTAL_NUM_TWEETS)
