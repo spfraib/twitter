@@ -16,6 +16,7 @@ MODE=$3
 RUN_NAME=$4
 METHOD=$5
 RESUME=$6
+RESUME_FOLDER=$7
 
 JOB_ID=${SLURM_ARRAY_JOB_ID}
 
@@ -32,10 +33,14 @@ elif [ ${MODE} -eq 2 ]
 then
   INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/test
   OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
-elif [ ${MODE} -eq 3 ] # MEXICO inference
+elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 0 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
   OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-3GB-${JOB_ID}
+elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
+then
+  INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
+  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/${COUNTRY_CODE}/${RESUME_FOLDER}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
