@@ -3,7 +3,7 @@
 #SBATCH --job-name=sample_kskipngrams
 #SBATCH --nodes=1
 #SBATCH --mem=100GB
-#SBATCH --time=24:00:00
+#SBATCH --time=3:00:00
 #SBATCH --cpus-per-task=1
 ##SBATCH --gres=gpu:1
 #SBATCH --output=slurm_sample_kskipngrams_%j.out
