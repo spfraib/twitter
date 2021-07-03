@@ -118,9 +118,8 @@ def get_local_path(row, tmpdir, user_image_mapping):
     if user not in user_image_mapping:
         return np.nan
     else:
-        
-        tfilename, tmember = user_image_mapping[user]
         tmpd = tempfile.TemporaryDirectory()
+        tfilename, tmember = user_image_mapping[user]
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
             tarf.extract(tmember, path=tmpdir)
             
@@ -156,6 +155,7 @@ df = pq.read_table(source=selected_parquets).to_pandas()
 
 # Remove uids that we had already calculated before
 df = df[~df["user_id"].isin(known_ids)]
+print("Going to process the remaining %d user ids" % (df.shape[0]))
 
 # +
 df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
