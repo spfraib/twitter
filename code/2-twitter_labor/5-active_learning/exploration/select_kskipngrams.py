@@ -56,11 +56,11 @@ tokenizer = AutoTokenizer.from_pretrained(model_dict[country_code])
 
 for motif in motifs:
     print('# sampled',motif, ':', len(existing_ngrams[motif]))    
-model_iter = int(re.findall('_(\d)-',model_name)[0])
+model_iter = int(re.findall('\_(.*?)\-',model_name)[0])
 print('Iteration', model_iter)
 if model_iter:
     for filename in sorted(glob(os.path.join(path_to_data,'k_skip_n_grams',country_code,'*','kskipngrams_*.json'))):
-        filename_iter = int(re.findall('_(\d)-',filename)[0])
+        filename_iter = int(re.findall('\_(.*?)\-',filename)[0])
         if filename_iter<model_iter:
             print('Remove ngrams sampled up to iteration', filename_iter)
             previous_ngrams = pd.read_json(filename).applymap(lambda x:tuple(x))
