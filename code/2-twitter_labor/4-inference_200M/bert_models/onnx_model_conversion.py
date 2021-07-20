@@ -86,6 +86,13 @@ if args.method == 0:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_may29_iter6_7232045_seed-1',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_may29_iter6_7232059_seed-15'
             },
+            'iter7': {
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_jul19_iter7_8788309_seed-4',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_jul19_iter7_8788311_seed-6',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_jul19_iter7_8788314_seed-9',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_jul19_iter7_8788309_seed-4',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_jul19_iter7_8788315_seed-10'
+            },
         },
         'BR': {
             'iter0': {
