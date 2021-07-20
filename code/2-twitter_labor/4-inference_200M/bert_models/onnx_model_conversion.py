@@ -238,6 +238,13 @@ if args.method == 0:
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jun30_iter10_8222587_seed-1',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jun30_iter10_8222592_seed-6'
             },
+            'iter11': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jul20_iter11_8804820_seed-6',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jul20_iter11_8804823_seed-9',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jul20_iter11_8804817_seed-3',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jul20_iter11_8804823_seed-9',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jul20_iter11_8804819_seed-5'
+            },
         }
     }
 elif args.method == 1:
