@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=inference
+#SBATCH --job-name=deployment
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=3GB
@@ -8,7 +8,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=outfiles/jobarray_inference_%j.out
+#SBATCH --output=outfiles/jobarray_deployment_%j.out
 
 COUNTRY_CODE=$1
 ITER=$2
@@ -73,8 +73,8 @@ then
 fi
 echo 'running inference..'
 #srun time python -u inference_ONNX_bert_MX.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/test.log 2>&1
-echo python -u inference_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME}
-srun time python -u inference_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}$(date +%s).log 2>&1
+echo python -u deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME}
+srun time python -u deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}$(date +%s).log 2>&1
 
 echo 'done'
 
