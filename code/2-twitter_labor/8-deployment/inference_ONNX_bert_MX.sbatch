@@ -36,11 +36,11 @@ then
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 0 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
-  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-3GB-${JOB_ID}
+  OUTPUT_PATH=/scratch/spf248/twitter/data/labor/tweet_scores/BERT/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-3GB-${JOB_ID}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
-  OUTPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_BERT_scores_labor/${COUNTRY_CODE}/${RESUME_FOLDER}
+  OUTPUT_PATH=/scratch/spf248/twitter/data/labor/tweet_scores/BERT/${COUNTRY_CODE}/${RESUME_FOLDER}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
