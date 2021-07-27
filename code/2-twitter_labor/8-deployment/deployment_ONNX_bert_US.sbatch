@@ -3,7 +3,7 @@
 #SBATCH --job-name=deployment_US
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=4500MB
+#SBATCH --mem=6000MB
 #SBATCH --time=48:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
@@ -38,7 +38,7 @@ then
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 0 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
-  OUTPUT_PATH=/scratch/spf248/twitter/data/labor/tweet_scores/BERT/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-4500MB-${JOB_ID}
+  OUTPUT_PATH=/scratch/spf248/twitter/data/labor/tweet_scores/BERT/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-6000MB-${JOB_ID}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/${COUNTRY_CODE}/
