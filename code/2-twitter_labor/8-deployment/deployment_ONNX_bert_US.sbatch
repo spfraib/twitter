@@ -3,7 +3,7 @@
 #SBATCH --job-name=deployment_US
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=3600MB
+#SBATCH --mem=4500MB
 #SBATCH --time=48:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
