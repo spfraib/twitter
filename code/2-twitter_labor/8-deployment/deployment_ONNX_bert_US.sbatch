@@ -1,20 +1,20 @@
 #!/bin/bash
 
-#SBATCH --job-name=deployment
+#SBATCH --job-name=deployment_US
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=3GB
+#SBATCH --mem=3.6GB
 #SBATCH --time=48:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=outfiles/jobarray_deployment_%j.out
+#SBATCH --output=outfiles/jobarray_deployment_us_%j.out
 
-COUNTRY_CODE=$1
-ITER=$2
-RESUME=$3
-RESUME_FOLDER=$4
+ITER=$1
+RESUME=$2
+RESUME_FOLDER=$3
 
+COUNTRY_CODE=US
 MODE=3
 RUN_NAME=0
 METHOD=0
