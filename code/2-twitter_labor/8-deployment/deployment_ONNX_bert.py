@@ -177,8 +177,9 @@ filename_prefix = input_files_list[0].split('part-')[0]
 filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
 
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
-unique_already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
                               for filename in already_processed_output_files]
+unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_file_id_list))
 
 if args.resume == 1:
     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
