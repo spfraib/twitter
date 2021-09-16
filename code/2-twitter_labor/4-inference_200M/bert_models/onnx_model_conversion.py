@@ -39,11 +39,6 @@ if args.method == 0:
                 'is_unemployed': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928498_SEED_15',
                 'job_offer': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928493_SEED_10',
                 'job_search': 'DeepPavlov_bert-base-cased-conversational_jan5_iter0_928486_SEED_3'
-                # 'lost_job_1mo': 'vinai_bertweet-base_jan5_iter0_928517_SEED_7',
-                # 'is_hired_1mo': 'vinai_bertweet-base_jan5_iter0_928525_SEED_15',
-                # 'is_unemployed': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-                # 'job_offer': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3',
-                # 'job_search': 'vinai_bertweet-base_jan5_iter0_928513_SEED_3'
             },
             'iter1': {
                 'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_feb22_iter1_3045488_seed-2',
@@ -258,6 +253,13 @@ if args.method == 0:
                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jul27_iter12_8966162_seed-8',
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jul27_iter12_8966155_seed-1',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jul27_iter12_8966167_seed-13'
+            },
+            'iter13': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_sep16_iter13_10031058_seed-7',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_sep16_iter13_10031052_seed-1',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_sep16_iter13_10031054_seed-3',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_sep16_iter13_10031052_seed-1',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_sep16_iter13_10031058_seed-7'
             },
         }
     }

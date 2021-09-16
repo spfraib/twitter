@@ -266,7 +266,7 @@ for REPLICATION in range(5):
     # ####################################################################################################################################
     # print('Save Predictions of random Tweets:')
     # start_time = time.time()
-    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/dhaval_inference_test/replication_output_data'
+    final_output_path = '/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-inference/bert_models/dhaval_inference_test/replication_output_data'
     # final_output_path = '/Users/dval/work_temp/twitter_from_nyu/output'
     if not os.path.exists(os.path.join(final_output_path, column)):
         # print('>>>> directory doesnt exists, creating it')
