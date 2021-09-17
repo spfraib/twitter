@@ -489,7 +489,7 @@ for file in paths_to_random:
     print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
     all_columns_df.to_parquet(
         os.path.join(final_output_path,
-                     filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID)
+                     filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID)
                      + '.parquet'))
 
     print('saved to:',
