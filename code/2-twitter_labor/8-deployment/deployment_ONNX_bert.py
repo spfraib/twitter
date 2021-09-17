@@ -499,7 +499,7 @@ for file in paths_to_random:
           SLURM_ARRAY_TASK_COUNT,
           filename_without_extension,
           os.path.join(final_output_path,
-                                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
+                                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID) + '.parquet'),
           str(time.time() - start_time)
         )
 
