@@ -60,8 +60,7 @@ echo ${OUTPUT_MODELS}
 
 module purge
 
-singularity exec --nv \
-	    --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/deployment/deployment.ext3:ro \
+singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/deployment/deployment.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; srun time python -u /scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment/deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_JOB_ID}.log 2>&1"
 #module load anaconda3/2020.02
