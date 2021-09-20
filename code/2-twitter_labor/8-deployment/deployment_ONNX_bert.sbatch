@@ -62,7 +62,7 @@ module purge
 
 singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/deployment/deployment.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-	    /bin/bash -c "source /ext3/env.sh; srun time python -u /scratch/spf248/twitter/code/twitter/code/2-twitter_labor/8-deployment/deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_JOB_ID}.log 2>&1"
+	    /bin/bash -c "source /ext3/env.sh; python /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/8-deployment/deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} --log_path ${OUTPUT_LOGS}/${SLURM_JOB_ID}.log"
 #module load anaconda3/2020.02
 #
 #source /scratch/spf248/twitter/virtualenvs/mexico_virtualenv/bin/activate
