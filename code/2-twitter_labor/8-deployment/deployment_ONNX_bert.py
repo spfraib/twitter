@@ -31,20 +31,21 @@ parser.add_argument("--method", type=int)
 parser.add_argument("--debug_mode", type=bool, help="fast debug mode", default=True)
 parser.add_argument("--drop_duplicates", type=bool, help="drop duplicated tweets from parquet files", default=False)
 parser.add_argument("--resume", type=int, help="resuming a run, 0 or 1")
-parser.add_argument("--log_path", type=str, help="resuming a run, 0 or 1")
+# parser.add_argument("--log_path", type=str, help="resuming a run, 0 or 1")
 
 
 
 args = parser.parse_args()
 
-logging.basicConfig(filename=f'{args.log_path}.log',
+logging.basicConfig(
+                    # filename=f'{args.log_path}.log',
                     format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
-logger.info('libs loaded')
+print('libs loaded')
 
-logger.info(args)
+print(args)
 
 DEBUG_MODE = args.debug_mode
 
@@ -76,7 +77,7 @@ def inference(onnx_model, model_dir, examples):
     options.intra_op_num_threads = 1
     # options.inter_op_num_threads = multiprocessing.cpu_count()
 
-    logger.info(onnx_model)
+    print(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
 
     # pytorch pretrained model and tokenizer
@@ -87,7 +88,7 @@ def inference(onnx_model, model_dir, examples):
 
     tokenizer_str = "TokenizerFast"
 
-    logger.info("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
+    print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
         quantized_str, tokenizer_str))
     start_onnx_inference_batch = time.time()
     start_batch_tokenization = time.time()
@@ -101,7 +102,7 @@ def inference(onnx_model, model_dir, examples):
         """
 
         if i % 100 == 0:
-            logger.info(f'[inference: {i} out of {str(len(examples))}')
+            print(f'[inference: {i} out of {str(len(examples))}')
 
         tokens = get_tokens(tokens_dict, i)
         # inference
@@ -117,15 +118,15 @@ def inference(onnx_model, model_dir, examples):
         #         onnx_inference.append(label[0])
         onnx_inference.append(onnx_logits.detach().cpu().numpy()[0].tolist())
         total_build_label_time = total_build_label_time + (time.time() - start_build_label)
-    #         logger.info(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
+    #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
         # break #DEBUG
 
     end_onnx_inference_batch = time.time()
-    logger.info("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
-    logger.info("Total inference time (in seconds): ", total_inference_time)
-    logger.info("Total build label time (in seconds): ", total_build_label_time)
-    logger.info("Duration ONNX inference (in seconds) with {} and batch tokenization: ".format(tokenizer_str),
+    print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
+    print("Total inference time (in seconds): ", total_inference_time)
+    print("Total build label time (in seconds): ", total_build_label_time)
+    print("Duration ONNX inference (in seconds) with {} and batch tokenization: ".format(tokenizer_str),
           end_onnx_inference_batch - start_onnx_inference_batch,
           (end_onnx_inference_batch - start_onnx_inference_batch) / len(examples))
 
@@ -135,10 +136,10 @@ def inference(onnx_model, model_dir, examples):
 def get_env_var(varname, default):
     if os.environ.get(varname) != None:
         var = int(os.environ.get(varname))
-        logger.info(varname, ':', var)
+        print(varname, ':', var)
     else:
         var = default
-        logger.info(varname, ':', var, '(Default)')
+        print(varname, ':', var, '(Default)')
     return var
 
 
@@ -146,23 +147,23 @@ def get_env_var(varname, default):
 SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
 SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
 SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
-logger.info('Hostname:', socket.gethostname())
-logger.info('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
-logger.info('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
+print('Hostname:', socket.gethostname())
+print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
+print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 # ####################################################################################################################################
 # # loading data
 # ####################################################################################################################################
 
 path_to_data = args.input_path
 
-logger.info('Load random Tweets:')
+print('Load random Tweets:')
 
 start_time = time.time()
 
 final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
 
 if not os.path.exists(os.path.join(final_output_path)):
-    logger.info('>>>> directory doesnt exists, creating it')
+    print('>>>> directory doesnt exists, creating it')
     os.makedirs(os.path.join(final_output_path))
 
 input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
@@ -188,18 +189,18 @@ unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_fil
 if args.resume == 1:
     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
     files_remaining = [filename_prefix+'part-'+filename+'-c000'+filename_suffix for filename in unique_ids_remaining]
-    logger.info(files_remaining[:3])
-    logger.info(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
+    print(files_remaining[:3])
+    print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
 else:
     files_remaining = input_files_list
-logger.info('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
+print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
       len(unique_already_processed_file_id_list))
 
 paths_to_random = list(np.array_split(
         files_remaining,
         SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
     )
-logger.info('#files in paths_to_random', len(paths_to_random))
+print('#files in paths_to_random', len(paths_to_random))
 
 
 if args.method == 0:
@@ -414,62 +415,62 @@ tweets_random = pd.DataFrame()
 
 TOTAL_NUM_TWEETS = 0
 for file in paths_to_random:
-    logger.info(file)
+    print(file)
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
-    logger.info('filename_without_extension')
+    print('filename_without_extension')
 
 
     tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
-    logger.info(tweets_random.shape)
+    print(tweets_random.shape)
 
     # tweets_random = tweets_random.head(10) #DEBUG
 
-    logger.info('load random sample:', str(time.time() - start_time), 'seconds')
-    logger.info(tweets_random.shape)
+    print('load random sample:', str(time.time() - start_time), 'seconds')
+    print(tweets_random.shape)
 
 
     if args.drop_duplicates:
-        logger.info('dropping duplicates:')
+        print('dropping duplicates:')
         start_time = time.time()
         tweets_random = tweets_random.drop_duplicates('text')
-        logger.info('drop duplicates:', str(time.time() - start_time), 'seconds')
-        logger.info(tweets_random.shape)
+        print('drop duplicates:', str(time.time() - start_time), 'seconds')
+        print(tweets_random.shape)
 
     start_time = time.time()
-    logger.info('converting to list')
+    print('converting to list')
     examples = tweets_random.text.values.tolist()
     # examples = examples[0] #DEBUG
     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
-    logger.info('convert to list:', str(time.time() - start_time), 'seconds')
+    print('convert to list:', str(time.time() - start_time), 'seconds')
     all_predictions_random_df_list = []
     for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-        logger.info('\n\n!!!!!column', column)
+        print('\n\n!!!!!column', column)
         loop_start = time.time()
         best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
         model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
         column, 'models', 'best_model')
 
-        logger.info(model_path)
+        print(model_path)
         onnx_path = os.path.join(model_path, 'onnx')
-        logger.info(onnx_path)
+        print(onnx_path)
 
         ####################################################################################################################################
         # TOKENIZATION and INFERENCE
         ####################################################################################################################################
-        logger.info('Predictions of random Tweets:')
+        print('Predictions of random Tweets:')
         start_time = time.time()
         onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
                                 model_path,
                                 examples)
 
-        logger.info('time taken:', str(time.time() - start_time), 'seconds')
-        logger.info('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+        print('time taken:', str(time.time() - start_time), 'seconds')
+        print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
 
         ####################################################################################################################################
         # SAVING
         ####################################################################################################################################
-        logger.info('Save Predictions of random Tweets:')
+        print('Save Predictions of random Tweets:')
         start_time = time.time()
 
         # create dataframe containing tweet id and probabilities
@@ -479,7 +480,7 @@ for file in paths_to_random:
         predictions_random_df = predictions_random_df[['second']]
         # predictions_random_df.columns = ['score']
         predictions_random_df.columns = [column]
-        logger.info(predictions_random_df.head())
+        print(predictions_random_df.head())
 
         all_predictions_random_df_list.append(predictions_random_df)
 
@@ -489,14 +490,14 @@ for file in paths_to_random:
                             all_predictions_random_df_list
                             )
 
-    logger.info('!!all_columns_df', all_columns_df.head())
-    logger.info('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
+    print('!!all_columns_df', all_columns_df.head())
+    print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
     all_columns_df.to_parquet(
         os.path.join(final_output_path,
                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID)
                      + '.parquet'))
 
-    logger.info('saved to:',
+    print('saved to:',
           # column,
           SLURM_ARRAY_TASK_ID,
           SLURM_JOB_ID,
@@ -507,16 +508,16 @@ for file in paths_to_random:
           str(time.time() - start_time)
         )
 
-    logger.info('>>>>> completed', filename_without_extension)
+    print('>>>>> completed', filename_without_extension)
 
-    logger.info('save time taken:', str(time.time() - start_time), 'seconds')
+    print('save time taken:', str(time.time() - start_time), 'seconds')
 
-    logger.info('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
+    print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
                                                                                                   loop_start) / len(examples))
     # break #DEBUG parquet file
 
 
-logger.info('full loop:', str(time.time() - global_start), 'seconds',
+print('full loop:', str(time.time() - global_start), 'seconds',
       (time.time() - global_start) / TOTAL_NUM_TWEETS)
 
-logger.info('>>done')
+print('>>done')
