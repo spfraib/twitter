@@ -188,6 +188,7 @@ unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_fil
 
 if args.resume == 1:
     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
+    unique_ids_remaining = list(dict.fromkeys(unique_ids_remaining))
     files_remaining = [filename_prefix+'part-'+filename+'-c000'+filename_suffix for filename in unique_ids_remaining]
     print(files_remaining[:3])
     print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
