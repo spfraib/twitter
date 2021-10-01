@@ -47,7 +47,8 @@ if __name__ == '__main__':
             user_with_pictures_list.append(user_id_str)
     logger.info(f'File format repartition: {file_format_count_dict}')
     counter = Counter(user_with_pictures_list)
-    logger.info(f'# unique user IDs: {len(list(counter))}')
-    logger.info(f'# user IDs appearing more than once: {len([i for i in counter if counter[i]>1])}')
+    logger.info(f'Total # of users: {len(user_list)}')
+    logger.info(f'# unique user IDs with pictures: {len(list(counter))}')
+    logger.info(f'# user IDs with more than one picture: {len([i for i in counter if counter[i]>1])}')
     users_without_pictures_list = [user_id for user_id in user_list if user_id not in user_with_pictures_list]
     logger.info(f'# users without picture: {len(users_without_pictures_list)}')
