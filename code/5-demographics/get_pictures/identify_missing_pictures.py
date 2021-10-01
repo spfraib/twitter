@@ -1,7 +1,8 @@
 import gzip
 import argparse
 import logging
-import os
+from pathlib import Path
+import pandas as pd
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -14,46 +15,24 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--tar_type", type=str, help='Whether to look at the tar or resized_tars')
     args = parser.parse_args()
     return args
 
-
-args = get_args_from_command_line()
-dir = os.path.join("/scratch/spf248/twitter/data/classification", args.country_code, "profile_pictures_sam")
-
-def save_users_with_picture():
-    files = os.listdir(dir)
-    known_users = []
-    for file in files:
-        path = os.path.join(dir, file)
-        known_users += [f.split('.')[0] for f in os.listdir(path)]
-
-    known_users = set(known_users)
-    with open(f'known_users_{country_code}.pkl', 'wb') as file:
-        pickle.dump(known_users, file)
-
-def load_all_users():
-    all_users = []
-    dir_name = f"/scratch/spf248/twitter/data/classification/{country_code}/users/"
-    # filenames = os.listdir("/scratch/spf248/twitter/data/classification/US/users/")
-    all_users_paths = list(glob(os.path.join(dir_name, '*.parquet')))
-    for file_name in all_users_paths:
-        users = pq.read_table(file_name, columns=['user_id']).to_pandas()
-        all_users += list(users)
-    all_users = set(all_users)
-    return all_users
-
-def load_missing_users():
-    if not os.path.isfile(f'known_users_{country_code}.pkl'):
-        save_known_users()
-    with open('known_users.pkl', 'rb') as file:
-        known_users = pickle.load(file)
-    all_users = load_all_users()
-    missing_users = all_users - known_users
-    return missing_users
-
-missing_users = load_missing_users()
-with open(f'missing_users_{country_code}.pkl', 'wb') as file:
-    pickle.dump(missing_users, file)
 if __name__ == '__main__':
+    args = get_args_from_command_line()
+    data_path = '/scratch/spf248/twitter/data'
+    # get user id list
+    user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
+    user_df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in Path(user_data_path).glob('*.parquet')])
+    user_list = user_df['user_id'].unique().tolist()
+    # get ids from users with downloaded pictures
+    list_files_path = f'{data_path}/demographics/profile_pictures/tars/list_files_{args.country_code}.txt.gz'
+    user_with_pictures_list = list()
+    with gzip.open(list_files_path, 'rt') as f:
+        for line in f:
+            user_id_str = line.split('.')[0]
+            if not user_id_str.isdigit():
+                logger.info(f'{user_id_str} is not a digit')
+            user_with_pictures_list.append(user_id_str)
+    users_without_pictures_list = [user_id for user_id in user_list if user_id not in user_with_pictures_list]
+    logger.info(f'# users without picture: {len(users_without_pictures_list)}')
