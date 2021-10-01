@@ -30,9 +30,10 @@ if __name__ == '__main__':
     to_delete_dict = dict()
     for tar_path in Path(data_path).glob('*.tar'):
         if tar_path.name != 'err.tar':
+            logger.info(f'Reading {tar_path.name}')
             tar_files = tarfile.open(tar_path)
+            to_delete_dict[tar_path.name] = list()
             for member in tar_files.getmembers():
-                to_delete_dict[tar_path.name] = list()
                 if '(' in member.name:
                     to_delete_dict[tar_path.name].append(member.name)
                 f = tar_files.extractfile(member)
