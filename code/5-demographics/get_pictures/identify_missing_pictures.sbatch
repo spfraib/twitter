@@ -11,9 +11,8 @@
 COUNTRY_CODE=$1
 
 module purge
-module load anaconda3/2020.02
 
-cd /scratch/spf248/twitter/code/twitter/code/5-demographics/get_pictures
+singularity exec --overlay /scratch/spf248/twitter/code/singularity/get_pictures.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python /scratch/spf248/twitter/code/twitter/code/5-demographics/get_pictures/identify_missing_pictures.py --country_code ${COUNTRY_CODE}"
 
-python identify_missing_pictures.py \
---country_code ${COUNTRY_CODE}
