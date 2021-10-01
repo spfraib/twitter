@@ -32,10 +32,11 @@ if __name__ == '__main__':
         if tar_path.name != 'err.tar':
             logger.info(f'Reading {tar_path.name}')
             tar_files = tarfile.open(tar_path)
+            user_id_list = list()
             to_delete_dict[tar_path.name] = list()
             for member in tar_files.getmembers():
                 if '(' in member.name:
-                    to_delete_dict[tar_path.name].append(member.name)
+                    potential_dupes_list.append(member.name)
                 f = tar_files.extractfile(member)
                 content = Image.open(f)
                 if content.size[0] < 224:
