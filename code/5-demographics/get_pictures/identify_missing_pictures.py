@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 import pandas as pd
 from collections import Counter
+import os
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -33,7 +34,7 @@ if __name__ == '__main__':
     with gzip.open(list_files_path, 'rt') as f:
         for line in f:
             user_id_str = line.split('.')[0]
-            file_format = line.split('.')[1].lower()
+            file_format = os.path.splitext(line)[1].lower()
             if file_format not in file_format_count_dict.keys():
                 file_format_count_dict[file_format] = 1
             else:
