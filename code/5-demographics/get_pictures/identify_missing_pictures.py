@@ -42,7 +42,7 @@ if __name__ == '__main__':
             if '(' in user_id_str:
                 user_id_str = user_id_str.split('(')[0].replace(' ', '')
             if not user_id_str.isdigit():
-                logger.info(f'{user_id_str} is not a digit')
+                logger.info(f'{line} returns error')
             user_with_pictures_list.append(user_id_str)
     logger.info(f'File format repartition: {file_format_count_dict}')
     counter = Counter(user_with_pictures_list)
