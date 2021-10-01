@@ -33,6 +33,7 @@ if __name__ == '__main__':
     file_format_count_dict = dict()
     with gzip.open(list_files_path, 'rt') as f:
         for line in f:
+            line = line.replace('\n', '')
             user_id_str = line.split('.')[0]
             file_format = os.path.splitext(line)[1].lower()
             if file_format not in file_format_count_dict.keys():
