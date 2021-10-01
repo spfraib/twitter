@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 f = tar_files.extractfile(member)
                 content = Image.open(f)
                 if content.size[0] < 224:
-                    if not member.name in to_delete_dict[tar_path.name]:
+                    if member.name not in to_delete_dict[tar_path.name]:
                         to_delete_dict[tar_path.name].append(member.name)
     count = 0
     for tar_path_name in to_delete_dict.keys():
