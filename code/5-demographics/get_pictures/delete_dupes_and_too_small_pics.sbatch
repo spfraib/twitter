@@ -8,6 +8,8 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
+#SBATCH --output=slurm_delete_%j.out
+
 
 COUNTRY_CODE=$1
 
