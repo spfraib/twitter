@@ -28,7 +28,7 @@ if __name__ == '__main__':
     outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
     outfile_err_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_{args.country_code}.txt.gz'
     for tar_path in Path(data_path).glob('*.tar'):
-        if 'err.tar' not in tar_path:
+        if tar_path.name != 'err.tar':
             logger.info(f'Saving file names from {tar_path}')
             tar_files = tarfile.open(tar_path)
             with gzip.open(outfile_path, 'at') as f:
