@@ -72,8 +72,8 @@ def build_auc_dict(results_dict: dict, model_type: str) -> dict:
 if __name__ == '__main__':
     args = get_args_from_command_line()
     if 'manuto' in socket.gethostname().lower():
-        output_path = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/evaluation'
-        results_folder = f'/home/manuto/Documents/world_bank/bert_twitter_labor/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/train_test/results'
+        output_path = f'/home/manuel/Documents/world_bank/twitter_labor/repos/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/evaluation'
+        results_folder = f'/home/manuel/Documents/world_bank/twitter_labor/repos/twitter-labor-data/data/train_test/{args.country_code}/{args.data_folder}/train_test/results'
     else:
         output_path = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/evaluation'
         results_folder = f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/{args.data_folder}/{args.country_code}/train_test/results'

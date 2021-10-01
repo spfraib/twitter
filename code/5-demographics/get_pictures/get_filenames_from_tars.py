@@ -30,4 +30,4 @@ if __name__ == '__main__':
         tar_files = tarfile.open(tar_path)
         for tar in tar_files.getmembers():
             with gzip.open(outfile_path, 'wt') as f:
-                f.write(tar.name)
+                f.write(f'{tar.name}\n')

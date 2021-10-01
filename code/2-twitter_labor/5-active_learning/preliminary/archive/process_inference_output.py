@@ -96,7 +96,7 @@ if __name__ == "__main__":
         """
         TODO: this keeps breaking even on 100GB of memory         
         /opt/slurm/data/slurmd/job12703504/slurm_script: line 22: 143310 Killed                  
-        python3 -u process_inference_output.py --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output > /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/process_inference_output.log 2>&1
+        python3 -u process_inference_output.py --inference_output_folder /scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${INFERENCE_FOLDER}/output > /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/3-active_learning/process_inference_output.log 2>&1
         slurmstepd: error: Detected 1 oom-kill event(s) in step 12703504.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler
         """
         start = time.time()

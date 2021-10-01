@@ -51,7 +51,7 @@ from sklearn.preprocessing import scale
 
 
 # sys.path.append('../')
-sys.path.append('../2-twitter_labor/2-model_training/bert_models/')
+sys.path.append('../2-twitter_labor/1-model_training/bert_models/')
 
 from simpletransformers.classification import ClassificationModel
 
