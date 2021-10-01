@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=get_filenames_from_tars
+#SBATCH --job-name=delete_dupes_small
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
