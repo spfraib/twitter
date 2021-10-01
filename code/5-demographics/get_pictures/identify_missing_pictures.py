@@ -22,6 +22,7 @@ def get_args_from_command_line():
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
+    logger.info(f'Country code: {args.country_code}')
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
