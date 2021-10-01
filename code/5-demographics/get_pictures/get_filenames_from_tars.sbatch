@@ -5,6 +5,9 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=5GB
 #SBATCH --time=12:00:00
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user=mt4493@nyu.edu
 
 COUNTRY_CODE=$1
 TAR_TYPE=$2

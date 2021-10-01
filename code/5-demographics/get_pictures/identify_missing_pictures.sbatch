@@ -6,7 +6,9 @@
 #SBATCH --mem=10GB
 #SBATCH --time=12:00:00
 #SBATCH --output=slurm_missing_pictures_%j.out
-
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user=mt4493@nyu.edu
 
 COUNTRY_CODE=$1
 
