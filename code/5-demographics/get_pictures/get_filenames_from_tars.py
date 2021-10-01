@@ -43,6 +43,6 @@ if __name__ == '__main__':
                 total_err_user_id_list += err_user_id_list
             with gzip.open(outfile_err_path, 'at') as f:
                 for user_id in total_err_user_id_list:
-                    print(tar.name, file=f)
+                    print(user_id, file=f)
 
 
