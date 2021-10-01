@@ -10,6 +10,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message
                     level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
@@ -23,8 +24,8 @@ def get_args_from_command_line():
 if __name__ == '__main__':
     args = get_args_from_command_line()
     tar_folder_dict = {'normal': 'tars', 'resized': 'resized_tars'}
-    data_path = f'/scratch/spf248/twitter/data/demographics/data/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
-    outfile_path = f'/scratch/spf248/twitter/data/demographics/data/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
+    data_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
+    outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
     for tar_path in Path(data_path).glob('*.tar'):
         logger.info(f'Saving file names from {tar_path}')
         tar_files = tarfile.open(tar_path)
