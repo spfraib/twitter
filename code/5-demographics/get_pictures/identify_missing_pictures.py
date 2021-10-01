@@ -28,7 +28,6 @@ if __name__ == '__main__':
     user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
     user_df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in Path(user_data_path).glob('*.parquet')])
     user_list = user_df['user_id'].unique().tolist()
-    logger.info(f'Total # of users: {len(user_list)}')
     # get ids from user for whom we got an error when trying to download their pictures
     list_errors_path = f'{data_path}/demographics/profile_pictures/tars/list_errors_{args.country_code}.txt.gz'
     user_id_errors_list = list()
@@ -39,6 +38,7 @@ if __name__ == '__main__':
                 user_id_errors_list.append(line)
             else:
                 logger.info(f'User ID {line} from erroneous users is not a digit')
+    logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
     list_files_path = f'{data_path}/demographics/profile_pictures/tars/list_files_{args.country_code}.txt.gz'
