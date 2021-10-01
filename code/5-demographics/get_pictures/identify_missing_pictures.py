@@ -3,6 +3,7 @@ import argparse
 import logging
 from pathlib import Path
 import pandas as pd
+from collections import Counter
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -28,11 +29,23 @@ if __name__ == '__main__':
     # get ids from users with downloaded pictures
     list_files_path = f'{data_path}/demographics/profile_pictures/tars/list_files_{args.country_code}.txt.gz'
     user_with_pictures_list = list()
+    file_format_count_dict = dict()
     with gzip.open(list_files_path, 'rt') as f:
         for line in f:
             user_id_str = line.split('.')[0]
+            file_format = line.split('.')[1].lower()
+            if file_format not in file_format_count_dict.keys():
+                file_format_count_dict[file_format] = 1
+            else:
+                file_format_count_dict[file_format] += 1
+            if '(' in user_id_str:
+                user_id_str = user_id_str.split('(')[0].replace(' ', '')
             if not user_id_str.isdigit():
                 logger.info(f'{user_id_str} is not a digit')
             user_with_pictures_list.append(user_id_str)
+    logger.info(f'File format repartition: {file_format_count_dict}')
+    counter = Counter(user_with_pictures_list)
+    logger.info(f'# unique user IDs: {len(list(counter))}')
+    logger.info(f'# user IDs appearing more than once: {len([i for i in counter if counter[i]>1])}')
     users_without_pictures_list = [user_id for user_id in user_list if user_id not in user_with_pictures_list]
     logger.info(f'# users without picture: {len(users_without_pictures_list)}')
