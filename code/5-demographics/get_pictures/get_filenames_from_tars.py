@@ -26,9 +26,23 @@ if __name__ == '__main__':
     tar_folder_dict = {'normal': 'tars', 'resized': 'resized_tars'}
     data_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
     outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
+    outfile_err_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_{args.country_code}.txt.gz'
     for tar_path in Path(data_path).glob('*.tar'):
-        logger.info(f'Saving file names from {tar_path}')
-        tar_files = tarfile.open(tar_path)
-        with gzip.open(outfile_path, 'at') as f:
-            for tar in tar_files.getmembers():
-                print(tar.name, file=f)
+        if 'err.tar' not in tar_path:
+            logger.info(f'Saving file names from {tar_path}')
+            tar_files = tarfile.open(tar_path)
+            with gzip.open(outfile_path, 'at') as f:
+                for tar in tar_files.getmembers():
+                    print(tar.name, file=f)
+        else:
+            tar_files = tarfile.open(tar_path)
+            total_err_user_id_list = list()
+            for member in tar_files.getmembers():
+                f=tar_files.extractfile(member)
+                err_user_id_list =  [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
+                total_err_user_id_list += err_user_id_list
+            with gzip.open(outfile_err_path, 'at') as f:
+                for user_id in total_err_user_id_list:
+                    print(tar.name, file=f)
+
+
