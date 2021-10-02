@@ -12,4 +12,4 @@
 
 COUNTRY_CODE=$1
 
-rm -rf /scratch/spf248/twitter/data/demographics/profile_pictures/${COUNTRY_CODE}
+rm -rf /scratch/spf248/twitter/data/demographics/profile_pictures/archive/${COUNTRY_CODE}
