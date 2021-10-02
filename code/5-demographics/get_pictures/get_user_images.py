@@ -29,10 +29,10 @@ def get_args_from_command_line():
 def get_env_var(varname, default):
     if os.environ.get(varname) != None:
         var = int(os.environ.get(varname))
-        logger.info(varname, ':', var)
+        logger.info(f'{varname}: {var}')
     else:
         var = default
-        logger.info(varname, ':', var, '(Default)')
+        logger.info(f'{varname}: {var}, (Default)')
     return var
 
 
