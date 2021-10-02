@@ -72,31 +72,33 @@ if __name__ == '__main__':
         np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logging.info(f'#files: {len(paths_to_filtered)}')
     count = 0
-    for file_path in paths_to_filtered:
-        if not file_path.endswith("parquet"):
-            continue
-        start = timer()
-        users = pq.read_table(file_path, columns=['user_id', 'profile_image_url_https']).to_pandas()
-        for row in users.itertuples(index=False):
-            user_id = row[0]
-            url = row[1]
-            filename = url.rsplit('/', 1)[-1]
-            ext = os.path.splitext(filename)[1]
-            if '_' in filename:
-                new_filename = f'{filename.split("_")[0]}{ext}'
-                url = url.replace(filename, new_filename)
-            output_path = os.path.join(output_dir, f"{user_id}{ext}")
-            try:
-                wget.download(url, output_path)
-            except:
-                error_log.write(user_id + "\t" + url + "\n")
-            count += 1
-        if count % 1000 == 0:
-            logging.info(f'Covered {count} users')
-        logging.info("Done in", round(timer() - start), "sec")
-    # tar output
     os.chdir(output_dir)
-    tar_output_folder(folder_path='.', output_path=f'{output_dir}.tar')
+    with tarfile.open(f'{output_dir}.tar', 'w') as tar:
+        for file_path in paths_to_filtered:
+            if not file_path.endswith("parquet"):
+                continue
+            start = timer()
+            users = pq.read_table(file_path, columns=['user_id', 'profile_image_url_https']).to_pandas()
+            for row in users.itertuples(index=False):
+                user_id = row[0]
+                url = row[1]
+                filename = url.rsplit('/', 1)[-1]
+                ext = os.path.splitext(filename)[1]
+                if '_' in filename:
+                    new_filename = f'{filename.split("_")[0]}{ext}'
+                    url = url.replace(filename, new_filename)
+                output_path = os.path.join(output_dir, f"{user_id}{ext}")
+                try:
+                    wget.download(url, output_path)
+                except:
+                    error_log.write(user_id + "\t" + url + "\n")
+                count += 1
+            if count % 1000 == 0:
+                logging.info(f'Covered {count} users')
+            logging.info("Done in", round(timer() - start), "sec")
+            for f in os.listdir(output_dir):
+                tar.add(os.path.join(output_dir, f))
+                os.remove(os.path.join(output_dir, f))
     # delete original folder
     if os.path.exists(output_dir):
         os.rmdir(output_dir)
