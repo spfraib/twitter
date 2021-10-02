@@ -83,7 +83,7 @@ if __name__ == '__main__':
                 user_id = row[0]
                 url = row[1]
                 filename = url.rsplit('/', 1)[-1]
-                ext = os.path.splitext(filename)[1]
+                ext = os.path.splitext(filename)[1].lower()
                 if '_' in filename:
                     new_filename = f'{filename.split("_")[0]}{ext}'
                     url = url.replace(filename, new_filename)
@@ -95,10 +95,10 @@ if __name__ == '__main__':
                 count += 1
             if count % 1000 == 0:
                 logger.info(f'Covered {count} users')
+                for f in os.listdir(output_dir):
+                    tar.add(os.path.join(output_dir, f))
+                    os.remove(os.path.join(output_dir, f))
             logger.info(f"Done in {round(timer() - start)} sec")
-            for f in os.listdir(output_dir):
-                tar.add(os.path.join(output_dir, f))
-                os.remove(os.path.join(output_dir, f))
     # delete original folder
     if os.path.exists(output_dir):
         os.rmdir(output_dir)
