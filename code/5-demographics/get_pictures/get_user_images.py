@@ -83,7 +83,7 @@ if __name__ == '__main__':
                 user_id = row[0]
                 url = row[1]
                 filename = url.rsplit('/', 1)[-1]
-                ext = os.path.splitext(filename)[1].lower()
+                ext = os.path.splitext(filename)[1]
                 if '_' in filename:
                     new_filename = f'{filename.split("_")[0]}{ext}'
                     url = url.replace(filename, new_filename)
