@@ -5,6 +5,10 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2GB
 #SBATCH --time=48:00:00
+#SBATCH --output=outfiles/slurm_get_images_%j.out
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-user=mt4493@nyu.edu
 
 COUNTRY_CODE=$1
 
