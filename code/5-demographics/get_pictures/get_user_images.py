@@ -93,11 +93,11 @@ if __name__ == '__main__':
                 except:
                     error_log.write(user_id + "\t" + url + "\n")
                 count += 1
-            if count % 1000 == 0:
-                logger.info(f'Covered {count} users')
-                for f in os.listdir(output_dir):
-                    tar.add(os.path.join(output_dir, f))
-                    os.remove(os.path.join(output_dir, f))
+                if count % 1000 == 0:
+                    logger.info(f'Covered {count} users')
+                    for f in os.listdir(output_dir):
+                        tar.add(os.path.join(output_dir, f))
+                        os.remove(os.path.join(output_dir, f))
             logger.info(f"Done in {round(timer() - start)} sec")
     # delete original folder
     if os.path.exists(output_dir):
