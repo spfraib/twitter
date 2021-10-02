@@ -13,7 +13,7 @@ from pathlib import Path
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
-                    level=logging.INFO)
+                    level=logger.info)
 logger = logging.getLogger(__name__)
 
 
@@ -29,10 +29,10 @@ def get_args_from_command_line():
 def get_env_var(varname, default):
     if os.environ.get(varname) != None:
         var = int(os.environ.get(varname))
-        logging.info(varname, ':', var)
+        logger.info(varname, ':', var)
     else:
         var = default
-        logging.info(varname, ':', var, '(Default)')
+        logger.info(varname, ':', var, '(Default)')
     return var
 
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     args = get_args_from_command_line()
 
     country_code = args.country_code
-    logging.info('Country:', country_code)
+    logger.info(f'Country: {country_code}')
 
     # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
@@ -62,7 +62,7 @@ if __name__ == '__main__':
         os.makedirs(err_dir)
     error_log = open(os.path.join(err_dir, f"erroneous_users_{SLURM_JOB_ID}"), 'w')
 
-    logging.info('Load data')
+    logger.info('Load data')
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     start = timer()
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     # filenames = os.listdir("/scratch/spf248/twitter/data/classification/US/users/")
     paths_to_filtered = list(
         np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-    logging.info(f'#files: {len(paths_to_filtered)}')
+    logger.info(f'#files: {len(paths_to_filtered)}')
     count = 0
     os.chdir(output_dir)
     with tarfile.open(f'{output_dir}.tar', 'w') as tar:
@@ -94,8 +94,8 @@ if __name__ == '__main__':
                     error_log.write(user_id + "\t" + url + "\n")
                 count += 1
             if count % 1000 == 0:
-                logging.info(f'Covered {count} users')
-            logging.info("Done in", round(timer() - start), "sec")
+                logger.info(f'Covered {count} users')
+            logger.info(f"Done in {round(timer() - start)} sec")
             for f in os.listdir(output_dir):
                 tar.add(os.path.join(output_dir, f))
                 os.remove(os.path.join(output_dir, f))
