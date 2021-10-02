@@ -10,4 +10,6 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-rm -rf /scratch/spf248/twitter/data/demographics/profile_pictures/MX
+COUNTRY_CODE=$1
+
+rm -rf /scratch/spf248/twitter/data/demographics/profile_pictures/${COUNTRY_CODE}
