@@ -28,6 +28,10 @@ if __name__ == '__main__':
     data_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
     outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
     outfile_err_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_{args.country_code}.txt.gz'
+    if os.path.exists(outfile_path):
+        os.remove(outfile_path)
+    if os.path.exists(outfile_err_path):
+        os.remove(outfile_err_path)
     total_err_user_id_list = list()
     for tar_path in Path(data_path).glob('*.tar'):
         logger.info(f'Saving file names from {tar_path}')
