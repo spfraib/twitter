@@ -42,9 +42,12 @@ if __name__ == '__main__':
             tar_files = tarfile.open(tar_path)
             total_err_user_id_list = list()
             for member in tar_files.getmembers():
-                f = tar_files.extractfile(member)
-                err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
-                total_err_user_id_list += err_user_id_list
+                try:
+                    f = tar_files.extractfile(member)
+                    err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
+                    total_err_user_id_list += err_user_id_list
+                except:
+                    logger.info(f'Error reading member {member.name} from err.tar')
             with gzip.open(outfile_err_path, 'at') as f:
                 for user_id in total_err_user_id_list:
                     print(user_id, file=f)
