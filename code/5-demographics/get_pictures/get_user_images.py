@@ -114,9 +114,9 @@ if __name__ == '__main__':
             if os.path.exists(output_dir):
                 os.rmdir(output_dir)
     elif args.mode == 'get_missing':
-        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle',
-                  'rb') as f:
-            missing_pics_ids_list = pickle.load(f)
+        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.json',
+                  'r') as f:
+            missing_pics_ids_dict = json.load(f)
         ids_to_collect_list = list(np.array_split(missing_pics_ids_list, SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
         logger.info(f'#pics to collect: {len(ids_to_collect_list)}')
         user_df = pd.concat(

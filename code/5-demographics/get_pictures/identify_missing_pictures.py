@@ -5,7 +5,7 @@ from pathlib import Path
 import pandas as pd
 from collections import Counter
 import os
-import pickle
+import json
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -28,9 +28,9 @@ if __name__ == '__main__':
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
-    user_dict = pd.concat(
+    user_df = pd.concat(
         [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
-         Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()
+         Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['profile_image_url_https']
     user_list = list(user_dict.keys())
     # get ids from user for whom we got an error when trying to download their pictures
     list_errors_path = f'{data_path}/demographics/profile_pictures/tars/list_errors_{args.country_code}.txt.gz'
