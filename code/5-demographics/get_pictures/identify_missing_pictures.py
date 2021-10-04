@@ -38,7 +38,7 @@ if __name__ == '__main__':
             if user_id.isdigit():
                 user_id_errors_list.append(user_id)
             else:
-                logger.info(f'Line {line} from erroneous users')
+                logger.info(f'User ID {user_id} from erroneous users is not a digit.')
     logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
