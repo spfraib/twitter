@@ -155,3 +155,4 @@ if __name__ == '__main__':
             # remove empty directory
             if os.path.exists(output_dir):
                 os.rmdir(output_dir)
+

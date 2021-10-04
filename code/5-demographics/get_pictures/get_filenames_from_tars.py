@@ -28,9 +28,10 @@ if __name__ == '__main__':
     data_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
     outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
     outfile_err_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_{args.country_code}.txt.gz'
+    total_err_user_id_list = list()
     for tar_path in Path(data_path).glob('*.tar'):
         logger.info(f'Saving file names from {tar_path}')
-        if tar_path.name != 'err.tar':
+        if 'err' not in tar_path.name:
             tar_files = tarfile.open(tar_path)
             try:
                 for member in tar_files.getmembers():
@@ -40,14 +41,13 @@ if __name__ == '__main__':
                 logger.info(f'Error reading tar {tar_path}')
         else:
             tar_files = tarfile.open(tar_path)
-            total_err_user_id_list = list()
             for member in tar_files.getmembers():
                 try:
                     f = tar_files.extractfile(member)
                     err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
                     total_err_user_id_list += err_user_id_list
                 except:
-                    logger.info(f'Error reading member {member.name} from err.tar')
-            with gzip.open(outfile_err_path, 'at') as f:
-                for user_id in total_err_user_id_list:
-                    print(user_id, file=f)
+                    logger.info(f'Error reading member {member.name} from {tar_path.name}')
+    with gzip.open(outfile_err_path, 'at') as f:
+        for user_id in total_err_user_id_list:
+            print(user_id, file=f)
