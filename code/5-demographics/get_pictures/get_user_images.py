@@ -1,6 +1,7 @@
 import os
 from timeit import default_timer as timer
 from glob import glob
+import pandas as pd
 import pyarrow.parquet as pq
 import numpy as np
 import wget
@@ -10,6 +11,7 @@ import logging
 import tarfile
 from pathlib import Path
 import shutil
+import pickle
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -22,6 +24,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
+    parser.add_argument("--mode", type=str)
     args = parser.parse_args()
     return args
 
@@ -54,37 +57,74 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    output_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/{str(SLURM_JOB_ID)}"
-    success_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/success"
-    err_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/err"
+    output_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/{str(SLURM_JOB_ID)}"
+    success_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/success"
+    err_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/err"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    # if not os.path.exists(success_log_dir):
-    #     os.makedirs(success_log_dir)
     if not os.path.exists(err_log_dir):
         os.makedirs(err_log_dir)
-    # success_log = open(os.path.join(success_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     error_log = open(os.path.join(err_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
+    # if not os.path.exists(success_log_dir):
+    #     os.makedirs(success_log_dir)
+    # success_log = open(os.path.join(success_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     logger.info('Load data')
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     start = timer()
     dir_name = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
-    # filenames = os.listdir("/scratch/spf248/twitter/data/classification/US/users/")
-    paths_to_filtered = list(
-        np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-    logger.info(f'#files: {len(paths_to_filtered)}')
-    count = 0
-    os.chdir(output_dir)
-    with tarfile.open(f'{output_dir}.tar', 'w') as tar:
-        for file_path in paths_to_filtered:
-            if not file_path.endswith("parquet"):
-                continue
-            start = timer()
-            users = pq.read_table(file_path, columns=['user_id', 'profile_image_url_https']).to_pandas()
-            for row in users.itertuples(index=False):
-                user_id = row[0]
-                url = row[1]
+    if args.mode == 'from_scratch':
+        paths_to_filtered = list(
+            np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+        logger.info(f'#files: {len(paths_to_filtered)}')
+        count = 0
+        os.chdir(output_dir)
+        with tarfile.open(f'{output_dir}.tar', 'w') as tar:
+            for file_path in paths_to_filtered:
+                if not file_path.endswith("parquet"):
+                    continue
+                start = timer()
+                users = pq.read_table(file_path, columns=['user_id', 'profile_image_url_https']).to_pandas()
+                for row in users.itertuples(index=False):
+                    user_id = row[0]
+                    url = row[1]
+                    filename = url.rsplit('/', 1)[-1]
+                    ext = os.path.splitext(filename)[1]
+                    if '_' in filename:
+                        new_filename = f'{filename.split("_")[0]}{ext}'
+                        url = url.replace(filename, new_filename)
+                    output_path = os.path.join(output_dir, f"{user_id}{ext}")
+                    try:
+                        wget.download(url, output_path)
+                        # success_log.write(f'{user_id}\t{url}\n')
+                    except:
+                        error_log.write(f'{user_id}\t{url}\n')
+                    count += 1
+                    if count % 1000 == 0:
+                        logger.info(f'Covered {count} users')
+                        for f in os.listdir(output_dir):
+                            tar.add(os.path.join(output_dir, f))
+                            os.remove(os.path.join(output_dir, f))
+                logger.info(f"Done in {round(timer() - start)} sec")
+        # delete original folder
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+    elif args.mode == 'get_missing':
+        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle',
+                  'rb') as f:
+            missing_pics_ids_list = pickle.load(f)
+        ids_to_collect_list = list(np.array_split(missing_pics_ids_list, SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+        logger.info(f'#pics to collect: {len(ids_to_collect_list)}')
+        user_df = pd.concat(
+            [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
+             Path(dir_name).glob('*.parquet')])
+        user_df = user_df.loc[user_df['user_id'].isin(ids_to_collect_list)].reset_index(drop=True)
+        count=0
+        os.chdir(output_dir)
+        with tarfile.open(f'{output_dir}.tar', 'w') as tar:
+            for row_nb in range(user_df.shape[0]):
+                user_id = user_df['user_id'][row_nb]
+                url = user_df['profile_image_url_https'][row_nb]
                 filename = url.rsplit('/', 1)[-1]
                 ext = os.path.splitext(filename)[1]
                 if '_' in filename:
@@ -97,12 +137,9 @@ if __name__ == '__main__':
                 except:
                     error_log.write(f'{user_id}\t{url}\n')
                 count += 1
-                if count % 1000 == 0:
+                if count % 100 == 0:
                     logger.info(f'Covered {count} users')
                     for f in os.listdir(output_dir):
                         tar.add(os.path.join(output_dir, f))
                         os.remove(os.path.join(output_dir, f))
             logger.info(f"Done in {round(timer() - start)} sec")
-    # delete original folder
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)

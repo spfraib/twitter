@@ -34,11 +34,11 @@ if __name__ == '__main__':
     user_id_errors_list = list()
     with gzip.open(list_errors_path, 'rt') as f:
         for line in f:
-            line = line.replace('\n', '')
-            if line.isdigit():
+            user_id = line.replace('\n', '')
+            if user_id.isdigit():
                 user_id_errors_list.append(line)
             else:
-                logger.info(f'User ID {line} from erroneous users is not a digit')
+                logger.info(f'Line {line} from erroneous users does not contain user ID')
     logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
