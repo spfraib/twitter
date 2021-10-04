@@ -28,7 +28,9 @@ do
     loop_count=$(($loop_count+1))
     if ! [[ ${filename} == *"err"* ]]; then
       mkdir -p ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}
-      tar -xf ${tar_file} -C ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext} --strip-components 9
+      components=$(tar -tvf ${tar_file} | awk -F/ '$NF != "" { print $F; exit }' | tr -cd '/' | wc -c)
+      components=$(($components-1))
+      tar -xf ${tar_file} -C ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext} --strip-components ${components}
       module purge
       singularity exec --overlay /scratch/spf248/twitter/code/singularity/m3_inference.ext3:ro \
         /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
@@ -36,7 +38,7 @@ do
       mkdir -p empty_dir
       rsync -a --delete empty_dir/    ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}/
       rm -rf ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}/
-      tar -cvf ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}.tar ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}
+      tar -cvf ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}.tar -C ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext} .
       mkdir -p empty_dir
       rsync -a --delete empty_dir/    ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}/
       rm -rf ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}/
