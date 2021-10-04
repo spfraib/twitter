@@ -70,5 +70,7 @@ if __name__ == '__main__':
     logger.info(f'# users without picture and not listed in errors: {len(users_without_pictures_list)}')
     if len(users_without_pictures_list) > 0:
         missing_pictures_pickle_path = f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle'
+        if os.path.exists(missing_pictures_pickle_path):
+            os.remove(missing_pictures_pickle_path)
         with open(missing_pictures_pickle_path, 'wb') as f:
             pickle.dump(users_without_pictures_list, f)
