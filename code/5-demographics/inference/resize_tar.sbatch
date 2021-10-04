@@ -45,3 +45,5 @@ do
     fi
     echo "Resized ${loop_count}/${dir_count} tar folders"
 done
+
+rm -rf empty_dir 
