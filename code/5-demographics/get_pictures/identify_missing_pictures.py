@@ -5,6 +5,7 @@ from pathlib import Path
 import pandas as pd
 from collections import Counter
 import os
+import pickle
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -64,5 +65,9 @@ if __name__ == '__main__':
     logger.info(f'# unique user IDs with pictures: {len(list(counter))}')
     logger.info(f'# user IDs with more than one picture: {len([i for i in counter if counter[i]>1])}')
     pictures_and_error_list = user_with_pictures_list + user_id_errors_list
-    users_without_pictures_list = [user_id for user_id in user_list if user_id not in pictures_and_error_list ]
+    users_without_pictures_list = list(set(user_list) - set(pictures_and_error_list))
     logger.info(f'# users without picture and not listed in errors: {len(users_without_pictures_list)}')
+    if len(users_without_pictures_list) > 0:
+        missing_pictures_pickle_path = f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle'
+        with open(missing_pictures_pickle_path, 'wb') as f:
+            pickle.dump(users_without_pictures_list, f)

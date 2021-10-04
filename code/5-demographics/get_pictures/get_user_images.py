@@ -55,13 +55,16 @@ if __name__ == '__main__':
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
     output_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/{str(SLURM_JOB_ID)}"
-    err_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/err"
+    success_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/success"
+    err_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/{country_code}/err"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    if not os.path.exists(err_dir):
-        os.makedirs(err_dir)
-    error_log = open(os.path.join(err_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
-
+    # if not os.path.exists(success_log_dir):
+    #     os.makedirs(success_log_dir)
+    if not os.path.exists(err_log_dir):
+        os.makedirs(err_log_dir)
+    # success_log = open(os.path.join(success_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
+    error_log = open(os.path.join(err_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     logger.info('Load data')
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
@@ -90,8 +93,9 @@ if __name__ == '__main__':
                 output_path = os.path.join(output_dir, f"{user_id}{ext}")
                 try:
                     wget.download(url, output_path)
+                    # success_log.write(f'{user_id}\t{url}\n')
                 except:
-                    error_log.write(user_id + "\t" + url + "\n")
+                    error_log.write(f'{user_id}\t{url}\n')
                 count += 1
                 if count % 1000 == 0:
                     logger.info(f'Covered {count} users')
