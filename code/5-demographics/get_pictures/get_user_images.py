@@ -11,7 +11,7 @@ import logging
 import tarfile
 from pathlib import Path
 import shutil
-import pickle
+import json
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
