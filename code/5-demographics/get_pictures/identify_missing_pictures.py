@@ -28,7 +28,7 @@ if __name__ == '__main__':
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
-    user_df = pd.concat(
+    user_dict = pd.concat(
         [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
          Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['profile_image_url_https']
     user_list = list(user_dict.keys())

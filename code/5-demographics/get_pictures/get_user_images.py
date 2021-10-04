@@ -117,19 +117,13 @@ if __name__ == '__main__':
         with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.json',
                   'r') as f:
             missing_pics_ids_dict = json.load(f)
-        ids_to_collect_list = list(np.array_split(missing_pics_ids_list, SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+        ids_to_collect_list = list(np.array_split(list(missing_pics_ids_dict.keys()), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
         logger.info(f'#pics to collect: {len(ids_to_collect_list)}')
-        user_df = pd.concat(
-            [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
-             Path(dir_name).glob('*.parquet')])
-        logger.info('Loaded user data')
-        user_df = user_df.loc[user_df['user_id'].isin(ids_to_collect_list)].reset_index(drop=True)
         count = 0
         os.chdir(output_dir)
         with tarfile.open(f'{output_dir}.tar', 'w') as tar:
-            for row_nb in range(user_df.shape[0]):
-                user_id = user_df['user_id'][row_nb]
-                url = user_df['profile_image_url_https'][row_nb]
+            for user_id in ids_to_collect_list:
+                url = missing_pics_ids_dict[user_id]
                 filename = url.rsplit('/', 1)[-1]
                 ext = os.path.splitext(filename)[1]
                 if '_' in filename:
