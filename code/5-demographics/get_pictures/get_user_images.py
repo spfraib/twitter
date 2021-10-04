@@ -119,7 +119,7 @@ if __name__ == '__main__':
             [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
              Path(dir_name).glob('*.parquet')])
         user_df = user_df.loc[user_df['user_id'].isin(ids_to_collect_list)].reset_index(drop=True)
-        count=0
+        count = 0
         os.chdir(output_dir)
         with tarfile.open(f'{output_dir}.tar', 'w') as tar:
             for row_nb in range(user_df.shape[0]):
