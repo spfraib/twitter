@@ -1,7 +1,6 @@
 import os
 from timeit import default_timer as timer
 from glob import glob
-import pandas as pd
 import pyarrow.parquet as pq
 import numpy as np
 import wget
@@ -10,6 +9,7 @@ import argparse
 import logging
 import tarfile
 from pathlib import Path
+import shutil
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -101,4 +101,4 @@ if __name__ == '__main__':
             logger.info(f"Done in {round(timer() - start)} sec")
     # delete original folder
     if os.path.exists(output_dir):
-        os.rmdir(output_dir)
+        shutil.rmtree(output_dir)
