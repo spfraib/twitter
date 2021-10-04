@@ -60,7 +60,7 @@ if __name__ == '__main__':
         os.makedirs(output_dir)
     if not os.path.exists(err_dir):
         os.makedirs(err_dir)
-    error_log = open(os.path.join(err_dir, f"erroneous_users_{SLURM_JOB_ID}"), 'w')
+    error_log = open(os.path.join(err_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
 
     logger.info('Load data')
     data_path = '/scratch/spf248/twitter/data'
