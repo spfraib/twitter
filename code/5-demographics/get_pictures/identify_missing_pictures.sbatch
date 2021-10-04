@@ -3,7 +3,7 @@
 #SBATCH --job-name=identify_missing_pictures
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=20GB
+#SBATCH --mem=30GB
 #SBATCH --time=12:00:00
 #SBATCH --output=slurm_missing_pictures_%j.out
 #SBATCH --mail-type=BEGIN
