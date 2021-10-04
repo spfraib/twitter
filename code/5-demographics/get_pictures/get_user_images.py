@@ -106,9 +106,13 @@ if __name__ == '__main__':
                             tar.add(os.path.join(output_dir, f))
                             os.remove(os.path.join(output_dir, f))
                 logger.info(f"Done in {round(timer() - start)} sec")
-        # delete original folder
-        if os.path.exists(output_dir):
-            shutil.rmtree(output_dir)
+            # add last downloaded pictures
+            for f in os.listdir(output_dir):
+                tar.add(os.path.join(output_dir, f))
+                os.remove(os.path.join(output_dir, f))
+            # remove empty directory
+            if os.path.exists(output_dir):
+                os.rmdir(output_dir)
     elif args.mode == 'get_missing':
         with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle',
                   'rb') as f:
@@ -118,6 +122,7 @@ if __name__ == '__main__':
         user_df = pd.concat(
             [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
              Path(dir_name).glob('*.parquet')])
+        logger.info('Loaded user data')
         user_df = user_df.loc[user_df['user_id'].isin(ids_to_collect_list)].reset_index(drop=True)
         count = 0
         os.chdir(output_dir)
@@ -143,3 +148,10 @@ if __name__ == '__main__':
                         tar.add(os.path.join(output_dir, f))
                         os.remove(os.path.join(output_dir, f))
             logger.info(f"Done in {round(timer() - start)} sec")
+            # add last downloaded pictures
+            for f in os.listdir(output_dir):
+                tar.add(os.path.join(output_dir, f))
+                os.remove(os.path.join(output_dir, f))
+            # remove empty directory
+            if os.path.exists(output_dir):
+                os.rmdir(output_dir)
