@@ -32,7 +32,7 @@ do
       module purge
       singularity exec --overlay /scratch/spf248/twitter/code/singularity/m3_inference.ext3:ro \
         /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-        /bin/bash -c "python3 /scratch/spf248/twitter/code/m3inference/scripts/preprocess.py --source_dir ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext} --output_dir ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}"
+        /bin/bash -c "source /ext3/env.sh; python3 /scratch/spf248/twitter/code/m3inference/scripts/preprocess.py --source_dir ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext} --output_dir ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}"
       mkdir -p empty_dir
       rsync -a --delete empty_dir/    ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}/
       tar -cvf ${RESIZED_TAR_OUTPUT_PATH}/${filename_without_ext}.tar ${RESIZED_TAR_OUTPUT_PATH}/resized_${filename_without_ext}
