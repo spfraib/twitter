@@ -65,4 +65,4 @@ if __name__ == '__main__':
     logger.info(f'# user IDs with more than one picture: {len([i for i in counter if counter[i]>1])}')
     pictures_and_error_list = user_with_pictures_list + user_id_errors_list
     users_without_pictures_list = [user_id for user_id in user_list if user_id not in pictures_and_error_list ]
-    logger.info(f'# users without picture: {len(users_without_pictures_list)}')
+    logger.info(f'# users without picture and not listed in errors: {len(users_without_pictures_list)}')
