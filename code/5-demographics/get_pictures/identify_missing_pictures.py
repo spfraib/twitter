@@ -36,9 +36,9 @@ if __name__ == '__main__':
         for line in f:
             user_id = line.replace('\n', '')
             if user_id.isdigit():
-                user_id_errors_list.append(line)
+                user_id_errors_list.append(user_id)
             else:
-                logger.info(f'Line {line} from erroneous users does not contain user ID')
+                logger.info(f'Line {line} from erroneous users')
     logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
