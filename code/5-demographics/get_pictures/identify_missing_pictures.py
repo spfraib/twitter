@@ -21,14 +21,17 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     logger.info(f'Country code: {args.country_code}')
     data_path = '/scratch/spf248/twitter/data'
     # get user id list
     user_data_path = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
-    user_df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in Path(user_data_path).glob('*.parquet')])
-    user_list = user_df['user_id'].unique().tolist()
+    user_dict = pd.concat(
+        [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
+         Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()
+    user_list = list(user_dict.keys())
     # get ids from user for whom we got an error when trying to download their pictures
     list_errors_path = f'{data_path}/demographics/profile_pictures/tars/list_errors_{args.country_code}.txt.gz'
     user_id_errors_list = list()
@@ -64,13 +67,14 @@ if __name__ == '__main__':
     logger.info(f'File format repartition: {file_format_count_dict}')
     counter = Counter(user_with_pictures_list)
     logger.info(f'# unique user IDs with pictures: {len(list(counter))}')
-    logger.info(f'# user IDs with more than one picture: {len([i for i in counter if counter[i]>1])}')
+    logger.info(f'# user IDs with more than one picture: {len([i for i in counter if counter[i] > 1])}')
     pictures_and_error_list = user_with_pictures_list + user_id_errors_list
     users_without_pictures_list = list(set(user_list) - set(pictures_and_error_list))
     logger.info(f'# users without picture and not listed in errors: {len(users_without_pictures_list)}')
     if len(users_without_pictures_list) > 0:
-        missing_pictures_pickle_path = f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.pickle'
-        if os.path.exists(missing_pictures_pickle_path):
-            os.remove(missing_pictures_pickle_path)
-        with open(missing_pictures_pickle_path, 'wb') as f:
-            pickle.dump(users_without_pictures_list, f)
+        missing_pictures_dict = {k: user_dict[k] for k in users_without_pictures_list}
+        missing_pictures_path = f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.json'
+        if os.path.exists(missing_pictures_path):
+            os.remove(missing_pictures_path)
+        with open(missing_pictures_path, 'w') as fp:
+            json.dump(missing_pictures_dict, fp)
