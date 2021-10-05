@@ -28,6 +28,7 @@ do
       components=$(tar -tvf ${tar_file} | awk -F/ '$NF != "" { print $F; exit }' | tr -cd '/' | wc -c)
       components=$(($components-1))
       echo "Components: ${components}"
+      mkdir -p ${TAR_INPUT_PATH}/${filename_without_ext}
       tar -xf ${tar_file} -C ${TAR_INPUT_PATH}/${filename_without_ext} --strip-components ${components}
       mkdir -p empty_dir
       rsync -a --delete empty_dir/    ${tar_file}/
