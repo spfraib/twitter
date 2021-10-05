@@ -61,9 +61,9 @@ if __name__ == '__main__':
     success_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/success"
     err_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/err"
     if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
+        os.makedirs(output_dir, exist_ok=True)
     if not os.path.exists(err_log_dir):
-        os.makedirs(err_log_dir)
+        os.makedirs(err_log_dir, exist_ok=True)
     error_log = open(os.path.join(err_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     # if not os.path.exists(success_log_dir):
     #     os.makedirs(success_log_dir)
