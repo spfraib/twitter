@@ -3,6 +3,7 @@ from pathlib import Path
 import tarfile
 import logging
 import argparse
+from tqdm import tqdm
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -19,7 +20,7 @@ def get_args_from_command_line():
 
 def generate_user_image_map(tar_dir):
     user_image_mapping = dict()
-    for tar_path in Path(tar_dir).glob('*.tar'):
+    for tar_path in tqdm(list(Path(tar_dir).glob('*.tar'))):
         if 'err' not in tar_path.name:
             try:
                 tfile = tarfile.open(tar_path, 'r', ignore_zeros=True)
@@ -37,7 +38,7 @@ def generate_user_image_map(tar_dir):
                     # saves <id>: (path_to_tar, file_member)
                     # Example: '1182331536': ('../resized_tars/BR/118.tar', '1182331536.jpeg'),
             except Exception as e:
-                logger.info(f'Exception {e} when treating {tar_path.name}')
+                logger.info(f'Exception "{e}" when treating {tar_path.name}')
     return user_image_mapping
 
 if __name__ == '__main__':
