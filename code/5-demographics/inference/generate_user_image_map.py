@@ -33,7 +33,7 @@ def generate_user_image_map(tar_dir):
                         logger.info(f'Filename {filename_no_ext} (original filename: {filename}) is not a user ID.')
                         uid = None
                     if uid:
-                        user_image_mapping[uid] = (tar_path.name, filename)
+                        user_image_mapping[uid] = (tar_path.name, raw_path)
                     # saves <id>: (path_to_tar, file_member)
                     # Example: '1182331536': ('../resized_tars/BR/118.tar', '1182331536.jpeg'),
             except Exception as e:
