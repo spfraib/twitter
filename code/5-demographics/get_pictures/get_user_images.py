@@ -103,12 +103,14 @@ if __name__ == '__main__':
                     if count % 1000 == 0:
                         logger.info(f'Covered {count} users')
                         for f in os.listdir(output_dir):
-                            tar.add(os.path.join(output_dir, f))
+                            basename = os.path.basename(os.path.join(output_dir, f))
+                            tar.add(os.path.join(output_dir, f), arcname=basename)
                             os.remove(os.path.join(output_dir, f))
                 logger.info(f"Done in {round(timer() - start)} sec")
             # add last downloaded pictures
             for f in os.listdir(output_dir):
-                tar.add(os.path.join(output_dir, f))
+                basename = os.path.basename(os.path.join(output_dir, f))
+                tar.add(os.path.join(output_dir, f), arcname=basename)
                 os.remove(os.path.join(output_dir, f))
             # remove empty directory
             if os.path.exists(output_dir):
@@ -139,12 +141,14 @@ if __name__ == '__main__':
                 if count % 100 == 0:
                     logger.info(f'Covered {count} users')
                     for f in os.listdir(output_dir):
-                        tar.add(os.path.join(output_dir, f))
+                        basename = os.path.basename(os.path.join(output_dir, f))
+                        tar.add(os.path.join(output_dir, f), arcname=basename)
                         os.remove(os.path.join(output_dir, f))
             logger.info(f"Done in {round(timer() - start)} sec")
             # add last downloaded pictures
             for f in os.listdir(output_dir):
-                tar.add(os.path.join(output_dir, f))
+                basename = os.path.basename(os.path.join(output_dir, f))
+                tar.add(os.path.join(output_dir, f), arcname=basename)
                 os.remove(os.path.join(output_dir, f))
             # remove empty directory
             if os.path.exists(output_dir):
