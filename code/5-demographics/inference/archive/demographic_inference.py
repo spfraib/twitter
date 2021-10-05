@@ -71,6 +71,7 @@ user_data_dir = args.user_data_dir
 
 # +
 def set_lang(row):
+    languages = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
     return languages[country]
 
 def findMax(pred):
@@ -121,6 +122,7 @@ def get_local_path(row, tmpdir, user_image_mapping):
         tfilename, tmember = user_image_mapping[user]
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
             tarf.extract(tmember, path=tmpdir)
+
             
         return os.path.join(tmpdir, tmember)
 
