@@ -8,7 +8,6 @@ from PIL import Image
 from tqdm import tqdm
 import tempfile
 
-
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
                     level=logging.INFO)
@@ -75,6 +74,7 @@ def resize_imgs(src_root, dest_root, src_list=None, filter=Image.BILINEAR, force
             logger.debug(f'{img_name} not found in {dest_root}. Resizing to {out_path}')
             resize_img(img_path, out_path, filter=filter, force=force)
 
+
 def set_lang(country_code):
     languages = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
     return languages[country_code]
@@ -88,8 +88,23 @@ def extract(row, tmpdir, user_image_mapping_dict):
         tfilename, tmember = user_image_mapping[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
+            for member in tarf.getmembers():
+                if member.name == tmember:
+                    tmember = member
+                    tmember.name = os.path.basename(member.name)
+                break
             tarf.extract(tmember, path=f'{tmpdir}/original_pics')
-        return os.path.join(tmpdir, 'original_pics', tmember)
+        return os.path.join(tmpdir, 'original_pics', tmember.name)
+
+
+def get_resized_path(orig_img_path, src_root, dest_root):
+    img_name = os.path.splitext(os.path.relpath(orig_img_path, src_root))[0]
+    out_path = os.path.join(dest_root, img_name) + '.jpeg'
+    if os.path.exists(out_path):
+        return out_path
+    else:
+        return None
+
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
@@ -99,12 +114,8 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
     # define paths and paths to be treated
-    tar_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}"
-    resized_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/resized/{country_code}"
     user_dir = f'/scratch/spf248/twitter/data/user_timeline/user_timeline_crawled/{args.country_code}'
     user_mapping_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars/user_map_dict_{args.country_code}.json'
-    if not os.path.exists(resized_dir):
-        os.makedirs(resized_dir)
     # load user mapping
     with open(user_mapping_path, 'r') as fp:
         user_image_mapping_dict = json.load(fp)
@@ -117,14 +128,23 @@ if __name__ == '__main__':
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
-        for (ichunk, chunk) in enumerate(np.array_split(df, 100)):
+        for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
                 continue
-            with tempfile.TemporaryDirectory() as tmpd:
-                chunk['original_img_path'] = chunk.apply(lambda x: extract(x, tmpd, user_image_mapping_dict), axis=1)
-
+            with tempfile.TemporaryDirectory() as tmpdir:
+                chunk['original_img_path'] = chunk.apply(
+                    lambda x: extract(row=x, tmpdir=tmpdir, user_image_mapping_dict=user_image_mapping_dict), axis=1)
+                resize_imgs(src_root=f'{tmpdir}/original_pics', dest_root=f'{tmpdir}/resized_pics')
+                chunk['img_path'] = chunk['original_img_path'].apply(
+                    lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
+                                               dest_root=f'{tmpdir}/resized_pics'))
+                chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
+                chunk = 
                 chunk = chunk.dropna()
-
+                df_json = json.loads(chunk.to_json(orient='records'))
+                # Run inference
+                m3 = M3Inference()  # see docstring for details
+                predictions = m3.infer(df_json)  # also see docstring for details
 
     # for user_path in selected_tars_list:
     #     filename = os.path.basename(tar_path.name)
