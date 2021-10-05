@@ -3,7 +3,7 @@
 #SBATCH --job-name=generate_user_image_map
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=5GB
+#SBATCH --mem=30GB
 #SBATCH --time=12:00:00
 #SBATCH --output=slurm_generate_user_image_map_%j.out
 #SBATCH --mail-type=BEGIN
