@@ -139,13 +139,23 @@ if __name__ == '__main__':
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
                                                dest_root=f'{tmpdir}/resized_pics'))
                 chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
-                chunk = 
+                chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
                 chunk = chunk.dropna()
                 df_json = json.loads(chunk.to_json(orient='records'))
                 # Run inference
                 m3 = M3Inference()  # see docstring for details
                 predictions = m3.infer(df_json)  # also see docstring for details
+                if predictions:
+                    result_file = os.path.join(output_dir, "processed_%s.csv.gz" % str(uuid.uuid4()))
 
+                    rows = []
+                    for item in predictions.items():
+                        user, pred = item
+                        row = {"user": user, "gender": findMax(pred['gender']),
+                               "age": findMax(pred['age']), "org": findMax(pred['org'])}
+                        rows.append(row)
+
+                    pd.DataFrame(rows).to_csv(result_file, index=False)
     # for user_path in selected_tars_list:
     #     filename = os.path.basename(tar_path.name)
     #     filename_without_ext = os.path.splitext(filename)[0]
