@@ -7,6 +7,8 @@ import os
 from PIL import Image
 from tqdm import tqdm
 import tempfile
+from glob import glob
+from m3inference import M3Inference
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -19,7 +21,6 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--mode", type=str)
     return parser.parse_args()
 
 
@@ -31,10 +32,6 @@ def get_env_var(varname, default):
         var = default
         logger.info(f'{varname}: {var}, (Default)')
     return var
-
-
-def sh(script):
-    os.system("bash -c '%s'" % script)
 
 
 def resize_img(img_path, img_out_path, filter=Image.BILINEAR, force=False, url=None):
@@ -85,14 +82,14 @@ def extract(row, tmpdir, user_image_mapping_dict):
     if user not in user_image_mapping_dict:
         return np.nan
     else:
-        tfilename, tmember = user_image_mapping[user]
+        tfilename, tmember = user_image_mapping_dict[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
             for member in tarf.getmembers():
                 if member.name == tmember:
                     tmember = member
                     tmember.name = os.path.basename(member.name)
-                break
+                    break
             tarf.extract(tmember, path=f'{tmpdir}/original_pics')
         return os.path.join(tmpdir, 'original_pics', tmember.name)
 
@@ -112,10 +109,20 @@ if __name__ == '__main__':
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
     SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
-    SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
     # define paths and paths to be treated
     user_dir = f'/scratch/spf248/twitter/data/user_timeline/user_timeline_crawled/{args.country_code}'
     user_mapping_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars/user_map_dict_{args.country_code}.json'
+    output_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir, exist_ok=True)
+    # store inferences already done in known_ids
+    files_on_output = glob(os.path.join(output_dir, "*"))
+    if len(files_on_output) > 0:
+        previous_result = pd.concat([pd.read_csv(f) for f in files_on_output if f.endswith(".csv.gz")])
+        known_ids = set(map(str, previous_result["user"].unique()))
+        print("A total of %d ids were already known." % (len(known_ids)))
+    else:
+        known_ids = set([])
     # load user mapping
     with open(user_mapping_path, 'r') as fp:
         user_image_mapping_dict = json.load(fp)
@@ -125,10 +132,12 @@ if __name__ == '__main__':
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
         df = pq.read_table(source=selected_parquets).to_pandas()
+        df = df[~df["user_id"].isin(known_ids)]
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
+            logger.info(f'Starting with chunk {ichunk}')
             if chunk.shape[0] == 0:
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
@@ -139,15 +148,18 @@ if __name__ == '__main__':
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
                                                dest_root=f'{tmpdir}/resized_pics'))
                 chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
+                initial_chunk_shape = chunk.shape[0]
+                logger.info(f'Initial chunk size: {initial_chunk_shape}')
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
+                logger.info(f'Chunk size after resizing: {initial_chunk_shape - chunk.shape[0]}')
                 chunk = chunk.dropna()
                 df_json = json.loads(chunk.to_json(orient='records'))
                 # Run inference
-                m3 = M3Inference()  # see docstring for details
-                predictions = m3.infer(df_json)  # also see docstring for details
+                m3 = M3Inference()
+                predictions = m3.infer(df_json)
+                # Save inference output
                 if predictions:
-                    result_file = os.path.join(output_dir, "processed_%s.csv.gz" % str(uuid.uuid4()))
-
+                    result_file = os.path.join(output_dir, f"processed_{SLURM_JOB_ID}.csv.gz")
                     rows = []
                     for item in predictions.items():
                         user, pred = item
