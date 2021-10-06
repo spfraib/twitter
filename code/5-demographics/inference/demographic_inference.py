@@ -9,6 +9,7 @@ from tqdm import tqdm
 import tempfile
 from glob import glob
 from m3inference import M3Inference
+import json
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
