@@ -137,7 +137,7 @@ if __name__ == '__main__':
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
-            logger.info(f'Starting with chunk {ichunk}')
+            logger.info(f'Starting with chunk {ichunk}. Chunk size is {chunk.shape[0]} users.')
             if chunk.shape[0] == 0:
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
