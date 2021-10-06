@@ -106,6 +106,15 @@ def get_resized_path(orig_img_path, src_root, dest_root):
     else:
         return None
 
+def findMax(pred):
+    label = None
+    maxm = 0
+    for key,val in pred.items():
+        if val>maxm:
+            maxm = val
+            label = key
+    return label
+
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
