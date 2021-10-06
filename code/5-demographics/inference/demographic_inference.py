@@ -84,7 +84,7 @@ def set_lang(country_code):
 def extract(row, tmpdir, mapping_dict, tar_dir):
     user = row['id']
     if user not in mapping_dict:
-        return np.nan
+        return None
     else:
         tfilename, tmember = mapping_dict[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
@@ -142,13 +142,16 @@ if __name__ == '__main__':
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
-            logger.info(f'Starting with chunk {ichunk}. Chunk size is {chunk.shape[0]} users.')
+            initial_chunk_shape = chunk.shape[0]
+            logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             if chunk.shape[0] == 0:
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.info('Extract pictures from tars')
                 chunk['original_img_path'] = chunk.apply(
                     lambda x: extract(row=x, tmpdir=tmpdir, mapping_dict=user_image_mapping_dict, tar_dir=tar_dir), axis=1)
+                chunk = chunk.loc[~chunk['original_img_path'].isnull()].reset_index(drop=True)
+                logger.info(f'Chunk shape with pictures: {chunk.shape[0]}')
                 logger.info('Resize imgs')
                 resize_imgs(src_root=f'{tmpdir}/original_pics', dest_root=f'{tmpdir}/resized_pics')
                 chunk['img_path'] = chunk['original_img_path'].apply(
@@ -156,9 +159,8 @@ if __name__ == '__main__':
                                                dest_root=f'{tmpdir}/resized_pics'))
                 chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
                 initial_chunk_shape = chunk.shape[0]
-                logger.info(f'Initial chunk size: {initial_chunk_shape}')
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
-                logger.info(f'Chunk size after resizing: {initial_chunk_shape - chunk.shape[0]}')
+                logger.info(f'Chunk size with resized pics: {chunk.shape[0]}')
                 chunk = chunk.dropna()
                 df_json = json.loads(chunk.to_json(orient='records'))
                 # Run inference
