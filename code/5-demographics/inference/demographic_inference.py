@@ -59,10 +59,10 @@ def resize_imgs(src_root, dest_root, src_list=None, filter=Image.BILINEAR, force
     if not os.path.exists(dest_root):
         os.makedirs(dest_root)
 
-    src_list = glob.glob(os.path.join(src_root, '*')) if src_list is None else src_list
+    src_list = glob(os.path.join(src_root, '*')) if src_list is None else src_list
 
     des_set = set([os.path.relpath(img_path, dest_root).replace('.jpeg', '')
-                   for img_path in glob.glob(os.path.join(dest_root, '*'))])
+                   for img_path in glob(os.path.join(dest_root, '*'))])
 
     for img_path in tqdm(src_list, desc='resizing images', disable=logging.root.level >= logging.WARN):
 
@@ -88,7 +88,6 @@ def extract(row, tmpdir, mapping_dict, tar_dir):
     else:
         tfilename, tmember = mapping_dict[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
-        logger.info(f'Opening file: {tfilename}')
         with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
             for member in tarf.getmembers():
                 if member.name == tmember:
@@ -147,8 +146,10 @@ if __name__ == '__main__':
             if chunk.shape[0] == 0:
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
+                logger.info('Extract pictures from tars')
                 chunk['original_img_path'] = chunk.apply(
                     lambda x: extract(row=x, tmpdir=tmpdir, mapping_dict=user_image_mapping_dict, tar_dir=tar_dir), axis=1)
+                logger.info('Resize imgs')
                 resize_imgs(src_root=f'{tmpdir}/original_pics', dest_root=f'{tmpdir}/resized_pics')
                 chunk['img_path'] = chunk['original_img_path'].apply(
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
