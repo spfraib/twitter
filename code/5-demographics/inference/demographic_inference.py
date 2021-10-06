@@ -88,6 +88,7 @@ def extract(row, tmpdir, mapping_dict):
     else:
         tfilename, tmember = mapping_dict[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
+        logger.info(f'Opening file: {tfilename}')
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
             for member in tarf.getmembers():
                 if member.name == tmember:
