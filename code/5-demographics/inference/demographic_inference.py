@@ -25,7 +25,7 @@ def get_args_from_command_line():
 
 
 def get_env_var(varname, default):
-    if os.environ.get(varname) != None:
+    if os.environ.get(varname) is not None:
         var = int(os.environ.get(varname))
         logger.info(f'{varname}: {var}')
     else:
@@ -77,12 +77,12 @@ def set_lang(country_code):
     return languages[country_code]
 
 
-def extract(row, tmpdir, user_image_mapping_dict):
+def extract(row, tmpdir, mapping_dict):
     user = row['id']
-    if user not in user_image_mapping_dict:
+    if user not in mapping_dict:
         return np.nan
     else:
-        tfilename, tmember = user_image_mapping_dict[user]
+        tfilename, tmember = mapping_dict[user]
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
         with tarfile.open(tfilename, mode='r', ignore_zeros=True) as tarf:
             for member in tarf.getmembers():
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                 continue
             with tempfile.TemporaryDirectory() as tmpdir:
                 chunk['original_img_path'] = chunk.apply(
-                    lambda x: extract(row=x, tmpdir=tmpdir, user_image_mapping_dict=user_image_mapping_dict), axis=1)
+                    lambda x: extract(row=x, tmpdir=tmpdir, mapping_dict=user_image_mapping_dict), axis=1)
                 resize_imgs(src_root=f'{tmpdir}/original_pics', dest_root=f'{tmpdir}/resized_pics')
                 chunk['img_path'] = chunk['original_img_path'].apply(
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
@@ -155,10 +155,12 @@ if __name__ == '__main__':
                 chunk = chunk.dropna()
                 df_json = json.loads(chunk.to_json(orient='records'))
                 # Run inference
+                logger.info('Launching inference')
                 m3 = M3Inference()
                 predictions = m3.infer(df_json)
                 # Save inference output
                 if predictions:
+                    logger.info('Saving inference output')
                     result_file = os.path.join(output_dir, f"processed_{SLURM_JOB_ID}.csv.gz")
                     rows = []
                     for item in predictions.items():
