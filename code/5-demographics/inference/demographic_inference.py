@@ -115,6 +115,9 @@ def findMax(pred):
             label = key
     return label
 
+def save_to_json(data_dict, outfile):
+    with open(outfile, 'a') as file:
+        file.write('{}\n'.format(json.dumps(data_dict)))
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
@@ -179,15 +182,14 @@ if __name__ == '__main__':
                 # Save inference output
                 if predictions:
                     logger.info('Saving inference output')
-                    result_file = os.path.join(output_dir, f"processed_{SLURM_JOB_ID}.csv.gz")
+                    json_output_path = os.path.join(output_dir, f"{SLURM_JOB_ID}.json")
                     rows = []
                     for item in predictions.items():
                         user, pred = item
-                        row = {"user": user, "gender": findMax(pred['gender']),
+                        row_dict = {"user": user, "gender": findMax(pred['gender']),
                                "age": findMax(pred['age']), "org": findMax(pred['org'])}
-                        rows.append(row)
+                        save_to_json(data_dict=row_dict, outfile=json_output_path)
 
-                    pd.DataFrame(rows).to_csv(result_file, index=False)
     # for user_path in selected_tars_list:
     #     filename = os.path.basename(tar_path.name)
     #     filename_without_ext = os.path.splitext(filename)[0]
