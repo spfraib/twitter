@@ -135,7 +135,7 @@ if __name__ == '__main__':
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
-        df = pq.read_table(source=selected_parquets).to_pandas()
+        df = pq.read_table(source=selected_users_list).to_pandas()
         df = df[~df["user_id"].isin(known_ids)]
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
