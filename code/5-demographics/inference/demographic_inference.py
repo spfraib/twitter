@@ -10,6 +10,9 @@ import tempfile
 from glob import glob
 from m3inference import M3Inference
 import json
+import pandas as pd
+import pyarrow.parquet as pq
+
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
