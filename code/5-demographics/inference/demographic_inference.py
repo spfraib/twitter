@@ -12,6 +12,8 @@ from m3inference import M3Inference
 import json
 import pandas as pd
 import pyarrow.parquet as pq
+from pathlib import Path
+import ast
 
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
@@ -119,6 +121,19 @@ def save_to_json(data_dict, outfile):
     with open(outfile, 'a') as file:
         file.write('{}\n'.format(json.dumps(data_dict)))
 
+def retrieve_known_ids(output_dir):
+    json_paths_list = Path(output_dir).glob('*.json')
+    known_ids_list = list()
+    for json_path in json_paths_list:
+        with open(json_path, 'r') as f:
+            for line in f:
+                try:
+                    user_dict = ast.literal_eval(line)
+                    known_ids_list.append(user_dict['user'])
+                except:
+                    continue
+    return known_ids_list
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     # define env vars
@@ -135,8 +150,7 @@ if __name__ == '__main__':
     # store inferences already done in known_ids
     files_on_output = glob(os.path.join(output_dir, "*"))
     if len(files_on_output) > 0:
-        previous_result = pd.concat([pd.read_csv(f) for f in files_on_output if f.endswith(".csv.gz")])
-        known_ids = set(map(str, previous_result["user"].unique()))
+        known_ids = set(retrieve_known_ids(output_dir=output_dir))
         print("A total of %d ids were already known." % (len(known_ids)))
     else:
         known_ids = set([])
