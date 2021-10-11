@@ -151,7 +151,7 @@ if __name__ == '__main__':
     files_on_output = glob(os.path.join(output_dir, "*"))
     if len(files_on_output) > 0:
         known_ids = set(retrieve_known_ids(output_dir=output_dir))
-        print("A total of %d ids were already known." % (len(known_ids)))
+        logger.info(f"A total of {len(known_ids)} ids were already known.")
     else:
         known_ids = set([])
     # load user mapping
