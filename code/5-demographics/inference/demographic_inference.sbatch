@@ -3,7 +3,7 @@
 #SBATCH --gres=gpu:0
 #SBATCH --job-name=demo_infer
 #SBATCH --nodes=1
-#SBATCH --mem=12GB
+#SBATCH --mem=8GB
 #SBATCH --time=72:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=outfiles/slurm_demo_%j.out
