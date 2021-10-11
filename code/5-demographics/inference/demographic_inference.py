@@ -163,7 +163,9 @@ if __name__ == '__main__':
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
         df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in selected_users_list]).reset_index(drop=True)
+        logger.info(f'Initial df size: {df.shape[0]}')
         df = df[~df["user_id"].isin(known_ids)]
+        logger.info(f'df size after dropping known ids: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
