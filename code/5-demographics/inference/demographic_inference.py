@@ -149,6 +149,7 @@ def retrieve_non_resizable_ids(err_dir):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
+    logger.info(f'Country code: {args.country_code}')
     # define env vars
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
     SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
