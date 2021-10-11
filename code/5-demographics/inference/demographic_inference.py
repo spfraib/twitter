@@ -189,7 +189,6 @@ if __name__ == '__main__':
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
-        not_resizable_id_list = list()
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
@@ -207,7 +206,10 @@ if __name__ == '__main__':
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
                                                dest_root=f'{tmpdir}/resized_pics'))
                 not_resizable_chunk = chunk.loc[chunk['img_path'].isnull()].reset_index(drop=True)
-                not_resizable_id_list += not_resizable_chunk['id'].tolist()
+                if not_resizable_chunk.shape[0] > 0:
+                    not_resizable_id_list = not_resizable_chunk['id'].tolist()
+                else:
+                    not_resizable_id_list = list()
                 chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
                 initial_chunk_shape = chunk.shape[0]
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
