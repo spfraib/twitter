@@ -117,7 +117,7 @@ def findMax(pred):
             label = key
     return label
 
-def save_to_json(data_dict, outfile):
+def save_dict_to_json(data_dict, outfile):
     with open(outfile, 'a') as file:
         file.write('{}\n'.format(json.dumps(data_dict)))
 
@@ -134,6 +134,19 @@ def retrieve_known_ids(output_dir):
                     continue
     return known_ids_list
 
+def retrieve_non_resizable_ids(err_dir):
+    json_paths_list = Path(err_dir).glob('*.json')
+    not_resizable_id_list = list()
+    for json_path in json_paths_list:
+        with open(json_path, 'r') as f:
+            for line in f:
+                try:
+                    line = line.replace('\n', '')
+                    not_resizable_id_list.append(str(line))
+                except:
+                    continue
+    return not_resizable_id_list
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     # define env vars
@@ -145,6 +158,7 @@ if __name__ == '__main__':
     user_dir = f'/scratch/spf248/twitter/data/user_timeline/user_timeline_crawled/{args.country_code}'
     user_mapping_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars/user_map_dict_{args.country_code}.json'
     output_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}'
+    err_dir = os.path.join(output_dir, 'err')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
     # store inferences already done in known_ids
@@ -168,9 +182,14 @@ if __name__ == '__main__':
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
         df = df[~df["user_id"].isin(known_ids)]
         logger.info(f'df size after dropping known ids: {df.shape[0]}')
+        if os.path.exists(err_dir):
+            total_not_resizable_id_list = retrieve_non_resizable_ids(err_dir=err_dir)
+            df = df[~df["user_id"].isin(total_not_resizable_id_list)]
+            logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
         df['lang'] = set_lang(country_code=args.country_code)
+        not_resizable_id_list = list()
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
@@ -187,6 +206,8 @@ if __name__ == '__main__':
                 chunk['img_path'] = chunk['original_img_path'].apply(
                     lambda x: get_resized_path(orig_img_path=x, src_root=f'{tmpdir}/original_pics',
                                                dest_root=f'{tmpdir}/resized_pics'))
+                not_resizable_chunk = chunk.loc[chunk['img_path'].isnull()].reset_index(drop=True)
+                not_resizable_id_list += not_resizable_chunk['id'].tolist()
                 chunk = chunk[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
                 initial_chunk_shape = chunk.shape[0]
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
@@ -206,25 +227,14 @@ if __name__ == '__main__':
                         user, pred = item
                         row_dict = {"user": user, "gender": findMax(pred['gender']),
                                "age": findMax(pred['age']), "org": findMax(pred['org'])}
-                        save_to_json(data_dict=row_dict, outfile=json_output_path)
-
-    # for user_path in selected_tars_list:
-    #     filename = os.path.basename(tar_path.name)
-    #     filename_without_ext = os.path.splitext(filename)[0]
-    #     sh(f'mkdir -p {resized_dir}/{filename_without_ext}')
-    #     tf = tarfile.open(tar_path)
-    #     try:
-    #         tf = tarfile.open(tar_path)
-    #         components_str = tf.getnames[0].count('/')
-    #         # untar
-    #         sh(f'tar -xf {tar_path.name} -C {resized_dir}/{filename_without_ext} --strip-components {components_str}')
-    #         # for each image in {resized_dir}/{filename_without_ext}, resize and remove original file.
-    #         resize_imgs(src_root=f'{resized_dir}/{filename_without_ext}',
-    #                     dest_root=f'{resized_dir}/{filename_without_ext}_resized')
-    #         sh(f'rm -rf {resized_dir}/{filename_without_ext}')
-    #         #
-    #
-    #
-    #     except Exception as e:
-    #         logger.info(f'Exception "{e}" when processing {tar_path.name}')
-    #         continue
+                        save_dict_to_json(data_dict=row_dict, outfile=json_output_path)
+                # Save errors
+                if len(not_resizable_id_list) > 0:
+                    logger.info('Saving errors')
+                    err_dir = os.path.join(output_dir, 'err')
+                    if not os.path.exists(err_dir):
+                        os.makedirs(err_dir, exist_ok=True)
+                    outfile = os.path.join(err_dir, f"{SLURM_JOB_ID}.json")
+                    for error_id in not_resizable_id_list:
+                        with open(outfile, 'a') as file:
+                            file.write(f'{error_id}\n')
