@@ -4,6 +4,7 @@ import logging
 import argparse
 from pathlib import Path
 import ast
+import os
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
