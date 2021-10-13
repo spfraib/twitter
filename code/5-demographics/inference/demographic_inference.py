@@ -172,6 +172,7 @@ if __name__ == '__main__':
     # load user mapping
     with open(user_mapping_path, 'r') as fp:
         user_image_mapping_dict = json.load(fp)
+    logger.info('Loaded the user image mapping')
     # select users and load data
     selected_users_list = list(
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
