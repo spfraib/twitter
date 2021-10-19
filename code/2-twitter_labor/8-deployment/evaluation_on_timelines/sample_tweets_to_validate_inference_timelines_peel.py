@@ -6,6 +6,7 @@ from pyspark.sql import SparkSession
 import pyspark.sql.functions as F
 from pyspark.sql import Window
 from pyspark.sql.types import *
+import subprocess
 
 spark = SparkSession.builder.config('spark.driver.extraJavaOptions', '-Duser.timezone=UTC').config(
     'spark.executor.extraJavaOptions', '-Duser.timezone=UTC').config('spark.sql.session.timeZone', 'UTC').getOrCreate()
