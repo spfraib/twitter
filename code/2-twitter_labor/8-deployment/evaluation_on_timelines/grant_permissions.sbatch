@@ -8,7 +8,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=jobarray_permissions_%j.out
+#SBATCH --output=slurm_permissions_%j.out
 
 cd /scratch/spf248/twitter/data
 setfacl -R -m u:mt4493:rwx user_timeline/
