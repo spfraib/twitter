@@ -24,6 +24,10 @@ def get_args_from_command_line():
 
 def question_generator(country_code, survey_link, instructions_dict, survey_link_text_dict, worker_input_text_dict,
                        submit_dict):
+    if country_code in ['NG', 'PK']:
+        country_key = 'US'
+    else:
+        country_key = country_code
     xml_wrapper_begin = """
     <HTMLQuestion xmlns="http://mechanicalturk.amazonaws.com/AWSMechanicalTurkDataSchemas/2011-11-11/HTMLQuestion.xsd">
     <HTMLContent><![CDATA[
@@ -43,11 +47,11 @@ def question_generator(country_code, survey_link, instructions_dict, survey_link
             "r") as f:
         content = f.read()
 
-    content = content.replace("${INSTRUCTIONS}", instructions_dict[country_code])
+    content = content.replace("${INSTRUCTIONS}", instructions_dict[country_key])
     content = content.replace("${SURVEY_LINK}", survey_link)
-    content = content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_code])
-    content = content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_code])
-    content = content.replace("${SUBMIT}", submit_dict[country_code])
+    content = content.replace("${SURVEY_LINK_TEXT}", survey_link_text_dict[country_key])
+    content = content.replace("${WORKER_INPUT_TEXT}", worker_input_text_dict[country_key])
+    content = content.replace("${SUBMIT}", submit_dict[country_key])
 
     return xml_wrapper_begin + content + xml_wrapper_end
 
