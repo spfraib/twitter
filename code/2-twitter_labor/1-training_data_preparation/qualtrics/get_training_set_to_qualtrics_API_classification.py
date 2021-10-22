@@ -327,12 +327,12 @@ if __name__ == "__main__":
                                                  to_label_df=tweets)
         print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at old iterations (before doing exploitation)')
 
-    for iteration_number in range(int(args.iteration_number) + 1):
-        tweets_count = tweets.shape[0]
-        tweets = discard_already_labelled_tweets(
-            path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
-            to_label_df=tweets)
-        print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at iteration {str(iteration_number)}')
+    # for iteration_number in range(int(args.iteration_number) + 1):
+    #     tweets_count = tweets.shape[0]
+    #     tweets = discard_already_labelled_tweets(
+    #         path_to_labelled=f'/scratch/mt4493/twitter_labor/twitter-labor-data/data/qualtrics/{args.country_code}/iter{iteration_number}/labeling',
+    #         to_label_df=tweets)
+    #     print(f'Dropped {str(tweets_count - tweets.shape[0])} tweets already labelled at iteration {str(iteration_number)}')
 
     print(f'# tweets left to label: {tweets.shape[0]}')
 
