@@ -61,7 +61,9 @@ time_to_complete = int(math.ceil((3 / 5) * ntweets))
 money_per_tweet_dict = {
     'US': 0.1,
     'BR': 0.06,
-    'MX': 0.1
+    'MX': 0.1,
+    'NG': 0.1,
+    'PK': 0.1
 }
 
 money_for_hit = int(money_per_tweet_dict[args.country_code] * ntweets)
