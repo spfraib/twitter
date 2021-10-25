@@ -34,6 +34,7 @@ def get_sampled_indices(min_magnitude=3, top_tweets_threshold=1000000000):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
+    logger.info(args.country_code)
     # Load sample indices
     index_list = get_sampled_indices()
     # Define paths
