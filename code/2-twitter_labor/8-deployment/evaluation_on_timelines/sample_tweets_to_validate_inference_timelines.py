@@ -44,17 +44,19 @@ if __name__ == '__main__':
         logger.info(f'Starting with {label}')
         scores_df = pd.concat([pd.read_parquet(path, columns=['tweet_id', label]) for path in Path(path_to_scores).glob('*.parquet')])
         logger.info('Loaded scores')
-        scores_df = scores_df.sort_values(by=[label]).reset_index(drop=True)
         scores_df['rank'] = scores_df[label].rank(method='first', ascending=False)
         scores_df = scores_df.loc[scores_df['rank'].isin(index_list)].reset_index(drop=True)
+        logger.info('Selected indices. Now retrieving tweets with indices')
         for path in Path(path_to_tweets).glob('*.parquet'):
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
             tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
             if tweets_df.shape[0] > 0:
-                final_df = scores_df.merge(tweets_df, on=['tweet_id'])
-                final_df_list.append(final_df)
-        df = pd.concat(final_df_list).reset_index(drop=True)
+                final_df_list.append(tweets_df)
+        logger.info('Finished retrieving tweets with indices.')
+        tweets_df = pd.concat(final_df_list).reset_index(drop=True)
+        df = tweets_df.merge(scores_df, on=['tweet_id']).reset_index(drop=True)
         df = df[['tweet_id', 'text', label, 'rank']]
         df.columns = ['tweet_id', 'text', 'score', 'rank']
+        df = df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
         output_path = os.path.join(path_to_evals, f'{label}.parquet')
         df.to_parquet(output_path, index=False)
