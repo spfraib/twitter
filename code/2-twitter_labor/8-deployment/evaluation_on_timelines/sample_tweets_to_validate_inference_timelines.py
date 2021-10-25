@@ -5,7 +5,14 @@ import argparse
 import subprocess
 from pathlib import Path
 from itertools import product
+import logging
 
+logging.basicConfig(
+                    # filename=f'{args.log_path}.log',
+                    format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
