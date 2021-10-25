@@ -13,8 +13,7 @@
 COUNTRY_CODE=$1
 
 module purge
-module load anaconda3/2020.02
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/8-deployment/evaluation_on_timelines
-
-python3 sample_tweets_to_validate_inference_timelines.py --country_code ${COUNTRY_CODE}
+singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/deployment/deployment.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/8-deployment/evaluation_on_timelines/sample_tweets_to_validate_inference_timelines.py --country_code ${COUNTRY_CODE}"
