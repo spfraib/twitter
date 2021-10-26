@@ -50,7 +50,7 @@ if __name__ == '__main__':
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
         final_df_list = list()
         logger.info(f'Starting with {label}')
-        scores_df = pd.concat([pd.read_parquet(path, columns=['tweet_id', label]) for path in list(Path(path_to_scores).glob('*.parquet'))[:1]])
+        scores_df = pd.concat([pd.read_parquet(path) for path in list(Path(path_to_scores).glob('*.parquet'))[:1]])
         logger.info('Loaded scores')
         logger.info(f'Scores df columns: {list(scores_df.columns)}')
         scores_df['rank'] = scores_df[label].rank(method='first', ascending=False)
