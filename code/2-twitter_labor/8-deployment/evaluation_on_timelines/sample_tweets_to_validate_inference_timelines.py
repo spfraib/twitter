@@ -51,22 +51,17 @@ if __name__ == '__main__':
         final_df_list = list()
         logger.info(f'Starting with {label}')
         scores_df = pd.concat([pd.read_parquet(path) for path in list(Path(path_to_scores).glob('*.parquet'))[:1]])
-        logger.info('Loaded scores')
-        logger.info(f'Scores df columns: {list(scores_df.columns)}')
         scores_df = scores_df.reset_index()
-        logger.info(f'Scores df columns after resetting index: {list(scores_df.columns)}')
+        logger.info('Loaded scores')
         scores_df['rank'] = scores_df[label].rank(method='first', ascending=False)
         scores_df = scores_df.loc[scores_df['rank'].isin(index_list)].reset_index(drop=True)
         logger.info('Selected indices. Now retrieving tweets with indices')
-        for path in Path(path_to_tweets).glob('*.parquet'):
+        for path in list(Path(path_to_tweets).glob('*.parquet'))[:3]:
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
             logger.info(path)
-            if 'tweet_id' in tweets_df.columns:
-                tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
-                if tweets_df.shape[0] > 0:
-                    final_df_list.append(tweets_df)
-            else:
-                logger.info(f'No tweet_id column for {path}')
+            tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
+            if tweets_df.shape[0] > 0:
+                final_df_list.append(tweets_df)
         logger.info('Finished retrieving tweets with indices.')
         tweets_df = pd.concat(final_df_list).reset_index(drop=True)
         df = tweets_df.merge(scores_df, on=['tweet_id']).reset_index(drop=True)
