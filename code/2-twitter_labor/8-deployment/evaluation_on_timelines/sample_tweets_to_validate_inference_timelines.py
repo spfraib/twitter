@@ -57,9 +57,10 @@ if __name__ == '__main__':
         logger.info('Selected indices. Now retrieving tweets with indices')
         for path in Path(path_to_tweets).glob('*.parquet'):
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
-            tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
-            if tweets_df.shape[0] > 0:
-                final_df_list.append(tweets_df)
+            if 'tweet_id' in tweets_df.columns():
+                tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
+                if tweets_df.shape[0] > 0:
+                    final_df_list.append(tweets_df)
         logger.info('Finished retrieving tweets with indices.')
         tweets_df = pd.concat(final_df_list).reset_index(drop=True)
         df = tweets_df.merge(scores_df, on=['tweet_id']).reset_index(drop=True)
