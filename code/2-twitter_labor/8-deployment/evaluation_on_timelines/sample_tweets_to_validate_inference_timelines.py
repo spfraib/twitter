@@ -71,4 +71,4 @@ if __name__ == '__main__':
         df.columns = ['tweet_id', 'text', 'score', 'rank']
         df = df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
         output_path = os.path.join(path_to_evals, f'{label}.parquet')
-        df.to_parquet(output_path, index=False)
+        # df.to_parquet(output_path, index=False)
