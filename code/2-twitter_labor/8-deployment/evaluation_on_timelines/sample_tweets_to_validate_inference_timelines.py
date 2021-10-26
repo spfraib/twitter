@@ -57,6 +57,7 @@ if __name__ == '__main__':
         logger.info('Selected indices. Now retrieving tweets with indices')
         for path in Path(path_to_tweets).glob('*.parquet'):
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
+            logger.info(path)
             if 'tweet_id' in tweets_df.columns():
                 tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
                 if tweets_df.shape[0] > 0:
