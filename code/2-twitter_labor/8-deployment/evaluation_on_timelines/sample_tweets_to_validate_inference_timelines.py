@@ -45,25 +45,24 @@ if __name__ == '__main__':
                                   args.country_code, model_folder_dict[args.country_code], 'output')
     path_to_evals = os.path.join(
         '/scratch/spf248/twitter/data/user_timeline', 'user_timeline_evaluation_samples', args.country_code)  # Where to store the sampled tweets to be labeled
-    scores_df = pd.concat(
-        [pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
-    logger.info('Loaded scores')
     if not os.path.exists(path_to_evals):
         os.makedirs(path_to_evals)
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
         final_df_list = list()
         logger.info(f'Starting with {label}')
+        scores_df = pd.concat([pd.read_parquet(path, columns=['tweet_id', label]) for path in Path(path_to_scores).glob('*.parquet')])
+        logger.info('Loaded scores')
         scores_df['rank'] = scores_df[label].rank(method='first', ascending=False)
-        sample_scores_df = scores_df.loc[scores_df['rank'].isin(index_list)].reset_index(drop=True)
+        scores_df = scores_df.loc[scores_df['rank'].isin(index_list)].reset_index(drop=True)
         logger.info('Selected indices. Now retrieving tweets with indices')
         for path in Path(path_to_tweets).glob('*.parquet'):
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
-            tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(sample_scores_df['tweet_id'].unique()))]
+            tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
             if tweets_df.shape[0] > 0:
                 final_df_list.append(tweets_df)
         logger.info('Finished retrieving tweets with indices.')
         tweets_df = pd.concat(final_df_list).reset_index(drop=True)
-        df = tweets_df.merge(sample_scores_df, on=['tweet_id']).reset_index(drop=True)
+        df = tweets_df.merge(scores_df, on=['tweet_id']).reset_index(drop=True)
         df = df[['tweet_id', 'text', label, 'rank']]
         df.columns = ['tweet_id', 'text', 'score', 'rank']
         df = df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
