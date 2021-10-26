@@ -61,6 +61,8 @@ if __name__ == '__main__':
                 tweets_df = tweets_df.loc[tweets_df['tweet_id'].isin(list(scores_df['tweet_id'].unique()))]
                 if tweets_df.shape[0] > 0:
                     final_df_list.append(tweets_df)
+            else:
+                logger.info(f'No tweet_id column for {path}')
         logger.info('Finished retrieving tweets with indices.')
         tweets_df = pd.concat(final_df_list).reset_index(drop=True)
         df = tweets_df.merge(scores_df, on=['tweet_id']).reset_index(drop=True)
