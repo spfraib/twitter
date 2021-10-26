@@ -50,12 +50,11 @@ if __name__ == '__main__':
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
         final_df_list = list()
         logger.info(f'Starting with {label}')
-        scores_df = pd.concat([pd.read_parquet(path) for path in list(Path(path_to_scores).glob('*.parquet'))[:1]])
+        scores_df = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
         scores_df = scores_df.reset_index()
         logger.info('Loaded scores')
         scores_df['rank'] = scores_df[label].rank(method='first', ascending=False)
         scores_df = scores_df.loc[scores_df['rank'].isin(index_list)].reset_index(drop=True)
-        logger.info('')
         logger.info('Selected indices. Now retrieving tweets with indices')
         for path in Path(path_to_tweets).glob('*.parquet'):
             tweets_df = pd.read_parquet(path, columns=['tweet_id', 'text'])
@@ -70,5 +69,4 @@ if __name__ == '__main__':
         df.columns = ['tweet_id', 'text', 'score', 'rank']
         df = df.sort_values(by=['score'], ascending=False).reset_index(drop=True)
         output_path = os.path.join(path_to_evals, f'{label}.parquet')
-        break
-        # df.to_parquet(output_path, index=False)
+        df.to_parquet(output_path, index=False)
