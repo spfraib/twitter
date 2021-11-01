@@ -410,7 +410,8 @@ for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "jo
 
     try:
         shutil.rmtree(onnx_path)  # deleting onxx folder and contents, if exists, conversion excepts
-        logger.info('Remove existing ONNX folder')
+        logger.info('Remove existing ONNX folder and recreate empty')
+        os.makedirs
     except:
         logger.info('no existing folder, creating one')
         os.makedirs(onnx_path)
