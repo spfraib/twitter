@@ -43,22 +43,27 @@ mkdir -p ${OUTPUT_LOGS}
 
 
 module purge
-module load anaconda3/2020.02
-
-source /scratch/mt4493/twitter_labor/code/envs/env_to_tar/inference_2021_env/bin/activate
-
-echo "pyenv activated"
+#module load anaconda3/2020.02
+#
+#source /scratch/mt4493/twitter_labor/code/envs/env_to_tar/inference_2021_env/bin/activate
+#
+#echo "pyenv activated"
 
 cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
-pwd
-
-if [ -z "${SLURM_ARRAY_TASK_ID}" ]
-then
-      echo SLURM_ARRAY_TASK_ID=test
-fi
+#if [ -z "${SLURM_ARRAY_TASK_ID}" ]
+#then
+#      echo SLURM_ARRAY_TASK_ID=test
+#fi
 echo 'running inference..'
-srun time python -u inference_ONNX_bert_100M_random.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} > ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/inference/env.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 inference_ONNX_bert_100M_random.py \
+	     --input_path ${INPUT_PATH} \
+	     --output_path ${OUTPUT_MODELS} \
+	     --country_code ${COUNTRY_CODE} \
+	     --iteration_number ${ITER} \
+	     --method ${METHOD}" #> ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
 
 exit

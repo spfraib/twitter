@@ -19,10 +19,6 @@ import logging
 import socket
 import multiprocessing
 
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S',
-                    level=logging.INFO)
-logger = logging.getLogger(__name__)
 print('libs loaded')
 
 parser = argparse.ArgumentParser()
@@ -36,7 +32,33 @@ parser.add_argument("--method", type=int)
 
 args = parser.parse_args()
 
-print(args)
+def get_env_var(varname, default):
+    if os.environ.get(varname) != None:
+        var = int(os.environ.get(varname))
+        print(varname, ':', var)
+    else:
+        var = default
+        print(varname, ':', var, '(Default)')
+    return var
+
+# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
+SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
+SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
+SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
+
+
+logname=os.path.join(os.path.dirname(args.output_path), 'logs', f'{SLURM_ARRAY_TASK_ID}-{time.time()}.log')
+logging.basicConfig(filename=logname,
+                    filemode='a',
+                    format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+                    datefmt='%m/%d/%Y %H:%M:%S',
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+logger.info(args)
+logger.info(f'Hostname: {socket.gethostname()}')
+logger.info(f'SLURM_ARRAY_TASK_ID: {SLURM_ARRAY_TASK_ID}')
+logger.info(f'SLURM_ARRAY_TASK_COUNT: {SLURM_ARRAY_TASK_COUNT}')
 
 
 ####################################################################################################################################
@@ -65,7 +87,7 @@ def inference(onnx_model, model_dir, examples):
     options.intra_op_num_threads = 1
     # options.inter_op_num_threads = multiprocessing.cpu_count()
 
-    print(onnx_model)
+    logger.info(onnx_model)
     ort_session = ort.InferenceSession(onnx_model, options)
 
     # pytorch pretrained model and tokenizer
@@ -76,7 +98,7 @@ def inference(onnx_model, model_dir, examples):
 
     tokenizer_str = "TokenizerFast"
 
-    print("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
+    logger.info("**************** {} ONNX inference with batch tokenization and with {} tokenizer****************".format(
         quantized_str, tokenizer_str))
     start_onnx_inference_batch = time.time()
     start_batch_tokenization = time.time()
@@ -90,7 +112,7 @@ def inference(onnx_model, model_dir, examples):
         """
 
         if i % 100 == 0:
-            print(f'[inference: {i} out of {str(len(examples))}')
+            logger.info(f'[inference: {i} out of {str(len(examples))}')
 
         tokens = get_tokens(tokens_dict, i)
         # inference
@@ -109,69 +131,51 @@ def inference(onnx_model, model_dir, examples):
     #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
     end_onnx_inference_batch = time.time()
-    print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
-    print("Total inference time (in seconds): ", total_inference_time)
-    print("Total build label time (in seconds): ", total_build_label_time)
-    print("Duration ONNX inference (in seconds) with {} and batch tokenization: ".format(tokenizer_str),
-          end_onnx_inference_batch - start_onnx_inference_batch,
-          (end_onnx_inference_batch - start_onnx_inference_batch) / len(examples))
+    logger.info(f"Total batch tokenization time (in seconds): {total_batch_tokenization_time}")
+    logger.info(f"Total inference time (in seconds): {total_inference_time}")
+    logger.info(f"Total build label time (in seconds): {total_build_label_time}")
+    logger.info(f"Duration ONNX inference (in seconds) with {tokenizer_str} and batch tokenization: {end_onnx_inference_batch - start_onnx_inference_batch}, {(end_onnx_inference_batch - start_onnx_inference_batch) / len(examples)}")
 
     return onnx_inference
 
 
-def get_env_var(varname, default):
-    if os.environ.get(varname) != None:
-        var = int(os.environ.get(varname))
-        print(varname, ':', var)
-    else:
-        var = default
-        print(varname, ':', var, '(Default)')
-    return var
 
-
-# Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
-SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
-SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
-SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 1)
-print('Hostname:', socket.gethostname())
-print('SLURM_ARRAY_TASK_ID', SLURM_ARRAY_TASK_ID)
-print('SLURM_ARRAY_TASK_COUNT', SLURM_ARRAY_TASK_COUNT)
 # ####################################################################################################################################
 # # loading data
 # ####################################################################################################################################
 
 path_to_data = args.input_path
 
-print('Load random Tweets:')
+logger.info('Load random Tweets:')
 
 start_time = time.time()
 
 paths_to_random = list(np.array_split(
     glob(os.path.join(path_to_data, '*.parquet')),
     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
-print('#files:', len(paths_to_random))
+logger.info(f'#files: {len(paths_to_random)}')
 
 tweets_random = pd.DataFrame()
 for file in paths_to_random:
-    print(file)
+    logger.info(file)
     tweets_random = pd.concat([tweets_random, pd.read_parquet(file)[['tweet_id', 'text']]])
-    print(tweets_random.shape)
+    logger.info(tweets_random.shape)
 
-print('load random sample:', str(time.time() - start_time), 'seconds')
-print(tweets_random.shape)
+logger.info(f'load random sample: {str(time.time() - start_time)} seconds')
+logger.info(tweets_random.shape)
 
-print('dropping duplicates:')
+logger.info('dropping duplicates:')
 # random contains 7.3G of data!!
 start_time = time.time()
 tweets_random = tweets_random.drop_duplicates('text')
-print('drop duplicates:', str(time.time() - start_time), 'seconds')
-print(tweets_random.shape)
+logger.info(f'drop duplicates: {str(time.time() - start_time)} seconds')
+logger.info(tweets_random.shape)
 
 start_time = time.time()
-print('converting to list')
+logger.info('converting to list')
 examples = tweets_random.text.values.tolist()
 
-print('convert to list:', str(time.time() - start_time), 'seconds')
+logger.info(f'convert to list: {str(time.time() - start_time)} seconds')
 
 if args.method == 0:
     best_model_folders_dict = {
@@ -545,36 +549,36 @@ elif args.method == 3:
         }}
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-    print('\n\n!!!!!', column)
+    logger.info(f'\n\n!!!!! {column}')
     loop_start = time.time()
     best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
     model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
     column, 'models', 'best_model')
 
-    print(model_path)
+    logger.info(model_path)
     onnx_path = os.path.join(model_path, 'onnx')
-    print(onnx_path)
+    logger.info(onnx_path)
 
     ####################################################################################################################################
     # TOKENIZATION and INFERENCE
     ####################################################################################################################################
-    print('Predictions of random Tweets:')
+    logger.info('Predictions of random Tweets:')
     start_time = time.time()
     onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
     model_path,
     examples)
 
-    print('time taken:', str(time.time() - start_time), 'seconds')
-    print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+    logger.info(f'time taken: {str(time.time() - start_time)} seconds')
+    logger.info(f'per tweet: {(time.time() - start_time) / tweets_random.shape[0]} seconds')
 
     ####################################################################################################################################
     # SAVING
     ####################################################################################################################################
-    print('Save Predictions of random Tweets:')
+    logger.info('Save Predictions of random Tweets:')
     start_time = time.time()
     final_output_path = args.output_path
     if not os.path.exists(os.path.join(final_output_path, column)):
-        print('>>>> directory doesnt exists, creating it')
+        logger.info('>>>> directory doesnt exists, creating it')
         os.makedirs(os.path.join(final_output_path, column))
     # create dataframe containing tweet id and probabilities
     predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
@@ -583,15 +587,13 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     predictions_random_df = predictions_random_df[['second']]
     predictions_random_df.columns = ['score']
 
-    print(predictions_random_df.head())
+    logger.info(predictions_random_df.head())
     predictions_random_df.to_parquet(
     os.path.join(final_output_path, column,
                  str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
-    print('saved to:\n', os.path.join(final_output_path, column,
-                                      str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'),
-    'saved')
+    logger.info(f'saved to:\n  {os.path.join(final_output_path, column, str(getpass.getuser()) + "_random" + "-" + str(SLURM_ARRAY_TASK_ID) + ".parquet")})
 
-    print('save time taken:', str(time.time() - start_time), 'seconds')
+    logger.info(f'save time taken: {str(time.time() - start_time)} seconds')
 
-    print('full loop:', str(time.time() - loop_start), 'seconds', (time.time() - loop_start) / len(examples))
+    logger.info(f'full loop: {str(time.time() - loop_start)}, seconds: {(time.time() - loop_start) / len(examples)}')
