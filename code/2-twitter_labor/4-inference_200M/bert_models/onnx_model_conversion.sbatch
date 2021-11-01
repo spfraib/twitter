@@ -23,8 +23,8 @@ module purge
 singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/inference/env.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/onnx_model_conversion.py \
---iteration_number ${ITER} \
---country_code ${COUNTRY_CODE} \
---method ${METHOD}"
+      --iteration_number ${ITER} \
+      --country_code ${COUNTRY_CODE} \
+      --method ${METHOD}"
 
 exit
