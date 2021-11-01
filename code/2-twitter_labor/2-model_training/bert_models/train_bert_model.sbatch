@@ -54,7 +54,8 @@ shopt -s extglob
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
 
-singularity exec --overlay ${SINGULARITY_PATH}:ro \
+singularity exec --nv \
+      --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
@@ -73,7 +74,8 @@ echo '***********************DONE TRAINING ON LABEL lost_job_1mo****************
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
 
-singularity exec --overlay ${SINGULARITY_PATH}:ro \
+singularity exec --nv \
+      --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
@@ -93,7 +95,8 @@ echo '***********************DONE TRAINING ON LABEL is_unemployed***************
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
 
-singularity exec --overlay ${SINGULARITY_PATH}:ro \
+singularity exec --nv \
+      --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_search.csv \
@@ -113,7 +116,8 @@ echo '***********************DONE TRAINING ON LABEL job_search******************
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
 
-singularity exec --overlay ${SINGULARITY_PATH}:ro \
+singularity exec --nv \
+      --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
@@ -133,7 +137,8 @@ echo '***********************DONE TRAINING ON LABEL is_hired_1mo****************
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
 
-singularity exec --overlay ${SINGULARITY_PATH}:ro \
+singularity exec --nv \
+      --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_offer.csv \
@@ -146,7 +151,7 @@ singularity exec --overlay ${SINGULARITY_PATH}:ro \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
   --seed ${SEED}"
-  
+
 rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'
