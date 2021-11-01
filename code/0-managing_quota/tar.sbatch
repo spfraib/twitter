@@ -11,9 +11,8 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=slurm_tar_%j.out
 
-PATH=$1
+PATH_TO_TAR=$1
 
 module purge
-module load anaconda3/2020.02
 
-tar -zcvf ${PATH}.tar.gz ${PATH}
+tar -zcvf ${PATH_TO_TAR}.tar.gz ${PATH_TO_TAR}
