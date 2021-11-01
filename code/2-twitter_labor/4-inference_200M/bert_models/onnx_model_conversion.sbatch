@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=ONNX_conversion
 #SBATCH --nodes=1
-#SBATCH --mem=10GB
+#SBATCH --mem=20GB
 #SBATCH --gres=gpu:0
 #SBATCH --output=slurm_ONNX_conversion_%j.out
 #SBATCH --mail-type=BEGIN
