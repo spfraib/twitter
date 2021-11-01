@@ -592,7 +592,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     os.path.join(final_output_path, column,
                  str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
-    logger.info(f'saved to:\n  {os.path.join(final_output_path, column, str(getpass.getuser()) + "_random" + "-" + str(SLURM_ARRAY_TASK_ID) + ".parquet")})
+    logger.info(f'saved to:\n  {os.path.join(final_output_path, column, str(getpass.getuser()) + "_random" + "-" + str(SLURM_ARRAY_TASK_ID) + ".parquet")}')
 
     logger.info(f'save time taken: {str(time.time() - start_time)} seconds')
 
