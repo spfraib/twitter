@@ -40,7 +40,7 @@ DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/train_test/${COU
 # Load packages and activate virtual environment
 module purge
 module load anaconda3/2020.02
-source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
+#source /scratch/mt4493/twitter_labor/code/envs/finetuning_bert_env/bin/activate
 echo "virtualenv activated"
 
 #create output folder
@@ -48,12 +48,15 @@ mkdir /scratch/mt4493/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TY
 OUTPUT_DIR=/scratch/mt4493/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_seed-${SEED}
 echo "Output folder created: ${OUTPUT_DIR}"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
-
+CODE_PATH=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
+SINGULARITY_PATH=/scratch/mt4493/twitter_labor/code/envs/singularity/finetuning_bert/env.ext3
 shopt -s extglob
 
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
-python3 train_bert.py \
+
+singularity exec --overlay ${SINGULARITY_PATH}:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_lost_job_1mo.csv \
   --eval_data_path ${DATA_PATH}/val_lost_job_1mo.csv \
   --model_name ${MODEL_NAME} \
@@ -63,14 +66,16 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED} \
-  #--holdout_data_path ${DATA_PATH}/holdout_lost_job_1mo.csv \
+  --seed ${SEED}"
 
 rm -rf ${OUTPUT_DIR}/lost_job_1mo/models/!(best_model)
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
-python3 train_bert.py \
+
+singularity exec --overlay ${SINGULARITY_PATH}:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_unemployed.csv \
   --eval_data_path ${DATA_PATH}/val_is_unemployed.csv \
   --model_name ${MODEL_NAME} \
@@ -80,15 +85,17 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED} \
-  #--holdout_data_path ${DATA_PATH}/holdout_is_unemployed.csv \
+  --seed ${SEED}"
 
 rm -rf ${OUTPUT_DIR}/is_unemployed/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_unemployed*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
-python3 train_bert.py \
+
+singularity exec --overlay ${SINGULARITY_PATH}:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_search.csv \
   --eval_data_path ${DATA_PATH}/val_job_search.csv \
   --model_name ${MODEL_NAME} \
@@ -98,15 +105,17 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED} \
-  #--holdout_data_path ${DATA_PATH}/holdout_job_search.csv \
+  --seed ${SEED}"
 
 rm -rf ${OUTPUT_DIR}/job_search/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_search*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
-python3 train_bert.py \
+
+singularity exec --overlay ${SINGULARITY_PATH}:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_is_hired_1mo.csv \
   --eval_data_path ${DATA_PATH}/val_is_hired_1mo.csv \
   --model_name ${MODEL_NAME} \
@@ -116,15 +125,17 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED} \
-  #--holdout_data_path ${DATA_PATH}/holdout_is_hired_1mo.csv \
+  --seed ${SEED}"
 
 rm -rf ${OUTPUT_DIR}/is_hired_1mo/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL is_hired_1mo*******************************************************'
 
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
-python3 train_bert.py \
+
+singularity exec --overlay ${SINGULARITY_PATH}:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
   --train_data_path ${DATA_PATH}/train_job_offer.csv \
   --eval_data_path ${DATA_PATH}/val_job_offer.csv \
   --model_name ${MODEL_NAME} \
@@ -134,9 +145,8 @@ python3 train_bert.py \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED} \
-  #--holdout_data_path ${DATA_PATH}/holdout_job_offer.csv \
-
+  --seed ${SEED}"
+  
 rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
 
 echo '***********************DONE TRAINING ON LABEL job_offer*******************************************************'

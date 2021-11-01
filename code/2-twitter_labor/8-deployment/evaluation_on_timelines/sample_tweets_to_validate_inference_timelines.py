@@ -44,7 +44,7 @@ if __name__ == '__main__':
     path_to_scores = os.path.join('/scratch/spf248/twitter/data/labor/tweet_scores/BERT',
                                   args.country_code, model_folder_dict[args.country_code], 'output')
     path_to_evals = os.path.join(
-        '/scratch/spf248/twitter/data/user_timeline', 'user_timeline_evaluation_samples', args.country_code)  # Where to store the sampled tweets to be labeled
+        '/scratch/spf248/twitter/data/user_timeline/user_timeline_evaluation_samples', args.country_code)  # Where to store the sampled tweets to be labeled
     if not os.path.exists(path_to_evals):
         os.makedirs(path_to_evals)
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
