@@ -3,7 +3,7 @@
 #SBATCH --job-name=sample
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1500GB
+#SBATCH --mem=1750GB
 #SBATCH --time=72:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
