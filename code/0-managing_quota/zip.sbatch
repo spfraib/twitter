@@ -12,7 +12,7 @@
 #SBATCH --output=slurm_zip_%j.out
 
 
-PATH=$1
+PATH_TO_ZIP=$1
 
-zip -r ${PATH}.zip ${PATH}
+zip -r ${PATH_TO_ZIP}.zip ${PATH_TO_ZIP}
 
