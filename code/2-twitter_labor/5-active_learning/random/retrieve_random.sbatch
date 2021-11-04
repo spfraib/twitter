@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_adaptive_retrieval-%j.out
+#SBATCH --output=slurm_random-%j.out
 
 COUNTRY_CODE=$1
 INFERENCE_FOLDER=$2
