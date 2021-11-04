@@ -28,4 +28,4 @@ singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/i
 	    /bin/bash -c "source /ext3/env.sh; python3 /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/random/retrieve_random.py \
       --country_code ${COUNTRY_CODE} \
       --inference_folder ${INFERENCE_FOLDER} \
-      --iteration_number "${ITERATION_NUMBER}"
+      --iteration_number ${ITERATION_NUMBER}"
