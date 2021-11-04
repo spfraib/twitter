@@ -90,7 +90,7 @@ if __name__ == '__main__':
         sample_df = sample_df[['tweet_id', 'text', 'label']]
         sample_df_list.append(sample_df)
         random_df = random_df.loc[~random_df['tweet_id'].isin(sample_df['tweet_id'].tolist())]
-    appended_sample_df = pd.concat(sample_df_list)
+    appended_sample_df = pd.concat(sample_df_list).reset_index(drop=True)
     output_path = f'{data_path}/active_learning/random/{args.country_code}/{args.inference_folder}'
     if not os.path.exists(output_path):
         os.makedirs(output_path)
