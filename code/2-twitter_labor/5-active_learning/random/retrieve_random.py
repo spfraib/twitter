@@ -52,6 +52,7 @@ if __name__ == '__main__':
     data_path = '/scratch/mt4493/twitter_labor/twitter-labor-data/data'
     random_path = f'{data_path}/random_samples/random_samples_splitted'
     random_path_new_samples = Path(os.path.join(random_path, args.country_code, 'new_samples'))
+    print(random_path_new_samples)
     random_df = pd.concat(
         pd.read_parquet(parquet_file)
         for parquet_file in random_path_new_samples.glob('*.parquet')
