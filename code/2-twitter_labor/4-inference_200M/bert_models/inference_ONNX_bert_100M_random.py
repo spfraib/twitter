@@ -494,7 +494,7 @@ elif args.method == 2:
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_may2_iter3_uncertainty_6314071_seed-1'
             },
             'iter4': {
-                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6349919_seed-1',
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378399_seed-1',
                 'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378411_seed-13',
                 'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378403_seed-5',
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_may3_iter4_uncertainty_6378407_seed-9',
