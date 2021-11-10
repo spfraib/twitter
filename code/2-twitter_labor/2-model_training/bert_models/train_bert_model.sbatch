@@ -55,6 +55,7 @@ shopt -s extglob
 echo '***********************STARTING TRAINING ON LABEL lost_job_1mo***************************************************'
 
 singularity exec --nv \
+      --bind /home/mt4493/resolv.conf:/etc/resolv.conf:ro \
       --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
@@ -75,6 +76,7 @@ echo '***********************DONE TRAINING ON LABEL lost_job_1mo****************
 echo '***********************STARTING TRAINING ON LABEL is_unemployed***************************************************'
 
 singularity exec --nv \
+      --bind /home/mt4493/resolv.conf:/etc/resolv.conf:ro \
       --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
@@ -96,6 +98,7 @@ echo '***********************DONE TRAINING ON LABEL is_unemployed***************
 echo '***********************STARTING TRAINING ON LABEL job_search***************************************************'
 
 singularity exec --nv \
+      --bind /home/mt4493/resolv.conf:/etc/resolv.conf:ro \
       --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
@@ -117,6 +120,7 @@ echo '***********************DONE TRAINING ON LABEL job_search******************
 echo '***********************STARTING TRAINING ON LABEL is_hired_1mo***************************************************'
 
 singularity exec --nv \
+      --bind /home/mt4493/resolv.conf:/etc/resolv.conf:ro \
       --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
@@ -138,6 +142,7 @@ echo '***********************DONE TRAINING ON LABEL is_hired_1mo****************
 echo '***********************STARTING TRAINING ON LABEL job_offer***************************************************'
 
 singularity exec --nv \
+      --bind /home/mt4493/resolv.conf:/etc/resolv.conf:ro \
       --overlay ${SINGULARITY_PATH}:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 ${CODE_PATH}/train_bert.py \
