@@ -579,11 +579,11 @@ elif args.method == 4:
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_nov8_iter4_stratified_sampling_11689992_seed-14'
             },
             'iter5': {
-                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737085_seed-12',
-                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737082_seed-9',
-                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737074_seed-1',
-                'job_offer': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737077_seed-4',
-                'job_search': 'DeepPavlov-bert-base-cased-conversational_may12_iter5_uncertainty_uncalibrated_6737086_seed-13'
+                'lost_job_1mo': 'DeepPavlov-bert-base-cased-conversational_nov10_iter5_stratified_sampling_11794455_seed-15',
+                'is_hired_1mo': 'DeepPavlov-bert-base-cased-conversational_nov10_iter5_stratified_sampling_11794443_seed-3',
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_nov10_iter5_stratified_sampling_11794441_seed-1',
+                'job_offer': 'DeepPavlov-bert-base-cased-conversational_nov10_iter5_stratified_sampling_11794452_seed-12',
+                'job_search': 'DeepPavlov-bert-base-cased-conversational_nov10_iter5_stratified_sampling_11794452_seed-12'
             }
         }}
 
