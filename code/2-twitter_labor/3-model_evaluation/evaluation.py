@@ -80,6 +80,7 @@ if __name__ == '__main__':
     if not os.path.exists(output_path):
         os.makedirs(output_path)
     results_folders_list = os.listdir(results_folder)
+    results_folders_list = [result_folder for result_folder in results_folders_list if not 'archive' in result_folder]
     results_dict = dict()
 
     for model in ['neuralmind-bert-base-portuguese-cased', 'DeepPavlov-bert-base-cased-conversational', 'dccuchile-bert-base-spanish-wwm-cased']:
