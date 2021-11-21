@@ -21,22 +21,9 @@ def get_args_from_command_line():
     args = parser.parse_args()
     return args
 
-
-def get_sampled_indices(min_magnitude=3, top_tweets_threshold=1000000000):
-    index_list = list(range(1,11)) + list(range(91,101))
-    start=991
-    range_value = int((top_tweets_threshold-9-start)/pow(10,min_magnitude)) + 1
-    print(range_value)
-    for i in range(range_value):
-        list_to_add = list(range(start+pow(10,min_magnitude)*i, start+pow(10,min_magnitude)*i + 10))
-        index_list += list_to_add
-    return index_list
-
 if __name__ == '__main__':
     args = get_args_from_command_line()
     logger.info(args.country_code)
-    # Load sample indices
-    index_list = get_sampled_indices()
     # Define paths
     path_to_tweets = os.path.join(
         '/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed', args.country_code)  # Random set of tweets
