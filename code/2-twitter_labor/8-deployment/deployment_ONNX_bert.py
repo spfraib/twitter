@@ -167,7 +167,7 @@ if not os.path.exists(os.path.join(final_output_path)):
     os.makedirs(os.path.join(final_output_path))
 
 input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
-
+print(input_files_list)
 """
 creating a list of unique file ids assuming this file name structure:
 /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/part-00000-52fdb0a4-e509-49fe-9f3a-d809594bba7d-c000.snappy.parquet
