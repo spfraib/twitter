@@ -43,7 +43,7 @@ if __name__ == '__main__':
         final_df_list = list()
         logger.info(f'Starting with {label}')
         # scores_df = scores_df.sort_values(by=[label], ascending=False)
-        cutoff = cutoff_df.loc[cutoff_df['class']==label]['cutoff'].reset_index(drop=True)['cutoff'][0]
+        cutoff = cutoff_df.loc[cutoff_df['class']==label].reset_index(drop=True)['cutoff'][0]
         scores_df['modified_score'] = scores_df[label] - cutoff
         above_threshold_df = scores_df.loc[scores_df['modified_score'] > 0].nsmallest(500, 'modified_score')
         below_threshold_df = scores_df.loc[scores_df['modified_score'] < 0].nlargest(500, 'modified_score')
