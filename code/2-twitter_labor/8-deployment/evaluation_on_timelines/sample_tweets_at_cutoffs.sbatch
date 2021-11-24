@@ -3,7 +3,7 @@
 #SBATCH --job-name=sample_at_cutoffs
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1000GB
+#SBATCH --mem=2000GB
 #SBATCH --time=72:00:00
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
