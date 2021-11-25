@@ -47,7 +47,6 @@ if __name__ == '__main__':
         scores_df['modified_score'] = scores_df[label] - cutoff
         above_threshold_df = scores_df.loc[scores_df['modified_score'] > 0].nsmallest(500, 'modified_score')
         below_threshold_df = scores_df.loc[scores_df['modified_score'] < 0].nlargest(500, 'modified_score')
-        if above_threshold_df.shape[0] > 400:
-            df = pd.concat([above_threshold_df, below_threshold_df]).sample(100)
-            output_path = os.path.join(path_to_evals, f'ids_to_retrieve_{label}.parquet')
-            scores_df.to_parquet(output_path, index=False)
+        df = pd.concat([above_threshold_df, below_threshold_df]).sample(100)
+        output_path = os.path.join(path_to_evals, f'ids_to_retrieve_{label}.parquet')
+        df.to_parquet(output_path, index=False)
