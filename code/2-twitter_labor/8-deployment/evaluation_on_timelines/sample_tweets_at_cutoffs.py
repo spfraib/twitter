@@ -48,5 +48,7 @@ if __name__ == '__main__':
         above_threshold_df = scores_df.loc[scores_df['modified_score'] > 0].nsmallest(500, 'modified_score')
         below_threshold_df = scores_df.loc[scores_df['modified_score'] < 0].nlargest(500, 'modified_score')
         df = pd.concat([above_threshold_df, below_threshold_df]).sample(100)
-        output_path = os.path.join(path_to_evals, f'ids_to_retrieve_{label}.parquet')
-        df.to_parquet(output_path, index=False)
+        output_path = os.path.join(path_to_evals, label, 'tweet_ids')
+        if not os.path.exists(output_path):
+            os.makedirs(output_path)
+        df.to_parquet(os.path.join(output_path, 'ids_to_retrieve.parquet'), index=False)
