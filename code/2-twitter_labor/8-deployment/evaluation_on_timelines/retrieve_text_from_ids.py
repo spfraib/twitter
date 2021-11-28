@@ -4,6 +4,7 @@ import pandas as pd
 import logging
 from glob import glob
 import os
+import numpy as np
 
 logging.basicConfig(
                     format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
