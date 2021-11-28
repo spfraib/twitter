@@ -27,7 +27,9 @@ if __name__ == '__main__':
     # Define paths
     path_to_tweets = os.path.join(
         '/scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed', args.country_code)  # Random set of tweets
-    model_folder_dict = {'US': 'iter_8-2000-3GB-9032948', 'BR': 'iter_9-2000-3GB-8406630'}
+    model_folder_dict = {'US': 'iter_8-2000-3GB-9032948',
+                         'BR': 'iter_9-2000-3GB-8406630',
+                         'MX': "iter_15-1999-3GB-12200443"}
     path_to_scores = os.path.join('/scratch/spf248/twitter/data/labor/tweet_scores/BERT',
                                   args.country_code, model_folder_dict[args.country_code], 'output')
     path_to_evals = os.path.join(
