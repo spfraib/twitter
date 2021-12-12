@@ -443,8 +443,25 @@ if args.method == 0:
                 'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
-            }
-        }
+            }},
+            'AR': {
+                'iter15': {
+                    'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
+                    'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
+                    'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
+                    'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
+                    'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
+                },
+        },
+            'CO': {
+                'iter15': {
+                    'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
+                    'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
+                    'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
+                    'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
+                    'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
+                },
+            },
     }
 
 tweets_random = pd.DataFrame()
