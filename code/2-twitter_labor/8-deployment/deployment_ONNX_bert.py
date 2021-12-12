@@ -20,7 +20,6 @@ import socket
 import multiprocessing
 from functools import reduce
 
-
 parser = argparse.ArgumentParser()
 
 parser.add_argument("--input_path", type=str, help="path to input data")
@@ -34,14 +33,13 @@ parser.add_argument("--resume", type=int, help="resuming a run, 0 or 1")
 # parser.add_argument("--log_path", type=str, help="resuming a run, 0 or 1")
 
 
-
 args = parser.parse_args()
 
 logging.basicConfig(
-                    # filename=f'{args.log_path}.log',
-                    format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
-                    datefmt='%m/%d/%Y %H:%M:%S',
-                    level=logging.INFO)
+    # filename=f'{args.log_path}.log',
+    format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
+    datefmt='%m/%d/%Y %H:%M:%S',
+    level=logging.INFO)
 logger = logging.getLogger(__name__)
 print('libs loaded')
 
@@ -50,6 +48,7 @@ print(args)
 DEBUG_MODE = args.debug_mode
 
 global_start = time.time()
+
 
 ####################################################################################################################################
 # HELPER FUNCTIONS
@@ -120,7 +119,7 @@ def inference(onnx_model, model_dir, examples):
         total_build_label_time = total_build_label_time + (time.time() - start_build_label)
     #         print(i, label[0], onnx_logits.detach().cpu().numpy()[0].tolist(), type(onnx_logits.detach().cpu().numpy()[0]) )
 
-        # break #DEBUG
+    # break #DEBUG
 
     end_onnx_inference_batch = time.time()
     print("Total batch tokenization time (in seconds): ", total_batch_tokenization_time)
@@ -160,7 +159,7 @@ print('Load random Tweets:')
 
 start_time = time.time()
 
-final_output_path = args.output_path #e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
+final_output_path = args.output_path  # e.g. /scratch/spf248/twitter/data/user_timeline/bert_inferrred/MX
 
 if not os.path.exists(os.path.join(final_output_path)):
     print('>>>> directory doesnt exists, creating it')
@@ -183,13 +182,14 @@ filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
 
 already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
 already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
-                              for filename in already_processed_output_files]
+                                  for filename in already_processed_output_files]
 unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_file_id_list))
 
 if args.resume == 1:
     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
     unique_ids_remaining = list(dict.fromkeys(unique_ids_remaining))
-    files_remaining = [filename_prefix+'part-'+filename+'-c000'+filename_suffix for filename in unique_ids_remaining]
+    files_remaining = [filename_prefix + 'part-' + filename + '-c000' + filename_suffix for filename in
+                       unique_ids_remaining]
     print(files_remaining[:3])
     print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
 else:
@@ -198,11 +198,10 @@ print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_lis
       len(unique_already_processed_file_id_list))
 
 paths_to_random = list(np.array_split(
-        files_remaining,
-        SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
-    )
+    files_remaining,
+    SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
+                       )
 print('#files in paths_to_random', len(paths_to_random))
-
 
 if args.method == 0:
     best_model_folders_dict = {
@@ -275,12 +274,12 @@ if args.method == 0:
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850802_seed-8'
             }},
         'BR': {'iter0': {
-                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
-                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
-                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
-                'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
-                'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
-            },
+            'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
+            'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+            'is_unemployed': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
+            'job_offer': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843318_seed-6',
+            'job_search': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843320_seed-8'
+        },
             'iter1': {
                 'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
                 'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_mar12_iter1_3742968_seed-6',
@@ -444,24 +443,33 @@ if args.method == 0:
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
             }},
-            'AR': {
-                'iter15': {
-                    'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
-                    'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
-                    'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
-                    'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
-                    'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
-                },
-        },
-            'CO': {
-                'iter15': {
-                    'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
-                    'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
-                    'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
-                    'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
-                    'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
-                },
+        'AR': {
+            'iter15': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
             },
+        },
+        'CO': {
+            'iter15': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
+            },
+        },
+        'VE': {
+            'iter15': {
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324090_seed-8',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324094_seed-12',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324089_seed-7',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324088_seed-6',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
+            },
+        },
     }
 
 tweets_random = pd.DataFrame()
@@ -472,7 +480,6 @@ for file in paths_to_random:
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
     print('filename_without_extension')
 
-
     tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
     print(tweets_random.shape)
 
@@ -480,7 +487,6 @@ for file in paths_to_random:
 
     print('load random sample:', str(time.time() - start_time), 'seconds')
     print(tweets_random.shape)
-
 
     if args.drop_duplicates:
         print('dropping duplicates:')
@@ -501,8 +507,10 @@ for file in paths_to_random:
         print('\n\n!!!!!column', column)
         loop_start = time.time()
         best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
-        column, 'models', 'best_model')
+        model_country_folder_dict = {'US': 'US', 'MX': 'MX', 'BR': 'BR', 'AR': 'MX', 'CO': 'MX', 'VE': 'MX'}
+        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models',
+                                  model_country_folder_dict[args.country_code], best_model_folder,
+                                  column, 'models', 'best_model')
 
         print(model_path)
         onnx_path = os.path.join(model_path, 'onnx')
@@ -539,7 +547,7 @@ for file in paths_to_random:
 
         # break  # DEBUG column
 
-    all_columns_df = reduce(lambda x,y: pd.merge(x , y, left_on=['tweet_id'], right_on=['tweet_id'] ,how='inner'),
+    all_columns_df = reduce(lambda x, y: pd.merge(x, y, left_on=['tweet_id'], right_on=['tweet_id'], how='inner'),
                             all_predictions_random_df_list
                             )
 
@@ -557,18 +565,19 @@ for file in paths_to_random:
           SLURM_ARRAY_TASK_COUNT,
           filename_without_extension,
           os.path.join(final_output_path,
-                                      filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID) + '.parquet'),
+                       filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(
+                           SLURM_JOB_ID) + '.parquet'),
           str(time.time() - start_time)
-        )
+          )
 
     print('>>>>> completed', filename_without_extension)
 
     print('save time taken:', str(time.time() - start_time), 'seconds')
 
     print('file loop:', filename_without_extension, str(time.time() - loop_start), 'seconds', (time.time() -
-                                                                                                  loop_start) / len(examples))
+                                                                                               loop_start) / len(
+        examples))
     # break #DEBUG parquet file
-
 
 print('full loop:', str(time.time() - global_start), 'seconds',
       (time.time() - global_start) / TOTAL_NUM_TWEETS)
