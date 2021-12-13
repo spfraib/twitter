@@ -15,10 +15,13 @@ COUNTRY_CODE=$1
 MODEL_FOLDER=$2
 
 module purge
-module load anaconda3/2020.02
-source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
-srun time python -u count_kskipngrams.py --country_code ${COUNTRY_CODE} --model_folder ${MODEL_FOLDER} > log/count_kskipngrams_${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID} 2>&1
-exit
+#module load anaconda3/2020.02
+#source /scratch/mt4493/twitter_labor/code/envs/kskipngrams_env/bin/activate
+#cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration
+singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/kskipngrams/env.ext3:ro \
+	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
+	    /bin/bash -c "source /ext3/env.sh; python3 /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/5-active_learning/exploration/count_kskipngrams.py \
+	     --country_code ${COUNTRY_CODE} \
+	     --model_folder ${MODEL_FOLDER}"
 
 # sbatch --array=0-4 count_kskipngrams.sbatch
