@@ -332,6 +332,13 @@ if args.method == 0:
                 'job_offer': 'neuralmind-bert-base-portuguese-cased_jun24_iter9_7985492_seed-10',
                 'job_search': 'neuralmind-bert-base-portuguese-cased_jun24_iter9_7985489_seed-7'
             },
+            'iter10': {
+                'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_jan17_iter10_13940821_seed-2',
+                'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_jan17_iter10_13940823_seed-4',
+                'is_unemployed': 'neuralmind-bert-base-portuguese-cased_jan17_iter10_13940824_seed-5',
+                'job_offer': 'neuralmind-bert-base-portuguese-cased_jan17_iter10_13940830_seed-11',
+                'job_search': 'neuralmind-bert-base-portuguese-cased_jan17_iter10_13940820_seed-1'
+            },
         },
         'MX': {
             'iter0': {
@@ -443,11 +450,11 @@ if args.method == 0:
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_oct30_iter15_11324095_seed-13'
             },
             'iter16': {
-                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jan11_iter16_13682352_seed-12',
-                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jan11_iter16_13682351_seed-11',
-                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jan11_iter16_13682341_seed-1',
-                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jan11_iter16_13682353_seed-13',
-                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jan11_iter16_13682350_seed-10'
+                'lost_job_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jan12_iter16_13940794_seed-12',
+                'is_hired_1mo': 'dccuchile-bert-base-spanish-wwm-cased_jan12_iter16_13940793_seed-11',
+                'is_unemployed': 'dccuchile-bert-base-spanish-wwm-cased_jan12_iter16_13940789_seed-7',
+                'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jan12_iter16_13940795_seed-13',
+                'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jan12_iter16_13940787_seed-5'
             },
         }
     }
