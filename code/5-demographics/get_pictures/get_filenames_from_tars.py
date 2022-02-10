@@ -32,7 +32,6 @@ if __name__ == '__main__':
         os.remove(outfile_path)
     if os.path.exists(outfile_err_path):
         os.remove(outfile_err_path)
-    total_err_user_id_list = list()
     for tar_path in Path(data_path).glob('*.tar'):
         logger.info(f'Saving file names from {tar_path}')
         if 'err' not in tar_path.name:
@@ -43,15 +42,17 @@ if __name__ == '__main__':
                         print(member.name, file=f)
             except:
                 logger.info(f'Error reading tar {tar_path}')
-        else:
-            tar_files = tarfile.open(tar_path)
-            for member in tar_files.getmembers():
-                try:
-                    f = tar_files.extractfile(member)
-                    err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
-                    total_err_user_id_list += err_user_id_list
-                except:
-                    logger.info(f'Error reading member {member.name} from {tar_path.name}')
+    # check errors
+    total_err_user_id_list = list()
+    input_err_path = os.path.join(data_path, 'err')
+    for txt_file in Path(input_err_path).glob('*.txt'):
+        try:
+            f = open(txt_file, 'r')
+            err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
+            total_err_user_id_list += err_user_id_list
+        except:
+            logger.info(f'Error reading member {member.name} from {tar_path.name}')
+    total_err_user_id_list = list(set(total_err_user_id_list))
     with gzip.open(outfile_err_path, 'at') as f:
         for user_id in total_err_user_id_list:
             print(user_id, file=f)
