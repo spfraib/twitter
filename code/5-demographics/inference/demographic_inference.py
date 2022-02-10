@@ -79,7 +79,7 @@ def resize_imgs(src_root, dest_root, src_list=None, filter=Image.BILINEAR, force
 
 
 def set_lang(country_code):
-    languages = {'US': 'en', 'MX': 'es', 'BR': 'pt'}
+    languages = {'US': 'en', 'MX': 'es', 'BR': 'pt', 'NG': 'en'}
     return languages[country_code]
 
 
