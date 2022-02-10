@@ -50,8 +50,9 @@ if __name__ == '__main__':
             f = open(txt_file, 'r')
             err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
             total_err_user_id_list += err_user_id_list
-        except:
-            logger.info(f'Error reading member {member.name} from {tar_path.name}')
+        except Exception as e:
+            logger.info(f'Exception : {e}')
+            logger.info(f'Error reading {txt_file.name}')
     total_err_user_id_list = list(set(total_err_user_id_list))
     with gzip.open(outfile_err_path, 'at') as f:
         for user_id in total_err_user_id_list:
