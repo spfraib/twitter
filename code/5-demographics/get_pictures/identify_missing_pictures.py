@@ -31,7 +31,7 @@ if __name__ == '__main__':
     user_dict = pd.concat(
         [pd.read_parquet(parquet_path, columns=['user_id', 'profile_image_url_https']) for parquet_path in
          Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['profile_image_url_https']
-    user_list = list(user_dict.keys())
+    user_list = list(set(list(user_dict.keys())))
     # get ids from user for whom we got an error when trying to download their pictures
     list_errors_path = f'{data_path}/demographics/profile_pictures/tars/list_errors_{args.country_code}.txt.gz'
     user_id_errors_list = list()
