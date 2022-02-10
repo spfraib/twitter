@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for txt_file in Path(input_err_path).glob('*.txt'):
         try:
             f = open(txt_file, 'r')
-            err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().decode('utf-8').split('\n')]
+            err_user_id_list = [err_str.split('\t')[0] for err_str in f.read().split('\n')]
             total_err_user_id_list += err_user_id_list
         except Exception as e:
             logger.info(f'Exception : {e}')
