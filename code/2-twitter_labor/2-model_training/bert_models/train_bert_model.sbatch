@@ -16,6 +16,7 @@ MODEL_NAME=$3
 MODEL_TYPE=$4
 SEED=$5
 INTRA_EPOCH_EVAL=$6
+LEARNING_RATE_EXPONENT=$7
 #SEGMENT=$5
 #INTRA_EPOCH_EVAL=$5
 TIMESTAMP=$(date +%s)
@@ -68,7 +69,8 @@ singularity exec --nv \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}"
+  --seed ${SEED} \
+  --learning_rate_exponent ${LEARNING_RATE_EXPONENT}"
 
 rm -rf ${OUTPUT_DIR}/lost_job_1mo/models/!(best_model)
 echo '***********************DONE TRAINING ON LABEL lost_job_1mo*******************************************************'
@@ -89,7 +91,8 @@ singularity exec --nv \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}"
+  --seed ${SEED} \
+  --learning_rate_exponent ${LEARNING_RATE_EXPONENT}"
 
 rm -rf ${OUTPUT_DIR}/is_unemployed/models/!(best_model)
 
@@ -111,7 +114,8 @@ singularity exec --nv \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}"
+  --seed ${SEED} \
+  --learning_rate_exponent ${LEARNING_RATE_EXPONENT}"
 
 rm -rf ${OUTPUT_DIR}/job_search/models/!(best_model)
 
@@ -133,7 +137,8 @@ singularity exec --nv \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}"
+  --seed ${SEED} \
+  --learning_rate_exponent ${LEARNING_RATE_EXPONENT}"
 
 rm -rf ${OUTPUT_DIR}/is_hired_1mo/models/!(best_model)
 
@@ -155,7 +160,8 @@ singularity exec --nv \
   --slurm_job_timestamp ${TIMESTAMP} \
   --slurm_job_id ${JOB_ID} \
   --intra_epoch_evaluation ${INTRA_EPOCH_EVAL} \
-  --seed ${SEED}"
+  --seed ${SEED} \
+  --learning_rate_exponent ${LEARNING_RATE_EXPONENT}"
 
 rm -rf ${OUTPUT_DIR}/job_offer/models/!(best_model)
 

@@ -59,6 +59,7 @@ from datetime import datetime
 import time
 import pytz
 import json
+from pysentimiento.preprocessing import preprocess_tweet
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
@@ -90,7 +91,7 @@ def get_args_from_command_line():
     parser.add_argument("--use_cuda", type=int, help="Whether to use cuda", default=1)
     parser.add_argument("--segment", type=int, default=0)
     parser.add_argument("--seed", type=int, default=0)
-
+    parser.add_argument("--learning_rate_exponent", type=int, default=5)
 
     args = parser.parse_args()
     return args
@@ -182,6 +183,9 @@ if __name__ == "__main__":
     train_df = pd.read_csv(args.train_data_path, lineterminator='\n')
     eval_df = pd.read_csv(args.eval_data_path, lineterminator='\n')
     text_column = 'text_segment' if args.segment == 1 else 'text'
+    if 'robertuito' in args.model_type:
+        train_df[text_column] = train_df[text_column].apply(preprocess_tweet)
+        eval_df[text_column] = eval_df[text_column].apply(preprocess_tweet)
     if args.holdout_data_path:
         holdout_df = pd.read_csv(args.holdout_data_path, lineterminator='\n')
         holdout_df = holdout_df[[text_column, 'class']]
@@ -216,6 +220,7 @@ if __name__ == "__main__":
     # Create a ClassificationModel
     ## Define arguments
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
+    learning_rate = float(f'1e-{args.learning_rate_exponent}')
     classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
@@ -223,7 +228,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_delta": 0, "early_stopping_metric": "auroc",
                                       "early_stopping_metric_minimize": False, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" ,
-                                      "manual_seed": args.seed}
+                                      "manual_seed": args.seed, "learning_rate": learning_rate }
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
@@ -299,10 +304,11 @@ if __name__ == "__main__":
     # Save evaluation results on eval set
     segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
     seed_str = f'seed-{args.seed}'
+    learning_rate_str = f'lr-1e-{args.learning_rate_exponent}'
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '-')
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}_{learning_rate_str}',
                                               f'{name_val_file}_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
         os.makedirs(os.path.dirname(path_to_store_eval_results))
@@ -313,7 +319,7 @@ if __name__ == "__main__":
     # Save scores
     eval_df['score'] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}_{learning_rate_str}',
                                               f'{name_val_file}_scores.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
         os.makedirs(os.path.dirname(path_to_store_eval_scores))
