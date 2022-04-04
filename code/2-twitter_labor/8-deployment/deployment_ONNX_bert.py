@@ -495,7 +495,7 @@ for file in paths_to_random:
     filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
     print('filename_without_extension')
 
-    tweets_random = pd.read_parquet(file)[['tweet_id', 'text']]
+    tweets_random = pd.read_parquet(file)[['tweet_id', 'tweet_text']]
     print(tweets_random.shape)
 
     # tweets_random = tweets_random.head(10) #DEBUG
@@ -506,13 +506,13 @@ for file in paths_to_random:
     if args.drop_duplicates:
         print('dropping duplicates:')
         start_time = time.time()
-        tweets_random = tweets_random.drop_duplicates('text')
+        tweets_random = tweets_random.drop_duplicates('tweet_text')
         print('drop duplicates:', str(time.time() - start_time), 'seconds')
         print(tweets_random.shape)
 
     start_time = time.time()
     print('converting to list')
-    examples = tweets_random.text.values.tolist()
+    examples = tweets_random.tweet_text.values.tolist()
     # examples = examples[0] #DEBUG
     TOTAL_NUM_TWEETS = TOTAL_NUM_TWEETS + len(examples)
 
