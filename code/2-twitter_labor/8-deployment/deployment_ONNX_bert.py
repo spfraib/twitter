@@ -165,7 +165,7 @@ if not os.path.exists(os.path.join(final_output_path)):
     print('>>>> directory doesnt exists, creating it')
     os.makedirs(os.path.join(final_output_path))
 
-input_files_list = glob(os.path.join(path_to_data, '*.parquet'))
+input_files_list = [input_file.split('/')[-1] for input_file in glob(os.path.join(path_to_data, '*.parquet'))]
 print(input_files_list)
 """
 creating a list of unique file ids assuming this file name structure:
@@ -175,33 +175,41 @@ unique_intput_file_id_list will contain 00000-52fdb0a4-e509-49fe-9f3a-d809594bba
 filename_prefix is /scratch/spf248/twitter/data/user_timeline/user_timeline_text_preprocessed/part-
 filename_suffix is -c000.snappy.parquet
 """
-unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
-                              for filename in input_files_list]
-filename_prefix = input_files_list[0].split('part-')[0]
-filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
+# unique_intput_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+#                               for filename in input_files_list]
+# filename_prefix = input_files_list[0].split('part-')[0]
+# filename_suffix = input_files_list[0].split('part-')[1].split('-c000')[1]
 
-already_processed_output_files = glob(os.path.join(final_output_path, '*.parquet'))
-already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
-                                  for filename in already_processed_output_files]
-unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_file_id_list))
+already_processed_output_files = [output_file.split('/')[-1] for output_file in glob(os.path.join(final_output_path, '*.parquet'))]
+# already_processed_file_id_list = [filename.split('part-')[1].split('-c000')[0]
+#                                   for filename in already_processed_output_files]
+# unique_already_processed_file_id_list = list(dict.fromkeys(already_processed_file_id_list))
+unique_already_processed_output_files = list(dict.fromkeys(already_processed_output_files))
 
-if args.resume == 1:
-    unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
-    unique_ids_remaining = list(dict.fromkeys(unique_ids_remaining))
-    files_remaining = [filename_prefix + 'part-' + filename + '-c000' + filename_suffix for filename in
-                       unique_ids_remaining]
-    print(files_remaining[:3])
-    print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
-else:
-    files_remaining = input_files_list
-print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
-      len(unique_already_processed_file_id_list))
+# if args.resume == 1:
+#     unique_ids_remaining = list(set(unique_intput_file_id_list) - set(unique_already_processed_file_id_list))
+#     unique_ids_remaining = list(dict.fromkeys(unique_ids_remaining))
+#     files_remaining = [filename_prefix + 'part-' + filename + '-c000' + filename_suffix for filename in
+#                        unique_ids_remaining]
+#     print(files_remaining[:3])
+#     print(len(files_remaining), len(unique_intput_file_id_list), len(unique_already_processed_file_id_list))
+# else:
+#     files_remaining = input_files_list
+# print('resume', args.resume, len(files_remaining), len(unique_intput_file_id_list),
+#       len(unique_already_processed_file_id_list))
 
-paths_to_random = list(np.array_split(
-    files_remaining,
+files_to_process_list = list(np.array_split(
+    input_files_list,
     SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID]
                        )
-print('#files in paths_to_random', len(paths_to_random))
+print('#files to process', len(files_to_process_list))
+
+# remove already processed files from input
+
+formatted_output_files_list = list(dict.fromkeys([f'{filename.split("_")[0]}.snappy.parquet' for filename in unique_already_processed_output_files]))
+files_to_process_list = [file for file in files_to_process_list if file not in formatted_output_files_list]
+print('#files to process (after dropping already processed)', len(files_to_process_list))
+
 
 if args.method == 0:
     best_model_folders_dict = {
@@ -490,12 +498,12 @@ if args.method == 0:
 tweets_random = pd.DataFrame()
 
 TOTAL_NUM_TWEETS = 0
-for file in paths_to_random:
-    print(file)
-    filename_without_extension = os.path.splitext(os.path.splitext(file.split('/')[-1])[0])[0]
-    print('filename_without_extension')
+for filename in files_to_process_list:
+    print(filename)
+    filename_without_extension = filename.split('.')[0]
+    # print('filename_without_extension')
 
-    tweets_random = pd.read_parquet(file)[['tweet_id', 'tweet_text']]
+    tweets_random = pd.read_parquet(os.path.join(path_to_data, filename))[['tweet_id', 'tweet_text']]
     print(tweets_random.shape)
 
     # tweets_random = tweets_random.head(10) #DEBUG
@@ -570,8 +578,10 @@ for file in paths_to_random:
     print('!!shapes', all_columns_df.shape, [df.shape for df in all_predictions_random_df_list])
     all_columns_df.to_parquet(
         os.path.join(final_output_path,
-                     filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID)
+                     filename_without_extension + '_' + str(getpass.getuser()) + '_random' + '-' + str(SLURM_JOB_ID)
                      + '.parquet'))
+    # all_columns_df.to_parquet(
+    #     os.path.join(final_output_path, filename)
 
     print('saved to:',
           # column,
@@ -580,7 +590,7 @@ for file in paths_to_random:
           SLURM_ARRAY_TASK_COUNT,
           filename_without_extension,
           os.path.join(final_output_path,
-                       filename_without_extension + str(getpass.getuser()) + '_random' + '-' + str(
+                       filename_without_extension + '_' + str(getpass.getuser()) + '_random' + '-' + str(
                            SLURM_JOB_ID) + '.parquet'),
           str(time.time() - start_time)
           )
