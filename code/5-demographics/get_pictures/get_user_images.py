@@ -22,8 +22,6 @@ logger = logging.getLogger(__name__)
 def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument("--country_code", type=str,
-                        default="US")
     parser.add_argument("--mode", type=str)
     args = parser.parse_args()
     return args
@@ -47,9 +45,6 @@ def tar_output_folder(folder_path, output_path):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-
-    country_code = args.country_code
-    logger.info(f'Country: {country_code}')
 
     # Choose Number of Nodes To Distribute Credentials: e.g. jobarray=0-4, cpu_per_task=20, credentials = 90 (<100)
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
@@ -116,7 +111,7 @@ if __name__ == '__main__':
             if os.path.exists(output_dir):
                 os.rmdir(output_dir)
     elif args.mode == 'get_missing':
-        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_{args.country_code}.json',
+        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics.json',
                   'r') as f:
             missing_pics_ids_dict = json.load(f)
         ids_to_collect_list = list(np.array_split(list(missing_pics_ids_dict.keys()), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
