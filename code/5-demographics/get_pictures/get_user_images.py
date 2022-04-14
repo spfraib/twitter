@@ -79,7 +79,7 @@ if __name__ == '__main__':
                 if not file_path.endswith("parquet"):
                     continue
                 start = timer()
-                users = pq.read_table(file_path, columns=['user_id', 'profile_image_url_https']).to_pandas()
+                users = pq.read_table(file_path, columns=['user_id', 'user_profile_image_url_https']).to_pandas()
                 for row in users.itertuples(index=False):
                     user_id = row[0]
                     url = row[1]
