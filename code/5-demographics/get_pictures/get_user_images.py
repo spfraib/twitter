@@ -57,9 +57,9 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    output_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/{str(SLURM_JOB_ID)}"
-    success_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/success"
-    err_log_dir = f"/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{country_code}/err"
+    output_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/{str(SLURM_JOB_ID)}"
+    success_log_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/success"
+    err_log_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/err"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
     if not os.path.exists(err_log_dir):
@@ -69,10 +69,10 @@ if __name__ == '__main__':
     #     os.makedirs(success_log_dir)
     # success_log = open(os.path.join(success_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     logger.info('Load data')
-    data_path = '/scratch/spf248/twitter/data'
+    data_path = '/scratch/spf248/twitter_data_collection/data'
     # get user id list
     start = timer()
-    dir_name = f'{data_path}/user_timeline/user_timeline_crawled/{args.country_code}'
+    dir_name = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
     if args.mode == 'from_scratch':
         paths_to_filtered = list(
             np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
