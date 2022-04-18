@@ -10,17 +10,13 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-COUNTRY_CODE=$1
-TAR_TYPE=$2
 
 module purge
 module load anaconda3/2020.02
 
 cd /scratch/spf248/twitter/code/twitter/code/5-demographics/get_pictures
 
-python get_filenames_from_tars.py \
---country_code ${COUNTRY_CODE} \
---tar_type ${TAR_TYPE}
+python get_filenames_from_tars.py
 
 
 

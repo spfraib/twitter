@@ -17,7 +17,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
                         default="US")
-    parser.add_argument("--tar_type", type=str, help='Whether to look at the tar or resized_tars')
+    parser.add_argument("--tar_type", type=str, help='Whether to look at the tar or resized_tars', default='normal')
     args = parser.parse_args()
     return args
 
@@ -25,9 +25,9 @@ def get_args_from_command_line():
 if __name__ == '__main__':
     args = get_args_from_command_line()
     tar_folder_dict = {'normal': 'tars', 'resized': 'resized_tars'}
-    data_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/{args.country_code}'
-    outfile_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_{args.country_code}.txt.gz'
-    outfile_err_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_{args.country_code}.txt.gz'
+    data_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}'
+    outfile_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_files_all.txt.gz'
+    outfile_err_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/{tar_folder_dict[args.tar_type]}/list_errors_all.txt.gz'
     if os.path.exists(outfile_path):
         os.remove(outfile_path)
     if os.path.exists(outfile_err_path):
