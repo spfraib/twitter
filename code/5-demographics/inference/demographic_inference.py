@@ -149,16 +149,16 @@ def retrieve_non_resizable_ids(err_dir):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-    logger.info(f'Country code: {args.country_code}')
+    # logger.info(f'Country code: {args.country_code}')
     # define env vars
     SLURM_JOB_ID = get_env_var('SLURM_JOB_ID', 0)
     SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     # define paths and paths to be treated
-    tar_dir = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars/{args.country_code}'
-    user_dir = f'/scratch/spf248/twitter/data/user_timeline/user_timeline_crawled/{args.country_code}'
-    user_mapping_path = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars/user_map_dict_{args.country_code}.json'
-    output_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}'
+    tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
+    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
+    user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
+    output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
     err_dir = os.path.join(output_dir, 'err')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
@@ -188,9 +188,9 @@ if __name__ == '__main__':
             total_not_resizable_id_list = retrieve_non_resizable_ids(err_dir=err_dir)
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
-        df = df.rename(columns={'user_id': 'id', 'profile_image_url_https': 'img_path'})
+        df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path'})
         df = df[['id', 'name', 'screen_name', 'description', 'lang', 'img_path']]
-        df['lang'] = set_lang(country_code=args.country_code)
+        # df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
