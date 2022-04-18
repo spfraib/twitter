@@ -44,8 +44,8 @@ def generate_user_image_map(tar_dir):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-    tar_dir = f'/scratch/spf248/twitter/data/demographics/profile_pictures/tars'
-    user_image_mapping_dict = generate_user_image_map(tar_dir=os.path.join(tar_dir, args.country_code))
-    output_dir = f'{tar_dir}/user_map_dict_{args.country_code}.json'
+    tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
+    user_image_mapping_dict = generate_user_image_map(tar_dir=tar_dir)
+    output_dir = f'{tar_dir}/user_map_dict_all.json'
     with open(output_dir, 'w') as fp:
         json.dump(user_image_mapping_dict, fp)
