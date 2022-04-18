@@ -10,12 +10,10 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-COUNTRY_CODE=$1
 
 module purge
 module load anaconda3/2020.02
 
 cd /scratch/spf248/twitter/code/twitter/code/5-demographics/inference
 
-python3 generate_user_image_map.py \
---country_code ${COUNTRY_CODE}
+python3 generate_user_image_map.py
