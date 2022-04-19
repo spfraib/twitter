@@ -84,7 +84,7 @@ def set_lang(country_code):
 
 
 def extract(row, tmpdir, mapping_dict, tar_dir):
-    user = row['id']
+    user = row['user_id']
     if user not in mapping_dict:
         return None
     else:
@@ -209,7 +209,7 @@ if __name__ == '__main__':
                                                dest_root=f'{tmpdir}/resized_pics'))
                 not_resizable_chunk = chunk.loc[chunk['img_path'].isnull()].reset_index(drop=True)
                 if not_resizable_chunk.shape[0] > 0:
-                    not_resizable_id_list = not_resizable_chunk['id'].tolist()
+                    not_resizable_id_list = not_resizable_chunk['user_id'].tolist()
                 else:
                     not_resizable_id_list = list()
                 chunk = chunk[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'img_path']]
