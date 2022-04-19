@@ -38,7 +38,7 @@ then
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 0 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/unscored/
-  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/output
+  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
   INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/unscored/
