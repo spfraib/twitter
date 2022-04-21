@@ -84,7 +84,7 @@ def set_lang(country_code):
 
 
 def extract(row, tmpdir, mapping_dict, tar_dir):
-    user = row['user_id']
+    user = row['id']
     if user not in mapping_dict:
         return None
     else:
@@ -178,6 +178,7 @@ if __name__ == '__main__':
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
+        #todo load file par file et select users que je veux
         df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in selected_users_list]).reset_index(drop=True)
         logger.info(f'Initial df size: {df.shape[0]}')
         if args.country_code != 'all':
@@ -191,9 +192,9 @@ if __name__ == '__main__':
             total_not_resizable_id_list = retrieve_non_resizable_ids(err_dir=err_dir)
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
-        df = df.rename(columns={'user_profile_image_url_https': 'img_path'})
-        df = df[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'img_path']]
-        # df['lang'] = set_lang(country_code=args.country_code)
+        df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
+        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path']]
+        df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
@@ -212,10 +213,10 @@ if __name__ == '__main__':
                                                dest_root=f'{tmpdir}/resized_pics'))
                 not_resizable_chunk = chunk.loc[chunk['img_path'].isnull()].reset_index(drop=True)
                 if not_resizable_chunk.shape[0] > 0:
-                    not_resizable_id_list = not_resizable_chunk['user_id'].tolist()
+                    not_resizable_id_list = not_resizable_chunk['id'].tolist()
                 else:
                     not_resizable_id_list = list()
-                chunk = chunk[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'img_path']]
+                chunk = chunk[['id', 'user_name', 'user_screen_name', 'user_description', 'lang', 'img_path']]
                 initial_chunk_shape = chunk.shape[0]
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
                 logger.info(f'Chunk size with resized pics: {chunk.shape[0]}')

@@ -42,10 +42,27 @@ def generate_user_image_map(tar_dir):
                 logger.info(f'Exception "{e}" when treating {tar_path.name}')
     return user_image_mapping_dict
 
+def get_image_map(map_dict, user_id):
+    if user_id in map_dict.keys():
+        return map_dict[user_id]
+    else:
+        return None
+
 if __name__ == '__main__':
     args = get_args_from_command_line()
     tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
     user_image_mapping_dict = generate_user_image_map(tar_dir=tar_dir)
-    output_dir = f'{tar_dir}/user_map_dict_all.json'
-    with open(output_dir, 'w') as fp:
-        json.dump(user_image_mapping_dict, fp)
+    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
+    output_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    for path in Path(user_dir).glob('*.parquet'):
+        df = pd.read_parquet(path)
+        df = df[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'user_profile_image_url_https']]
+        df['user_id'] = df['user_id'].astype(str)
+        df['tar_info'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x))
+        output_filename = path.name.split("/")[-1]
+        df.to_parquet(os.path.join(output_dir, output_filename))
+    # output_dir = f'{tar_dir}/user_map_dict_all.json'
+    # with open(output_dir, 'w') as fp:
+    #     json.dump(user_image_mapping_dict, fp)
