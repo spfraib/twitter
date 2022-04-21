@@ -26,7 +26,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="US")
+                        default=None)
     return parser.parse_args()
 
 
@@ -180,6 +180,9 @@ if __name__ == '__main__':
     if len(selected_users_list) > 0:
         df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in selected_users_list]).reset_index(drop=True)
         logger.info(f'Initial df size: {df.shape[0]}')
+        if args.country_code != 'all':
+            df = df.loc[df['country_short']==args.country_code]
+            logger.info(f'df size after keeping only {args.country_code} users: {df.shape[0]}')
         df = df[df["user_id"].isin(user_image_mapping_dict.keys())]
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
         df = df[~df["user_id"].isin(known_ids)]

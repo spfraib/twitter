@@ -11,7 +11,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-#COUNTRY_CODE=$1
+COUNTRY_CODE=$1
 
 module purge
 singularity exec --bind /home/spf248/resolv.conf:/etc/resolv.conf:ro \
