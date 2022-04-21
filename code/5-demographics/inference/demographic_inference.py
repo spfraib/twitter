@@ -84,20 +84,20 @@ def set_lang(country_code):
 
 
 def extract(row, tmpdir, mapping_dict, tar_dir):
-    user = row['id']
-    if user not in mapping_dict:
-        return None
-    else:
-        tfilename, tmember = mapping_dict[user]
-        os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
-        with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
-            for member in tarf.getmembers():
-                if member.name == tmember:
-                    tmember = member
-                    tmember.name = os.path.basename(member.name)
-                    break
-            tarf.extract(tmember, path=f'{tmpdir}/original_pics')
-        return os.path.join(tmpdir, 'original_pics', tmember.name)
+    # user = row['id']
+    # if user not in mapping_dict:
+    #     return None
+    # else:
+    tfilename, tmember = row['tar_info']
+    os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
+    with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
+        for member in tarf.getmembers():
+            if member.name == tmember:
+                tmember = member
+                tmember.name = os.path.basename(member.name)
+                break
+        tarf.extract(tmember, path=f'{tmpdir}/original_pics')
+    return os.path.join(tmpdir, 'original_pics', tmember.name)
 
 
 def get_resized_path(orig_img_path, src_root, dest_root):
@@ -156,8 +156,8 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     # define paths and paths to be treated
     tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
-    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
-    user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
+    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path'
+    # user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
     output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
     err_dir = os.path.join(output_dir, 'err')
     if not os.path.exists(output_dir):
@@ -170,9 +170,9 @@ if __name__ == '__main__':
     else:
         known_ids = set([])
     # load user mapping
-    with open(user_mapping_path, 'r') as fp:
-        user_image_mapping_dict = json.load(fp)
-    logger.info('Loaded the user image mapping')
+    # with open(user_mapping_path, 'r') as fp:
+    #     user_image_mapping_dict = json.load(fp)
+    # logger.info('Loaded the user image mapping')
     # select users and load data
     selected_users_list = list(
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
@@ -184,7 +184,7 @@ if __name__ == '__main__':
         if args.country_code != 'all':
             df = df.loc[df['country_short']==args.country_code]
             logger.info(f'df size after keeping only {args.country_code} users: {df.shape[0]}')
-        df = df[df["user_id"].isin(user_image_mapping_dict.keys())]
+        df = df[~df["tar_info"].isnull()]
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
         df = df[~df["user_id"].isin(known_ids)]
         logger.info(f'df size after dropping known ids: {df.shape[0]}')
@@ -193,8 +193,9 @@ if __name__ == '__main__':
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
-        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path']]
+        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tar_info']]
         df['lang'] = set_lang(country_code=args.country_code)
+
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')

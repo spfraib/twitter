@@ -42,9 +42,9 @@ def generate_user_image_map(tar_dir):
                 logger.info(f'Exception "{e}" when treating {tar_path.name}')
     return user_image_mapping_dict
 
-def get_image_map(map_dict, user_id):
+def get_image_map(map_dict, user_id, index):
     if user_id in map_dict.keys():
-        return map_dict[user_id]
+        return map_dict[user_id][index]
     else:
         return None
 
@@ -60,7 +60,8 @@ if __name__ == '__main__':
         df = pd.read_parquet(path)
         df = df[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'user_profile_image_url_https']]
         df['user_id'] = df['user_id'].astype(str)
-        df['tar_info'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x))
+        df['tfilename'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x, index=0))
+        df['tmember'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x, index=1))
         output_filename = path.name.split("/")[-1]
         df.to_parquet(os.path.join(output_dir, output_filename))
     # output_dir = f'{tar_dir}/user_map_dict_all.json'
