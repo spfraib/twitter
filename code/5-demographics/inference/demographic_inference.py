@@ -83,21 +83,26 @@ def set_lang(country_code):
     return languages[country_code]
 
 
-def extract(row, tmpdir, mapping_dict, tar_dir):
+def extract(row, tmpdir, tar_dir):
     # user = row['id']
     # if user not in mapping_dict:
     #     return None
     # else:
-    tfilename, tmember = row['tar_info']
-    os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
-    with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
-        for member in tarf.getmembers():
-            if member.name == tmember:
-                tmember = member
-                tmember.name = os.path.basename(member.name)
-                break
-        tarf.extract(tmember, path=f'{tmpdir}/original_pics')
-    return os.path.join(tmpdir, 'original_pics', tmember.name)
+    tfilename = row['tfilename']
+    tmember = row['tmember']
+    if tfilename is not None:
+        #todo: if value missing, then return none, else
+        os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
+        with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
+            for member in tarf.getmembers():
+                if member.name == tmember:
+                    tmember = member
+                    tmember.name = os.path.basename(member.name)
+                    break
+            tarf.extract(tmember, path=f'{tmpdir}/original_pics')
+        return os.path.join(tmpdir, 'original_pics', tmember.name)
+    else:
+        return None
 
 
 def get_resized_path(orig_img_path, src_root, dest_root):
@@ -204,7 +209,7 @@ if __name__ == '__main__':
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.info('Extract pictures from tars')
                 chunk['original_img_path'] = chunk.apply(
-                    lambda x: extract(row=x, tmpdir=tmpdir, mapping_dict=user_image_mapping_dict, tar_dir=tar_dir), axis=1)
+                    lambda x: extract(row=x, tmpdir=tmpdir, tar_dir=tar_dir), axis=1)
                 chunk = chunk.loc[~chunk['original_img_path'].isnull()].reset_index(drop=True)
                 logger.info(f'Chunk shape with pictures: {chunk.shape[0]}')
                 logger.info('Resize imgs')
