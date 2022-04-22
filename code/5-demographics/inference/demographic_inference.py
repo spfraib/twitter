@@ -90,8 +90,7 @@ def extract(row, tmpdir, tar_dir):
     # else:
     tfilename = row['tfilename']
     tmember = row['tmember']
-    if tfilename is not None:
-        #todo: if value missing, then return none, else
+    if not pd.isna(tfilename) and not pd.isna(tmember):
         os.makedirs(f'{tmpdir}/original_pics', exist_ok=True)
         with tarfile.open(os.path.join(tar_dir, tfilename), mode='r', ignore_zeros=True) as tarf:
             for member in tarf.getmembers():
@@ -183,13 +182,17 @@ if __name__ == '__main__':
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
-        #todo load file par file et select users que je veux
-        df = pd.concat([pd.read_parquet(parquet_path) for parquet_path in selected_users_list]).reset_index(drop=True)
+        df_list = list()
+        for parquet_path in selected_users_list:
+            df = pd.read_parquet(parquet_path)
+            if args.country_code != 'all':
+                df = df.loc[df['country_short'] == args.country_code]
+            df_list.append(df)
+        df = pd.concat(df_list).reset_index(drop=True)
+        del df_list
         logger.info(f'Initial df size: {df.shape[0]}')
-        if args.country_code != 'all':
-            df = df.loc[df['country_short']==args.country_code]
-            logger.info(f'df size after keeping only {args.country_code} users: {df.shape[0]}')
-        df = df[~df["tar_info"].isnull()]
+        df = df[~df["tfilename"].isnull()]
+        df = df[~df["tmember"].isnull()]
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
         df = df[~df["user_id"].isin(known_ids)]
         logger.info(f'df size after dropping known ids: {df.shape[0]}')
@@ -198,9 +201,8 @@ if __name__ == '__main__':
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
-        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tar_info']]
+        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember']]
         df['lang'] = set_lang(country_code=args.country_code)
-
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
