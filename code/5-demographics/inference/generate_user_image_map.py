@@ -5,6 +5,8 @@ import logging
 import argparse
 from tqdm import tqdm
 import json
+import pandas as pd
+
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
