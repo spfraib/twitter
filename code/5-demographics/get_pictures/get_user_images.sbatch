@@ -3,7 +3,7 @@
 #SBATCH --job-name=get_images
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=4GB
+#SBATCH --mem=2GB
 #SBATCH --time=48:00:00
 #SBATCH --output=outfiles/slurm_get_images_%j.out
 #SBATCH --mail-type=BEGIN
