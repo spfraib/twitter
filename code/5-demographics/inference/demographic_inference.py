@@ -211,8 +211,8 @@ if __name__ == '__main__':
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
                 continue
-            initial_chunk_shape = chunk.shape[0]
             chunk = chunk.head(10)
+            initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.info('Extract pictures from tars')
@@ -231,6 +231,7 @@ if __name__ == '__main__':
                 else:
                     not_resizable_id_list = list()
                 chunk = chunk[['id', 'user_name', 'user_screen_name', 'user_description', 'lang', 'img_path']]
+                chunk.columns = ['id', 'name', 'screen_name', 'description', 'lang', 'img_path']
                 initial_chunk_shape = chunk.shape[0]
                 chunk = chunk.loc[~chunk['img_path'].isnull()].reset_index(drop=True)
                 logger.info(f'Chunk size with resized pics: {chunk.shape[0]}')
