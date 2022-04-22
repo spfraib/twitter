@@ -181,8 +181,10 @@ if __name__ == '__main__':
     # selected_users_list = list(
     #     np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     selected_users_list = list(
-        np.array_split(glob(os.path.join(user_dir, '*.parquet')), 10000)[0])
+        np.array_split(glob(os.path.join(user_dir, '*.parquet')), 2000)[0])
     logger.info(f'# retained files: {len(selected_users_list)}')
+    selected_users_list = [selected_users_list[0]]
+    print(selected_users_list)
     if len(selected_users_list) > 0:
         df_list = list()
         for parquet_path in selected_users_list:
