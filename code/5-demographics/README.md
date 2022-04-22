@@ -17,3 +17,4 @@ Once you have the pictures and you are sure you are not missing any, you can per
 - Run `sbatch --array=0-SIZE_ARRAY demographic_inference COUNTRY_CODE`. Options for `COUNTRY_CODE` are:
   - `all` if you would like to perform inference for users in all countries for which we have data
   - a specific country code (e.g. `US`) to do inference only for the users in that country
+- Run `sbatch merge_output.sbatch`. This will merge the inference output into one single file. [TODO: adapt paths]
