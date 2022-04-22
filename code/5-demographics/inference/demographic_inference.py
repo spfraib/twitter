@@ -178,8 +178,10 @@ if __name__ == '__main__':
     #     user_image_mapping_dict = json.load(fp)
     # logger.info('Loaded the user image mapping')
     # select users and load data
+    # selected_users_list = list(
+    #     np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     selected_users_list = list(
-        np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
+        np.array_split(glob(os.path.join(user_dir, '*.parquet')), 10000)[0])
     logger.info(f'# retained files: {len(selected_users_list)}')
     if len(selected_users_list) > 0:
         df_list = list()
@@ -191,6 +193,7 @@ if __name__ == '__main__':
         df = pd.concat(df_list).reset_index(drop=True)
         del df_list
         logger.info(f'Initial df size: {df.shape[0]}')
+        print(df.loc[df['tfilename'].isnull()].shape[0])
         df = df[~df["tfilename"].isnull()]
         df = df[~df["tmember"].isnull()]
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
