@@ -209,10 +209,11 @@ if __name__ == '__main__':
         df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember']]
         df['lang'] = set_lang(country_code=args.country_code)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
-            initial_chunk_shape = chunk.shape[0]
-            logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             if chunk.shape[0] == 0:
                 continue
+            initial_chunk_shape = chunk.shape[0]
+            chunk = [chunk[0]]
+            logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.info('Extract pictures from tars')
                 chunk['original_img_path'] = chunk.apply(
