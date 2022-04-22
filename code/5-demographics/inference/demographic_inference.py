@@ -184,7 +184,7 @@ if __name__ == '__main__':
         np.array_split(glob(os.path.join(user_dir, '*.parquet')), 2000)[0])
     logger.info(f'# retained files: {len(selected_users_list)}')
     selected_users_list = [selected_users_list[0]]
-    print(selected_users_list)
+    logger.info(selected_users_list)
     if len(selected_users_list) > 0:
         df_list = list()
         for parquet_path in selected_users_list:
