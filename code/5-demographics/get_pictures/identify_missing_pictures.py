@@ -43,7 +43,7 @@ if __name__ == '__main__':
     logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
-    list_files_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars//list_files_all.txt.gz'
+    list_files_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/list_files_all.txt.gz'
     user_with_pictures_list = list()
     file_format_count_dict = dict()
     with gzip.open(list_files_path, 'rt') as f:
