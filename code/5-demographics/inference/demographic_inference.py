@@ -212,7 +212,7 @@ if __name__ == '__main__':
             if chunk.shape[0] == 0:
                 continue
             initial_chunk_shape = chunk.shape[0]
-            chunk = [chunk[0]]
+            chunk = chunk.head(10)
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             with tempfile.TemporaryDirectory() as tmpdir:
                 logger.info('Extract pictures from tars')
