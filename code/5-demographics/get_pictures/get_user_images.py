@@ -111,7 +111,7 @@ if __name__ == '__main__':
             if os.path.exists(output_dir):
                 os.rmdir(output_dir)
     elif args.mode == 'get_missing':
-        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics.json',
+        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_all.json',
                   'r') as f:
             missing_pics_ids_dict = json.load(f)
         ids_to_collect_list = list(np.array_split(list(missing_pics_ids_dict.keys()), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
