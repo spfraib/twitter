@@ -178,13 +178,9 @@ if __name__ == '__main__':
     #     user_image_mapping_dict = json.load(fp)
     # logger.info('Loaded the user image mapping')
     # select users and load data
-    # selected_users_list = list(
-    #     np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     selected_users_list = list(
-        np.array_split(glob(os.path.join(user_dir, '*.parquet')), 2000)[0])
+        np.array_split(glob(os.path.join(user_dir, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
     logger.info(f'# retained files: {len(selected_users_list)}')
-    selected_users_list = [selected_users_list[0]]
-    logger.info(selected_users_list)
     if len(selected_users_list) > 0:
         df_list = list()
         for parquet_path in selected_users_list:
@@ -195,7 +191,6 @@ if __name__ == '__main__':
         df = pd.concat(df_list).reset_index(drop=True)
         del df_list
         logger.info(f'Initial df size: {df.shape[0]}')
-        print(df.loc[df['tfilename'].isnull()].shape[0])
         df = df[~df["tfilename"].isnull()]
         df = df[~df["tmember"].isnull()]
         logger.info(f'df size after keeping users with image: {df.shape[0]}')
@@ -211,7 +206,6 @@ if __name__ == '__main__':
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
                 continue
-            chunk = chunk.head(10)
             initial_chunk_shape = chunk.shape[0]
             logger.info(f'Starting with chunk {ichunk}. Chunk size is {initial_chunk_shape} users.')
             with tempfile.TemporaryDirectory() as tmpdir:
