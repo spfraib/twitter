@@ -10,11 +10,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
 
-COUNTRY_CODE=$1
-
-module purge
-
 module purge
 singularity exec --overlay /scratch/spf248/twitter/code/singularity/m3_inference.ext3:ro \
   /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-  /bin/bash -c "source /ext3/env.sh; python3 /scratch/spf248/twitter/code/twitter/code/5-demographics/inference/merge_output.py --country_code ${COUNTRY_CODE}"
+  /bin/bash -c "source /ext3/env.sh; python3 /scratch/spf248/twitter_deprecated/code/twitter/code/5-demographics/inference/merge_output.py"

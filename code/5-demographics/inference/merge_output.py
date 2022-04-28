@@ -21,11 +21,11 @@ def get_args_from_command_line():
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-    logger.info(f'Country code: {args.country_code}')
+    # logger.info(f'Country code: {args.country_code}')
     # define paths
-    inference_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}'
-    err_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}/err'
-    output_dir = f'/scratch/spf248/twitter/data/demographics/inference_results/{args.country_code}/output'
+    inference_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
+    err_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results/err'
+    output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results/output'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     # store user_dicts in list
@@ -41,7 +41,7 @@ if __name__ == '__main__':
     # store data in dataframe and save
     user_df = pd.DataFrame(user_dict_list)
     logger.info(f'# users with demographic inference: {user_df.shape[0]}')
-    user_df.to_parquet(os.path.join(output_dir, f'{args.country_code}_demo_inf.parquet'), index=False)
+    user_df.to_parquet(os.path.join(output_dir, f'demo_inf.parquet'), index=False)
     # get count of non resizable pictures
     err_list = list()
     for json_path in Path(err_dir).glob('*.json'):
