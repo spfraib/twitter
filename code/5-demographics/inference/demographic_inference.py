@@ -206,8 +206,8 @@ if __name__ == '__main__':
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
-        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember']]
         df['lang'] = df['country_short'].apply(set_lang)
+        df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember', 'lang']]
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
                 continue
