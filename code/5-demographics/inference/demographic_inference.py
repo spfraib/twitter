@@ -79,7 +79,9 @@ def resize_imgs(src_root, dest_root, src_list=None, filter=Image.BILINEAR, force
 
 
 def set_lang(country_code):
-    languages = {'US': 'en', 'MX': 'es', 'BR': 'pt', 'NG': 'en'}
+    languages = {'US': 'en', 'MX': 'es', 'BR': 'pt', 'NG': 'en',
+                 'AR': 'es', 'CO': 'es', 'FR': 'fr', 'VE': 'es',
+                 'PK': 'en'}
     return languages[country_code]
 
 
@@ -187,6 +189,9 @@ if __name__ == '__main__':
             df = pd.read_parquet(parquet_path)
             if args.country_code != 'all':
                 df = df.loc[df['country_short'] == args.country_code]
+            elif args.country_code == 'all':
+                df = df.loc[df['country_short'].isin(['US', 'BR', 'MX', 'AR', 'CO', 'FR',
+                                                      'NG', 'VE', 'PK'])]
             df_list.append(df)
         df = pd.concat(df_list).reset_index(drop=True)
         del df_list
@@ -202,7 +207,7 @@ if __name__ == '__main__':
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
         df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember']]
-        df['lang'] = set_lang(country_code=args.country_code)
+        df['lang'] = df['country_short'].apply(set_lang)
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
                 continue
