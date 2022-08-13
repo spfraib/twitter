@@ -25,6 +25,7 @@ if [ ${SAM} -eq 1 ]
 then
   SCRATCH_PATH=/scratch/spf248/scratch_manu
 elif [ ${SAM} -eq 0 ]
+then
   SCRATCH_PATH=/scratch/mt4493
 fi
 
