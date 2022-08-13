@@ -17,21 +17,28 @@ MODE=$3
 RUN_NAME=$4
 METHOD=$5
 
+SAM=1
+
 JOB_ID=${SLURM_ARRAY_JOB_ID}
 
+if [ ${SAM} -eq 1 ]
+then
+  SCRATCH_PATH=/scratch/spf248/scratch_manu
+elif [ ${SAM} -eq 0 ]
+  SCRATCH_PATH=/scratch/mt4493
 
 if [ ${MODE} -eq 0 ]
 then
-  INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/evaluation
-  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-evaluation
+  INPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/evaluation
+  OUTPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-evaluation
 elif [ ${MODE} -eq 1 ]
 then
-  INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/new_samples
-  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-new_samples
+  INPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/new_samples
+  OUTPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-new_samples
 elif [ ${MODE} -eq 2 ]
 then
-  INPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/test
-  OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
+  INPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted/${COUNTRY_CODE}/test
+  OUTPUT_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
@@ -49,14 +56,14 @@ module purge
 #
 #echo "pyenv activated"
 
-cd /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
+cd ${SCRATCH_PATH}/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models
 
 #if [ -z "${SLURM_ARRAY_TASK_ID}" ]
 #then
 #      echo SLURM_ARRAY_TASK_ID=test
 #fi
 echo 'running inference..'
-singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/inference/env.ext3:ro \
+singularity exec --overlay ${SCRATCH_PATH}/twitter_labor/code/envs/singularity/inference/env.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
 	    /bin/bash -c "source /ext3/env.sh; python3 inference_ONNX_bert_100M_random.py \
 	     --input_path ${INPUT_PATH} \
