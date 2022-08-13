@@ -9,7 +9,7 @@
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
 #SBATCH --mail-user=mt4493@nyu.edu
-#SBATCH --output=slurm_inference_berts_%j.out
+#SBATCH --output=outfiles/slurm_inference_berts_%j.out
 
 COUNTRY_CODE=$1
 ITER=$2
@@ -26,6 +26,7 @@ then
   SCRATCH_PATH=/scratch/spf248/scratch_manu
 elif [ ${SAM} -eq 0 ]
   SCRATCH_PATH=/scratch/mt4493
+fi
 
 if [ ${MODE} -eq 0 ]
 then
