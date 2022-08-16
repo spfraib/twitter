@@ -72,7 +72,8 @@ singularity exec --overlay ${SCRATCH_PATH}/twitter_labor/code/envs/singularity/i
 	     --output_path ${OUTPUT_MODELS} \
 	     --country_code ${COUNTRY_CODE} \
 	     --iteration_number ${ITER} \
-	     --method ${METHOD}" #> ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
+	     --method ${METHOD} \
+	     --scratch_path ${SCRATCH_PATH}" #> ${OUTPUT_LOGS}/${SLURM_ARRAY_TASK_ID}-$(date +%s).log 2>&1
 echo 'done'
 
 exit

@@ -28,6 +28,7 @@ parser.add_argument("--output_path", type=str, help="path where inference csv is
 parser.add_argument("--country_code", type=str, help="path where inference csv is saved")
 parser.add_argument("--iteration_number", type=int)
 parser.add_argument("--method", type=int)
+parser.add_argument("--scratch_path", type=str)
 
 
 args = parser.parse_args()
@@ -698,7 +699,7 @@ for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "j
     if best_model_folder:
         logger.info(f'\n\n!!!!! {column}')
         loop_start = time.time()
-        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+        model_path = os.path.join(f'{args.scratch_path}/twitter_labor/trained_models', args.country_code, best_model_folder,
         column, 'models', 'best_model')
 
         logger.info(model_path)
