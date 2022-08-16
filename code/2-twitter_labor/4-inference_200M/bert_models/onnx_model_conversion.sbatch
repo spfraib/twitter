@@ -36,6 +36,7 @@ singularity exec --overlay ${SCRATCH_PATH}/twitter_labor/code/envs/singularity/i
 	    /bin/bash -c "source /ext3/env.sh; python3 ${SCRATCH_PATH}/twitter_labor/code/twitter/code/2-twitter_labor/4-inference_200M/bert_models/onnx_model_conversion.py \
       --iteration_number ${ITER} \
       --country_code ${COUNTRY_CODE} \
-      --method ${METHOD}"
+      --method ${METHOD} \
+      --scratch_path ${SCRATCH_PATH}"
 
 exit
