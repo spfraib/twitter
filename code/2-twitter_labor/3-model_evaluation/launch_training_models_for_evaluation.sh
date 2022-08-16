@@ -56,14 +56,19 @@ MODEL_NAME_1=$(select_model_name "${MODEL_TYPE_1}")
 
 CODE_FOLDER=${SCRATCH_PATH}/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
+#echo "Launch series of training with different seeds";
+#for i in {1..5}; do
+#  for j in {3..6}; do
+#    sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} ${i} True ${j}
+#  done
+#done
+
 echo "Launch series of training with different seeds";
-for i in {1..5}; do
-  for j in {3..6}; do
-    sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} ${i} True ${j}
-  done
+for i in {1..16}; do
+#  for j in {3..6}; do
+  j=5
+  sbatch ${CODE_FOLDER}/train_bert_model.sbatch ${DATA_FOLDER} ${COUNTRY_CODE} ${MODEL_NAME_1} ${MODEL_TYPE_1} ${i} True ${j}
 done
-
-
 
 
 #sbatch /scratch/mt4493/twitter_labor
