@@ -220,7 +220,7 @@ if __name__ == "__main__":
     # Create a ClassificationModel
     ## Define arguments
     name_val_file = os.path.splitext(os.path.basename(args.eval_data_path))[0]
-    learning_rate = float(f'1e-{args.learning_rate_exponent}')
+    learning_rate = float(f'4e-{args.learning_rate_exponent}')
     classification_args = {'train_batch_size': 8, 'overwrite_output_dir': True, 'evaluate_during_training': True,
                                       'save_model_every_epoch': True, 'save_eval_checkpoints': True,
                                       'output_dir': path_to_store_model, 'best_model_dir': path_to_store_best_model,
