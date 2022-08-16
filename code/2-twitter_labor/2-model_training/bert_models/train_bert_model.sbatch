@@ -22,12 +22,19 @@ LEARNING_RATE_EXPONENT=$7
 TIMESTAMP=$(date +%s)
 JOB_ID=${SLURM_JOB_ID}
 SAM=1
+DO=1
 ONLY_IS_EMP=1
 
 if [ ${SAM} -eq 1 ]
 then
   SCRATCH_PATH=/scratch/spf248/scratch_manu
-  HOME_PATH=/home/spf248
+  if [ ${DO} -eq 1 ]
+  then
+    HOME_PATH=/home/dql204
+  elif [ ${DO} -eq 0 ]
+  then
+    HOME_PATH=/home/spf248
+  fi
 elif [ ${SAM} -eq 0 ]
 then
   SCRATCH_PATH=/scratch/mt4493
