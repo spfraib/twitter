@@ -304,11 +304,11 @@ if __name__ == "__main__":
     # Save evaluation results on eval set
     segmented_str = 'segmented' if args.segment == 1 else 'not_segmented'
     seed_str = f'seed-{args.seed}'
-    learning_rate_str = f'lr-1e-{args.learning_rate_exponent}'
+    # learning_rate_str = f'lr-1e-{args.learning_rate_exponent}'
     if "/" in args.model_type:
         args.model_type = args.model_type.replace('/', '-')
     path_to_store_eval_results = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}_{learning_rate_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',#_{learning_rate_str}',
                                               f'{name_val_file}_evaluation.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_results)):
         os.makedirs(os.path.dirname(path_to_store_eval_results))
@@ -319,7 +319,7 @@ if __name__ == "__main__":
     # Save scores
     eval_df['score'] = scores
     path_to_store_eval_scores = os.path.join(os.path.dirname(args.eval_data_path), 'results',
-                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}_{learning_rate_str}',
+                                              f'{args.model_type}_{str(slurm_job_id)}_{seed_str}',#_{learning_rate_str}',
                                               f'{name_val_file}_scores.csv')
     if not os.path.exists(os.path.dirname(path_to_store_eval_scores)):
         os.makedirs(os.path.dirname(path_to_store_eval_scores))

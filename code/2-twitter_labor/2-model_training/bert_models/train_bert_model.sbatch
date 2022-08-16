@@ -64,8 +64,10 @@ module purge
 echo "virtualenv activated"
 
 #create output folder
-mkdir ${SCRATCH_PATH}/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_seed-"${SEED}"#_lr-1e-"${LEARNING_RATE_EXPONENT}"
-OUTPUT_DIR=${SCRATCH_PATH}/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_seed-${SEED}#_lr-1e-${LEARNING_RATE_EXPONENT}
+#mkdir ${SCRATCH_PATH}/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_seed-"${SEED}"#_lr-1e-"${LEARNING_RATE_EXPONENT}"
+#OUTPUT_DIR=${SCRATCH_PATH}/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_seed-${SEED}#_lr-1e-${LEARNING_RATE_EXPONENT}
+mkdir ${SCRATCH_PATH}/twitter_labor/trained_models/"${COUNTRY_CODE}"/"${MODEL_TYPE_WITHOUT_SLASH}"_"${DATA_FOLDER_WITHOUT_SLASH}"_"${JOB_ID}"_seed-"${SEED}"
+OUTPUT_DIR=${SCRATCH_PATH}/twitter_labor/trained_models/${COUNTRY_CODE}/${MODEL_TYPE_WITHOUT_SLASH}_${DATA_FOLDER_WITHOUT_SLASH}_${JOB_ID}_seed-${SEED}
 echo "Output folder created: ${OUTPUT_DIR}"
 
 CODE_PATH=${SCRATCH_PATH}/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
