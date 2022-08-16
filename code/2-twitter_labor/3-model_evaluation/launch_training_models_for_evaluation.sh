@@ -4,7 +4,17 @@ DATA_FOLDER=$1
 COUNTRY_CODE=$2
 MODEL_TYPE_1=$3
 
-DATA_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/${COUNTRY_CODE}
+if [ ${SAM} -eq 1 ]
+then
+  SCRATCH_PATH=/scratch/spf248/scratch_manu
+  HOME_PATH=/home/spf248
+elif [ ${SAM} -eq 0 ]
+then
+  SCRATCH_PATH=/scratch/mt4493
+  HOME_PATH=/home/mt4493
+fi
+
+DATA_PATH=${SCRATCH_PATH}/twitter_labor/twitter-labor-data/data/${DATA_FOLDER}/${COUNTRY_CODE}
 
 #if [[ ${MODEL_TYPE_1} == *"/"* ]]; then
 #  MODEL_TYPE_1_WITHOUT_SLASH=${MODEL_TYPE_1//[${SLASH}]/_}
@@ -39,9 +49,10 @@ select_model_name () {
   echo ${MODEL_NAME}
   }
 
+
 MODEL_NAME_1=$(select_model_name "${MODEL_TYPE_1}")
 
-CODE_FOLDER=/scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
+CODE_FOLDER=${SCRATCH_PATH}/twitter_labor/code/twitter/code/2-twitter_labor/2-model_training/bert_models
 
 echo "Launch series of training with different seeds";
 for i in {1..5}; do
