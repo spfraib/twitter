@@ -4,6 +4,8 @@ DATA_FOLDER=$1
 COUNTRY_CODE=$2
 MODEL_TYPE_1=$3
 
+SAM=1
+
 if [ ${SAM} -eq 1 ]
 then
   SCRATCH_PATH=/scratch/spf248/scratch_manu
