@@ -242,6 +242,13 @@ if args.method == 0:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850798_seed-4',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850802_seed-8'
             },
+            'iter9': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug16_iter9_23578691_seed-13',
+                'job_offer': None,
+                'job_search': None,
+            },
         },
         'BR': {
             'iter0': {
@@ -687,51 +694,52 @@ elif args.method == 4:
 
 
 for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
-    logger.info(f'\n\n!!!!! {column}')
-    loop_start = time.time()
     best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
-    column, 'models', 'best_model')
+    if best_model_folder:
+        logger.info(f'\n\n!!!!! {column}')
+        loop_start = time.time()
+        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code, best_model_folder,
+        column, 'models', 'best_model')
 
-    logger.info(model_path)
-    onnx_path = os.path.join(model_path, 'onnx')
-    logger.info(onnx_path)
+        logger.info(model_path)
+        onnx_path = os.path.join(model_path, 'onnx')
+        logger.info(onnx_path)
 
-    ####################################################################################################################################
-    # TOKENIZATION and INFERENCE
-    ####################################################################################################################################
-    logger.info('Predictions of random Tweets:')
-    start_time = time.time()
-    onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-    model_path,
-    examples)
+        ####################################################################################################################################
+        # TOKENIZATION and INFERENCE
+        ####################################################################################################################################
+        logger.info('Predictions of random Tweets:')
+        start_time = time.time()
+        onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+        model_path,
+        examples)
 
-    logger.info(f'time taken: {str(time.time() - start_time)} seconds')
-    logger.info(f'per tweet: {(time.time() - start_time) / tweets_random.shape[0]} seconds')
+        logger.info(f'time taken: {str(time.time() - start_time)} seconds')
+        logger.info(f'per tweet: {(time.time() - start_time) / tweets_random.shape[0]} seconds')
 
-    ####################################################################################################################################
-    # SAVING
-    ####################################################################################################################################
-    logger.info('Save Predictions of random Tweets:')
-    start_time = time.time()
-    final_output_path = args.output_path
-    if not os.path.exists(os.path.join(final_output_path, column)):
-        logger.info('>>>> directory doesnt exists, creating it')
-        os.makedirs(os.path.join(final_output_path, column), exist_ok=True)
-    # create dataframe containing tweet id and probabilities
-    predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-    predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-    # reformat dataframe
-    predictions_random_df = predictions_random_df[['second']]
-    predictions_random_df.columns = ['score']
+        ####################################################################################################################################
+        # SAVING
+        ####################################################################################################################################
+        logger.info('Save Predictions of random Tweets:')
+        start_time = time.time()
+        final_output_path = args.output_path
+        if not os.path.exists(os.path.join(final_output_path, column)):
+            logger.info('>>>> directory doesnt exists, creating it')
+            os.makedirs(os.path.join(final_output_path, column), exist_ok=True)
+        # create dataframe containing tweet id and probabilities
+        predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+        predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+        # reformat dataframe
+        predictions_random_df = predictions_random_df[['second']]
+        predictions_random_df.columns = ['score']
 
-    logger.info(predictions_random_df.head())
-    predictions_random_df.to_parquet(
-    os.path.join(final_output_path, column,
-                 str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
+        logger.info(predictions_random_df.head())
+        predictions_random_df.to_parquet(
+        os.path.join(final_output_path, column,
+                     str(getpass.getuser()) + '_random' + '-' + str(SLURM_ARRAY_TASK_ID) + '.parquet'))
 
-    logger.info(f'saved to:\n  {os.path.join(final_output_path, column, str(getpass.getuser()) + "_random" + "-" + str(SLURM_ARRAY_TASK_ID) + ".parquet")}')
+        logger.info(f'saved to:\n  {os.path.join(final_output_path, column, str(getpass.getuser()) + "_random" + "-" + str(SLURM_ARRAY_TASK_ID) + ".parquet")}')
 
-    logger.info(f'save time taken: {str(time.time() - start_time)} seconds')
+        logger.info(f'save time taken: {str(time.time() - start_time)} seconds')
 
-    logger.info(f'full loop: {str(time.time() - loop_start)}, seconds: {(time.time() - loop_start) / len(examples)}')
+        logger.info(f'full loop: {str(time.time() - loop_start)}, seconds: {(time.time() - loop_start) / len(examples)}')

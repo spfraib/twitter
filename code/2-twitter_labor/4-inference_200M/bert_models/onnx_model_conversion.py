@@ -95,6 +95,13 @@ if args.method == 0:
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850798_seed-4',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850802_seed-8'
             },
+            'iter9': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug16_iter9_23578691_seed-13',
+                'job_offer': None,
+                'job_search': None,
+            },
         },
         'BR': {
             'iter0': {
@@ -538,34 +545,35 @@ elif args.method == 4:
             }
         }}
 for label in ["lost_job_1mo", "is_unemployed", "job_search", "is_hired_1mo", "job_offer"]:
-    logger.info(f'*****************************{label}*****************************')
-    model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
-    best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label],
-    label, 'models', 'best_model')
-    onnx_path = os.path.join(model_path, 'onnx')
+    if best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label]:
+        logger.info(f'*****************************{label}*****************************')
+        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models', args.country_code,
+        best_model_paths_dict[args.country_code][f'iter{str(args.iteration_number)}'][label],
+        label, 'models', 'best_model')
+        onnx_path = os.path.join(model_path, 'onnx')
 
-    try:
-        shutil.rmtree(onnx_path)  # deleting onxx folder and contents, if exists, conversion excepts
-        logger.info('Remove existing ONNX folder and recreate empty')
-        os.makedirs
-    except:
-        logger.info('no existing folder, creating one')
-        os.makedirs(onnx_path)
+        try:
+            shutil.rmtree(onnx_path)  # deleting onxx folder and contents, if exists, conversion excepts
+            logger.info('Remove existing ONNX folder and recreate empty')
+            os.makedirs
+        except:
+            logger.info('no existing folder, creating one')
+            os.makedirs(onnx_path)
 
-    logger.info('>> converting..')
-    convert(framework="pt",
-            model=model_path,
-            tokenizer=convert_model_path_to_model_name(model_path),
-            output=Path(os.path.join(onnx_path, 'converted.onnx')),
-            opset=11,
-            pipeline_name='sentiment-analysis')
+        logger.info('>> converting..')
+        convert(framework="pt",
+                model=model_path,
+                tokenizer=convert_model_path_to_model_name(model_path),
+                output=Path(os.path.join(onnx_path, 'converted.onnx')),
+                opset=11,
+                pipeline_name='sentiment-analysis')
 
-    logger.info('>> ONNX optimization')
-    optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
-    logger.info('>> Quantization')
-    quantized_output = quantize(optimized_output)
+        logger.info('>> ONNX optimization')
+        optimized_output = optimize(Path(os.path.join(onnx_path, 'converted.onnx')))
+        logger.info('>> Quantization')
+        quantized_output = quantize(optimized_output)
 
-    logger.info('>> Verification')
-    verify(Path(os.path.join(onnx_path, 'converted.onnx')))
-    verify(optimized_output)
-    verify(quantized_output)
+        logger.info('>> Verification')
+        verify(Path(os.path.join(onnx_path, 'converted.onnx')))
+        verify(optimized_output)
+        verify(quantized_output)
