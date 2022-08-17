@@ -12,6 +12,7 @@ def get_args_from_command_line():
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str)
     parser.add_argument("--model_folder", type=str)
+    parser.add_argument("--scratch_path", type=str)
     args = parser.parse_args()
     return args
 
@@ -35,14 +36,14 @@ if __name__ == '__main__':
     args = get_args_from_command_line()
     # Load tweets
     path_to_tweets = os.path.join(
-        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted',
+        f'{args.scratch_path}/twitter_labor/twitter-labor-data/data/random_samples/random_samples_splitted',
         args.country_code,
         'evaluation')  # Random set of tweets
     tweets = pd.concat([pd.read_parquet(path) for path in Path(path_to_tweets).glob('*.parquet')])
     tweets = tweets[['tweet_id', 'text']]
     tweets = tweets.set_index('tweet_id')
     path_to_evals = os.path.join(
-        '/scratch/mt4493/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
+        f'{args.scratch_path}/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference',
         args.country_code, args.model_folder)  # Where to store the sampled tweets to be labeled
     # Load sample indices
     sampled_points, sampled_ranks = get_sampled_indices()
@@ -51,7 +52,7 @@ if __name__ == '__main__':
     if not os.path.exists(path_to_evals):
         os.makedirs(path_to_evals)
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
-        path_to_scores = os.path.join('/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference',
+        path_to_scores = os.path.join(f'{args.scratch_path}/twitter_labor/twitter-labor-data/data/inference',
                                       args.country_code, args.model_folder, 'output',
                                       label)  # Prediction scores from classification
         sampled_points, sampled_ranks = get_sampled_indices()
