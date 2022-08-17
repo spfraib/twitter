@@ -5,7 +5,7 @@ import argparse
 import subprocess
 from pathlib import Path
 from itertools import product
-
+from pathlib import Path
 
 def get_args_from_command_line():
     """Parse the command line arguments."""
@@ -52,16 +52,17 @@ if __name__ == '__main__':
     if not os.path.exists(path_to_evals):
         os.makedirs(path_to_evals)
     for label in ['is_hired_1mo', 'lost_job_1mo', 'is_unemployed', 'job_search', 'job_offer']:
-        path_to_scores = os.path.join(f'{args.scratch_path}/twitter_labor/twitter-labor-data/data/inference',
+        path_to_scores = Path(os.path.join(f'{args.scratch_path}/twitter_labor/twitter-labor-data/data/inference',
                                       args.country_code, args.model_folder, 'output',
-                                      label)  # Prediction scores from classification
-        sampled_points, sampled_ranks = get_sampled_indices()
-        print('# Sampled points:', len(set(sampled_points)))
-        print('# Sampled tweets:', len(sampled_ranks))
-        scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
-        df = tweets.join(scores).reset_index()
-        df['rank'] = df['score'].rank(method='first', ascending=False)
-        df = df.sort_values(by=['rank'], ascending=True).reset_index(drop=True)
-        df = df.merge(sampled_indices, on=['rank'])
-        output_path = os.path.join(path_to_evals, f'{label}.csv')
-        df.to_csv(output_path, index=False)
+                                      label))  # Prediction scores from classification
+        if path_to_scores.is_dir():
+            sampled_points, sampled_ranks = get_sampled_indices()
+            print('# Sampled points:', len(set(sampled_points)))
+            print('# Sampled tweets:', len(sampled_ranks))
+            scores = pd.concat([pd.read_parquet(path) for path in Path(path_to_scores).glob('*.parquet')])
+            df = tweets.join(scores).reset_index()
+            df['rank'] = df['score'].rank(method='first', ascending=False)
+            df = df.sort_values(by=['rank'], ascending=True).reset_index(drop=True)
+            df = df.merge(sampled_indices, on=['rank'])
+            output_path = os.path.join(path_to_evals, f'{label}.csv')
+            df.to_csv(output_path, index=False)
