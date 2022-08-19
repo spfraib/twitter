@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --mem=20GB
 #SBATCH --gres=gpu:0
-#SBATCH --time=24:00:00
+#SBATCH --time=10:00:00
 #SBATCH --output=slurm_ONNX_conversion_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
