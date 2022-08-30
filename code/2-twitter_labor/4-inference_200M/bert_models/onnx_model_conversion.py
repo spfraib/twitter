@@ -125,6 +125,13 @@ if args.method == 0:
                 'job_offer': None,
                 'job_search': None,
             },
+            'iter13': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug29_iter13_24242177_seed-3',
+                'job_offer': None,
+                'job_search': None,
+            },
         },
         'BR': {
             'iter0': {
