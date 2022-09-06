@@ -19,6 +19,7 @@ if __name__ == '__main__':
         df = df.reset_index()
         df['tweet_id'] = df['tweet_id'].astype(str)
         df.columns = ['tweet_id', f'score_iter{iter_nb}']
+        df[f'rank_iter{iter_nb}'] = df[f'score_iter{iter_nb}'].rank(method='first', ascending=False)
         df = labels_df.merge(df, on=['tweet_id'])
         output_path = f'/scratch/spf248/scratch_manu/twitter_labor/twitter-labor-data/data/active_learning/evaluation_inference/US/all_labels_scored_iter{iter_nb}_is_U.parquet'
         df.to_parquet(output_path, index=False)
