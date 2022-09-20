@@ -280,7 +280,43 @@ if args.method == 0:
                 'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850800_seed-6',
                 'job_offer': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850798_seed-4',
                 'job_search': 'DeepPavlov-bert-base-cased-conversational_jul22_iter8_8850802_seed-8'
-            }},
+            },
+            'iter9': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug16_iter9_23578691_seed-13',
+                'job_offer': None,
+                'job_search': None,
+            },
+            'iter10': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug18_iter10_23646208_seed-2',
+                'job_offer': None,
+                'job_search': None,
+            },
+            'iter11': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug21_iter11_23803990_seed-5',
+                'job_offer': None,
+                'job_search': None,
+            },
+            'iter12': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug22_iter12_23922907_seed-9',
+                'job_offer': None,
+                'job_search': None,
+            },
+            'iter13': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'DeepPavlov-bert-base-cased-conversational_aug29_iter13_24242177_seed-3',
+                'job_offer': None,
+                'job_search': None,
+            },
+        },
         'BR': {'iter0': {
             'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
             'is_hired_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843317_seed-5',
@@ -500,6 +536,7 @@ tweets_random = pd.DataFrame()
 TOTAL_NUM_TWEETS = 0
 for filename in files_to_process_list:
     print(filename)
+    loop_start = time.time()
     filename_without_extension = filename.split('.')[0]
     # print('filename_without_extension')
 
@@ -528,47 +565,47 @@ for filename in files_to_process_list:
     all_predictions_random_df_list = []
     for column in ["is_unemployed", "lost_job_1mo", "job_search", "is_hired_1mo", "job_offer"]:
         print('\n\n!!!!!column', column)
-        loop_start = time.time()
         best_model_folder = best_model_folders_dict[args.country_code][f'iter{str(args.iteration_number)}'][column]
-        model_country_folder_dict = {'US': 'US', 'MX': 'MX', 'BR': 'BR', 'AR': 'MX', 'CO': 'MX', 'VE': 'MX'}
-        model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models',
-                                  model_country_folder_dict[args.country_code], best_model_folder,
-                                  column, 'models', 'best_model')
+        if best_model_folder:
+            model_country_folder_dict = {'US': 'US', 'MX': 'MX', 'BR': 'BR', 'AR': 'MX', 'CO': 'MX', 'VE': 'MX'}
+            model_path = os.path.join('/scratch/mt4493/twitter_labor/trained_models',
+                                      model_country_folder_dict[args.country_code], best_model_folder,
+                                      column, 'models', 'best_model')
 
-        print(model_path)
-        onnx_path = os.path.join(model_path, 'onnx')
-        print(onnx_path)
+            print(model_path)
+            onnx_path = os.path.join(model_path, 'onnx')
+            print(onnx_path)
 
-        ####################################################################################################################################
-        # TOKENIZATION and INFERENCE
-        ####################################################################################################################################
-        print('Predictions of random Tweets:')
-        start_time = time.time()
-        onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
-                                model_path,
-                                examples)
+            ####################################################################################################################################
+            # TOKENIZATION and INFERENCE
+            ####################################################################################################################################
+            print('Predictions of random Tweets:')
+            start_time = time.time()
+            onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+                                    model_path,
+                                    examples)
 
-        print('time taken:', str(time.time() - start_time), 'seconds')
-        print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
+            print('time taken:', str(time.time() - start_time), 'seconds')
+            print('per tweet:', (time.time() - start_time) / tweets_random.shape[0], 'seconds')
 
-        ####################################################################################################################################
-        # SAVING
-        ####################################################################################################################################
-        print('Save Predictions of random Tweets:')
-        start_time = time.time()
+            ####################################################################################################################################
+            # SAVING
+            ####################################################################################################################################
+            print('Save Predictions of random Tweets:')
+            start_time = time.time()
 
-        # create dataframe containing tweet id and probabilities
-        predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
-        predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
-        # reformat dataframe
-        predictions_random_df = predictions_random_df[['second']]
-        # predictions_random_df.columns = ['score']
-        predictions_random_df.columns = [column]
-        print(predictions_random_df.head())
+            # create dataframe containing tweet id and probabilities
+            predictions_random_df = pd.DataFrame(data=onnx_labels, columns=['first', 'second'])
+            predictions_random_df = predictions_random_df.set_index(tweets_random.tweet_id)
+            # reformat dataframe
+            predictions_random_df = predictions_random_df[['second']]
+            # predictions_random_df.columns = ['score']
+            predictions_random_df.columns = [column]
+            print(predictions_random_df.head())
 
-        all_predictions_random_df_list.append(predictions_random_df)
+            all_predictions_random_df_list.append(predictions_random_df)
 
-        # break  # DEBUG column
+            # break  # DEBUG column
 
     all_columns_df = reduce(lambda x, y: pd.merge(x, y, left_on=['tweet_id'], right_on=['tweet_id'], how='inner'),
                             all_predictions_random_df_list
