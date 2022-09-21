@@ -14,7 +14,7 @@ COUNTRY_CODE=$1
 ITER=$2
 METHOD=$3
 
-SAM=1
+SAM=0
 
 if [ ${SAM} -eq 1 ]
 then
