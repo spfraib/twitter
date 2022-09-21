@@ -501,6 +501,13 @@ if args.method == 0:
                 'job_offer': 'dccuchile-bert-base-spanish-wwm-cased_jan27_iter25_14391506_seed-13',
                 'job_search': 'dccuchile-bert-base-spanish-wwm-cased_jan27_iter25_14391503_seed-10'
             },
+            'iter25_pedro': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'best-dccuchile-bert-base-spanish-wwm-cased_iter25',
+                'job_offer': None,
+                'job_search': None
+            },
         },
         'AR': {
             'iter15': {
