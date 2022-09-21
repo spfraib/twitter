@@ -24,7 +24,7 @@ def convert_model_path_to_model_name(model_path):
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--iteration_number", type=int, help="path to pytorch models (with onnx model in model_path/onnx/")
+parser.add_argument("--iteration_number", type=str, help="path to pytorch models (with onnx model in model_path/onnx/")
 parser.add_argument("--country_code", type=str)
 parser.add_argument("--method", type=int)
 parser.add_argument("--scratch_path", type=str)
