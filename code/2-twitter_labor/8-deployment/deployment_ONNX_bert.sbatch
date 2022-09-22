@@ -41,8 +41,8 @@ then
   OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
-  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/unscored/
-  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/tweet_scores/BERT/${COUNTRY_CODE}/${RESUME_FOLDER}
+  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/text_labor_cls/${COUNTRY_CODE}
+  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/${RESUME_FOLDER}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
