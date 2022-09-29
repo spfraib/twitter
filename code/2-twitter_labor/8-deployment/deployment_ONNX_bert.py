@@ -316,6 +316,13 @@ if args.method == 0:
                 'job_offer': None,
                 'job_search': None,
             },
+            'iter13_pedro': {
+                'lost_job_1mo': None,
+                'is_hired_1mo': None,
+                'is_unemployed': 'best-DeepPavlov-bert-base-cased-conversational_iter13',
+                'job_offer': None,
+                'job_search': None,
+            },
         },
         'BR': {'iter0': {
             'lost_job_1mo': 'neuralmind-bert-base-portuguese-cased_feb16_iter0_2843324_seed-12',
