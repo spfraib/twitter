@@ -23,6 +23,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str)
+    parser.add_argument("--country_code", type=str)
     args = parser.parse_args()
     return args
 
@@ -52,9 +53,10 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    output_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/{str(SLURM_JOB_ID)}"
-    success_log_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/success"
-    err_log_dir = f"/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/err"
+    data_path = '/scratch/spf248/twitter_data_collection/data'
+    output_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/{str(SLURM_JOB_ID)}")
+    success_log_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/success")
+    err_log_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/err")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
     if not os.path.exists(err_log_dir):
@@ -64,10 +66,10 @@ if __name__ == '__main__':
     #     os.makedirs(success_log_dir)
     # success_log = open(os.path.join(success_log_dir, f"erroneous_users_{SLURM_JOB_ID}.txt"), 'w')
     logger.info('Load data')
-    data_path = '/scratch/spf248/twitter_data_collection/data'
     # get user id list
     start = timer()
-    dir_name = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
+    if args.country_code == 'NG':
+        dir_name = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     if args.mode == 'from_scratch':
         paths_to_filtered = list(
             np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
@@ -111,7 +113,7 @@ if __name__ == '__main__':
             if os.path.exists(output_dir):
                 os.rmdir(output_dir)
     elif args.mode == 'get_missing':
-        with open(f'{data_path}/demographics/profile_pictures/tars/user_ids_w_missing_pics_all.json',
+        with open(f'{data_path}/profile_pictures/{args.country_code}/tars/user_ids_w_missing_pics_all.json',
                   'r') as f:
             missing_pics_ids_dict = json.load(f)
         ids_to_collect_list = list(np.array_split(list(missing_pics_ids_dict.keys()), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
