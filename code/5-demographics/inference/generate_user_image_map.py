@@ -17,7 +17,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="US")
+                        default="NG")
     args = parser.parse_args()
     return args
 
@@ -52,10 +52,11 @@ def get_image_map(map_dict, user_id, index):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-    tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
+    tar_dir = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars'
     user_image_mapping_dict = generate_user_image_map(tar_dir=tar_dir)
-    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
-    output_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path'
+    if args.country_code == 'NG':
+        user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
+    output_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path/{args.country_code}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for path in Path(user_dir).glob('*.parquet'):
