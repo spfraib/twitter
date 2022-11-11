@@ -28,9 +28,7 @@ if __name__ == '__main__':
     if args.country_code == 'NG':
         user_data_path = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     # user_data_path = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
-    user_dict = pd.concat(
-        [pd.read_parquet(parquet_path, columns=['user_id', 'user_profile_image_url_https']) for parquet_path in
-         Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['user_profile_image_url_https']
+    user_dict = pd.concat([pd.read_parquet(parquet_path, columns=['user_id', 'user_profile_image_url_https']) for parquet_path in Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['user_profile_image_url_https']
     user_list = list(set(list(user_dict.keys())))
     # get ids from user for whom we got an error when trying to download their pictures
     list_errors_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars/list_errors_all.txt.gz'
