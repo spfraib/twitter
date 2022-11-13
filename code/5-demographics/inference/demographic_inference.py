@@ -26,7 +26,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default='all')
+                        default='NG')
     return parser.parse_args()
 
 
@@ -161,8 +161,9 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     # define paths and paths to be treated
-    tar_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars'
-    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path'
+    tar_dir = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars'
+    if args.country_code == 'NG':
+        user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     # user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
     output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
     err_dir = os.path.join(output_dir, 'err')

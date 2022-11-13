@@ -61,7 +61,7 @@ if __name__ == '__main__':
         os.makedirs(output_dir)
     for path in Path(user_dir).glob('*.parquet'):
         df = pd.read_parquet(path)
-        df = df[['user_id', 'user_name', 'user_screen_name', 'user_description', 'country_short', 'user_profile_image_url_https']]
+        df = df[['user_id', 'user_name', 'user_screen_name', 'user_description', 'user_profile_image_url_https']]
         df['user_id'] = df['user_id'].astype(str)
         df['tfilename'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x, index=0))
         df['tmember'] = df['user_id'].apply(lambda x: get_image_map(map_dict=user_image_mapping_dict, user_id=x, index=1))
