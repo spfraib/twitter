@@ -16,16 +16,17 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="US")
+                        default="NG")
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
     # logger.info(f'Country code: {args.country_code}')
     # define paths
-    inference_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
-    err_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results/err'
-    output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results/output'
+    if args.country_code == 'NG':
+        inference_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
+    err_dir = f'{inference_dir}/err'
+    output_dir = f'{inference_dir}/output'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     # store user_dicts in list
