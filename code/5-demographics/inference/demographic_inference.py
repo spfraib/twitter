@@ -162,10 +162,10 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     # define paths and paths to be treated
     tar_dir = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars'
-    if args.country_code == 'NG':
-        user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
+    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path/{args.country_code}'
     # user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
-    output_dir = f'/scratch/spf248/twitter_data_collection/data/demographics/inference_results'
+    if args.country_code == 'NG':
+        output_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
     err_dir = os.path.join(output_dir, 'err')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
@@ -188,11 +188,11 @@ if __name__ == '__main__':
         df_list = list()
         for parquet_path in selected_users_list:
             df = pd.read_parquet(parquet_path)
-            if args.country_code != 'all':
-                df = df.loc[df['country_short'] == args.country_code]
-            elif args.country_code == 'all':
-                df = df.loc[df['country_short'].isin(['US', 'BR', 'MX', 'AR', 'CO', 'FR',
-                                                      'NG', 'VE', 'PK'])]
+            # if args.country_code != 'all':
+            #     df = df.loc[df['country_short'] == args.country_code]
+            # elif args.country_code == 'all':
+            #     df = df.loc[df['country_short'].isin(['US', 'BR', 'MX', 'AR', 'CO', 'FR',
+            #                                           'NG', 'VE', 'PK'])]
             df_list.append(df)
         df = pd.concat(df_list).reset_index(drop=True)
         del df_list
@@ -207,7 +207,7 @@ if __name__ == '__main__':
             df = df[~df["user_id"].isin(total_not_resizable_id_list)]
             logger.info(f'df size after dropping users with non resizable pictures: {df.shape[0]}')
         df = df.rename(columns={'user_id': 'id', 'user_profile_image_url_https': 'img_path', })
-        df['lang'] = df['country_short'].apply(set_lang)
+        df['lang'] = set_lang(args.country_code)
         df = df[['id', 'user_name', 'user_screen_name', 'user_description', 'img_path', 'tfilename', 'tmember', 'lang']]
         for (ichunk, chunk) in enumerate(np.array_split(df, 10)):
             if chunk.shape[0] == 0:
