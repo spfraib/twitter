@@ -10,7 +10,7 @@
 #SBATCH --mail-user=mt4493@nyu.edu
 #SBATCH --output=outfiles/jobarray_deployment_us_%j.out
 
-ITER=$1
+CLASS=$1
 RESUME=$2
 RESUME_FOLDER=$3
 
@@ -18,10 +18,11 @@ COUNTRY_CODE=US
 MODE=3
 RUN_NAME=0
 METHOD=0
+ITER=13
 
 
 JOB_ID=${SLURM_ARRAY_JOB_ID}
-
+DATE=$(date '+%d%m%Y')
 
 if [ ${MODE} -eq 0 ]
 then
@@ -37,14 +38,14 @@ then
   OUTPUT_PATH=/scratch/mt4493/twitter_labor/twitter-labor-data/data/inference/${COUNTRY_CODE}/iter_${ITER}-${RUN_NAME}-${JOB_ID}-test
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 0 ] # MEXICO inference
 then
-  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/text_labor_cls/${COUNTRY_CODE} #/iter${ITER}/unscored/
-  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}
+  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/text_labor_cls
+  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/${DATE}
 #  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/text_labor_cls/${COUNTRY_CODE}/
 #  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/tweet_scores/BERT/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-3GB-${JOB_ID}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
-  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/text_labor_cls/${COUNTRY_CODE}
-  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/${RESUME_FOLDER}
+  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/text_labor_cls
+  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/${RESUME_FOLDER}
 fi
 
 OUTPUT_MODELS=${OUTPUT_PATH}/output
@@ -64,7 +65,7 @@ module purge
 
 singularity exec --overlay /scratch/mt4493/twitter_labor/code/envs/singularity/inference/env.ext3:ro \
 	    /scratch/work/public/singularity/cuda11.1-cudnn8-devel-ubuntu18.04.sif \
-	    /bin/bash -c "source /ext3/env.sh; python /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/8-deployment/deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_JOB_ID}.log"
+	    /bin/bash -c "source /ext3/env.sh; python /scratch/mt4493/twitter_labor/code/twitter/code/2-twitter_labor/8-deployment/deployment_ONNX_bert.py --input_path ${INPUT_PATH} --output_path ${OUTPUT_MODELS} --country_code ${COUNTRY_CODE} --iteration_number ${ITER}_${CLASS} --method ${METHOD} --resume ${RESUME} > ${OUTPUT_LOGS}/${SLURM_JOB_ID}.log"
 #module load anaconda3/2020.02
 
 
