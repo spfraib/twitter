@@ -2,7 +2,7 @@
 #SBATCH --job-name=training_berts
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=10GB
+#SBATCH --mem=15GB
 #SBATCH --time=5:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --output=slurm_training_berts_%j.out
