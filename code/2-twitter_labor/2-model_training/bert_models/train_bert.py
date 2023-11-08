@@ -59,7 +59,7 @@ from datetime import datetime
 import time
 import pytz
 import json
-from pysentimiento.preprocessing import preprocess_tweet
+# from pysentimiento.preprocessing import preprocess_tweet
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s -   %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S',
