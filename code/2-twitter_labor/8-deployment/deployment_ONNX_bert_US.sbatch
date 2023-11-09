@@ -45,7 +45,7 @@ then
 #  OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/tweet_scores/BERT/${COUNTRY_CODE}/iter_${ITER}-${SLURM_ARRAY_TASK_COUNT}-3GB-${JOB_ID}
 elif [ ${MODE} -eq 3 ] && [ ${RESUME} -eq 1 ] # MEXICO inference
 then
-  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/text_labor_cls
+  INPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/user_timeline/US/31122022
   OUTPUT_PATH=/scratch/spf248/twitter_labor_market_flows/data/bert_labor_cls/${COUNTRY_CODE}/iter${ITER}/${CLASS}/${RESUME_FOLDER}
 fi
 
