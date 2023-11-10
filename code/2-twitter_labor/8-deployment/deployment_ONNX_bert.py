@@ -629,7 +629,7 @@ for filename in files_to_process_list:
             ####################################################################################################################################
             print('Predictions of random Tweets:')
             start_time = time.time()
-            onnx_labels = inference(os.path.join(onnx_path, 'converted-optimized-quantized.onnx'),
+            onnx_labels = inference(os.path.join(onnx_path, 'converted.onnx'),
                                     model_path,
                                     examples)
 
