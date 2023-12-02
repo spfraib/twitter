@@ -23,7 +23,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--mode", type=str)
-    parser.add_argument("--country_code", type=str, default='NG')
+    parser.add_argument("--country_code", type=str, default='US')
     args = parser.parse_args()
     return args
 
@@ -70,6 +70,8 @@ if __name__ == '__main__':
     start = timer()
     if args.country_code == 'NG':
         dir_name = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
+    elif args.country_code == 'US':
+        dir_name = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
     if args.mode == 'from_scratch':
         paths_to_filtered = list(
             np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
