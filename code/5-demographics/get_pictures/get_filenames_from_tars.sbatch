@@ -14,7 +14,7 @@
 module purge
 module load anaconda3/2020.02
 
-cd /scratch/spf248/twitter_deprecated/code/twitter/code/5-demographics/get_pictures
+cd /scratch/mt4493/twitter_labor/code/twitter/code/5-demographics/get_pictures
 
 python get_filenames_from_tars.py
 
