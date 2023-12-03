@@ -26,7 +26,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default='NG')
+                        default='US')
     return parser.parse_args()
 
 
@@ -166,6 +166,8 @@ if __name__ == '__main__':
     # user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
     if args.country_code == 'NG':
         output_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
+    elif args.country_code == 'US':
+        output_dir = '/scratch/mt4493/twitter_labor/demographic_cls/m3inference'
     err_dir = os.path.join(output_dir, 'err')
     if not os.path.exists(output_dir):
         os.makedirs(output_dir, exist_ok=True)
