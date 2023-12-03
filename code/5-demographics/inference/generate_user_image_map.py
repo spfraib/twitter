@@ -56,6 +56,8 @@ if __name__ == '__main__':
     user_image_mapping_dict = generate_user_image_map(tar_dir=tar_dir)
     if args.country_code == 'NG':
         user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
+    elif args.country_code == 'US':
+        user_dir = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
     output_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path/{args.country_code}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
