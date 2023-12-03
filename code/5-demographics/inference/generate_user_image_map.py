@@ -17,7 +17,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="NG")
+                        default="US")
     args = parser.parse_args()
     return args
 
