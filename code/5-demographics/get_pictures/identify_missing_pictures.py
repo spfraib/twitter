@@ -17,7 +17,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="NG")
+                        default="US")
     args = parser.parse_args()
     return args
 
@@ -27,6 +27,8 @@ if __name__ == '__main__':
     # get user id list
     if args.country_code == 'NG':
         user_data_path = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
+    elif args.country_code == 'US':
+        user_data_path = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
     # user_data_path = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
     user_dict = pd.concat([pd.read_parquet(parquet_path, columns=['user_id', 'user_profile_image_url_https']) for parquet_path in Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['user_profile_image_url_https']
     user_list = list(set(list(user_dict.keys())))
