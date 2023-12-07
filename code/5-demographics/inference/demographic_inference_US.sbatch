@@ -4,7 +4,7 @@
 #SBATCH --job-name=demo_infer
 #SBATCH --nodes=1
 #SBATCH --mem=20GB
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #SBATCH --cpus-per-task=1
 #SBATCH --output=outfiles/slurm_demo_%j.out
 #SBATCH --mail-type=BEGIN
