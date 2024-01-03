@@ -57,8 +57,8 @@ if __name__ == '__main__':
     if args.country_code == 'NG':
         user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     elif args.country_code == 'US':
-        user_dir = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
-    output_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path/{args.country_code}'
+        user_dir = f'/scratch/mt4493/twitter_labor/demographic_cls/US_profiles'
+    output_dir = f'/scratch/mt4493/twitter_labor/demographic_cls/profiles_with_tar_path/{args.country_code}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
     for path in Path(user_dir).glob('*.parquet'):
