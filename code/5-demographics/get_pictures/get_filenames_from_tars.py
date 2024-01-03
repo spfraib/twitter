@@ -25,9 +25,9 @@ def get_args_from_command_line():
 if __name__ == '__main__':
     args = get_args_from_command_line()
     tar_folder_dict = {'normal': 'tars', 'resized': 'resized_tars'}
-    data_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}'
-    outfile_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}/list_files_all.txt.gz'
-    outfile_err_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}/list_errors_all.txt.gz'
+    data_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}'
+    outfile_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}/list_files_all.txt.gz'
+    outfile_err_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/{tar_folder_dict[args.tar_type]}/list_errors_all.txt.gz'
     if os.path.exists(outfile_path):
         os.remove(outfile_path)
     if os.path.exists(outfile_err_path):
