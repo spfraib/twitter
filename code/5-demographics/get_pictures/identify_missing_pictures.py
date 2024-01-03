@@ -28,12 +28,12 @@ if __name__ == '__main__':
     if args.country_code == 'NG':
         user_data_path = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     elif args.country_code == 'US':
-        user_data_path = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
+        user_data_path = f'/scratch/mt4493/twitter_labor/demographic_cls/US_profiles'
     # user_data_path = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles'
     user_dict = pd.concat([pd.read_parquet(parquet_path, columns=['user_id', 'user_profile_image_url_https']) for parquet_path in Path(user_data_path).glob('*.parquet')]).set_index('user_id').to_dict()['user_profile_image_url_https']
     user_list = list(set(list(user_dict.keys())))
     # get ids from user for whom we got an error when trying to download their pictures
-    list_errors_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars/list_errors_all.txt.gz'
+    list_errors_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/tars/list_errors_all.txt.gz'
     user_id_errors_list = list()
     with gzip.open(list_errors_path, 'rt') as f:
         for line in f:
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     logger.info(f'Total # of users: {len(user_list)}')
     logger.info(f'# of users whose picture we were not able to download: {len(user_id_errors_list)}')
     # get ids from users with downloaded pictures
-    list_files_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars/list_files_all.txt.gz'
+    list_files_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/tars/list_files_all.txt.gz'
     user_with_pictures_list = list()
     file_format_count_dict = dict()
     with gzip.open(list_files_path, 'rt') as f:
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     logger.info(f'# users without picture and not listed in errors: {len(users_without_pictures_list)}')
     if len(users_without_pictures_list) > 0:
         missing_pictures_dict = {k: user_dict[k] for k in users_without_pictures_list}
-        missing_pictures_path = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars/user_ids_w_missing_pics_all.json'
+        missing_pictures_path = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/tars/user_ids_w_missing_pics_all.json'
         if os.path.exists(missing_pictures_path):
             os.remove(missing_pictures_path)
         with open(missing_pictures_path, 'w') as fp:
