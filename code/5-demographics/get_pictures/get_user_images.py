@@ -53,7 +53,7 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     SLURM_JOB_CPUS_PER_NODE = get_env_var('SLURM_JOB_CPUS_PER_NODE', mp.cpu_count())
 
-    data_path = '/scratch/spf248/twitter_data_collection/data'
+    data_path = '/scratch/mt4493/twitter_labor/demographic_cls'
     output_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/{str(SLURM_JOB_ID)}")
     success_log_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/success")
     err_log_dir = os.path.join(data_path, f"profile_pictures/{args.country_code}/tars/err")
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     if args.country_code == 'NG':
         dir_name = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
     elif args.country_code == 'US':
-        dir_name = f'/scratch/spf248/twitter_labor_market_flows/data/latest_profiles/US'
+        dir_name = f'/scratch/mt4493/twitter_labor/demographic_cls/US_profiles'
     if args.mode == 'from_scratch':
         paths_to_filtered = list(
             np.array_split(glob(os.path.join(dir_name, '*.parquet')), SLURM_ARRAY_TASK_COUNT)[SLURM_ARRAY_TASK_ID])
