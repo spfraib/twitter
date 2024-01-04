@@ -52,7 +52,7 @@ def get_image_map(map_dict, user_id, index):
 
 if __name__ == '__main__':
     args = get_args_from_command_line()
-    tar_dir = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars'
+    tar_dir = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/tars'
     user_image_mapping_dict = generate_user_image_map(tar_dir=tar_dir)
     if args.country_code == 'NG':
         user_dir = f'/scratch/spf248/twitter_social_cohesion/data/preprocessed_from_twitter_api/profiles/NG'
