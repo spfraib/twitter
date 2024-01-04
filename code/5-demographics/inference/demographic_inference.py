@@ -161,8 +161,8 @@ if __name__ == '__main__':
     SLURM_ARRAY_TASK_ID = get_env_var('SLURM_ARRAY_TASK_ID', 0)
     SLURM_ARRAY_TASK_COUNT = get_env_var('SLURM_ARRAY_TASK_COUNT', 1)
     # define paths and paths to be treated
-    tar_dir = f'/scratch/spf248/twitter_data_collection/data/profile_pictures/{args.country_code}/tars'
-    user_dir = f'/scratch/spf248/twitter_data_collection/data/user_timeline/profiles_with_tar_path/{args.country_code}'
+    tar_dir = f'/scratch/mt4493/twitter_labor/demographic_cls/profile_pictures/{args.country_code}/tars'
+    user_dir = f'/scratch/mt4493/twitter_labor/demographic_cls/profiles_with_tar_path/{args.country_code}'
     # user_mapping_path = f'/scratch/spf248/twitter_data_collection/data/demographics/profile_pictures/tars/user_map_dict_all.json'
     if args.country_code == 'NG':
         output_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
