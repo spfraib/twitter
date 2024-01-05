@@ -16,7 +16,7 @@ def get_args_from_command_line():
     """Parse the command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument("--country_code", type=str,
-                        default="NG")
+                        default="US")
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -25,6 +25,8 @@ if __name__ == '__main__':
     # define paths
     if args.country_code == 'NG':
         inference_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
+    elif args.country_code == 'US':
+        output_dir = '/scratch/mt4493/twitter_labor/demographic_cls/m3inference'
     err_dir = f'{inference_dir}/err'
     output_dir = f'{inference_dir}/output'
     if not os.path.exists(output_dir):
