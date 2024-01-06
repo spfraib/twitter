@@ -26,7 +26,7 @@ if __name__ == '__main__':
     if args.country_code == 'NG':
         inference_dir = f'/scratch/spf248/twitter_social_cohesion/data/demographic_cls/m3inference'
     elif args.country_code == 'US':
-        output_dir = '/scratch/mt4493/twitter_labor/demographic_cls/m3inference'
+        inference_dir = '/scratch/mt4493/twitter_labor/demographic_cls/m3inference'
     err_dir = f'{inference_dir}/err'
     output_dir = f'{inference_dir}/output'
     if not os.path.exists(output_dir):
