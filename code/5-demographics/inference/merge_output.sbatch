@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=30GB
-#SBATCH --time=12:00:00
+#SBATCH --time=6:00:00
 #SBATCH --output=slurm_merge_output_%j.out
 #SBATCH --mail-type=BEGIN
 #SBATCH --mail-type=END
