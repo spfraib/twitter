@@ -200,7 +200,10 @@ if __name__ == "__main__":
 
     print("********** Train shape: ", train_df.shape[0], " **********")
     print("********** Eval shape: ", eval_df.shape[0], " **********")
-
+    print("********** Missing labels in train: ", train_df.loc[train_df['labels'].isnull()].shape[0], " **********")
+    print("********** Missing text in train: ", train_df.loc[train_df['text'].isnull()].shape[0], " **********")
+    print("********** Missing labels in eval: ", eval_df.loc[eval_df['labels'].isnull()].shape[0], " **********")
+    print("********** Missing text in eval: ", eval_df.loc[eval_df['text'].isnull()].shape[0], " **********")
     # Make sure the DataFrame contains the necessary columns
     verify_data_format(train_df)
     verify_data_format(eval_df)
