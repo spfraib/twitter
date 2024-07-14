@@ -203,7 +203,7 @@ if __name__ == "__main__":
     print("********** Missing labels in train: ", train_df.loc[train_df['labels'].isnull()].shape[0], " **********")
     print("********** Missing text in train: ", train_df.loc[train_df['text'].isnull()].shape[0], " **********")
     print("********** Missing labels in eval: ", eval_df.loc[eval_df['labels'].isnull()].shape[0], " **********")
-    print("********** Missing text in eval: ", eval_df.loc[eval_df['text'].isnull()].shape[0], " **********")
+    print("********** Missing text in eval: ", eval_df.loc[slurm_training_berts_48474744.out['text'].isnull()].shape[0], " **********")
     # Make sure the DataFrame contains the necessary columns
     verify_data_format(train_df)
     verify_data_format(eval_df)
@@ -231,7 +231,7 @@ if __name__ == "__main__":
                                       'num_train_epochs': args.num_train_epochs, "use_early_stopping": True,
                                       "early_stopping_delta": 0, "early_stopping_metric": "auroc",
                                       "early_stopping_metric_minimize": False, "tensorboard_dir": f"runs/{args.slurm_job_id}_{name_val_file.replace('val_', '')}/" ,
-                                      "manual_seed": args.seed, "learning_rate": learning_rate }
+                                      "manual_seed": args.seed, "learning_rate": learning_rate, 'fp16':False}
     ## Allow for several evaluations per epoch
     if args.intra_epoch_evaluation:
         nb_steps_per_epoch = (train_df.shape[0] // classification_args['train_batch_size']) + 1
